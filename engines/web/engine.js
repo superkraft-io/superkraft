@@ -76,7 +76,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
         
 
-        app.use('/ss', this.express.static(this.paths.frontend.ss))
+        app.use('/sk', this.express.static(this.paths.frontend.ss))
         
         app.use('/', this.express.static(this.paths.frontend.app))
 
