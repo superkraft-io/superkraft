@@ -1,0 +1,116 @@
+body {
+    background-color: #141414;
+    color: white;
+}
+
+.face_color {
+    background-color: #141414;
+}
+
+.frosted {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.frosted.face_color {
+    background-color: rgba(20, 20, 20, 0.6);
+}
+
+.sk_app {
+    width: 100%;
+    height: 100%;
+}
+
+.appBody {
+    position: absolute;
+    top: 1.8rem;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+}
+
+.appBody.noTitlebar {
+    top: 0px;
+}
+
+.appBody > div {
+    width: 100%;
+    height: 100%;
+}
+
+i.icon, i.icons, i.flag {
+    margin: 0 !important;
+    /*line-height: unset;*/
+}
+
+.hidden {
+    display: none;
+}
+
+.transition {
+    transition: 200ms;
+}
+
+.noSelect {
+    -webkit-touch-callout: none;
+      -webkit-user-select: none;
+       -khtml-user-select: none;
+         -moz-user-select: none;
+          -ms-user-select: none;
+              user-select: none;
+}
+
+
+.vertical_margin.normal > div:not(:first-child) {
+    margin-top: 8px;
+}
+
+.sk_horizontal_margin > div:not(:first-child) {
+    margin-left: 32px;
+}
+
+
+
+.sk_app_view {
+    width: 100%;
+    height: 100%;
+}
+
+.sk_fileDrop_active {
+    border: dashed 1px rgba(255,255,255,1)
+}
+
+
+.sk_ui_fileDrop_Area {
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    right: 4px;
+    bottom: 4px;
+    margin: 0px !important;
+    /*backdrop-filter: blur(10px);
+    background-color: rgba(255,255,255,0.2);
+    */
+}
+
+.sk_ui_fileDrop_Area_outline {
+    width: 100%;
+    height: 100%;
+    border: dashed 2px rgba(255,255,255,0.2);
+    transition: none;
+}
+
+/*.sk_ui_fileDrop_Area_outline:hover {
+    background-color: rgba(255,255,255,0.8);
+}*/
+
+
+.sk_ui_fade_indicate {
+    animation: sk_ui_fade_indicate_animation 1s infinite;
+}
+
+@keyframes sk_ui_fade_indicate_animation {
+    0%   { opacity: 1}
+    50%  { opacity: 0.1}
+    100% { opacity: 1}
+}

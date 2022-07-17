@@ -1,0 +1,7 @@
+.sk_ui_segment.vertical > *:not(:last-child) {
+    margin-bottom: 8px;
+}
+
+.sk_ui_segment.horizontal > *:not(:last-child) {
+    margin-right: 8px;
+}

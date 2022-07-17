@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <script-src type="text/javascript"  src="https://js.stripe.com/v3/"></script>
+
+        <script> try { var $ = jQuery = require("jquery") } catch(err) {} </script>
+        <script src="<%= ss.routes.frontend.ss %>libs/jquery/dist/jquery.slim.min.js"></script>
+
+
+        <link rel="stylesheet" href="<%= ss.routes.frontend.ss %>libs/formantic-ui/semantic.css"/>
+        <script src="<%= ss.routes.frontend.ss %>libs/formantic-ui/semantic.min.js"></script>
+        
+
+        <link rel="stylesheet" type="text/css" href="<%= ss.routes.frontend.ss %>libs/jsom/jsom.css">
+        <script src="<%= ss.routes.frontend.ss %>libs/jsom/jsom.js"></script>
+
+
+        <script src="<%= ss.routes.frontend.ss %>libs/sk_comm/sk_comm_<%= app_type %>.js"></script>
+        <script src="<%= ss.routes.frontend.ss %>libs/sk_comm/sk_comm_core.js"></script>
+
+        <script src="<%= ss.routes.frontend.ss %>libs/sk_fileSystem/sk_fileSystem_<%= app_type %>.js"></script>
+        <script src="<%= ss.routes.frontend.ss %>libs/sk_fileSystem/sk_fileSystem_core.js"></script>
+
+
+        <script src="<%= ss.routes.frontend.ss %>libs/sk_fileDrop/sk_fileDrop.js"></script>
+
+        <script src="<%= ss.routes.frontend.ss %>libs/sk_tween.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="<%= ss.routes.frontend.ss %>libs/sk_titlebar/sk_titlebar.css">
+        <script src="<%= ss.routes.frontend.ss %>libs/sk_titlebar/sk_titlebar.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="<%= ss.routes.frontend.ss %>libs/sk_contextMenu/sk_contextMenu.css">
+        <script src="<%= ss.routes.frontend.ss %>libs/sk_contextMenu/sk_contextMenu.js"></script>
+
+        
+
+        <script src="<%= ss.routes.frontend.ss %>libs/js-cookie/js.cookie.min.js"></script>
+
+        <%- include(globalHead) %>
+        <%- include(viewHead) %>
+    </head>
+
+    <%- include(ss.ui.head) %>
+
+    <% if (ss.useComplexity){ %>
+        <head>
+            <link rel="stylesheet" type="text/css" href="<%= ss.routes.frontend.complexity %>complexity.css">
+            <script src="<%= ss.routes.frontend.complexity %>icons.js"></script>
+            <script src="<%= ss.routes.frontend.complexity %>comm.js"></script>
+            <script src="<%= ss.routes.frontend.complexity %>selectionManager.js"></script>
+            <script src="<%= ss.routes.frontend.complexity %>complexity.js"></script>
+
+
+            <script src="<%= ss.routes.frontend.complexity %>editor/components/objectTree.js"></script>
+            <script src="<%= ss.routes.frontend.complexity %>editor/components/stylingEditor.js"></script>
+            <script src="<%= ss.routes.frontend.complexity %>editor/components/attributeEditor.js"></script>
+            <script src="<%= ss.routes.frontend.complexity %>editor/components/iconList.js"></script>
+
+            
+
+            <link rel="stylesheet" href="<%= ss.routes.frontend.complexity %>codeEditor/codemirror/theme/vscode-dark.css">
+
+            <link rel="stylesheet" href="<%= ss.routes.frontend.complexity %>codeEditor/codemirror/lib/codemirror.css">
+            <script src="<%= ss.routes.frontend.complexity %>codeEditor/codemirror/lib/codemirror.js"></script>
+            <script src="<%= ss.routes.frontend.complexity %>codeEditor/codemirror/mode/javascript/javascript.js"></script>
+            <script src="<%= ss.routes.frontend.complexity %>codeEditor/bakery.js"></script>
+            <script src="<%= ss.routes.frontend.complexity %>codeEditor/codeEditor.js"></script>
+
+            <script src="<%= ss.routes.frontend.complexity %>editor/editor.js"></script>
+        </head>
+    <% } %>
+    
+    <body>
+        <%- include(viewBodyScripts.start) %>
+
+        <%- include(ss.ui.script) %>
+
+        
+        <script src="<%= ss.routes.frontend.view %>view.js"></script>
+
+        <script>
+            ss.l10n = <%- JSON.stringify(l10n) %>
+        </script>
+        <script src="<%= ss.routes.frontend.ss %>libs/sk_l10n/sk_l10n.js"></script>
+
+        <script>
+             <% if (ss.useComplexity){ %>
+                ss.complexity = {
+                    core: new sk_ui_complexity()
+                }
+                ss.complexity.comm = new sk_ui_complexity_comm()
+                ss.complexity.comm.init()
+            <% } %>
+
+            
+            
+            ss.userData = <%- JSON.stringify(userData) %>
+
+            ss.init().then(()=>{
+                ss.app = (new sk_ui_component({element: document.body}))
+                .setup(_c => {
+                    _c.classAdd('sk_app')
+
+                    _c.styling = 'ttb'
+
+                    if (ss.app_type === 'local') _c.titleBar = new TitleBar({
+                        parent: _c.element,
+                        os: ss.os,
+                        title: ss.title,
+                        noTitle: ss.noTitle
+                    })
+                    
+
+                    _c.body = _c.add.component(_c => {
+                        _c.classAdd('appBody ' + (ss.app_type !== 'local' ? 'noTitlebar' : ''))
+                    
+                        _c.view = new ss._view(_c)
+                        _c.children.push(_c.view)
+                    })
+
+                    <% if (ss.useComplexity){ %>
+                        ss.complexity.editor = new sk_ui_complexity_editor({app: _c})
+                        ss.complexity.codeEditor = new sk_ui_complexity_codeEditor(_c)
+                    <% } %>
+                })
+
+                
+            })
+
+           
+            
+        </script>
+
+
+        <%- include(viewBodyScripts.end) %>
+    </body>
+</html>

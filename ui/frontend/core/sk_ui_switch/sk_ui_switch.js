@@ -1,0 +1,51 @@
+class sk_ui_switch extends sk_ui_component {
+    constructor(parent){
+        super(parent)
+        
+        this.multiComponent = true
+
+        var size = 24
+
+        this.styling = 'left middle'
+
+        this.style.width = Math.round(size*1.75) + 'px'
+        this.style.height = size + 'px'
+        this.style.padding = '2px'
+        this.style.borderRadius = size + 'px'
+        this.style.backgroundColor = '#3c3c3c'
+        this.style.cursor = 'pointer'
+
+        this.spacer = this.add.spacer(_c => _c.styling = '' )
+
+        this.handle = this.add.component(_c => {
+            _c.style.borderRadius = size + 'px'
+            _c.style.width = size-4 + 'px'
+            _c.styling += ' fullheight'
+            _c.style.backgroundColor = '#767676'
+        })
+
+        this.element.onclick = async ()=>{
+            this.toggled = !this.toggled
+            if (this.onChanged) this.onChanged(this.toggled)
+        }
+
+        this.attributes.add({
+            friendlyName: 'Toggled',
+            name: 'toggled',
+            type: 'bool',
+
+            onSet: val => {
+                this.spacer.styling = ''
+
+                this.style.backgroundColor = '#3c3c3c'
+                this.handle.style.backgroundColor = '#767676'
+
+                if (val){
+                    this.spacer.styling = 'fill'
+                    this.style.backgroundColor = 'rgb(0, 166, 255)'
+                    this.handle.style.backgroundColor = 'white'
+                }
+            }
+        })
+    }
+}

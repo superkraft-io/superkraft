@@ -1,0 +1,115 @@
+.sk_ui_button {
+    width: fit-content;
+    padding: 8px 14px;
+    color: rgb(155, 155, 155);
+    position: relative;
+    overflow: hidden;
+}
+
+.sk_ui_button_enabled:hover {
+    background-color: rgb(46, 46, 46);
+    color: white;
+}
+
+.sk_ui_button_enabled:active {
+    opacity: 0.5;
+}
+
+.sk_ui_button.active:hover {
+    background-color: rgb(0, 82, 121);
+}
+
+
+.sk_ui_button > .sk_ui_label {
+    font-weight: 500;
+}
+
+.sk_ui_button > .sk_ui_icon {
+    margin-right: 12px;
+}
+
+.sk_ui_button.normal {
+    background-color: rgb(29, 29, 29);
+    border-radius: 6px;
+    color: white;
+}
+
+.sk_ui_button.normal:hover {
+    background-color: rgb(46, 46, 46);
+}
+
+.sk_ui_button.clear {
+    background-color: transparent;
+}
+
+.sk_ui_button.icon {
+    padding: 8px 8px;
+}
+
+.sk_ui_button.icon > .sk_ui_icon {
+    margin-right: 0px;
+}
+
+.sk_ui_button_vertical > .sk_ui_icon {
+    margin-right: 0px;
+    margin-bottom: 12px;
+}
+
+.sk_ui_button_toggled {
+    background-color: rgb(0, 166, 255);
+    color: white;
+}
+
+.sk_ui_button_toggled:hover {
+    background-color: rgb(0, 82, 121);
+    color: white;
+}
+
+
+
+.sk_ui_button_style_thin {
+    padding: 0px 5px;
+}
+
+.sk_ui_button_style_thin > .sk_ui_icon {
+    margin-right: 6px;
+    font-size: 10px;
+}
+
+.sk_ui_button_style_action {
+    border-radius: 6px;
+    background-color: rgb(50, 50, 50);
+    
+}
+
+.sk_ui_button_style_action > .sk_ui_label {
+    color: white;
+    font-weight: 500;
+}
+
+
+
+.sk_ui_button_loader {
+    
+    width: 8px;
+    height: 8px;
+
+    border-radius: 4px;
+
+    color: rgb(255, 255, 255);
+    background-color: rgb(255, 255, 255);
+    background-size: 400% 400%;
+    animation: 1s ease 0s infinite normal none running sk_ui_button_loader;
+}
+  
+@keyframes sk_ui_button_loader {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+@-moz-keyframes sk_ui_button_loader {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+}

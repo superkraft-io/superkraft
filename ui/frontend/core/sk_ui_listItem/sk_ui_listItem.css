@@ -1,0 +1,93 @@
+.sk_ui_listItem {
+    width: 100%;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px;
+    transition: 100ms;
+    margin-bottom: 0px !important;
+}
+
+.sk_ui_listItem.highlighted {
+    background-color: rgb(43, 43, 43);
+}
+
+.sk_ui_listItem._hidden_height {
+    height: 0px;
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+}
+
+.sk_ui_listItem._hidden_visibility {
+    opacity: 0 !important;
+}
+
+
+.sk_ui_listItem.selected {
+    background: rgb(60, 60, 60);
+    color: white;
+}
+
+
+
+.sk_ui_list::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sk_ui_list::-webkit-scrollbar-track {
+    border-radius: 10px;
+}
+
+.sk_ui_list::-webkit-scrollbar-thumb {
+    background: rgb(46, 46, 46);
+    border-radius: 10px;
+}
+
+
+
+
+.sk_ui_listItem > #labelContainer {
+    position: relative;
+}
+
+.sk_ui_listItem_labelEditor {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+
+    background-color: #141414;
+    border: solid 1px #ffffff;
+    border-radius: 4px;
+
+    display: none;
+
+    color: white;
+
+    outline: none;
+
+    margin-left: -3px;
+
+    font-weight: 600;
+}
+
+.sk_ui_listItem_labelEditor::selection {
+    background:rgb(0, 140, 255);
+    color: white;
+    border-radius: 4px;
+}
+
+.sk_ui_listItem_labelEditor.show {
+    display: unset;
+    opacity: 1;
+}
+
+.sk_ui_listItem.editing {
+    background-color: rgb(46, 46, 46);
+}
+.sk_ui_listItem.editing:hover {
+    opacity: 1 !important;
+}
+.sk_ui_listItem.editing:active {
+    opacity: 1 !important;
+}

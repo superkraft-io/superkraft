@@ -1,0 +1,75 @@
+.sk_ui_shadow_default {
+    -webkit-box-shadow: 0px 10px 30px 0px rgba(255,0,196,1);
+    -moz-box-shadow: 0px 10px 30px 0px rgba(255,0,196,1);
+    box-shadow: 0px 10px 30px 0px rgba(255,0,196,1);
+}
+
+.sk_ui_shadow_orange {
+    -webkit-box-shadow: 0px 10px 30px 0px rgba(255,170,0,1);
+    -moz-box-shadow: 0px 10px 30px 0px rgba(255,170,0,1);
+    box-shadow: 0px 10px 30px 0px rgba(255,170,0,1);
+}
+
+.sk_ui_shadow_grey {
+    -webkit-box-shadow: 0px 10px 30px 0px rgba(204,204,204,1);
+    -moz-box-shadow: 0px 10px 30px 0px rgba(204,204,204,1);
+    box-shadow: 0px 10px 30px 0px rgba(204,204,204,1);
+}
+
+.sk_ui_shadow_blue {
+    -webkit-box-shadow: 0px 10px 30px 0px rgba(0,174,255,1);
+    -moz-box-shadow: 0px 10px 30px 0px rgba(0,174,255,1);
+    box-shadow: 0px 10px 30px 0px rgba(0,174,255,1);
+}
+
+.sk_ui_shadow_blue_inset {
+    -webkit-box-shadow: inset 0px 0px 10px 0px rgb(138 218 255);
+    -moz-box-shadow: inset 0px 0px 10px 0px rgb(138 218 255);
+    box-shadow: inset 0px 0px 10px 0px rgb(138 218 255);
+}
+
+
+
+
+.sk_ui_shadow_purple {
+    -webkit-box-shadow: 0px 10px 30px 0px rgba(140,0,255,1);
+    -moz-box-shadow: 0px 10px 30px 0px rgba(140,0,255,1);
+    box-shadow: 0px 10px 30px 0px rgba(140,0,255,1);
+}
+
+
+
+
+.sk_ui_shadow_green {
+    -webkit-box-shadow: 0px 10px 30px 0px rgba(85,255,0,1);
+    -moz-box-shadow: 0px 10px 30px 0px rgba(85,255,0,1);
+    box-shadow: 0px 10px 30px 0px rgba(85,255,0,1);
+}
+
+.sk_ui_shadow_green_dark {
+    -webkit-box-shadow: 0px 10px 30px 0px rgb(27 82 0);
+    -moz-box-shadow: 0px 10px 30px 0px rgb(27 82 0);
+    box-shadow: 0px 10px 30px 0px rgb(27 82 0);
+}
+
+
+
+
+.sk_ui_shadow_red {
+    -webkit-box-shadow: 0px 10px 30px 0px rgba(255,38,0,1);
+    -moz-box-shadow: 0px 10px 30px 0px rgba(255,38,0,1);
+    box-shadow: 0px 10px 30px 0px rgba(255,38,0,1);
+}
+
+
+.sk_ui_shadow_black {
+    -webkit-box-shadow: 0px 10px 30px 0px rgb(0, 0, 0);
+    -moz-box-shadow: 0px 10px 30px 0px rgb(0, 0, 0);
+    box-shadow: 0px 10px 30px 0px rgb(0, 0, 0);
+}
+
+.sk_ui_shadow_black_inset {
+    -webkit-box-shadow: inset 0px 0px 10px 0px lightgrey;
+    -moz-box-shadow: inset 0px 0px 10px 0px lightgrey;
+    box-shadow: inset 0px 0px 10px 0px lightgrey;
+}

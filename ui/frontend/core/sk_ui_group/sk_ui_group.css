@@ -1,0 +1,27 @@
+.sk_ui_group {
+    border-radius: 4px;
+}
+
+.sk_ui_group_opaque {
+    background-color: rgb(26, 26, 26);
+}
+
+.sk_ui_group_container {
+    overflow: hidden;
+    padding-top: 4px;
+    /*height: 256px;*/
+}
+
+/* top container */
+.sk_ui_group_top {
+    border-radius: 4px 4px 0px 0px;
+    padding: 0px 2px;
+    margin-bottom: 6px
+}
+
+
+.sk_ui_group_header {
+    font-weight: 600;
+    color: lightgrey;
+    width: 100%;
+}
