@@ -7,7 +7,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                 frontend: {
                     view: this.info.route + 'vfe_frontend/',
 
-                    sk: '/ss/',
+                    sk: '/sk/',
 
                     ui: global.sk.ui.routes.core,
                     ui_shared: 'sk_ui_shared/',
