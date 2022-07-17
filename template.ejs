@@ -76,11 +76,10 @@
     
     <body>
         <%- include(viewBodyScripts.start) %>
-
-        <%- include(sk.ui.script) %>
-
         
         <script src="<%= sk.routes.frontend.view %>view.js"></script>
+
+        <%- include(sk.ui.script) %>
 
         <script>
             sk.l10n = <%- JSON.stringify(l10n) %>
