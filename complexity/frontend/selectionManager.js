@@ -129,7 +129,7 @@ class ss_ui_complexity_selectionManager {
     duplicateFromList(target, list){
 
         var traverseAdd = (parent, serialization) => {
-            return parent.add[serialization.clask.replace('ss_ui_', '')](_c => {
+            return parent.add[serialization.class.replace('ss_ui_', '')](_c => {
                 for(var attrName in serialization.attributes){
                     if (attrName === 'pseudoClassName' || attrName === 'uuid') continue
                     

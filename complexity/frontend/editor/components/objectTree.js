@@ -28,7 +28,7 @@ class ss_ui_complexity_objectTree extends ss_ui_groupCollapsable {
 
         group._header.add.spacer()
         group._header.add.label(_c => {
-            _c.text = serializedObject.clask.split('ss_ui_')[1]
+            _c.text = serializedObject.class.split('ss_ui_')[1]
             _c.color = '#5f5f5f'
             _c.weight = 600
             _c.style.marginRight = '4px'
