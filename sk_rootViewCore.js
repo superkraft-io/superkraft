@@ -11,7 +11,7 @@ module.exports = class sk_RootViewCore {
     
                 id: this.id,
                 title: (this.info ? this.info.title : 'New View'),
-                ss: {
+                sk: {
                     ui: sk.ui.renderInfo(opt.root + 'frontend/sk_ui/'),
                     routes: this.routes
                 },

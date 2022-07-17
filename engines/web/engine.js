@@ -64,7 +64,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
         this.paths = {
             frontend: {
-                ss: global.sk.paths.sk_frontend,
+                sk: global.sk.paths.sk_frontend,
                 ui: {
                     core: global.sk.ui.paths.frontend.core,
                     shared: global.sk.ui.paths.frontend.shared,

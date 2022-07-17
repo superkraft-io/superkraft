@@ -4,7 +4,7 @@ module.exports = class sk_RootEngine {
     constructor(opt){
         this.paths = {
             frontend: {
-                ss: global.sk.paths.sk_frontend,
+                sk: global.sk.paths.sk_frontend,
                 ui: {
                     core: global.sk.ui.paths.frontend.core,
                     shared: global.sk.ui.paths.frontend.shared,
