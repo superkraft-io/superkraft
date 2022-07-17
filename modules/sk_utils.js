@@ -22,7 +22,7 @@ module.exports = class SK_Window {
             var action = actions[msg.action]
             var view = global.ss.views[msg.vid]
 
-            if (route !== 'root' && global.ss.type === 'local') if (view._view.id !== msg.senderID ) return
+            if (route !== 'root' && global.ss.type === 'dapp') if (view._view.id !== msg.senderID ) return
 
             var res = {}
 

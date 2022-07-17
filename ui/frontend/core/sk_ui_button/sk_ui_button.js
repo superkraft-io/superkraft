@@ -14,7 +14,7 @@ class sk_ui_button extends sk_ui_component {
 
 
         var handleOnClickEvent = async ()=>{
-            if (sk.app_type === 'local'){
+            if (sk.app_type === 'dapp'){
                 if (this.goto || this.goto_) sk.comm.main('openURL', {url: this.goto || this.goto_})
             } else {
                 if (this.goto) window.location.replace(this.goto)

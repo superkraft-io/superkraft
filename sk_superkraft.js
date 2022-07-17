@@ -8,7 +8,7 @@ module.exports = class SuperStructure {
 
     async init(opt){
         global.ss = {
-            ssModule: this,
+            skModule: this,
             type: opt.type,
             paths: {
                 root: opt.root + '/',

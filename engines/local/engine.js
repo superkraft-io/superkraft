@@ -8,8 +8,8 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
 
         
 
-        global.ss.app = app
-        global.ss.os = require('os')
+        global.sk.app = app
+        global.sk.os = require('os')
 
         const WebSockets_Callback = require('wscb')
         var wscb = new WebSockets_Callback({asElectron: true,
@@ -17,11 +17,11 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
                 if (msg.cmd === 'terminate') app.quit()
             }
         })
-        global.ss.wscb = wscb
+        global.sk.wscb = wscb
 
 
 
-        var postsFolder = global.ss.ssModule.opt.postsRoot
+        var postsFolder = global.sk.skModule.opt.postsRoot
         
         this.posts = {}
 
@@ -45,14 +45,14 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
     waitForReady(){
         return new Promise(resolve => {
             app.on('ready', ()=>{
-                global.ss.country = app.getLocale().split('-')[0]
+                global.sk.country = app.getLocale().split('-')[0]
                 resolve()
             })
         })   
     }
 
     on(cmd, cb){
-        global.ss.wscb.on(cmd, async (msg, rW) => {
+        global.sk.wscb.on(cmd, async (msg, rW) => {
             cb(msg, rW)
         })
     }

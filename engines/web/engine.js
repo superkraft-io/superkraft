@@ -88,7 +88,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
         /*********************/
 
-        var postsFolder = global.sk.ssModule.opt.postsRoot
+        var postsFolder = global.sk.skModule.opt.postsRoot
         
         this.posts = {}
 
