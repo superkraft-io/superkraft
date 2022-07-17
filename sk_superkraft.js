@@ -53,7 +53,7 @@ module.exports = class Superkraft {
 
         /****************/
 
-        global.sk_RootAction = require(global.sk.paths.sk_modules + 'sk_rootAction.js')
+        global.SK_RootAction = require(global.sk.paths.sk_modules + 'sk_rootAction.js')
         
 
         if (opt.useComplexity) global.sk.complexity = new ( require(__dirname + '/complexity/backend/sk_complexity.js'))
