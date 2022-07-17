@@ -1,6 +1,6 @@
 var fs = require('fs')
 
-module.exports = class SuperStructure {
+module.exports = class Superkraft {
     constructor(opt){
         this.opt = opt
         this.init(opt)
