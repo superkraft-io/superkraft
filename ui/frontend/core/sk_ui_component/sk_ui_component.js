@@ -572,10 +572,10 @@ class sk_ui_attributes {
                     
                     if (attribute.css){
                         if (!ignoreCSS){
-                            _name = attribute.csk.split('?')[0]
+                            _name = attribute.css.split('?')[0]
                             _attrRes.css = true
                         } else {
-                            _attrRes.value = _attrRes.value.replace(attribute.csk.split('?')[1], '')
+                            _attrRes.value = _attrRes.value.replace(attribute.css.split('?')[1], '')
                         }
                     }
                     
@@ -652,7 +652,7 @@ class sk_ui_attribute {
             info.name,
             {
                 get: ()=>{
-                    if (info.css) var val = parent.style[info.csk.split('?')[0]]
+                    if (info.css) var val = parent.style[info.css.split('?')[0]]
                     else var val = parent['__' + info.name]
                     
                     this.iterateCallbacks('get', val)
@@ -662,9 +662,9 @@ class sk_ui_attribute {
 
                 set: val => {
                     if (info.css){
-                        var newVal = val + info.csk.split('?')[1]
+                        var newVal = val + info.css.split('?')[1]
                         if (val === 0) newVal = ''
-                        parent.style[info.csk.split('?')[0]] = newVal
+                        parent.style[info.css.split('?')[0]] = newVal
                     } else {
                         parent['__' + info.name] = val
                     }

@@ -125,7 +125,7 @@ class ss_ui_attributeItem {
 
         try {
             this.currValue = this.object[this.attr.name]
-            if (attr.css) this.currValue = this.currValue.replace(attr.csk.split('?')[1], '')
+            if (attr.css) this.currValue = this.currValue.replace(attr.css.split('?')[1], '')
             this[attr.type + 'Type']()
         } catch(err) {
 
