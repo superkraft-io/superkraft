@@ -30,7 +30,7 @@ module.exports = class SuperStructure {
 
             country: 'en'
         }
-        var ss = global.ss
+        var sk = global.ss
 
         sk.paths.sk_frontend = sk.paths.superstructure + 'frontend/'
 
