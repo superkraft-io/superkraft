@@ -1,31 +1,31 @@
-.ss_ui_complexity_object {
+.sk_ui_complexity_object {
     border: dashed 1px rgb(63, 63, 63);
 }
-.ss_ui_complexity_object_highlighted {
+.sk_ui_complexity_object_highlighted {
     border: dashed 1px #c9c9c9;
 }
 
 
-.ss_ui_complexity_object_wireframeOff {
+.sk_ui_complexity_object_wireframeOff {
     border: unset !important;
 }
 
-.ss_ui_complexity_object_selected {
+.sk_ui_complexity_object_selected {
     border: dashed 1px #00c3ff !important;
 }
-/*.ss_ui_complexity_object_wireframeOff.ss_ui_complexity_object_selected {
+/*.sk_ui_complexity_object_wireframeOff.sk_ui_complexity_object_selected {
     border: dashed !important;
 }*/
 
-.ss_ui_complexity_object_inflate {
+.sk_ui_complexity_object_inflate {
     padding: 8px;
 }
 
-.ss_ui_complexity_object_edited_show {
+.sk_ui_complexity_object_edited_show {
     border: dashed 1px #af10ff;
 }
 
-.ss_ui_complexity_object_classified {
+.sk_ui_complexity_object_classified {
     border: dashed 1px #ffcc00;
 }
 
@@ -34,7 +34,7 @@
 
 /* object tree */
 
-.ss_ui_complexity_objectTree_item_group {
+.sk_ui_complexity_objectTree_item_group {
 
 }
 
@@ -42,25 +42,25 @@
 
 
 
-.ss_ui_complexity_objectTree_item_group > .ss_ui_group_container {
+.sk_ui_complexity_objectTree_item_group > .sk_ui_group_container {
     padding: 1px;
     padding-left: 8px;
 }
 
-.ss_ui_complexity_objectTree_item > .ss_ui_label {
+.sk_ui_complexity_objectTree_item > .sk_ui_label {
     font-weight: 200;
     color: white;
     margin-bottom: 0px;
 }
 
-.ss_ui_complexity_objectTree_item_selected {
+.sk_ui_complexity_objectTree_item_selected {
 }
 
-.ss_ui_complexity_objectTree_item_highlighted {
+.sk_ui_complexity_objectTree_item_highlighted {
     background-color: #006094;
 }
 
-.ss_ui_complexity_objectTree_item_selected > .ss_ui_group_container {
+.sk_ui_complexity_objectTree_item_selected > .sk_ui_group_container {
     border: solid 1px #006094;
     border-width: 0px 1px 1px 1px;
     padding: 0px;
@@ -68,68 +68,68 @@
     border-radius: 0px 0px 4px 4px;
 }
 
-.ss_ui_complexity_objectTree_item_selected > .ss_ui_group_top {
+.sk_ui_complexity_objectTree_item_selected > .sk_ui_group_top {
     background-color: #006094;
     color: white !important;
 }
 
-.ss_ui_complexity_objectTree_item_group.ss_ui_group_collapsed {
+.sk_ui_complexity_objectTree_item_group.sk_ui_group_collapsed {
     border: unset;
 }
 
-.ss_ui_complexity_objectTree_item_selected > .ss_ui_group_top > .ss_ui_label > .ss_ui_label  {
+.sk_ui_complexity_objectTree_item_selected > .sk_ui_group_top > .sk_ui_label > .sk_ui_label  {
     color: rgb(0 165 255) !important;
 }
 
-.ss_ui_complexity_objectTree_item_selected > .ss_ui_group_top:hover {
+.sk_ui_complexity_objectTree_item_selected > .sk_ui_group_top:hover {
     background-color: rgb(0, 111, 170);
 }
 
-.ss_ui_complexity_objectTree_item_classified > .ss_ui_group_top {
+.sk_ui_complexity_objectTree_item_classified > .sk_ui_group_top {
     background-color: #554400;    
 }
 
-.ss_ui_complexity_objectTree_item_classified.ss_ui_complexity_objectTree_item_selected > .ss_ui_group_top {
+.sk_ui_complexity_objectTree_item_classified.sk_ui_complexity_objectTree_item_selected > .sk_ui_group_top {
     background-color: #9d7d00;
     color: #ffcc00 !important;
 }
 
-.ss_ui_complexity_objectTree_item_classified.ss_ui_complexity_objectTree_item_selected > .ss_ui_group_container {
+.sk_ui_complexity_objectTree_item_classified.sk_ui_complexity_objectTree_item_selected > .sk_ui_group_container {
     border: solid 1px #9d7d00;;
 }
-.ss_ui_complexity_objectTree_item_classified > .ss_ui_group_top:hover {
+.sk_ui_complexity_objectTree_item_classified > .sk_ui_group_top:hover {
     background-color: #a58400;
 }
 
-.ss_ui_complexity_objectTree_item_classified > .ss_ui_group_top > .ss_ui_label {
+.sk_ui_complexity_objectTree_item_classified > .sk_ui_group_top > .sk_ui_label {
     color: white !important;
 }
 
 
-.ss_ui_complexity_objectTree_item_classified > .ss_ui_group_top > .ss_ui_label > .ss_ui_label {
+.sk_ui_complexity_objectTree_item_classified > .sk_ui_group_top > .sk_ui_label > .sk_ui_label {
     color: #f8c500 !important;
 }
 
 
 
 
-.ss_ui_complexity_appBody {
+.sk_ui_complexity_appBody {
     left: 250px;
     right: 512px;
 }
 
-.ss_ui_complexity_editor {
+.sk_ui_complexity_editor {
     width: 250px;
     height: 100%;
     padding: 6px;
 }
 
-.ss_ui_complexity_editor_section {
+.sk_ui_complexity_editor_section {
     overflow-y: scroll;
     padding: 12px;
 }
 
-.ss_ui_complexity_codeEditor {
+.sk_ui_complexity_codeEditor {
     position: absolute;
     width: 512px;
     height: 100%;

@@ -98,7 +98,7 @@ class ss_ui_complexity_objectTree extends ss_ui_groupCollapsable {
                         try {
                         
                             var el = _e.path[i]
-                            var ss_ui_obj = el.ss_ui_obj
+                            var ss_ui_obj = el.sk_ui_obj
                             var targetObj = ss_ui_obj.targetObject
                             if (targetObj){
                                 var x = 0

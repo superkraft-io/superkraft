@@ -10,9 +10,9 @@ class ss_ui_complexity_selectionManager {
     }
 
     deselectAll(){
-        document.querySelectorAll('.ss_ui_complexity_object_selected').forEach(e =>{
+        document.querySelectorAll('.sk_ui_complexity_object_selected').forEach(e =>{
             e.classList.remove('ss_ui_complexity_object_selected')
-            try { e.ss_ui_obj.objectListItem.classRemove('ss_ui_complexity_objectTree_item_selected') } catch(err) {}
+            try { e.sk_ui_obj.objectListItem.classRemove('ss_ui_complexity_objectTree_item_selected') } catch(err) {}
         })
     }
 
