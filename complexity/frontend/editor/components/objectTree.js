@@ -28,7 +28,7 @@ class ss_ui_complexity_objectTree extends ss_ui_groupCollapsable {
 
         group._header.add.spacer()
         group._header.add.label(_c => {
-            _c.text = serializedObject.class.split('ss_ui_')[1]
+            _c.text = serializedObject.clask.split('ss_ui_')[1]
             _c.color = '#5f5f5f'
             _c.weight = 600
             _c.style.marginRight = '4px'
@@ -70,7 +70,7 @@ class ss_ui_complexity_objectTree extends ss_ui_groupCollapsable {
     update(){
         $(this.container.element).empty()
 
-        var view = ss.app.body.view
+        var view = sk.app.body.view
         var serialization = view.serialize(false, true)
 
         var addAndTraverse = (parentGroup, component)=>{
@@ -84,9 +84,9 @@ class ss_ui_complexity_objectTree extends ss_ui_groupCollapsable {
                 _c.targetObject = component.component
 
                 _c.top.element.addEventListener('mouseup', _e => {
-                    ss.complexity.core.selectionManager.deselectAll()
-                    if (!_e.shiftKey) ss.complexity.core.selectionManager.clear()
-                    ss.complexity.core.selectionManager.add(component.component)
+                    sk.complexity.core.selectionManager.deselectAll()
+                    if (!_e.shiftKey) sk.complexity.core.selectionManager.clear()
+                    sk.complexity.core.selectionManager.add(component.component)
                 })
 
 
@@ -129,6 +129,6 @@ class ss_ui_complexity_objectTree extends ss_ui_groupCollapsable {
         this.disableComplexity(true, true)
         
 
-        ss.complexity.codeEditor.bake()
+        sk.complexity.codeEditor.bake()
     }
 }

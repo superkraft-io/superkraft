@@ -23,8 +23,8 @@ class ss_ui_complexity_iconList extends ss_ui_component {
                 })
             })
 
-            for (var i in ss.complexity.core.lists.icons){
-                var category = ss.complexity.core.lists.icons[i]
+            for (var i in sk.complexity.core.lists.icons){
+                var category = sk.complexity.core.lists.icons[i]
 
                 category = this.container.add.component(_c => {
                     _c.styling = 'ttb'

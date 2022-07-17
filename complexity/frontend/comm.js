@@ -1,10 +1,10 @@
 
 class ss_ui_complexity_comm {
     constructor(){
-        ss.complexity.actions = {}
+        sk.complexity.actions = {}
 
         this.send = (action, data)=>{
-            return ss.comm.call('complexity', action, data)
+            return sk.comm.call('complexity', action, data)
         }
     }
 
@@ -14,13 +14,13 @@ class ss_ui_complexity_comm {
 
         var configureActions = actions => {
             var configAction = action => {
-                ss.complexity.actions[action] = opt => { return this.send(action, opt) }
+                sk.complexity.actions[action] = opt => { return this.send(action, opt) }
             }
 
             for (var i in actions) configAction(actions[i])
         }
 
-        ss.viewList = res.views
+        sk.viewList = res.views
         
         configureActions(res.actions)
     }

@@ -22,8 +22,8 @@ class ss_ui_complexity_editor {
             
                         var items = []
                         
-                        for (var _v in ss.viewList){
-                            var view = ss.viewList[_v]
+                        for (var _v in sk.viewList){
+                            var view = sk.viewList[_v]
                             items.push({label: _v, info: {name: _v, route: (view.route === '/' ? ''  : view.route)}})
                         }
             
@@ -50,7 +50,7 @@ class ss_ui_complexity_editor {
                         _c.hint('Show edits  (CTRL + <)', 'bottom center')
 
                         _c.onClick = ()=>{
-                            ss.complexity.core.showEdits = _c.toggled
+                            sk.complexity.core.showEdits = _c.toggled
                         }
                     })
 
@@ -61,7 +61,7 @@ class ss_ui_complexity_editor {
                         _c.hint('Inflate  (<)', 'bottom center')
 
                         _c.onClick = ()=>{
-                            ss.complexity.core.inflated = _c.toggled
+                            sk.complexity.core.inflated = _c.toggled
                         }
                     })
                     
@@ -72,7 +72,7 @@ class ss_ui_complexity_editor {
                         _c.hint('Wireframe (SHIFT + <)', 'bottom center')
 
                         _c.onClick = ()=>{
-                            ss.complexity.core.wireframe = _c.toggled
+                            sk.complexity.core.wireframe = _c.toggled
                         }
                     })
 
@@ -85,7 +85,7 @@ class ss_ui_complexity_editor {
                         _c.hint('Code', 'bottom center')
 
                         _c.onClick = ()=>{
-                            ss.complexity.core.codeEditorVisible = _c.toggled
+                            sk.complexity.core.codeEditorVisible = _c.toggled
                         }
                         
                     })

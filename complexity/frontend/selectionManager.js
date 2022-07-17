@@ -53,11 +53,11 @@ class ss_ui_complexity_selectionManager {
     }
 
     update(codeOnly){
-        if (!codeOnly) ss.complexity.editor.updateFromSelection(this.list)
+        if (!codeOnly) sk.complexity.editor.updateFromSelection(this.list)
 
-        ss.complexity.codeEditor.multiObjectWarning.hide()
-        if (this.list.length === 1) ss.complexity.codeEditor.from(this.list[0])
-        else ss.complexity.codeEditor.multiObjectWarning.show()
+        sk.complexity.codeEditor.multiObjectWarning.hide()
+        if (this.list.length === 1) sk.complexity.codeEditor.from(this.list[0])
+        else sk.complexity.codeEditor.multiObjectWarning.show()
     }
 
     classifySelected(){
@@ -129,7 +129,7 @@ class ss_ui_complexity_selectionManager {
     duplicateFromList(target, list){
 
         var traverseAdd = (parent, serialization) => {
-            return parent.add[serialization.class.replace('ss_ui_', '')](_c => {
+            return parent.add[serialization.clask.replace('ss_ui_', '')](_c => {
                 for(var attrName in serialization.attributes){
                     if (attrName === 'pseudoClassName' || attrName === 'uuid') continue
                     
@@ -149,7 +149,7 @@ class ss_ui_complexity_selectionManager {
             this.add(newObject)
         })
 
-        ss.complexity.editor.objectTree.update()
+        sk.complexity.editor.objectTree.update()
     }
 
     duplicateSelected(){

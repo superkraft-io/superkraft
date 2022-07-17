@@ -7,7 +7,7 @@ module.exports = class SuperStructure {
     }
 
     async init(opt){
-        global.ss = {
+        global.sk = {
             skModule: this,
             type: opt.type,
             paths: {

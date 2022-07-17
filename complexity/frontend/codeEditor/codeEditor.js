@@ -159,17 +159,17 @@ class ss_ui_complexity_codeEditor extends ss_ui_component {
     }
 
     bake(){
-        var view = ss.app.body.view
+        var view = sk.app.body.view
         var serialization = view.serialize(false, true)
 
         var bakery = new SS_UI_Component_Bakery()
         var bakeRes = bakery.mapClassified(serialization)
 
-        if (bakeRes.length === 0) return ss.toast.warning('No objects have been classified yet. Please flag at least one object for classification.')
+        if (bakeRes.length === 0) return sk.toast.warning('No objects have been classified yet. Please flag at least one object for classification.')
 
-        ss.complexity.actions.bake(bakeRes).then(res => {
+        sk.complexity.actions.bake(bakeRes).then(res => {
             if (res.length === 0){
-                ss.toast.success('Baked successfully!')
+                sk.toast.success('Baked successfully!')
                 return console.log('[BAKING] Successful!')
             }
 

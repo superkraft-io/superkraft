@@ -18,11 +18,11 @@ module.exports = class SK_Window {
     }
 
     captureActions(route, actions, onValidate){
-        global.ss.engine.on(`action_${route}`, async (msg, rW, srcOpt) => {
+        global.sk.engine.on(`action_${route}`, async (msg, rW, srcOpt) => {
             var action = actions[msg.action]
-            var view = global.ss.views[msg.vid]
+            var view = global.sk.views[msg.vid]
 
-            if (route !== 'root' && global.ss.type === 'dapp') if (view._view.id !== msg.senderID ) return
+            if (route !== 'root' && global.sk.type === 'dapp') if (view._view.id !== msg.senderID ) return
 
             var res = {}
 

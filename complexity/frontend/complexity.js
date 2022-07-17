@@ -70,49 +70,49 @@ class ss_ui_complexity {
             }
 
             if (_e.keyCode === 67){
-                if (_e.ctrlKey) ss.complexity.core.selectionManager.copySelected()
-                else ss.complexity.core.selectionManager.classifySelected()
+                if (_e.ctrlKey) sk.complexity.core.selectionManager.copySelected()
+                else sk.complexity.core.selectionManager.classifySelected()
             }
             
             if (_e.keyCode === 86){
                 if (_e.ctrlKey) {
                     window.focus()
-                    ss.complexity.core.selectionManager.pasteIntoSelected()
+                    sk.complexity.core.selectionManager.pasteIntoSelected()
                 }
             }
 
             if (_e.keyCode === 88){
                 if (_e.ctrlKey){
-                    ss.complexity.core.selectionManager.copySelected()
-                    ss.complexity.core.selectionManager.deleteSelected()
+                    sk.complexity.core.selectionManager.copySelected()
+                    sk.complexity.core.selectionManager.deleteSelected()
                 } else {
-                    ss.complexity.core.selectionManager.deleteSelected()
+                    sk.complexity.core.selectionManager.deleteSelected()
                 }
             }
 
             if (_e.keyCode === 71){
                 if (_e.shiftKey){
                     _e.preventDefault()
-                    ss.complexity.core.selectionManager.groupSelected()
+                    sk.complexity.core.selectionManager.groupSelected()
                 }
             }
 
             if (_e.keyCode === 68){
                 if (_e.shiftKey){
-                    ss.complexity.core.selectionManager.duplicateSelected()
+                    sk.complexity.core.selectionManager.duplicateSelected()
                 }
             }
 
             if (_e.keyCode === 65){
                 if (_e.shiftKey){
-                    ss.complexity.core.showUIComponentMenu(this.mousePos)
+                    sk.complexity.core.showUIComponentMenu(this.mousePos)
                 }
             }
 
             if (_e.keyCode === 66){
                 if (_e.ctrlKey){
-                    if (_e.shiftKey) ss.complexity.codeEditor.bakeOutputBtn.toggled = !ss.complexity.codeEditor.bakeOutputBtn.toggled
-                    else ss.complexity.codeEditor.bake()
+                    if (_e.shiftKey) sk.complexity.codeEditor.bakeOutputBtn.toggled = !sk.complexity.codeEditor.bakeOutputBtn.toggled
+                    else sk.complexity.codeEditor.bake()
                 }
             }
             if (doubleKey === true){
@@ -194,13 +194,13 @@ class ss_ui_complexity {
                 if (_e.target.classList.contains('ss_ui_complexity_object')){
                     if (_e.target !== this.element) return
                     if (_e.which === 1){
-                        ss.complexity.core.selectionManager.deselectAll()
-                        if (!_e.shiftKey) ss.complexity.core.selectionManager.clear()
+                        sk.complexity.core.selectionManager.deselectAll()
+                        if (!_e.shiftKey) sk.complexity.core.selectionManager.clear()
 
-                        ss.complexity.core.selectionManager.add(this)
+                        sk.complexity.core.selectionManager.add(this)
                     } else if (_e.which === 3){
                         _e.stopPropagation()
-                        ss._cM.show({
+                        sk._cM.show({
                             pos: {x: _e.clientX, y: _e.clientY},
                             sender: this.element,
             
@@ -342,8 +342,8 @@ class ss_ui_complexity {
 
                 ...[
                     { header: 'Edit' },
-                    { label: 'Add', icon: 'plus', items: ss.complexity.core.generateUIComponentList(this) },
-                    { label: 'Remove', icon: 'trash', sender: this, onClick: res => { ss.complexity.core.selectionManager.deleteSelected() } },
+                    { label: 'Add', icon: 'plus', items: sk.complexity.core.generateUIComponentList(this) },
+                    { label: 'Remove', icon: 'trash', sender: this, onClick: res => { sk.complexity.core.selectionManager.deleteSelected() } },
                 ],
             
             ]
@@ -358,11 +358,11 @@ class ss_ui_complexity {
 
         var onAddComponent = res => {
             target.add[res.componentName]()
-            ss.complexity.editor.objectTree.update()
+            sk.complexity.editor.objectTree.update()
         }
         
-        for (var compnent_name in ss.ui.components.core) components.core.push({ep: '', label: compnent_name, componentName: compnent_name, parent: this, onClick: res =>{ onAddComponent(res) } })
-        for (var compnent_name in ss.ui.components.custom) components.custom.push({ep: '', label: compnent_name, componentName: compnent_name, parent: this, onClick: res =>{ onAddComponent(res) }})
+        for (var compnent_name in sk.ui.components.core) components.core.push({ep: '', label: compnent_name, componentName: compnent_name, parent: this, onClick: res =>{ onAddComponent(res) } })
+        for (var compnent_name in sk.ui.components.custom) components.custom.push({ep: '', label: compnent_name, componentName: compnent_name, parent: this, onClick: res =>{ onAddComponent(res) }})
 
         var componentMenu = [...components.core, ...components.custom]
 
@@ -370,7 +370,7 @@ class ss_ui_complexity {
     }
 
     showUIComponentMenu(pos){
-        ss._cM.show({
+        sk._cM.show({
             pos: pos,
             sender: window.activeElement,
 
@@ -386,7 +386,7 @@ class ss_ui_complexity {
             else  _el.classList.remove('ss_ui_complexity_object_edited_show')
         })
 
-        ss.complexity.editor.showEditsToggleBtn.toggled = val
+        sk.complexity.editor.showEditsToggleBtn.toggled = val
     }
     get showEdits(){ return this._showEdits }
 
@@ -398,7 +398,7 @@ class ss_ui_complexity {
             else  _el.classList.remove('ss_ui_complexity_object_wireframeOff')
         })
 
-        ss.complexity.editor.wireframeToggleBtn.toggled = val
+        sk.complexity.editor.wireframeToggleBtn.toggled = val
 
         if (val) this.inflated = false
     }
@@ -412,7 +412,7 @@ class ss_ui_complexity {
             else  _el.classList.remove('ss_ui_complexity_object_inflate')
         })
 
-        ss.complexity.editor.inflateToggleBtn.toggled = val
+        sk.complexity.editor.inflateToggleBtn.toggled = val
     }
     get inflated(){ return this._inflated }
 
@@ -423,14 +423,14 @@ class ss_ui_complexity {
         this._codeEditorVisible = val
 
         if (val){
-            ss.complexity.codeEditor.show()
-            ss.app.body.style.right = ''
+            sk.complexity.codeEditor.show()
+            sk.app.body.style.right = ''
         } else {
-            ss.complexity.codeEditor.hide()
-            ss.app.body.style.right = '0px'
+            sk.complexity.codeEditor.hide()
+            sk.app.body.style.right = '0px'
         }
 
-        ss.complexity.editor.codeEditorToggleBtn.toggled = val
+        sk.complexity.editor.codeEditorToggleBtn.toggled = val
     }
     get codeEditorVisible(){ return this._codeEditorVisible }
 

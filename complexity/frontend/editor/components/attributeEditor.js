@@ -110,11 +110,11 @@ class ss_ui_attributeItem {
     apply(val){
         this.objects.forEach(object => {
             object.classAdd('ss_ui_complexity_object_edited')
-            if (ss.complexity.core.showEdits) object.classAdd('ss_ui_complexity_object_edited_show')
+            if (sk.complexity.core.showEdits) object.classAdd('ss_ui_complexity_object_edited_show')
             try { object[this.attr.name] = val } catch(err) { }
         })
 
-        ss.complexity.core.selectionManager.update(true)
+        sk.complexity.core.selectionManager.update(true)
     }
 
     from(obj, attr){
@@ -125,7 +125,7 @@ class ss_ui_attributeItem {
 
         try {
             this.currValue = this.object[this.attr.name]
-            if (attr.css) this.currValue = this.currValue.replace(attr.css.split('?')[1], '')
+            if (attr.css) this.currValue = this.currValue.replace(attr.csk.split('?')[1], '')
             this[attr.type + 'Type']()
         } catch(err) {
 
@@ -183,7 +183,7 @@ class ss_ui_attributeItem {
             
             _c.onChanged = color =>{ this.apply(color) }
 
-            if (this.currValue) _c.color = ss.utils.rgb2hex(this.currValue) || this.currValue
+            if (this.currValue) _c.color = sk.utils.rgb2hex(this.currValue) || this.currValue
         })
     }
 

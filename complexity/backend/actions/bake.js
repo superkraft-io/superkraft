@@ -9,12 +9,12 @@ module.exports = class SS_Action extends SS_RootAction {
             var pseudoClass = opt[i]
             var baked = (new SS_UI_Component_Bakery(pseudoClass)).asClass()
 
-            var targetPath = global.ss.complexity.paths.bakery + pseudoClass.pseudoClassName + '/'
+            var targetPath = global.sk.complexity.paths.bakery + pseudoClask.pseudoClassName + '/'
             try { fs.removeSync(targetPath) } catch(err){ errors.push(err) }    
             try {
                 fs.mkdirSync(targetPath)
-                fs.writeFileSync(targetPath + pseudoClass.pseudoClassName + '.css', baked.css)
-                fs.writeFileSync(targetPath + pseudoClass.pseudoClassName + '.js', baked.js)
+                fs.writeFileSync(targetPath + pseudoClask.pseudoClassName + '.css', baked.css)
+                fs.writeFileSync(targetPath + pseudoClask.pseudoClassName + '.js', baked.js)
             } catch(err){
                 errors.push(err)
             }

@@ -484,12 +484,12 @@ CodeMirror.defineMode("erlang", function(cmCfg) {
         if (is_member(stack[i].token,tokens)) {
           var ss = stack.slice(0,i);
           switch (type) {
-              case "m": return ss.concat(stack[i]).concat(stack[len]);
-              case "r": return ss.concat(stack[len]);
+              case "m": return sk.concat(stack[i]).concat(stack[len]);
+              case "r": return sk.concat(stack[len]);
               case "i": return ss;
-              case "g": return ss.concat(fakeToken("group"));
-              case "E": return ss.concat(stack[i]);
-              case "e": return ss.concat(stack[i]);
+              case "g": return sk.concat(fakeToken("group"));
+              case "E": return sk.concat(stack[i]);
+              case "e": return sk.concat(stack[i]);
           }
         }
       }

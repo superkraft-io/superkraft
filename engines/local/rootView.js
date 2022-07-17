@@ -12,20 +12,20 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                 frontend: {
                     view: opt.root + 'frontend/',
 
-                    ss: global.ss.paths.ss_frontend,
+                    ss: global.sk.paths.ss_frontend,
 
-                    ui: global.ss.ui.routes.core,
-                    ui_shared: global.ss.ui.routes.shared,
+                    ui: global.sk.ui.routes.core,
+                    ui_shared: global.sk.ui.routes.shared,
 
-                    app_root: global.ss.paths.root,
-                    app: global.ss.paths.app_frontend
+                    app_root: global.sk.paths.root,
+                    app: global.sk.paths.app_frontend
                 }
             }
 
             for (var i in this.routes.frontend) this.routes.frontend[i] = this.routes.frontend[i].split('\\').join('/')
 
             
-            if (global.ss.complexity) this.routes.frontend.complexity = global.ss.paths.complexity.frontend
+            if (global.sk.complexity) this.routes.frontend.complexity = global.sk.paths.complexity.frontend
 
             this.viewInfo = await this._init(opt)
             
@@ -54,9 +54,9 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                 this.create()
                 setTimeout(()=>{
                     this.show()
-                }, global.ss.showWindowWWaitTime)
+                }, global.sk.showWindowWWaitTime)
 
-                global.ss.showWindowWWaitTime = 100
+                global.sk.showWindowWWaitTime = 100
             }
         })
     }
@@ -77,14 +77,14 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                 ...{
                     l10n: {
                         countries: sk.l10n.listCountries(),
-                        phrases: sk.l10n.getForCountry(global.ss.country)
+                        phrases: sk.l10n.getForCountry(global.sk.country)
                     }
                 },
 
                 ...this.viewInfo,
                 ...{userData: {}}
             })
-            this._view.loadURL('file://' + global.ss.paths.superstructure + '/template.ejs')
+            this._view.loadURL('file://' + global.sk.paths.superstructure + '/template.ejs')
         })
 
 
