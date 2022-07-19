@@ -78,7 +78,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
         app.use('/sk', this.express.static(this.paths.frontend.sk))
         
-        app.use('/', this.express.static(this.paths.frontend.app))
+        app.use('/', this.express.static(this.paths.frontend.app.split('\\').join('/')))
 
         if (global.sk.complexity) app.use('/complexity', this.express.static(global.sk.complexity.paths.frontend))
         
@@ -110,10 +110,10 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
                     }
 
                     if (postModule.info.protected){
+                        var auth_token = req.cookies.auth_token
                         if (!auth_token) return reject('access_denied')
                         var isAuthTokenValid = await global.sk.engine.isAuthTokenValid(auth_token)
                         if (!isAuthTokenValid) return reject('access_denied')
-                        
                     }
 
                     try {
