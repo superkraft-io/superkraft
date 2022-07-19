@@ -1,5 +1,9 @@
 module.exports = class SK_L10N {
-    update(){
+    constructor(){
+        this.categorized = {}
+    }
+
+    update(phraseList){
         this.categorized = {}
 
         var categorizePhrase = phrase => {
@@ -14,8 +18,8 @@ module.exports = class SK_L10N {
             }
         }
     
-        for (var i in your_localization_list){
-            var phrase = your_localization_list[i]
+        for (var i in phraseList){
+            var phrase = phraseList[i]
             categorizePhrase(phrase)
         }
     }
