@@ -10,7 +10,7 @@ class TitleBar {
                 },
 
                 div_title: { class: 'title titlebar-movable', styling: 'c m',
-                    img_icon: { src: sk.paths.frontend + 'img/logo_square.png', class: `logo ${(sk.main ? '' : 'hidden')}`, title: 'We <3 U' },
+                    img_icon: { src: sk.paths.app + 'img/logo_square.png', class: `logo ${(sk.main ? '' : 'hidden')}`, title: 'We <3 U' },
                     div_titleText: { class: 'titlebar-movable', style: 'font-size: 1rem !important;',
                         div_titleLabel: { text: (!opt.title ? 'Splitter Studio' : opt.title) },
 
