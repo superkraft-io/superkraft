@@ -95,7 +95,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                 ...this.viewInfo,
                 ...{userData: {}}
             })
-            this._view.loadURL('file://' + global.sk.paths.superstructure + '/template.ejs')
+            this._view.loadURL('file://' + global.sk.paths.superkraft + '/template.ejs')
         })
 
 

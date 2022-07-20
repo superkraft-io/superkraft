@@ -12,7 +12,7 @@ module.exports = class Superkraft {
             type: opt.type,
             paths: {
                 root: opt.root + '/',
-                superstructure: __dirname + '/',
+                superkraft: __dirname + '/',
                 sk_modules: __dirname + '/modules/',
                 views: opt.projectRoot + '/views/',
                 app_frontend: opt.projectRoot + '/frontend/',
@@ -33,11 +33,11 @@ module.exports = class Superkraft {
         }
         var sk = global.sk
 
-        sk.paths.sk_frontend = sk.paths.superstructure + 'frontend/'
+        sk.paths.sk_frontend = sk.paths.superkraft + 'frontend/'
 
         /****************/
         
-        sk.paths.sk_ui = {root: sk.paths.superstructure + 'ui/'}
+        sk.paths.sk_ui = {root: sk.paths.superkraft + 'ui/'}
         sk.paths.sk_ui.backend = sk.paths.sk_ui.root + 'backend/'
         sk.paths.sk_ui.frontend = {
             core: sk.paths.sk_ui.root + 'frontend/core/',
