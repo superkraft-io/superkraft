@@ -3,7 +3,7 @@ module.exports = class SK_Action extends SK_RootAction {
         switch (opt.action) {
 
             case 'close':
-                if (window.info.main) global.app.quit()
+                if (window.info.main || opt.terminate) global.sk.app.quit()
                 else wnd.close()
                 break;
 
@@ -12,8 +12,18 @@ module.exports = class SK_Action extends SK_RootAction {
                 break;
 
             case 'maximize':
-                if (!wnd.isMaximized()) wnd.maximize()
-                else wnd.unmaximize()
+                if (opt.reset){
+                    wnd.isMaxxed = false
+                    return
+                }
+
+                if (!wnd.isMaxxed){
+                    wnd.isMaxxed = true
+                    wnd.maximize()
+                } else {
+                    wnd.isMaxxed = false
+                    wnd.unmaximize()
+                }
                 break;
         
             default:

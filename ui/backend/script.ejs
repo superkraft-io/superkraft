@@ -5,7 +5,8 @@
 
         paths: {
             app: '<%= sk.routes.frontend.app %>',
-            view: '<%= sk.routes.frontend.view %>'
+            view: '<%= sk.routes.frontend.view %>',
+            icon: '<%= sk.routes.icon %>',
         },
 
         id: '<%= id %>',
@@ -131,9 +132,13 @@
     }
 
     sk.window = {
-        close    : ()=>{ sk.comm.main('windowAction', {action: 'close'}) },
+        close    : terminate => { sk.comm.main('windowAction', {action: 'close', terminate: terminate}) },
         minimize : ()=>{ sk.comm.main('windowAction', {action: 'minimize'}) },
-        maximize : ()=>{ sk.comm.main('windowAction', {action: 'maximize'}) },
+        maximize : reset => {
+            sk.window.resizing = true
+            sk.comm.main('windowAction', {action: 'maximize', reset: reset})
+            setTimeout(()=>{ sk.window.resizing = false }, 100)
+        },
     }
 
     sk.ui = {

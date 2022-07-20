@@ -114,3 +114,12 @@ i.icon, i.icons, i.flag {
     50%  { opacity: 0.1}
     100% { opacity: 1}
 }
+
+.sk_ui_canMoveView {
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
+}
+
+.sk_ui_cannotMoveView {
+    -webkit-app-region: no-drag
+}

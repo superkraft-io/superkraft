@@ -30,8 +30,9 @@
 
         <script src="<%= sk.routes.frontend.sk%>libs/sk_tween.js"></script>
 
-        <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.sk%>libs/sk_titlebar/sk_titlebar.css">
+        <!--<link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.sk%>libs/sk_titlebar/sk_titlebar.css">
         <script src="<%= sk.routes.frontend.sk%>libs/sk_titlebar/sk_titlebar.js"></script>
+        -->
 
         <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.sk%>libs/sk_contextMenu/sk_contextMenu.css">
         <script src="<%= sk.routes.frontend.sk%>libs/sk_contextMenu/sk_contextMenu.js"></script>
@@ -101,7 +102,7 @@
 
             sk.init().then(()=>{
                 sk.app = (new sk_ui_component({element: document.body}))
-                .setup(_c => {
+                sk.app.setup(_c => {
                     _c.classAdd('sk_app')
 
                     _c.styling = 'ttb'
@@ -113,7 +114,13 @@
                         noTitle: sk.noTitle
                     })*/
 
-                    //if (sk.app_type === 'dapp') this.add.dappTitlebar(_c => _c.configureForOS(sk.os))
+                    if (sk.app_type === 'dapp' && !sk.noTitle){
+                        _c.titlebar = _c.add.dappTitlebar(_c => {
+                            _c.os    = sk.os
+                            _c.title = sk.title
+                            _c.icon  = sk.paths.icon
+                        })
+                    }
                     
 
                     _c.body = _c.add.component(_c => {
@@ -128,11 +135,13 @@
                         sk.complexity.codeEditor = new sk_ui_complexity_codeEditor(_c)
                     <% } %>
                 })
-
-                
             })
 
-           
+            if (sk.app_type === 'dapp'){
+                document.body.onresize = event => {
+                    if (!sk.window.resizing) sk.window.maximize(true)
+                }
+            }
             
         </script>
 

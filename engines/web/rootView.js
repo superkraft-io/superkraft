@@ -96,7 +96,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                
                 
                 
-                render(res, global.sk.paths.superstructure + '/template.ejs', userData, req.cookies.country)
+                render(res, global.sk.paths.superkraft + '/template.ejs', userData, req.cookies.country)
             })
         
 

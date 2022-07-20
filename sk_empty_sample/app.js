@@ -11,5 +11,10 @@ var sk = new (require('./superkraft/sk_superkraft.js'))({
     auth     : new (require('./modules/sk_auth.js'))(),
     l10n     : new (require('./modules/sk_l10n.js'))(),
 
-    //useComplexity: true
+    //useComplexity: true,
+
+    icons: {
+        app: __dirname + '/app_assets/app_logo.png',
+        view: __dirname + '/app_assets/default_view_icon.png',
+    }
 })

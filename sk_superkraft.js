@@ -17,6 +17,7 @@ module.exports = class Superkraft {
                 views: opt.projectRoot + '/views/',
                 app_frontend: opt.projectRoot + '/frontend/',
                 templates: opt.templates,
+                icons: opt.icons
             },
 
             database: opt.database,
