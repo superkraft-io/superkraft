@@ -106,12 +106,14 @@
 
                     _c.styling = 'ttb'
 
-                    if (sk.app_type === 'dapp') _c.titleBar = new TitleBar({
+                    /*if (sk.app_type === 'dapp') _c.titleBar = new TitleBar({
                         parent: _c.element,
                         os: sk.os,
                         title: sk.title,
                         noTitle: sk.noTitle
-                    })
+                    })*/
+
+                    //if (sk.app_type === 'dapp') this.add.dappTitlebar(_c => _c.configureForOS(sk.os))
                     
 
                     _c.body = _c.add.component(_c => {
