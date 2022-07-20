@@ -1,2 +1,73 @@
 .sk_ui_dappTitlebar {
+    height: 24px;
+    margin-bottom: 0px !important;
+    position: relative;
+}
+
+
+.sk_ui_dappTitlebar_actions {
+    position: absolute;
+}
+
+.sk_ui_dappTitlebar_actions > .sk_ui_dappTitlebar_actions_button {
+    margin: 0px;
+}
+
+.sk_ui_dappTitlebar_actions_win {
+    right: 0px;
+}
+
+
+.sk_ui_dappTitlebar_actions_mac {
+    left: 0px;
+}
+
+
+
+
+
+
+
+
+/****  sk_ui_dappTitlebar_actions_button  ****/
+
+.sk_ui_dappTitlebar_actions_button {
+    padding: 0px;
+}
+
+
+
+
+/****  win  ****/
+
+.sk_ui_dappTitlebar_actions_button_win {
+    width: 2.7rem;
+}
+
+.sk_ui_dappTitlebar_actions_button_win > .sk_ui_icon {
+    font-size: 12px;
+}
+
+.sk_ui_dappTitlebar_actions_button_win:active {
+    opacity: 0.5;
+}
+
+.sk_ui_dappTitlebar_actions_button_win:hover {
+    background-color: rgb(43, 43, 43);
+}
+
+
+.sk_ui_dappTitlebar_actions_button_win:hover > .sk_ui_icon {
+    color: white;
+}
+
+.sk_ui_dappTitlebar_actions_button_win.sk_ui_dappTitlebar_actions_button_closeBtn:hover {
+    background-color: rgb(241, 36, 0);
+}
+
+
+/****  mac  ****/
+
+.sk_ui_dappTitlebar_actions_button_mac {
+    
 }

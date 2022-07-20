@@ -162,6 +162,15 @@ class sk_ui_component {
             if (val) this.classAdd('sk_ui_fade_indicate')
         }})
 
+        this.attributes.add({friendlyName: 'Can Move View', name: 'canMoveView',  type: 'bool', onSet: val => {
+            this.classRemove('sk_ui_canMoveView')
+            this.classAdd('sk_ui_cannotMoveView')
+            if (val){
+                this.classAdd('sk_ui_canMoveView')
+                this.classRemove('sk_ui_cannotMoveView')
+            }
+        }})
+
 
         this.attributes.categories.new({name: 'CSS'}, _cat => {
             _cat.add({
@@ -256,7 +265,7 @@ class sk_ui_component {
 
 
         this.classAdd(this.classHierarchy.join(' '))
-        //this.classAdd('sk_ui_component_spaced_vertical')
+        this.classAdd('sk_ui_cannotMoveView')
 
         this.styling = 'center middle'
         this.vertical = true

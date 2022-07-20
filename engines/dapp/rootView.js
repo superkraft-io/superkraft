@@ -19,10 +19,21 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
                     app_root: global.sk.paths.root,
                     app: global.sk.paths.app_frontend
-                }
+                },
+
+                icon: this.info.icon || global.sk.paths.icons.view,
             }
 
-            for (var i in this.routes.frontend) this.routes.frontend[i] = this.routes.frontend[i].split('\\').join('/')
+            function fixPaths(list){
+                for (var i in list){
+                    if (list[i] instanceof Object) list[i] = fixPaths(list[i])
+                    else list[i] = list[i].split('\\').join('/')
+                }
+
+                return list
+            }
+
+            this.routes = fixPaths(this.routes)
 
             
             if (global.sk.complexity) this.routes.frontend.complexity = global.sk.paths.complexity.frontend

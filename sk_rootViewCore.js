@@ -25,9 +25,9 @@ module.exports = class sk_RootViewCore {
                 
             }
 
-            if (!fs.existsSync(this.viewInfo.viewHead               )) this.viewInfo.viewHead              = global.sk.paths.superstructure + 'sk_emptyEJS.ejs'
-            if (!fs.existsSync(this.viewInfo.viewBodyScripts.start  )) this.viewInfo.viewBodyScripts.start = global.sk.paths.superstructure + 'sk_emptyEJS.ejs'
-            if (!fs.existsSync(this.viewInfo.viewBodyScripts.end    )) this.viewInfo.viewBodyScripts.end   = global.sk.paths.superstructure + 'sk_emptyEJS.ejs'
+            if (!fs.existsSync(this.viewInfo.viewHead               )) this.viewInfo.viewHead              = global.sk.paths.superkraft + 'sk_emptyEJS.ejs'
+            if (!fs.existsSync(this.viewInfo.viewBodyScripts.start  )) this.viewInfo.viewBodyScripts.start = global.sk.paths.superkraft + 'sk_emptyEJS.ejs'
+            if (!fs.existsSync(this.viewInfo.viewBodyScripts.end    )) this.viewInfo.viewBodyScripts.end   = global.sk.paths.superkraft + 'sk_emptyEJS.ejs'
 
             if (global.sk.complexity) this.viewInfo.sk.useComplexity = global.sk.useComplexity
             
