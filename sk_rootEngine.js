@@ -22,6 +22,9 @@ module.exports = class sk_RootEngine {
 
             console.log('Loading views...')
             var viewsToLoad = fs.readdirSync(global.sk.paths.views)
+            
+            global.sk.viewList = []
+
             for (var i = 0; i < viewsToLoad.length; i++){
                 var viewName = viewsToLoad[i]
                 var viewPath = global.sk.paths.views + viewName + '/main.js'
@@ -36,13 +39,15 @@ module.exports = class sk_RootEngine {
                     if (!priorities[priority]) priorities[priority] = []
                     priorities[priority].push({name: viewName, view: view})
                    
+                    global.sk.viewList.push(viewName)
+
                     console.log('[SUCCESS] View loaded: ' + viewName)
                 } catch(err) {
                     console.error('[ERROR] Could not load view %s', viewName)
                     console.error(err)
                 }
             }
-
+            
             console.log('')
 
             console.log('Initializing views...')

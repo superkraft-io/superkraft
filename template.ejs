@@ -30,9 +30,10 @@
 
         <script src="<%= sk.routes.frontend.sk%>libs/sk_tween.js"></script>
 
-        <!--<link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.sk%>libs/sk_titlebar/sk_titlebar.css">
-        <script src="<%= sk.routes.frontend.sk%>libs/sk_titlebar/sk_titlebar.js"></script>
-        -->
+        <% if (app_type === 'dapp'){ %>
+            <script src="<%= sk.routes.frontend.sk%>libs/sk_viewController/sk_viewController.js"></script>
+        <% } %>
+
 
         <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.sk%>libs/sk_contextMenu/sk_contextMenu.css">
         <script src="<%= sk.routes.frontend.sk%>libs/sk_contextMenu/sk_contextMenu.js"></script>
@@ -141,6 +142,15 @@
                 document.body.onresize = event => {
                     if (!sk.window.resizing) sk.window.maximize(true)
                 }
+
+                function updateOnlineStatus () {
+                    sk.online = navigator.onLine
+                    sk.comm.main('setOnlineStatus', {online: sk.online})
+                }
+            
+                window.addEventListener('online'  , ()=>{ updateOnlineStatus() })
+                window.addEventListener('offline' , ()=>{ updateOnlineStatus() })
+                updateOnlineStatus()
             }
             
         </script>

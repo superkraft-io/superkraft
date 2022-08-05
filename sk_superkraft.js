@@ -17,7 +17,9 @@ module.exports = class Superkraft {
                 views: opt.projectRoot + '/views/',
                 app_frontend: opt.projectRoot + '/frontend/',
                 templates: opt.templates,
-                icons: opt.icons
+                icons: opt.icons,
+
+                globalActions: opt.globalActions
             },
 
             database: opt.database,
@@ -32,6 +34,11 @@ module.exports = class Superkraft {
             country: 'en'
         }
         var sk = global.sk
+
+        if (sk.type === 'dapp'){
+            sk.online = false
+            sk.onOnlineChanged = opt.onOnlineChanged
+        }
 
         sk.paths.sk_frontend = sk.paths.superkraft + 'frontend/'
 

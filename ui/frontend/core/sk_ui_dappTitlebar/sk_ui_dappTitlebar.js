@@ -93,6 +93,10 @@ class sk_ui_dappTitlebar_actions extends sk_ui_component {
         this.close.configureForOS(os)
         this.maximize.configureForOS(os)
         this.minimize.configureForOS(os)
+
+        if (!sk.window.closable    ) this.close.remove()
+        if (!sk.window.maximizable ) this.maximize.remove()
+        if (!sk.window.minimizable ) this.minimize.remove()
     }
 
     configureFor_win(){

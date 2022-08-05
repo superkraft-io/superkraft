@@ -1,10 +1,9 @@
 module.exports = class SK_Action extends SK_RootAction {
     exec(opt, res, window, wnd){
         switch (opt.action) {
-
             case 'close':
                 if (window.info.main || opt.terminate) global.sk.app.quit()
-                else wnd.close()
+                else wnd.hide()
                 break;
 
             case 'minimize':
@@ -27,6 +26,11 @@ module.exports = class SK_Action extends SK_RootAction {
                 break;
         
             default:
+                try {
+                    global.sk.views[opt.view][opt.action]()
+                } catch(err) {
+                    console.error(err)
+                }
                 break;
                 
         }

@@ -13,9 +13,12 @@ class sk_ui_button extends sk_ui_component {
 
 
 
-        var handleOnClickEvent = async ()=>{
+        var handleOnClickEvent = async _e => {
             if (sk.app_type === 'dapp'){
-                if (this.goto || this.goto_) sk.comm.main('openURL', {url: this.goto || this.goto_})
+                if (this.goto || this.goto_){
+                    sk.comm.main('openURL', {url: this.goto || this.goto_})
+                    this.addStatusIndicator({status: 'external'})
+                }
             } else {
                 if (this.goto) window.location.replace(this.goto)
                 if (this.goto_) window.open(this.goto_, '_blank')
@@ -23,7 +26,7 @@ class sk_ui_button extends sk_ui_component {
 
             if (this.__toggle) this.toggled = !this.__toggled
 
-            if (this.onClick) this.onClick(this)
+            if (this.onClick) this.onClick(this, _e)
 
             this.handleAction()
         }
@@ -33,9 +36,9 @@ class sk_ui_button extends sk_ui_component {
         var touchDragged = false
         
         if (!sk.isOnMobile){
-            this.element.onclick = ()=>{
+            this.element.onclick = _e => {
                 if (this.disabled) return
-                handleOnClickEvent()
+                handleOnClickEvent(_e)
             }
         } else {
             this.element.ontouchmove = ()=>{
@@ -46,9 +49,9 @@ class sk_ui_button extends sk_ui_component {
                 if (this.disabled) return
                 touchDragged = false
             }
-            this.element.ontouchend = ()=>{
+            this.element.ontouchend = _e => {
                 if (this.disabled) return
-                if (!touchDragged) handleOnClickEvent()
+                if (!touchDragged) handleOnClickEvent(_e)
             }
         }
 
@@ -242,6 +245,7 @@ class sk_ui_button extends sk_ui_component {
             fail    : 'times circle outline red',
             warning : 'exclamation triangle icon yellow',
             
+            external : 'external alternate',
         }
 
         return this.label.add.icon(_c => {

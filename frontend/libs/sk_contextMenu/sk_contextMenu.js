@@ -15,6 +15,8 @@ class ContextMenu {
         setTimeout(()=>{el.remove()}, 400)
 
         document.removeEventListener('click', this.onDocumentClick)
+
+        if (this.onHide) this.onHide()
     }
 
     hideAll(includinSubmenus){
@@ -65,7 +67,7 @@ class ContextMenu {
             var subMenu = undefined
 
 
-            var itemContent = { class: `contextMenuItem ${(!info.items ? 'contextMenuItem-interactable' : '')} ${(opt.isSubmenu ? 'submenu' : '')}`, styling: 'c' }
+            var itemContent = { class: `noSelect contextMenuItem ${(!info.items ? 'contextMenuItem-interactable' : '')} ${(opt.isSubmenu ? 'submenu' : '')}`, styling: 'c' }
             if (!info.customItemContent){
                 itemContent = {
                     ...itemContent,
@@ -215,7 +217,7 @@ class ContextMenu {
         $(bucket.contextMenu).transition(`fade ${bucket.contextMenu.direction} in`, 150)
 
         bucket.contextMenu.sender = opt.sender
-        if (opt.sender) opt.sender.classList.add('contextMenuSender')
+        if (opt.sender && !opt.ignoreHighlight) opt.sender.classList.add('contextMenuSender')
 
 
         bucket.contextMenu.addEventListener('contextmenu', _e => {
@@ -241,10 +243,26 @@ class ContextMenu {
                 return
             }
 
+            if (this.onHide) this.onHide()
             this.hideAll()
+            ignoredFirstDocumentClick = false
+            sk.contextMenuStuff.docEvListenening = false
+            document.removeEventListener('click', this.onDocumentClick)
         }
-        document.addEventListener('click', this.onDocumentClick, false)
 
+        if (!sk.contextMenuStuff) sk.contextMenuStuff = {
+            docEvListenening: undefined
+        }
+
+        
+        //if (!sk.contextMenuStuff.docEvListenening){
+            document.addEventListener('click', this.onDocumentClick, false)
+            sk.contextMenuStuff.docEvListenening = true
+        //} else {
+        //    document.removeEventListener('click', this.onDocumentClick)
+        //}
+
+        this.onHide = opt.onHide
         return this
     }
 }

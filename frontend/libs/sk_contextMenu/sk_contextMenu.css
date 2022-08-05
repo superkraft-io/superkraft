@@ -1,5 +1,5 @@
 .contextMenu {
-    z-index: 999;
+    z-index: 99999 !important;
     position: absolute;
     border: solid 1px #ffffff24;
     border-radius: 0.6rem;
@@ -95,5 +95,6 @@
 
 
 .contextMenuSender {
-    border: solid 1px rgb(140, 140, 140) !important;
+    /*border: solid 1px rgb(140, 140, 140) !important;*/
+    background-color: #343434 !important;
 }

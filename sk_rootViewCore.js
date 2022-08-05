@@ -21,9 +21,12 @@ module.exports = class sk_RootViewCore {
                 viewBodyScripts: {
                     start: opt.root + 'body_start.ejs',
                     end: opt.root + 'body_end.ejs'
-                },
-                
+                }
             }
+
+            if (global.sk.type === 'dapp') this.viewInfo.views = global.sk.viewList
+
+
 
             if (!fs.existsSync(this.viewInfo.viewHead               )) this.viewInfo.viewHead              = global.sk.paths.superkraft + 'sk_emptyEJS.ejs'
             if (!fs.existsSync(this.viewInfo.viewBodyScripts.start  )) this.viewInfo.viewBodyScripts.start = global.sk.paths.superkraft + 'sk_emptyEJS.ejs'
@@ -33,6 +36,7 @@ module.exports = class sk_RootViewCore {
             
             //load actions
             this.actions = global.sk.utils.loadActions(opt.root + 'actions/')
+            try { this.actions = {...this.actions, ...global.sk.utils.loadActions(global.sk.paths.globalActions)} } catch(err) {}
             global.sk.utils.captureActions(
                 this.id,
                 this.actions,
@@ -41,9 +45,6 @@ module.exports = class sk_RootViewCore {
 
             var actionsList = []
             for (var action in this.actions) actionsList.push(action)
-            
-
-            
 
             resolve(this.viewInfo)
         })

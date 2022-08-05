@@ -18,7 +18,7 @@ module.exports = class sk_UI {
 
         this.refresh()
 
-        this.endpoint = (opt.endpoint === 'web' ? new sk_UI_Web(this) : new sk_UI_Local(this))
+        this.endpoint = (opt.endpoint === 'wapp' ? new sk_UI_Web(this) : new sk_UI_Local(this))
     }
 
     getDirectories(source){

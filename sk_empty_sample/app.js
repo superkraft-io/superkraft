@@ -1,5 +1,5 @@
 var sk = new (require('./superkraft/sk_superkraft.js'))({
-    type: 'web',
+    type: 'wapp',
     root: __dirname,
     projectRoot: __dirname + '/sk_projectRoot',
     postsRoot: __dirname + '/sk_posts/',

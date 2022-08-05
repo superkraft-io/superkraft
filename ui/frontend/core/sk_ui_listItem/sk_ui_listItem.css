@@ -5,6 +5,11 @@
     padding: 2px;
     transition: 100ms;
     margin-bottom: 0px !important;
+    padding-left: 8px;
+}
+
+.sk_ui_listItem > .sk_ui_component {
+    margin-right: 6px;
 }
 
 .sk_ui_listItem.highlighted {

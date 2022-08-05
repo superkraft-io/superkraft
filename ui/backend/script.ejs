@@ -29,6 +29,8 @@
             warning : msg => { sk.toast.do(msg, 'warning') }
         },
 
+        openURL: url => { sk.comm.main('openURL', {url: url}) },
+
         init: ()=>{
             return new Promise(async (resolve, reject)=>{
                 var res = await sk.comm.main('getInfo')
@@ -147,23 +149,39 @@
 
             lists: {
                 core: {
-                    <% for(var i = 0; i < sk.ui.components.core.length; i++){ %>
+                    <% for (var i = 0; i < sk.ui.components.core.length; i++){ %>
                         <%= sk.ui.components.core[i] %>: sk_ui_<%= sk.ui.components.core[i] %>,
                     <% } %>
                 },
 
                 shared: {
-                    <% for(var i = 0; i < sk.ui.components.shared.length; i++){ %>
+                    <% for (var i = 0; i < sk.ui.components.shared.length; i++){ %>
                         <%= sk.ui.components.shared[i] %>: sk_ui_<%= sk.ui.components.shared[i] %>,
                     <% } %>
                 },
 
                 custom: {
-                    <% for(var i = 0; i < sk.ui.components.custom.length; i++){ %>
+                    <% for (var i = 0; i < sk.ui.components.custom.length; i++){ %>
                         <%= sk.ui.components.custom[i] %>: sk_ui_<%= sk.ui.components.custom[i] %>,
                     <% } %>
                 }
             }
         }
+    }
+
+    <% if (app_type === 'dapp'){ %>
+        sk.views = {
+            <% for (var i = 0; i < views.length; i++){ %>
+                <%= views[i] %>: new SK_ViewController({view: '<%= views[i] %>'}),
+            <% } %>
+        }
+    <% } %>
+    
+
+    var remote, dialog, win = undefined
+    if (sk.app_type === 'dapp'){
+        remote = require('electron').remote
+        dialog = remote.dialog
+        win    = remote.getCurrentWindow()
     }
 </script>

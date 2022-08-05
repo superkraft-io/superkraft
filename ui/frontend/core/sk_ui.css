@@ -123,3 +123,18 @@ i.icon, i.icons, i.flag {
 .sk_ui_cannotMoveView {
     -webkit-app-region: no-drag
 }
+
+
+
+.sk_ui_construction_stripes {
+    background: repeating-linear-gradient(
+        45deg,
+        #5f3400,
+        #775302 10px,
+        #cca000 10px,
+        #cca000 20px
+    );
+
+    border-radius: 8px;
+    padding: 2px;
+}
