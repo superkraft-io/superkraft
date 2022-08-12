@@ -128,10 +128,12 @@
             }
         },
 
-        fileDrop: new sk_fileDrop(),
+        
 
         _view: SK_App_View
     }
+
+    sk.fileDrop = new sk_fileDrop()
 
     sk.window = {
         close    : terminate => { sk.comm.main('windowAction', {action: 'close', terminate: terminate}) },
@@ -160,9 +162,15 @@
                     <% } %>
                 },
 
-                custom: {
-                    <% for (var i = 0; i < sk.ui.components.custom.length; i++){ %>
-                        <%= sk.ui.components.custom[i] %>: sk_ui_<%= sk.ui.components.custom[i] %>,
+                view: {
+                    <% for (var i = 0; i < sk.ui.components.view.length; i++){ %>
+                        <%= sk.ui.components.view[i] %>: sk_ui_<%= sk.ui.components.view[i] %>,
+                    <% } %>
+                },
+
+                global: {
+                    <% for (var i = 0; i < sk.ui.components.global.length; i++){ %>
+                        <%= sk.ui.components.global[i] %>: sk_ui_<%= sk.ui.components.global[i] %>,
                     <% } %>
                 }
             }

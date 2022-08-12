@@ -11,6 +11,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
                     ui: global.sk.ui.routes.core,
                     ui_shared: 'sk_ui_shared/',
+                    ui_global: 'sk_ui_global/',
 
                     app_root: '',
                     app: '',

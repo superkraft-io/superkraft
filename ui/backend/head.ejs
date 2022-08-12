@@ -15,9 +15,14 @@
                                         <script src="<%= sk.routes.frontend.ui_shared %>sk_ui_<%= sk.ui.components.shared[i] %>/sk_ui_<%= sk.ui.components.shared[i] %>.js"></script>
     <% } %>
 
-    <% for (var i = 0; i < sk.ui.components.custom.length; i++){ %>
-        <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.view %>sk_ui/sk_ui_<%= sk.ui.components.custom[i] %>/sk_ui_<%= sk.ui.components.custom[i] %>.css">
-                                        <script src="<%= sk.routes.frontend.view %>sk_ui/sk_ui_<%= sk.ui.components.custom[i] %>/sk_ui_<%= sk.ui.components.custom[i] %>.js"></script>
+    <% for (var i = 0; i < sk.ui.components.view.length; i++){ %>
+        <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.view %>sk_ui/sk_ui_<%= sk.ui.components.view[i] %>/sk_ui_<%= sk.ui.components.view[i] %>.css">
+                                        <script src="<%= sk.routes.frontend.view %>sk_ui/sk_ui_<%= sk.ui.components.view[i] %>/sk_ui_<%= sk.ui.components.view[i] %>.js"></script>
+    <% } %>
+
+    <% for (var i = 0; i < sk.ui.components.global.length; i++){ %>
+        <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui_global %>sk_ui_<%= sk.ui.components.global[i] %>/sk_ui_<%= sk.ui.components.global[i] %>.css">
+                                        <script src="<%= sk.routes.frontend.ui_global %>sk_ui_<%= sk.ui.components.global[i] %>/sk_ui_<%= sk.ui.components.global[i] %>.js"></script>
     <% } %>
 
     <script src="<%= sk.routes.frontend.sk%>libs/progressbarjs/progressbar.min.js"></script>

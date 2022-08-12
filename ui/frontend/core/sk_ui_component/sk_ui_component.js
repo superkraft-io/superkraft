@@ -270,6 +270,9 @@ class sk_ui_component {
         this.styling = 'center middle'
         this.vertical = true
 
+
+        this.contextMenu = new sk_ui_contextMenuMngr(this)
+
         /********/
 
         //continue construction. used by plugins to extend capabilities
@@ -303,12 +306,15 @@ class sk_ui_component {
         target.element.before(this.element)
     }
 
-    remove(){
+    async remove(){
+        if (this.onBeforeRemove) await this.onBeforeRemove(this)
+
         sk.fileDrop.unsubscribe(this)
         this.children.clear()
         this.element.remove()
         this.parent.children.delete(this.child_idx)
-        if (this.onRemove) this.onRemove()
+        
+        if (this.onRemove) this.onRemove(this)
     }
 
     setup(cb){
@@ -428,6 +434,10 @@ class sk_ui_component {
 
 
         var showHint = autohide => {
+            if (this.hintBucket) return
+
+            clearTimeout(this.hintHider)
+            
             this.hintBucket = JSOM.parse({root: document.body,
                 tree: { div_element: { class: 'sk_ui_hint noSelect frosted', style: 'display: none;', styling: 'c', text: text }}
             })
@@ -445,16 +455,18 @@ class sk_ui_component {
 
             if (!autohide) return
 
-            setTimeout(async ()=>{
+            this.hintHider = setTimeout(async ()=>{
                 await hideHint()
-                this.hintBucket = undefined
             }, 3000)
         }
 
         var hideHint = ()=>{
             return new Promise(async resolve => {
+                if (!this.hintBucket) return resolve()
+
                 await this.hintBucket.element.transition('fade ' + calcPos.result.animation + ' out')
                 this.hintBucket.element.remove()
+                this.hintBucket = undefined
                 resolve()
             })
         }
@@ -693,6 +705,35 @@ class sk_ui_attribute {
         var failed = false
         this.callbacks[which].forEach(_cb => {
             _cb(value)
+        })
+    }
+}
+
+
+
+
+/*********/
+
+
+class sk_ui_contextMenuMngr {
+    constructor(parent){
+        this.parent = parent
+
+        this.activeWhenParentDisabled = false
+
+        this.parent.element.addEventListener('contextmenu', _e => {
+            if (!this.items) return
+            if (this.parent.disabled && !this.activeWhenParentDisabled) return
+            
+            this.show(_e)
+        })
+    }
+
+    show(_e){
+        sk._cM.show({
+            pos    : {x: _e.clientX, y: _e.clientY},
+            sender : this.parent.element,
+            items  : this.items
         })
     }
 }

@@ -1,15 +1,16 @@
 var fs = require('fs')
 
-module.exports = class sk_UI {
+module.exports = class sk_ui {
     constructor(opt){
         this.opt = opt
 
         this.paths = opt.paths
 
         this.routes = {
-            core: '',
-            shared: '',
-            custom: ''
+            core   : '',
+            shared : '',
+            view   : '',
+            global : ''
         }
         
         this.components = {
@@ -18,7 +19,7 @@ module.exports = class sk_UI {
 
         this.refresh()
 
-        this.endpoint = (opt.endpoint === 'wapp' ? new sk_UI_Web(this) : new sk_UI_Local(this))
+        this.endpoint = (opt.endpoint === 'wapp' ? new sk_ui_wapp(this) : new sk_ui_dapp(this))
     }
 
     getDirectories(source){
@@ -43,22 +44,24 @@ module.exports = class sk_UI {
     }
 
     refresh(){
-        this.components.core = this.getComponentsFromPath(this.paths.frontend.core, 'component')
+        this.components.core   = this.getComponentsFromPath(this.paths.frontend.core, 'component')
         this.components.shared = this.getComponentsFromPath(this.paths.frontend.shared)
+        this.components.global = this.getComponentsFromPath(this.paths.frontend.global)
     }
 
     listCustom(path){
         
     }
 
-    renderInfo(customUIComponentsPath){
+    renderInfo(viewUIComponentsPath){
         return {
             head: __dirname + '/head.ejs',
             script: __dirname + '/script.ejs',
             components: {
                 core: this.components.core,
                 shared: this.components.shared,
-                custom: this.getComponentsFromPath(customUIComponentsPath)
+                view: this.getComponentsFromPath(viewUIComponentsPath),
+                global: this.components.global,
             },
 
             root: this.root
@@ -66,17 +69,19 @@ module.exports = class sk_UI {
     }
 }
 
-class sk_UI_Web {
+class sk_ui_wapp {
     constructor(parent){
-        parent.routes.core = '/sk_ui/'
-        parent.routes.shared = '/sk_ui_shared/'
+        parent.routes.core   = '/sk_ui/'
+        parent.routes.view   = '/sk_ui_view/'
+        parent.routes.global = '/sk_ui_global/'
         setInterval(()=>{ parent.refresh() }, 5000)
     }
 }
 
-class sk_UI_Local {
+class sk_ui_dapp {
     constructor(parent){
-        parent.routes.core = parent.paths.frontend.core
+        parent.routes.core   = parent.paths.frontend.core
         parent.routes.shared = parent.paths.frontend.shared
+        parent.routes.global = parent.paths.frontend.global
     }
 }

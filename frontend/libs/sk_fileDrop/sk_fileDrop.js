@@ -3,8 +3,10 @@ class sk_fileDrop {
     
         this.subscribers = {}
 
+        var elementToHandle = document.body
+        if (sk.app_type === 'dapp') elementToHandle = document
 
-        document.body.addEventListener('dragover', _e => {
+        elementToHandle.addEventListener('dragover', _e => {
             _e.preventDefault()
             _e.stopPropagation()
 
@@ -31,16 +33,15 @@ class sk_fileDrop {
             _e.stopPropagation()
         }
 
-        document.body.addEventListener('dragleave', _e => {
+        elementToHandle.addEventListener('dragleave', _e => {
             endDragDropEvent(_e, 'end')
         })
 
         this.files = undefined
-        document.body.addEventListener('drop',_e => {
+        elementToHandle.addEventListener('drop',_e => {
             this.files = _e.dataTransfer.files
             endDragDropEvent(_e, 'drop')
         }, false)
-        
     }
 
     subscribe(component){ this.subscribers[component.uuid] = component }

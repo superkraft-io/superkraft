@@ -6,9 +6,10 @@ module.exports = class sk_RootEngine {
             frontend: {
                 sk: global.sk.paths.sk_frontend,
                 ui: {
-                    core: global.sk.ui.paths.frontend.core,
-                    shared: global.sk.ui.paths.frontend.shared,
-                    custom: global.sk.ui.paths.frontend.custom
+                    core   : global.sk.ui.paths.frontend.core,
+                    shared : global.sk.ui.paths.frontend.shared,
+                    view   : global.sk.ui.paths.frontend.view,
+                    global : global.sk.ui.paths.frontend.global
                 },
                 app: global.sk.paths.app_frontend,
             }

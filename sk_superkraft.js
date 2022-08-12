@@ -19,7 +19,8 @@ module.exports = class Superkraft {
                 templates: opt.templates,
                 icons: opt.icons,
 
-                globalActions: opt.globalActions
+                globalActions: opt.globalActions,
+                globalFrontend: opt.globalFrontend
             },
 
             database: opt.database,
@@ -43,12 +44,13 @@ module.exports = class Superkraft {
         sk.paths.sk_frontend = sk.paths.superkraft + 'frontend/'
 
         /****************/
-        
+
         sk.paths.sk_ui = {root: sk.paths.superkraft + 'ui/'}
         sk.paths.sk_ui.backend = sk.paths.sk_ui.root + 'backend/'
         sk.paths.sk_ui.frontend = {
             core: sk.paths.sk_ui.root + 'frontend/core/',
             shared: opt.projectRoot + '/frontend/sk_ui/',
+            global: opt.globalFrontend + 'sk_ui/'
         }
         sk.ui = new (require(sk.paths.sk_ui.backend + 'sk_ui.js'))({
             endpoint: opt.type,
