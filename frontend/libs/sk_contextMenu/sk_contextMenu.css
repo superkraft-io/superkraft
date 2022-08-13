@@ -57,7 +57,7 @@
     margin-bottom: 0px !important;
 }
 
-.contextMenuItem:hover {
+.contextMenuItem-enabled:hover {
     background-color: rgb(8, 136, 255);
 }
 
@@ -70,7 +70,7 @@
 }
 
 .contextMenuItem > #label {
-    margin: 0px 32px 0px 4px;
+    margin: 0px 32px 0px 6px;
 }
 
 .contextMenuItem > #icon {
@@ -79,12 +79,13 @@
 }
 
 .contextMenuItem > #icon > .icon {
+    font-size: 10px;
     height: fit-content !important;
     line-height: unset !important;
 }
 
 .contextMenuItem > #label {
-    font-size: 1rem;
+    font-size: 12px;
 }
 
 .contextMenuItem > #rightSide > #arrow {

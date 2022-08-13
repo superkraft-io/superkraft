@@ -6,10 +6,14 @@ var sk_filesystem = {
             ]
 
             if (opt.multiple) properties.push('multiSelections')
+            if (opt.dontAddToRecent) properties.push('dontAddToRecent')
 
             var res = await dialog.showOpenDialog(win, {
+                title: opt.title,
                 properties: properties,
-                filters: opt.filters
+                filters: opt.filters,
+                buttonLabel: opt.buttonLabel,
+                message: opt.message
             })
 
             if (res.canceled) return reject()

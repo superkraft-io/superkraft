@@ -58,7 +58,7 @@ class ContextMenu {
             }
 
             if (info.header){
-                JSOM.parse({root: bucket.contextMenu, tree: {div_header: { class: 'contextMenuheader', text: info.header }}})
+                JSOM.parse({root: bucket.contextMenu, tree: {div_header: { class: 'noSelect contextMenuheader', text: info.header }}})
                 return
             }
 
@@ -67,7 +67,7 @@ class ContextMenu {
             var subMenu = undefined
 
 
-            var itemContent = { class: `noSelect contextMenuItem ${(!info.items ? 'contextMenuItem-interactable' : '')} ${(opt.isSubmenu ? 'submenu' : '')}`, styling: 'c' }
+            var itemContent = { class: `noSelect ${(!info.disabled ? 'contextMenuItem-enabled' : '')} contextMenuItem ${(!info.items && !info.disabled ? 'contextMenuItem-interactable' : '')} ${(opt.isSubmenu ? 'submenu' : '')}`, styling: 'c' }
             if (!info.customItemContent){
                 itemContent = {
                     ...itemContent,
@@ -86,6 +86,8 @@ class ContextMenu {
 
                         events: {
                             click: e => {
+                                if (info.disabled) return
+
                                 e.stopPropagation()
                                 if (info.items && !info.forceAccepOnClick) return
 
@@ -100,7 +102,8 @@ class ContextMenu {
                                 }
                             },
                             
-                            mouseenter: ()=>{
+                            mouseenter: ()=>{if (info.disabled) return
+                                
                                 itemBucket.item.classList.remove('contextMenuItem-submenuExpanded')
 
                                 if (!info.items) return
@@ -131,6 +134,8 @@ class ContextMenu {
                             },
 
                             mouseleave: ()=>{
+                                if (info.disabled) return
+                                
                                 clearTimeout(bucket.contextMenu.submenuTimer)
                                 setTimeout(()=>{
                                     if (!subMenu) return
@@ -228,11 +233,11 @@ class ContextMenu {
         
 
         if (!this.elementUnderPoint._cm){
-            this.elementUnderPoint.addEventListener('contextmenu', _e => {
+            /*this.elementUnderPoint.addEventListener('contextmenu', _e => {
                 _e.preventDefault()
                 _e.stopPropagation();
                 return false
-            })
+            })*/
             this.elementUnderPoint._cm = true
         }
 

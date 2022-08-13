@@ -721,19 +721,36 @@ class sk_ui_contextMenuMngr {
 
         this.activeWhenParentDisabled = false
 
+        
+    }
+
+    set items(val){
+        if (!this.__items) this.setEventListener()
+        this.__items = val
+    }
+
+    setEventListener(){
         this.parent.element.addEventListener('contextmenu', _e => {
-            if (!this.items) return
             if (this.parent.disabled && !this.activeWhenParentDisabled) return
-            
             this.show(_e)
         })
     }
 
     show(_e){
+        var items = undefined
+        
+        if (this.__items instanceof Function){
+            items = this.__items()
+        } else {
+            items = this.__items
+        }
+
+        if (!items) return
+
         sk._cM.show({
             pos    : {x: _e.clientX, y: _e.clientY},
             sender : this.parent.element,
-            items  : this.items
+            items  : items
         })
     }
 }
