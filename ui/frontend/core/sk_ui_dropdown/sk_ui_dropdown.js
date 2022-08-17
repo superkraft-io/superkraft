@@ -4,6 +4,7 @@ class sk_ui_dropdown extends sk_ui_button {
 
         this._icon.remove()
 
+        this.label.text = ''
         this.label.styling = 'fill left'
 
         this.compact = true
