@@ -12,6 +12,7 @@ class sk_ui_groupCollapsable extends sk_ui_group {
                 _c.type = 'icon'
                 _c.icon = 'angle up'
                 _c.size = 16
+                _c._icon.size = 16
             })
         })
 

@@ -7,6 +7,7 @@
 
 .sk_ui_groupCollapsable_collapsed > .sk_ui_group_top {
     border-radius: 4px;
+    margin-bottom: 0px;
 }
 
 /* top container */

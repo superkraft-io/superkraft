@@ -619,8 +619,7 @@ class sk_ui_contextMenuMngr {
         this.parent = parent
 
         this.activeWhenParentDisabled = false
-
-        
+        this.__button = 'right'
     }
 
     set items(val){
@@ -628,11 +627,16 @@ class sk_ui_contextMenuMngr {
         this.__items = val
     }
 
+    set button(val){ this.__button = val }
+
     setEventListener(){
-        this.parent.element.addEventListener('contextmenu', _e => {
-            if (this.parent.disabled && !this.activeWhenParentDisabled) return
-            this.show(_e)
-        })
+        this.parent.element.addEventListener('contextmenu', _e => { if (this.__button === 'right') this.handleMouseEvent(_e) })
+        this.parent.element.addEventListener('click', _e => { if (this.__button === 'left') this.handleMouseEvent(_e) })
+    }
+
+    handleMouseEvent(_e){
+        if (this.parent.disabled && !this.activeWhenParentDisabled) return
+        this.show(_e)
     }
 
     show(_e){

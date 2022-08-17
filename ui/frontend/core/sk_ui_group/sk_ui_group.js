@@ -3,11 +3,13 @@ class sk_ui_group extends sk_ui_component {
         super(opt)
 
         this.styling = 'left top ttb'
+        this.compact = true
         this.classAdd('sk_ui_group_opaque')
 
         this.top = this.add.component(_c => {
-            _c.styling += ' fullwidth center middle'
+            _c.styling = 'fullwidth center middle'
             _c.classAdd('sk_ui_group_top')
+            _c.compact = true
 
             this._header = _c.add.label(_c => {
                 _c.classAdd('sk_ui_group_header')
