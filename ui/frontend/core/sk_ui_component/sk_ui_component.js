@@ -631,7 +631,7 @@ class sk_ui_contextMenuMngr {
 
     setEventListener(){
         this.parent.element.addEventListener('contextmenu', _e => {
-            if (_e.path[0].id !== this.parent.element.id) return
+            if (this.noPropagation && _e.path[0].id !== this.parent.element.id) return
             _e.preventDefault()
             if (this.__button === 'right') this.handleMouseEvent(_e)
         })
