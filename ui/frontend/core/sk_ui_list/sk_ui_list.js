@@ -93,19 +93,10 @@ class sk_ui_list extends sk_ui_component {
     }
 
     clear(){
-        this.children.forEach(child => { child.remove() })
+        this.chil
+        for (var i = this.list.length - 1; i > -1; i--){
+            this.list[i].remove()
+            this.list.splice(i, 1)
+        }
     }
-
-    /*onIconSet(){
-        var iconSet = false
-        for (var i in this.list){
-            var item = this.list[i]
-            if (item.icon) iconSet = true
-        }
-
-        if (iconSet){
-
-        }
-        
-    }*/
 }
