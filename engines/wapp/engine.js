@@ -191,7 +191,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
     onValidateAction(srcOpt, view){
         return new Promise(async resolve => {
-            if (view.info.bypassOnAuthFail) resolve(true)
+            if (view.info.bypassOnAuthFail || !view.info.checkAuth) resolve(true)
             
             var auth_token = srcOpt.req.cookies.auth_token
             if (view.info.checkAuth){
