@@ -74,6 +74,7 @@ class sk_ui_wapp {
         parent.routes.core   = '/sk_ui/'
         parent.routes.view   = '/sk_ui_view/'
         parent.routes.global = '/sk_ui_global/'
+        parent.routes.global = '/sk_ui_shared/'
         setInterval(()=>{ parent.refresh() }, 5000)
     }
 }
