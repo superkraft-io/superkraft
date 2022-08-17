@@ -1,6 +1,6 @@
 class sk_ui_image extends sk_ui_component {
-    constructor(parent){
-        super(parent)
+    constructor(opt){
+        super(opt)
         
         this.attributes.add({friendlyName: 'URL', name: 'url', type: 'text', onSet: val => {
             this.style.backgroundImage = `url("${val}")`

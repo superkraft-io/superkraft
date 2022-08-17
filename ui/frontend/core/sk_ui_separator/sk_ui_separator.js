@@ -1,6 +1,6 @@
 class sk_ui_separator extends sk_ui_component {
-    constructor(parent){
-        super(parent)
+    constructor(opt){
+        super(opt)
         
         this.styling = 'fullwidth'
 

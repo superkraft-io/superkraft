@@ -5,10 +5,15 @@
     border-radius: 4px;
     background-color: rgba(55, 55, 55, 0.5);
     font-size: 12px;
+
+    width: fit-content;
+    height: fit-content;
+    min-width: 0px;
+    min-height: 0px;
 }
 
 .sk_ui_component_spaced_horizontal > .sk_ui_component {
-    margin-right: 16px
+    margin-right: 8px
 }
 
 
@@ -17,7 +22,7 @@
 }
 
 .sk_ui_component_spaced_vertical > .sk_ui_component {
-    margin-bottom: 16px
+    margin-bottom: 8px
 }
 
 

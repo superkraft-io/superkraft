@@ -1,6 +1,6 @@
 class sk_ui_dappTitlebar extends sk_ui_component {
-    constructor(parent){
-        super(parent)
+    constructor(opt){
+        super(opt)
 
         this.styling += ' fullwidth'
 
@@ -42,8 +42,8 @@ class sk_ui_dappTitlebar extends sk_ui_component {
 }
 
 class sk_ui_dappTitlebar_title extends sk_ui_component {
-    constructor(parent){
-        super(parent)
+    constructor(opt){
+        super(opt)
 
         this.styling += ' fullheight'
         this.vertical = false
@@ -56,13 +56,14 @@ class sk_ui_dappTitlebar_title extends sk_ui_component {
         })
         this.label = this.add.label(_c => {
             _c.canMoveView = true
+            _c.weight = 600
         })
     }
 }
 
 class sk_ui_dappTitlebar_actions extends sk_ui_component {
-    constructor(parent){
-        super(parent)
+    constructor(opt){
+        super(opt)
 
         this.styling += ' fullheight'
         this.vertical = false
@@ -80,7 +81,7 @@ class sk_ui_dappTitlebar_actions extends sk_ui_component {
 
         this.minimize = this.add.fromNew(sk_ui_dappTitlebar_actions_button, _c => {
             _c.classAdd('sk_ui_dappTitlebar_actions_button_miniimizeBtn');
-            _c.icon = 'minus'
+            _c.icon = 'window minimize outline'
             _c.onClick = ()=>{ sk.window.minimize() }
         })
     }
@@ -112,8 +113,8 @@ class sk_ui_dappTitlebar_actions extends sk_ui_component {
 }
 
 class sk_ui_dappTitlebar_actions_button extends sk_ui_button {
-    constructor(parent){
-        super(parent)
+    constructor(opt){
+        super(opt)
 
         this.styling += ' fullheight'
 

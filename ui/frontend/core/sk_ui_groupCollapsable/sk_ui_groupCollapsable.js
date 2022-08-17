@@ -1,6 +1,6 @@
 class sk_ui_groupCollapsable extends sk_ui_group {
-    constructor(parent){
-        super(parent)
+    constructor(opt){
+        super(opt)
 
         this.classAdd('sk_ui_groupCollapsable_collapsable_false')
 

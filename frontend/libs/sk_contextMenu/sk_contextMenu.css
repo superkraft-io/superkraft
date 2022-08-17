@@ -58,7 +58,7 @@
 }
 
 .contextMenuItem-enabled:hover {
-    background-color: rgb(8, 136, 255);
+    background-color: var(--sk_ui_color_blue);
 }
 
 .contextMenuItem-interactable {

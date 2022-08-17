@@ -1,0 +1,53 @@
+:root {
+    --sk_ui_color_very_dark_grey: rgb(20, 20, 20);
+    --sk_ui_color_very_dark_grey_2: rgb(32, 32, 32);
+
+    --sk_ui_color_dark_grey: rgb(48, 48, 48);
+    --sk_ui_color_dark_grey_2: rgb(58, 58, 58);
+
+    --sk_ui_color_grey: rgb(75, 75, 75);
+    --sk_ui_color_grey_2: rgb(100, 100, 100);
+
+
+    --sk_ui_color_blue: rgb(8, 136, 255);
+    --sk_ui_color_blue_dark: rgb(3, 88, 167);
+
+    --sk_ui_color_slightly_white: rgb(220, 220, 220);
+
+
+
+
+    --sk_ui_text_color: var(--sk_ui_color_slightly_white);
+    --sk_ui_text_color_full: white;
+
+
+
+
+
+    --sk_ui_button_toggled_button_color: var(--sk_ui_color_blue);
+    --sk_ui_button_toggled_text_color: white;
+
+    --sk_ui_button_toggled_button_color_hover: var(--sk_ui_color_blue_dark);
+    --sk_ui_button_toggled_text_color_hover: white;
+
+
+
+
+
+
+    --sk_ui_color_scrollbar: transparent;
+    --sk_ui_color_scrollbar_track: var(--sk_ui_color_very_dark_grey_2);
+    --sk_ui_color_scrollbar_thumb: var(--sk_ui_color_grey);
+
+    --sk_ui_scrollbar_width: 6px;
+    --sk_ui_scrollbar_track_radius: 6px;
+    --sk_ui_scrollbar_thumb_radius: 6px;
+}
+
+.sk_ui_color_blue {
+    background-color: var(--sk_ui_blue);
+}
+
+.sk_ui_color_blue_dark {
+    background-color: var(--sk_ui_color_blue_dark);
+}

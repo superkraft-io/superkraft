@@ -1,6 +1,6 @@
 class sk_ui_segment extends sk_ui_component {
-    constructor(parent){
-        super(parent)
+    constructor(opt){
+        super(opt)
         this.classAdd('vertical')
     }
 

@@ -1,6 +1,6 @@
 class sk_ui_l10n_selector extends sk_ui_button {
-    constructor(parent){
-        super(parent)
+    constructor(opt){
+        super(opt)
         this.multiComponent = true
         
         this._icon.ignoreIconDefinition = true

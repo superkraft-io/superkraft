@@ -1,6 +1,6 @@
 class SK_App_View extends sk_ui_component {
-    constructor(parent){
-        super(parent)
+    constructor(opt){
+        super(opt)
 
         var elapsedTime = (Date.now() - (new Date(sk.userData.date)).getTime()) / 1000 / 60 / 60 / 24
         var timeLeft = Math.floor(parseInt(sk.userData.duration) - elapsedTime)

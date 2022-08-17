@@ -1,6 +1,6 @@
 class ss_ui_complexity_objectTree extends ss_ui_groupCollapsable {
-    constructor(parent){
-        super(parent)
+    constructor(opt){
+        super(opt)
 
         
 

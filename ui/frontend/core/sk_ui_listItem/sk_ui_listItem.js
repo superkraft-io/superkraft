@@ -2,11 +2,11 @@ class sk_ui_listItem extends sk_ui_button {
     constructor(parent, opt){
         super(parent)
 
+        this.styling = 'left middle'
+
         this.list = this.parent.parent
 
-        this.info = opt
 
-        if (opt.hint) this.hint(opt.hint, 'right center')
 
         this.onClick = ()=>{
             if (this.list._highligtOnSelect) this.select()
@@ -49,24 +49,23 @@ class sk_ui_listItem extends sk_ui_button {
             _c.styling = 'fill'
         })
         
-        this.text = opt.label
-        this.icon = opt.icon
-        
+        //setup label editor
+        this.labelEditor = JSOM.parse({root: this.label.element, tree: {
+            input_labelEditor: { class: 'sk_ui_listItem_labelEditor', spellcheck: 'false' }
+        }}).labelEditor
+
+
+
+
         this.classAdd('_hidden_height')
         this.classAdd('_hidden_visibility')
         setTimeout(()=>{
             this.classRemove('_hidden_height')
         setTimeout(()=>{
             this.classRemove('_hidden_visibility')
+            this.classAdd('sk_ui_listItem_created')
         }, 100)
         }, 10)
-
-
-
-        //setup label editor
-        this.labelEditor = JSOM.parse({root: this.label.element, tree: {
-            input_labelEditor: { class: 'sk_ui_listItem_labelEditor', spellcheck: 'false' }
-        }}).labelEditor
     }
 
     select(){

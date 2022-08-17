@@ -15,8 +15,8 @@ class SS_UI_Component_Bakery {
         return {
             css: cssCode + '\n' + gen.css,
             js: `class ${this.opt.class} extends ${this.opt.parentClass} {
-    constructor(parent){
-        super(parent)
+    constructor(opt){
+        super(opt)
 
 ${jsAttributes}
 

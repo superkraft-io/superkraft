@@ -1,6 +1,6 @@
 class sk_ui_slider extends sk_ui_component {
-    constructor(parent){
-        super(parent)
+    constructor(opt){
+        super(opt)
         
 
         this.sliderBucket = JSOM.parse({root: this.element, tree: {
@@ -14,7 +14,11 @@ class sk_ui_slider extends sk_ui_component {
                 max: this.max || 50,
                 start: this.value || 14,
                 step: this.step || 1,
-                smooth: true,
+                smooth: this.smooth || true,
+                interpretLabel: (this.labels ? (value)=>{
+                    return this.labels[value];
+                } : undefined),
+
                 onMove: ()=>{
                     if (this.onChanged) this.onChanged($(this.slider).slider('get value'))
                 }
@@ -57,9 +61,16 @@ class sk_ui_slider extends sk_ui_component {
             this.handle.style.left = pos.x + 'px'
         })*/
         
-        this.attributes.add({friendlyName: 'Value', name: 'value', type: 'number', onSet: val => { this.slider.slider('set value', val) }})
+        this.attributes.add({friendlyName: 'Value', name: 'value', type: 'number', onSet: val => { this.slider.slider('set value', val) }, onGet: ()=>{ return this.slider.slider('get value') }})
         this.attributes.add({friendlyName: 'Step', name: 'step', type: 'number', onSet: val => { update() }})
         this.attributes.add({friendlyName: 'Min', name: 'min', type: 'number', onSet: val => { update() }})
         this.attributes.add({friendlyName: 'Max', name: 'max', type: 'number', onSet: val => { update() }})
+
+        this.attributes.add({friendlyName: 'Labeled', name: 'labeled', type: 'bool', onSet: val => { this.sliderBucket.sliderEl.classList.remove('labeled'); if (val) this.sliderBucket.sliderEl.classList.add('labeled'); update() }})
+        this.attributes.add({friendlyName: 'Ticked', name: 'ticked', type: 'bool', onSet: val => { this.sliderBucket.sliderEl.classList.remove('ticked'); if (val) this.sliderBucket.sliderEl.classList.add('ticked'); update() }})
+        this.attributes.add({friendlyName: 'Smooth', name: 'smooth', type: 'bool', onSet: val => { this.sliderBucket.sliderEl.classList.remove('smooth'); if (val) this.sliderBucket.sliderEl.classList.add('smooth'); update() }})
+
+        
+        this.attributes.add({friendlyName: 'Labels', name: 'labels', type: 'text', onSet: val => { update() }})
     }
 }

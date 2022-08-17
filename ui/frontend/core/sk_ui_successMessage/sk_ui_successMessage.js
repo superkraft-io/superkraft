@@ -1,6 +1,6 @@
 class sk_ui_successMessage extends sk_ui_prompter {
-    constructor(parent){
-        super(parent)
+    constructor(opt){
+        super(opt)
         
        
         this.header.remove()

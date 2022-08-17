@@ -1,6 +1,6 @@
 class SK_App_View extends sk_ui_component {
-    constructor(parent){
-        super(parent)
+    constructor(opt){
+        super(opt)
 
         this.form = this.add.component(_c => {
             _c.styling += ' fullwidth'
@@ -58,7 +58,7 @@ class SK_App_View extends sk_ui_component {
                         _c.onBeforeAction = ()=>{
     
                             if ((this.activationCode.value || '').trim().length === 0){
-                                _c.hint('Invalid activation code', '', true)
+                                _c.hint({text: 'Invalid activation code', instaShow: true})
                                 this.activationCode.transition('shake')
                                 return
                             }
@@ -77,7 +77,7 @@ class SK_App_View extends sk_ui_component {
                                 .show()
                             })
                             .catch(err => {
-                                _c.hint('Invalid activation code', '', true)
+                                _c.hint({text: 'Invalid activation code', instaShow: true})
                                 this.activationCode.transition('shake')
                                 console.error(err)
                             })

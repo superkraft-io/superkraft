@@ -1,11 +1,14 @@
 class sk_ui_button extends sk_ui_component {
-    constructor(parent){
-        super(parent)
+    constructor(opt){
+        super(opt)
         this.multiComponent = true
 
         this.classAdd('sk_ui_button_enabled')
 
-        this._icon = this.add.icon()
+        this._icon = this.add.icon(_c => {
+            _c.onChanged = ()=>{ if (this.onIconChanged) this.onIconChanged() }
+        })
+        
         this.label = this.add.label(_c => {
             _c.styling = 'center middle'
             _c.vertical = false
@@ -259,19 +262,7 @@ class sk_ui_button extends sk_ui_component {
             _c.size = 0
             _c.iconElement.style.opacity = 0
 
-            if (defOpt.status === 'loader'){
-                var degree = 0
-                var loaderTimer = setInterval(()=>{
-                    degree += Math.floor(360/2)
-                    _c.iconElement.style.transform = 'rotate(' + degree + 'deg)'
-                    setTimeout(()=>{
-                        _c.iconElement.style.opacity = 0.5
-                        setTimeout(()=>{
-                            _c.iconElement.style.opacity = 1
-                        }, 250)
-                    }, 250)
-                }, 250)
-            }
+            if (defOpt.status === 'loader') _c.spinning = true
 
             if (defOpt.side === 'left') _c.moveBefore(this.label)
 
@@ -294,8 +285,6 @@ class sk_ui_button extends sk_ui_component {
             _c.destroy = ()=>{
                 return new Promise(resolve => {
                     _c.iconElement.style.opacity = 0
-
-                    clearInterval(loaderTimer)
 
                     setTimeout(()=>{
                         _c.size = 0

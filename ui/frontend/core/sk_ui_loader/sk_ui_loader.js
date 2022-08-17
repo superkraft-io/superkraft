@@ -1,6 +1,6 @@
 class sk_ui_loader extends sk_ui_component {
-    constructor(parent){
-        super(parent)
+    constructor(opt){
+        super(opt)
 
         this.classAdd('ui active cetered inline loader')
 

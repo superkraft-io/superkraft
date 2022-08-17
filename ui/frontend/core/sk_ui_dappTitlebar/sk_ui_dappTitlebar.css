@@ -1,7 +1,9 @@
 .sk_ui_dappTitlebar {
-    height: 24px;
+    height: 28px;
     margin-bottom: 0px !important;
     position: relative;
+    z-index: 99999;
+    background-color: var(--sk_ui_color_very_dark_grey);
 }
 
 
@@ -53,7 +55,7 @@
 }
 
 .sk_ui_dappTitlebar_actions_button_win:hover {
-    background-color: rgb(43, 43, 43);
+    background-color: var(--sk_ui_color_dark_grey);
 }
 
 

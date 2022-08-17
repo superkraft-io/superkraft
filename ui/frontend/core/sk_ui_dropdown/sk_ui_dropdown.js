@@ -1,6 +1,6 @@
 class sk_ui_dropdown extends sk_ui_button {
-    constructor(parent){
-        super(parent)
+    constructor(opt){
+        super(opt)
 
         this._icon.remove()
 

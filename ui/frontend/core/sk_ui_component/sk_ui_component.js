@@ -1,60 +1,22 @@
 class sk_ui_component {
-    constructor(parent){
-        this.parent = parent
+    constructor(opt){
+        this.sk_ui_opt = opt
+        this.parent = this.sk_ui_opt.parent
         this.parentClassName = Object.getPrototypeOf(this.constructor).name
 
         this.attributes = new sk_ui_attributes(this)
         
 
-        this.children = new sk_ui_childList()
-        this.children.parent = this
-        this.add = {
-            fromNew: (sk_ui_class, cb) => {
-                var obj = new sk_ui_class(this)
-                this.children.add(obj)
-                if (cb) cb(obj)
-                return obj
-            }
-        }
-        var addComponent = component => {
-            this.add[component] = cb => {
-                var _component = undefined
+        this.children = new SK_ChildMngr({parent: this})
         
-                for (var _which in sk.ui.components.lists){
-                    var _cList = sk.ui.components.lists[_which]
-                    if (_cList[component]){
-                        _component = _cList[component]
-                        break
-                    }
-                }
-        
-                if (!_component){
-                    console.error('No component found called: ' + component)
-                    return
-                }
-        
-                var _c = new _component(this)
-                
-                this.children.add(_c)
-        
-                if (cb) cb(_c)
-        
-                return _c
-            }
-        }
-        
-        for (var _which in sk.ui.components.lists){
-            var _cList = sk.ui.components.lists[_which]
-            for (var _component in _cList) addComponent(_component)
-        }
         
         
         this.bucket = JSOM
         
         
 
-        this.bucket = JSOM.parse({root: parent.element,
-            tree: { div_element: { class: 'sk_component transition noSelect', styling: 'c' }}
+        this.bucket = JSOM.parse({root: this.parent.element,
+            tree: { div_element: { class: 'sk_component sk_ui_transition sk_ui_noSelect', styling: 'c' }}
         })
 
         
@@ -149,10 +111,10 @@ class sk_ui_component {
     
             onSet: val => {
                 if (val){
-                    this.classAdd('frosted')
-                    if (val !== 'clear') this.classAdd('face_color')
+                    this.classAdd('sk_ui_frosted')
+                    if (val !== 'clear') this.classAdd('sk_ui_face_color')
                 } else {
-                    this.classRemove('frosted face_color')
+                    this.classRemove('sk_ui_frosted sk_ui_face_color')
                 }
             }
         })
@@ -170,7 +132,12 @@ class sk_ui_component {
                 this.classRemove('sk_ui_cannotMoveView')
             }
         }})
+        
 
+        this.attributes.add({friendlyName: 'Pointer Events', name: 'pointerEvents',  type: 'text', onSet: val => {
+            this.style.pointerEvents = ''
+            if (val) this.style.pointerEvents = val
+        }})
 
         this.attributes.categories.new({name: 'CSS'}, _cat => {
             _cat.add({
@@ -272,11 +239,13 @@ class sk_ui_component {
 
 
         this.contextMenu = new sk_ui_contextMenuMngr(this)
+        this.subscriptions = new SK_Subscription_Client()
+        if (!opt.noHint) this._hint = new SK_Hint({parent: this})
 
         /********/
 
         //continue construction. used by plugins to extend capabilities
-        if (this.__sk_ui_continue_constructor__) this.__sk_ui_continue_constructor__(parent)
+        if (this.__sk_ui_continue_constructor__) this.__sk_ui_continue_constructor__(opt)
     }
 
     get classHierarchy(){
@@ -306,13 +275,18 @@ class sk_ui_component {
         target.element.before(this.element)
     }
 
-    async remove(){
+    async remove(opt){
+        if (opt) if (opt.animation) await this.hide(opt)
+
         if (this.onBeforeRemove) await this.onBeforeRemove(this)
 
+        this.subscriptions.clear()
         sk.fileDrop.unsubscribe(this)
         this.children.clear()
         this.element.remove()
         this.parent.children.delete(this.child_idx)
+
+        if (this._hint) this._hint.hide()
         
         if (this.onRemove) this.onRemove(this)
     }
@@ -322,12 +296,106 @@ class sk_ui_component {
         return this
     }
 
-    show(){
-        this.element.style.display = ''
+    hideAnimation(opt){
+        return new Promise(resolve => {
+            if (opt.dimension === 'width') this.width = 0.1
+            else if (opt.dimension === 'width') this.height = 0.1
+            this.opacity = 0.001
+            this.style.transform = 'scale(0)'
+            setTimeout(()=>{ resolve() }, 250)
+        })
+    }
+
+    show(opt){
+        return new Promise(resolve =>{
+            if (!opt.animation){
+                this.element.style.display = ''
+                return resolve()
+            }
+
+            this.classRemove('sk_ui_transition')
+            
+            var rect =  this.rect
+            this.width = rect.width
+            this.height = rect.height
+
+            var getCSSVal = prop => { return getComputedStyle(this.element).getPropertyValue(prop) }
+            var currentValues = {
+                size: {width: getCSSVal('width'),  height: getCSSVal('height') },
+                padding: {left: getCSSVal('padding-left'), top: getCSSVal('padding-top'), right: getCSSVal('padding-right'), bottom: getCSSVal('padding-bottom')},
+                margin: {left: getCSSVal('margin-left'), top: getCSSVal('margin-top'), right: getCSSVal('margin-right'), bottom: getCSSVal('margin-bottom')}
+            }
+
+            if (opt.animation === 'width'){
+                this.width = 0.01
+                this.paddingLeft = 0.01
+                this.paddingRight = 0.01
+            } else if (opt.animation === 'height'){
+                this.height = 0.01
+                this.paddinTop = 0.01
+                this.paddingBottom = 0.01
+            }
+
+            
+            this.style.transform = 'scale(0)'
+
+            setTimeout(()=>{
+                this.classAdd('sk_ui_transition')
+
+                if (opt.animation === 'width'){
+                    this.style.width        = currentValues.size.width
+                    this.style.marginRight  = currentValues.margin.right
+                    this.style.paddingLeft  = currentValues.padding.left
+                    this.style.paddingRight = currentValues.padding.right
+                } else if (opt.animation === 'height'){
+                    this.style.height        = currentValues.size.height
+                    this.style.marginBottom  = currentValues.margin.bottom
+                    this.style.paddinTop     = currentValues.padding.top
+                    this.style.paddingBottom = currentValues.padding.bottom
+                }
+
+                this.opacity = 0
+                this.style.transform = ''
+
+                setTimeout(()=>{
+
+
+                    resolve()
+                }, 210)
+            }, 5)
+        })
     }
     
-    hide(){
-        this.element.style.display = 'none'
+    hide(opt){
+        return new Promise(resolve =>{
+            if (!opt.animation){
+                this.element.style.display = 'none'
+                return resolve()
+            }
+
+            var rect =  this.rect
+            this.width = rect.width
+            this.height = rect.height
+
+            if (opt.animation === 'width'){
+                this.width = 0.01
+                this.marginRight = 0.01
+                this.paddingLeft = 0.1
+                this.paddingRight = 0.1
+            } else if (opt.animation === 'height'){
+                this.height = 0.01
+                this.marginBottom = 0.01
+                this.paddinTop = 0.1
+                this.paddingBottom = 0.1
+            }
+
+            this.opacity = 0.01
+            this.style.transform = 'scale(0)'
+
+            setTimeout(()=>{
+                resolve()
+            }, 210)
+        })
     }
 
     scrollTo(){
@@ -336,159 +404,9 @@ class sk_ui_component {
 
     get rect(){ return this.element.getBoundingClientRect() }
     
-    hint(text, position = '', decoupled){
-        if (position === '') position = 'bottom center'
-
-        this._hint = {text: text, pos: position}
-
-        
-
-        var orientation = 'horizontal'
-        var hintInfo = {
-            calc: ()=>{
-                hintInfo.rect = this.hintBucket.element.getBoundingClientRect()
-            }
-        }
-
-        var parentInfo = {
-            calc: ()=>{
-                parentInfo.rect = this.element.getBoundingClientRect()
-                parentInfo.pos = {
-                    x: parentInfo.rect.left + window.scrollX,
-                    y: parentInfo.rect.top + window.scrollY
-                }
-            }
-        }
-        
-        var margin = 6
-
-        var calcPos = {
-
-            left: (secondOperation)=>{
-                calcPos.result.x = parentInfo.pos.x - hintInfo.rect.width - margin
-                if (secondOperation && calcPos.secondIsASide) calcPos.result.x += hintInfo.rect.width + margin
-
-                if (!secondOperation) calcPos.result.animation = 'left'
-
-                if (calcPos.result.x < 0) calcPos.right()
-            },
-
-            right: (secondOperation)=>{
-                calcPos.result.x = parentInfo.pos.x + parentInfo.rect.width + margin
-                if (secondOperation && calcPos.secondIsASide) calcPos.result.x -= hintInfo.rect.width + margin
-
-                if (!secondOperation) calcPos.result.animation = 'right'
-
-                if (calcPos.result.x > document.body.clientWidth) calcPos.left()
-            },
-
-            top: (secondOperation)=>{
-                orientation = 'vertical'
-                
-                calcPos.result.y = parentInfo.pos.y - hintInfo.rect.height - margin
-                if (secondOperation && calcPos.secondIsASide) calcPos.result.y += hintInfo.rect.height + margin
-
-                if (!secondOperation) calcPos.result.animation = 'up'
-
-                if (calcPos.result.x < 0) calcPos.bottom()
-            },
-
-            bottom: (secondOperation)=>{
-                orientation = 'vertical'
-                
-                calcPos.result.y = parentInfo.pos.y + parentInfo.rect.height + margin
-                if (secondOperation && calcPos.secondIsASide) calcPos.result.y -= hintInfo.rect.height + margin
-
-                if (!secondOperation) calcPos.result.animation = 'down'
-
-                if (calcPos.result.y > document.body.clientHeight) calcPos.left()
-            },
-
-            center: ()=>{
-                if (orientation === 'vertical'){
-                    calcPos.result.x = parentInfo.pos.x + (parentInfo.rect.width/2) - (hintInfo.rect.width/2)
-                    return
-                }
-
-                calcPos.result.y = parentInfo.pos.y + (parentInfo.rect.height/2) - (hintInfo.rect.height/2)
-            },
-
-            result: {
-                x: 0,
-                y: 0
-            }
-        }
-
-        var positions = position.split(' ')
-        if (positions[0] === 'center') positions = [positions[1], positions[0]]
-        calcPos.secondIsASide = positions[1] !== 'center'
-        var positionFuncs = {
-            a: calcPos[positions[0]],
-            b: calcPos[positions[1]]
-        }
-        
-        
-        var hintTimer = undefined
-        var hintActivated = false
-
-
-
-        var showHint = autohide => {
-            if (this.hintBucket) return
-
-            clearTimeout(this.hintHider)
-            
-            this.hintBucket = JSOM.parse({root: document.body,
-                tree: { div_element: { class: 'sk_ui_hint noSelect frosted', style: 'display: none;', styling: 'c', text: text }}
-            })
-
-            this.hintBucket.element.transition('fade ' + calcPos.result.animation + ' in')
-
-            parentInfo.calc()
-            hintInfo.calc()
-
-            positionFuncs.a()
-            positionFuncs.b(true)
-
-            this.hintBucket.element.style.left = calcPos.result.x + 'px'
-            this.hintBucket.element.style.top = calcPos.result.y + 'px'
-
-            if (!autohide) return
-
-            this.hintHider = setTimeout(async ()=>{
-                await hideHint()
-            }, 3000)
-        }
-
-        var hideHint = ()=>{
-            return new Promise(async resolve => {
-                if (!this.hintBucket) return resolve()
-
-                await this.hintBucket.element.transition('fade ' + calcPos.result.animation + ' out')
-                this.hintBucket.element.remove()
-                this.hintBucket = undefined
-                resolve()
-            })
-        }
-
-
-        if (decoupled){
-            showHint(true)
-            return
-        }
-
-        this.element.addEventListener('mouseenter', ()=>{
-            hintTimer = setTimeout(()=>{
-                showHint()
-                hintActivated = true
-            }, 200)
-        })
-
-        this.element.addEventListener('mouseleave', ()=>{
-            clearTimeout(hintTimer)
-            if (!hintActivated) return
-            hideHint()
-        })
+    hint(opt){
+        console.log(opt)
+        this._hint.config(opt)
     }
 
     
@@ -528,27 +446,6 @@ class sk_ui_component {
     setOnFileDrop(cb){
         this.onFileDrop = cb
         sk.fileDrop.subscribe(this)
-    }
-}
-
-
-class sk_ui_childList extends Array {
-    recalculateIndices(){
-        for (var i = 0; i < this.length; i++) this[i].child_idx = i
-    }
-
-    add(obj){
-        this.push(obj)
-        this.recalculateIndices()
-    }
-
-    delete(idx){
-        this.splice(idx, 1)
-        this.recalculateIndices()
-    }
-
-    clear(){
-        for (var i = this.length - 1; i > -1; i--) this[i].remove()
     }
 }
 
@@ -676,9 +573,9 @@ class sk_ui_attribute {
                     if (info.css) var val = parent.style[info.css.split('?')[0]]
                     else var val = parent['__' + info.name]
                     
-                    this.iterateCallbacks('get', val)
-
-                    return val
+                    var _val = this.iterateCallbacks('get', val)
+                    
+                    return _val || val
                 },
 
                 set: val => {
@@ -702,10 +599,12 @@ class sk_ui_attribute {
     }
 
     iterateCallbacks(which, value){
-        var failed = false
-        this.callbacks[which].forEach(_cb => {
-            _cb(value)
-        })
+        var returnVal = undefined
+
+        if (which === 'set') this.callbacks.set.forEach(_cb => { _cb(value) })
+        else this.callbacks.get.forEach(_cb => { returnVal = _cb(value) })
+
+        return returnVal
     }
 }
 

@@ -1,6 +1,6 @@
 class ss_ui_complexity_stylingEditor extends ss_ui_groupCollapsable {
-    constructor(parent){
-        super(parent)
+    constructor(opt){
+        super(opt)
         this.collapsable = true
         this.container.styling = 'ttb center middle'
 

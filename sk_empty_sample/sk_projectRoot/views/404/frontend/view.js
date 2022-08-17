@@ -1,6 +1,6 @@
 class SK_App_View extends sk_ui_component {
-    constructor(parent){
-        super(parent)
+    constructor(opt){
+        super(opt)
 
         this.add.component(_c => {
             _c.styling = 'center middle ttb'

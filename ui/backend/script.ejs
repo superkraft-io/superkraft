@@ -18,6 +18,7 @@
         fileSystem: new SK_FileSystem(),
 
         _cM: new ContextMenu(),
+        subscriptions: new SK_Subscriptions(),
 
         toast: {
             do: (_msg, _class, _position)=>{
@@ -93,17 +94,17 @@
 
             formatSeconds: seconds => {
                 var _s = seconds
-                var timeUnit = (_s > 1 ? 'seconds' : 'second' )
+                var timeUnit = (_s > 1 ? sk.l10n.getPhrase('seconds') : sk.l10n.getPhrase('second') )
 
                 if (_s > 60){
                     _s = _s / 60
-                    timeUnit = (_s > 1 ? 'minutes' : 'minute' )
+                    timeUnit = (_s > 1 ? sk.l10n.getPhrase('minutes') : sk.l10n.getPhrase('minute') )
                 }
                 
                 var hourUnit = false
                 if (_s > 60){
                     _s = _s / 60
-                    timeUnit = (_s > 1 ? 'hours' : 'hour' )
+                    timeUnit = (_s > 1 ? sk.l10n.getPhrase('hours') : sk.l10n.getPhrase('hour') )
                     hourUnit = true
                 }
                 

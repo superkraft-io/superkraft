@@ -1,11 +1,13 @@
 .sk_ui_listItem {
     width: 100%;
-    font-size: 12px;
+    height: 24px;
     font-weight: 600;
-    padding: 2px;
-    transition: 100ms;
+    padding: 0px;
     margin-bottom: 0px !important;
-    padding-left: 8px;
+}
+
+.sk_ui_listItem_created {
+    min-height: 24px;
 }
 
 .sk_ui_listItem > .sk_ui_component {
@@ -13,7 +15,7 @@
 }
 
 .sk_ui_listItem.highlighted {
-    background-color: rgb(43, 43, 43);
+    background-color: var(--sk_ui_color_dark_grey);
 }
 
 .sk_ui_listItem._hidden_height {
@@ -28,25 +30,9 @@
 
 
 .sk_ui_listItem.selected {
-    background: rgb(60, 60, 60);
+    background: var(--sk_ui_color_dark_grey_2);
     color: white;
 }
-
-
-
-.sk_ui_list::-webkit-scrollbar {
-    width: 5px;
-}
-
-.sk_ui_list::-webkit-scrollbar-track {
-    border-radius: 10px;
-}
-
-.sk_ui_list::-webkit-scrollbar-thumb {
-    background: rgb(46, 46, 46);
-    border-radius: 10px;
-}
-
 
 
 
@@ -61,8 +47,8 @@
     bottom: 0px;
     right: 0px;
 
-    background-color: #141414;
-    border: solid 1px #ffffff;
+    background-color: var(--sk_ui_color_very_dark_grey);
+    border: solid 1px white;
     border-radius: 4px;
 
     display: none;
@@ -77,7 +63,7 @@
 }
 
 .sk_ui_listItem_labelEditor::selection {
-    background:rgb(0, 140, 255);
+    background: var(--sk_ui_color_blue);;
     color: white;
     border-radius: 4px;
 }
@@ -88,7 +74,7 @@
 }
 
 .sk_ui_listItem.editing {
-    background-color: rgb(46, 46, 46);
+    background-color: var(--sk_ui_color_dark_grey);
 }
 .sk_ui_listItem.editing:hover {
     opacity: 1 !important;

@@ -1,10 +1,10 @@
 class sk_ui_switch extends sk_ui_component {
-    constructor(parent){
-        super(parent)
+    constructor(opt){
+        super(opt)
         
         this.multiComponent = true
 
-        var size = 24
+        var size = 18
 
         this.styling = 'left middle'
 
@@ -36,15 +36,22 @@ class sk_ui_switch extends sk_ui_component {
 
             onSet: val => {
                 this.spacer.styling = ''
-
-                this.style.backgroundColor = '#3c3c3c'
-                this.handle.style.backgroundColor = '#767676'
+                this.classRemove('sk_ui_switch_highlighted')
 
                 if (val){
                     this.spacer.styling = 'fill'
-                    this.style.backgroundColor = 'rgb(0, 166, 255)'
-                    this.handle.style.backgroundColor = 'white'
+                    this.classAdd('sk_ui_switch_highlighted')
                 }
+            }
+        })
+
+        this.attributes.add({
+            friendlyName: 'Flipped',
+            name: 'flipped',
+            type: 'bool',
+
+            onSet: val => {
+                this.classAdd('sk_ui_switch_flipped')
             }
         })
     }

@@ -38,12 +38,17 @@
         <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.sk%>libs/sk_contextMenu/sk_contextMenu.css">
         <script src="<%= sk.routes.frontend.sk%>libs/sk_contextMenu/sk_contextMenu.js"></script>
 
+        <script src="<%= sk.routes.frontend.sk%>libs/sk_subscriptions/sk_subscriptions.js"></script>
+        <script src="<%= sk.routes.frontend.sk%>libs/sk_childMngr/sk_childMngr.js"></script>
+
         
 
         <script src="<%= sk.routes.frontend.sk%>libs/js-cookie/js.cookie.min.js"></script>
 
         <%- include(globalHead) %>
         <%- include(viewHead) %>
+
+        <script src="<%= sk.routes.frontend.sk%>libs/sk_hint/sk_hint.js"></script>
     </head>
 
     <%- include(sk.ui.head) %>
@@ -102,18 +107,11 @@
             sk.userData = <%- JSON.stringify(userData) %>
 
             sk.init().then(()=>{
-                sk.app = (new sk_ui_component({element: document.body}))
+                sk.app = (new sk_ui_component({parent: {element: document.body}}))
                 sk.app.setup(_c => {
                     _c.classAdd('sk_app')
 
                     _c.styling = 'ttb'
-
-                    /*if (sk.app_type === 'dapp') _c.titleBar = new TitleBar({
-                        parent: _c.element,
-                        os: sk.os,
-                        title: sk.title,
-                        noTitle: sk.noTitle
-                    })*/
 
                     if (sk.app_type === 'dapp' && !sk.noTitle){
                         _c.titlebar = _c.add.dappTitlebar(_c => {
@@ -125,10 +123,10 @@
                     
 
                     _c.body = _c.add.component(_c => {
-                        _c.classAdd('appBody ' + (sk.app_type !== 'dapp' ? 'noTitlebar' : ''))
+                        _c.classAdd('sk_ui_appBody ' + (sk.app_type !== 'dapp' ? 'sk_ui_noTitlebar' : ''))
                     
-                        _c.view = new sk._view(_c)
-                        _c.children.push(_c.view)
+                        _c.view = new sk._view({parent: _c})
+                        _c.children.add(_c.view)
                     })
 
                     <% if (sk.useComplexity){ %>

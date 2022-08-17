@@ -58,7 +58,7 @@ class ContextMenu {
             }
 
             if (info.header){
-                JSOM.parse({root: bucket.contextMenu, tree: {div_header: { class: 'noSelect contextMenuheader', text: info.header }}})
+                JSOM.parse({root: bucket.contextMenu, tree: {div_header: { class: 'sk_ui_noSelect contextMenuheader', text: info.header }}})
                 return
             }
 
@@ -67,7 +67,7 @@ class ContextMenu {
             var subMenu = undefined
 
 
-            var itemContent = { class: `noSelect ${(!info.disabled ? 'contextMenuItem-enabled' : '')} contextMenuItem ${(!info.items && !info.disabled ? 'contextMenuItem-interactable' : '')} ${(opt.isSubmenu ? 'submenu' : '')}`, styling: 'c' }
+            var itemContent = { class: `sk_ui_noSelect ${(!info.disabled ? 'contextMenuItem-enabled' : '')} contextMenuItem ${(!info.items && !info.disabled ? 'contextMenuItem-interactable' : '')} ${(opt.isSubmenu ? 'submenu' : '')}`, styling: 'c' }
             if (!info.customItemContent){
                 itemContent = {
                     ...itemContent,

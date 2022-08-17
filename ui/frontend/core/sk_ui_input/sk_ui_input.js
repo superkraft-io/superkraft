@@ -1,6 +1,6 @@
 class sk_ui_input extends sk_ui_component {
-    constructor(parent){
-        super(parent)
+    constructor(opt){
+        super(opt)
 
         this.inputBucket = JSOM.parse({root: this.element, tree: {
             div_inputEl: { class: 'ui input',

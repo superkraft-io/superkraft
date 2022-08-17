@@ -1,14 +1,12 @@
 .sk_ui_button {
     width: fit-content;
-    padding: 8px 14px;
-    color: rgb(155, 155, 155);
+    padding: 6px 8px;
     position: relative;
     overflow: hidden;
 }
 
 .sk_ui_button_enabled:hover {
-    background-color: rgb(46, 46, 46);
-    color: white;
+    background-color: var(--sk_ui_color_dark_grey_2);
 }
 
 .sk_ui_button_enabled:active {
@@ -16,7 +14,7 @@
 }
 
 .sk_ui_button.active:hover {
-    background-color: rgb(0, 82, 121);
+    background-color: var(--sk_ui_color_blue_dark);
 }
 
 
@@ -25,17 +23,16 @@
 }
 
 .sk_ui_button > .sk_ui_icon {
-    margin-right: 12px;
+    margin-right: 8px;
 }
 
 .sk_ui_button.normal {
-    background-color: rgb(29, 29, 29);
+    background-color: var(--sk_ui_color_dark_grey_2);
     border-radius: 6px;
-    color: white;
 }
 
 .sk_ui_button.normal:hover {
-    background-color: rgb(46, 46, 46);
+    background-color: var(--sk_ui_color_dark_grey);
 }
 
 .sk_ui_button.clear {
@@ -52,17 +49,27 @@
 
 .sk_ui_button_vertical > .sk_ui_icon {
     margin-right: 0px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 .sk_ui_button_toggled {
-    background-color: rgb(0, 166, 255);
-    color: white;
+    background-color: var(--sk_ui_button_toggled_button_color);
+}
+
+.sk_ui_button_toggled > .sk_ui_label {
+    color: var(--sk_ui_text_color_full);
+}
+
+.sk_ui_button_toggled > .sk_ui_icon > .icon {
+    color: var(--sk_ui_text_color_);
 }
 
 .sk_ui_button_toggled:hover {
-    background-color: rgb(0, 82, 121);
-    color: white;
+    background-color: var(--sk_ui_button_toggled_button_color_hover);
+}
+
+.sk_ui_button_toggled:hover > .sk_ui_label {
+    color: var(--sk_ui_button_toggled_text_color_hover);
 }
 
 
@@ -78,26 +85,24 @@
 
 .sk_ui_button_style_action {
     border-radius: 6px;
-    background-color: rgb(50, 50, 50);
+    background-color: var(--sk_ui_color_dark_grey);
     
 }
 
 .sk_ui_button_style_action > .sk_ui_label {
-    color: white;
     font-weight: 500;
 }
 
 
 
 .sk_ui_button_loader {
-    
     width: 8px;
     height: 8px;
 
     border-radius: 4px;
 
-    color: rgb(255, 255, 255);
-    background-color: rgb(255, 255, 255);
+    color: var(--sk_ui_text_color);
+    background-color: var(--sk_ui_text_color);
     background-size: 400% 400%;
     animation: 1s ease 0s infinite normal none running sk_ui_button_loader;
 }

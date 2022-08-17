@@ -1,6 +1,6 @@
 class sk_ui_colorPicker extends sk_ui_component {
-    constructor(parent){
-        super(parent)
+    constructor(opt){
+        super(opt)
 
         this.inputBucket = JSOM.parse({root: this.element, tree: {
             input_clrPicker: { type: 'color', style: 'width: 100%; height: 100%; border-style: none; padding: 0px; border-width: 0px; background-color: transparent; border-color: transparent;',

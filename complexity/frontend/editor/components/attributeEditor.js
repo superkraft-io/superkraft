@@ -1,6 +1,6 @@
 class ss_ui_complexity_attributeEditor extends ss_ui_group {
-    constructor(parent){
-        super(parent)
+    constructor(opt){
+        super(opt)
         this.header = 'Attributes'
         this.container.style.height = 'fit-content'
         this.collapsable = true
