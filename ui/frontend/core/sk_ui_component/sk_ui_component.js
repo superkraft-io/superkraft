@@ -436,7 +436,6 @@ class sk_ui_component {
     get rect(){ return this.element.getBoundingClientRect() }
     
     hint(opt){
-        console.log(opt)
         this._hint.config(opt)
     }
 
