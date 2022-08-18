@@ -61,6 +61,10 @@ class sk_ui_component {
             if (!val) this.classAdd('sk_ui_component_spaced' + (this.vertical ? '_vertical' : '_horizontal'))
         }})
         
+        this.attributes.add({friendlyName: 'Animate', name: 'animate',  type: 'bool', onSet: val => {
+            this.classRemove('sk_ui_transition')
+            if (val) this.classAdd('sk_ui_transition')
+        }})
 
         this.attributes.add({friendlyName: 'ID', name: 'uuid',  type: 'text', onSet: val => {
             this.classRemove(this.element.id)
@@ -221,6 +225,33 @@ class sk_ui_component {
                 _child[css] = val
             })
         })*/
+
+
+
+
+        this.attributes.add({friendlyName: 'Sortable', name: 'sortable', type: 'bool', onSet: val => {
+            if (!val) return
+
+            $('#' + this.element.id).sortable({
+                placeholder: 'sk_ui_component_sorbable_placeholder',
+                start: (_e, _ui)=>{
+                    _ui.item[0].sk_ui_obj.animate = false
+                    if (this.onSortStart) this.onSortStart(_e, _ui)
+                },
+
+                stop: (_e, _ui)=>{
+                    _ui.item[0].sk_ui_obj.animate = true
+                    if (this.onSortEnd) this.onSortEnd(_e, _ui)
+                }, 
+            })
+
+            try {
+                var collaborators = val.split(' ')
+                for (var i in collaborators) $('#' + this.element.id).sortable('option', 'connectWith', collaborators[i])
+            } catch(err) {
+
+            }
+        }})
 
         /********/
 
@@ -620,6 +651,7 @@ class sk_ui_contextMenuMngr {
 
         this.activeWhenParentDisabled = false
         this.__button = 'right'
+        this.allowPropagation = true
     }
 
     set items(val){
@@ -630,8 +662,28 @@ class sk_ui_contextMenuMngr {
     set button(val){ this.__button = val }
 
     setEventListener(){
+
+        var shouldIgnore = path => {
+            if (this.parent.element.id === path[0].id) return false
+
+            if (path[0].tagName === 'INPUT') return true
+
+            for (var i in path){
+                var element = path[i]
+                
+                try { 
+                    var cm = element.sk_ui_obj.contextMenu
+                    if (this.parent.element.id === element.id) return false
+                    if (cm.blockPropagation !== false) return true
+                } catch(err) {
+                }
+            }
+
+            return
+        }
+
         this.parent.element.addEventListener('contextmenu', _e => {
-            if (this.noPropagation && _e.path[0].id !== this.parent.element.id) return
+            if (shouldIgnore(_e.path)) return
             _e.preventDefault()
             if (this.__button === 'right') this.handleMouseEvent(_e)
         })

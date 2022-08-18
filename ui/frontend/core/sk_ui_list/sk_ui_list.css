@@ -37,7 +37,6 @@
     width: 0px;
     margin: 0px;
 }
-    
 
 ::-webkit-scrollbar {
     background:  var(--sk_ui_color_scrollbar) !important;

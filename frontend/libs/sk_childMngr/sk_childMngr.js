@@ -13,6 +13,7 @@ class SK_ChildMngr {
 
     add(obj){
         this.children.push(obj)
+        obj.parent = this.opt.parent
         this.recalculateIndices()
     }
 

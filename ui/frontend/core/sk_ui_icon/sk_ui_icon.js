@@ -2,6 +2,8 @@ class sk_ui_icon extends sk_ui_component {
     constructor(opt){
         super(opt)
 
+        this.invisible = true
+        
 
         this.styling = 'center middle'
 
