@@ -31,11 +31,6 @@ class sk_ui_loader extends sk_ui_component {
             if (val) this.classAdd('indeterminate')
         }})
 
-        this.attributes.add({friendlyName: 'Indeterminate', name: 'indeterminate', type: 'bool', onSet: val => {
-            this.classRemove('indeterminate')
-            if (val) this.classAdd('indeterminate')
-        }})
-
         this.attributes.add({friendlyName: 'Double', name: 'double', type: 'bool', onSet: val => {
             this.classRemove('double')
             if (val) this.classAdd('double')

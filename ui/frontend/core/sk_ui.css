@@ -5,7 +5,7 @@
 body {
     background-color: transparent;
     color: white;
-    font-size: 12px;
+    font-size: 14px;
     border-radius: var(--view-radius);
     overflow: hidden !important;
 }

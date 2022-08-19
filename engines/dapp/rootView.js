@@ -19,7 +19,8 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                     ui_global: global.sk.ui.routes.global,
 
                     app_root: global.sk.paths.root,
-                    app: global.sk.paths.app_frontend
+                    app: global.sk.paths.app_frontend,
+                    global: global.sk.paths.globalFrontend
                 },
 
                 icon: this.info.icon || global.sk.paths.icons.view,
