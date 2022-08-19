@@ -43,7 +43,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             }
            
             global.sk.app.use(this.routes.frontend.view, global.sk.engine.express.static(opt.root + 'frontend/'))
-            global.sk.app.use(this.routes.frontend.global, global.sk.engine.express.static(global.sk.paths.globalFrontent))
+            global.sk.app.use(this.routes.frontend.global, global.sk.engine.express.static(global.sk.paths.globalFrontend))
         
             global.sk.app.get(this.info.route, async (req, res)=>{
                 var auth_token = req.cookies.auth_token
