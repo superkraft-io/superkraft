@@ -1,121 +1,51 @@
-const { app, BrowserWindow, dialog, ipcMain } = require('electron')
+var fs = require('fs')
 
-const ejse = require('ejs-electron')
+module.exports = class sk_RootViewCore {
+    _init(opt){
+        return new Promise(resolve => {
+            this.actions = {}
+            this.id = opt.id
 
-
-module.exports = class SK_RootView extends SK_RootViewCore {
-    init(opt){
-        return new Promise(async resolve => {
-            
-
-            this.routes = {
-                frontend: {
-                    view: opt.root + 'frontend/',
-
-                    sk: global.sk.paths.sk_frontend,
-
-                    ui: global.sk.ui.routes.core,
-                    ui_shared: global.sk.ui.routes.shared,
-                    ui_global: global.sk.ui.routes.global,
-
-                    app_root: global.sk.paths.root,
-                    app: global.sk.paths.app_frontend
+            this.viewInfo = {
+                app_type: global.sk.type,
+    
+                id: this.id,
+                title: (this.info ? this.info.title : 'New View'),
+                ss: {
+                    ui: sk.ui.renderInfo(opt.root + 'frontend/sk_ui/'),
+                    routes: this.routes
                 },
 
-                icon: this.info.icon || global.sk.paths.icons.view,
-            }
-
-            function fixPaths(list){
-                for (var i in list){
-                    if (list[i] instanceof Object) list[i] = fixPaths(list[i])
-                    else list[i] = list[i].split('\\').join('/')
-                }
-
-                return list
-            }
-
-            this.routes = fixPaths(this.routes)
-
-            
-            if (global.sk.complexity) this.routes.frontend.complexity = global.sk.paths.complexity.frontend
-
-            this.viewInfo = await this._init(opt)
-            
-            var doShow = this.info.show || false
-            var defOpts = {
-                icon: __dirname + '/app/assets/img/icon.png',
-                width: 1024,
-                height: 750,
-                webPreferences: {
-                    nodeIntegration: true,
-                    contextIsolation: false,
-                    enableRemoteModule: true,
+                globalHead: sk.paths.templates + 'head.ejs',
+                viewHead: opt.root + 'head.ejs',
+                viewBodyScripts: {
+                    start: opt.root + 'body_start.ejs',
+                    end: opt.root + 'body_end.ejs'
                 },
-                transparent: true, 
-                frame: false
-            }
-            defOpts = {...defOpts, ...this.info}
-            delete defOpts.show
-
-            this.defOpts = defOpts
-
-
-            resolve()
-
-            if (doShow){
-                if (!global.sk.showWindowWWaitTime) global.sk.showWindowWWaitTime = 1
                 
-                global.sk.showWindowWWaitTime += 500
-
-                setTimeout(()=>{
-                    this.create()
-                    this.show()
-                }, global.sk.showWindowWWaitTime)
             }
+
+            if (!fs.existsSync(this.viewInfo.viewHead               )) this.viewInfo.viewHead              = global.sk.paths.superstructure + 'sk_emptyEJS.ejs'
+            if (!fs.existsSync(this.viewInfo.viewBodyScripts.start  )) this.viewInfo.viewBodyScripts.start = global.sk.paths.superstructure + 'sk_emptyEJS.ejs'
+            if (!fs.existsSync(this.viewInfo.viewBodyScripts.end    )) this.viewInfo.viewBodyScripts.end   = global.sk.paths.superstructure + 'sk_emptyEJS.ejs'
+
+            if (global.sk.complexity) this.viewInfo.sk.useComplexity = global.sk.useComplexity
+            
+            //load actions
+            this.actions = global.sk.utils.loadActions(opt.root + 'actions/')
+            global.sk.utils.captureActions(
+                this.id,
+                this.actions,
+                global.sk.engine.onValidateAction
+            )
+
+            var actionsList = []
+            for (var action in this.actions) actionsList.push(action)
+            
+
+            
+
+            resolve(this.viewInfo)
         })
-    }
-
-    create(){
-        this._view = new BrowserWindow(this.defOpts)
-
-        this._view.on('ready-to-show', ()=>{
-            this.ipc =  this._view.webContents
-        })
-
-
-        this._view.on('show', ()=>{
-            if (this.alreadyLoaded) return
-            this.alreadyLoaded = true
-        
-            ejse.data({
-                ...{
-                    l10n: {
-                        countries: sk.l10n.listCountries(),
-                        phrases: sk.l10n.getForCountry(global.sk.country)
-                    }
-                },
-
-                ...this.viewInfo,
-                ...{userData: {}}
-            })
-            this._view.loadURL('file://' + global.sk.paths.superkraft + '/template.ejs')
-        })
-
-
-
-        try {
-            var menu = new (require(opt.root + 'menu/' + 'mac' + '.js'))(this._view)
-        } catch(err) {
-
-        }
-    }
-
-    show(){
-        if (!this._view) this.create()
-        this._view.show()
-    }
-
-    hide(){
-        this._view.hide()
     }
 }

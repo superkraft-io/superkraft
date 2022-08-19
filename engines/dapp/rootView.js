@@ -63,12 +63,14 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             resolve()
 
             if (doShow){
-                this.create()
+                if (!global.sk.showWindowWWaitTime) global.sk.showWindowWWaitTime = 1
+                
+                global.sk.showWindowWWaitTime += 500
+
                 setTimeout(()=>{
+                    this.create()
                     this.show()
                 }, global.sk.showWindowWWaitTime)
-
-                global.sk.showWindowWWaitTime = 100
             }
         })
     }
