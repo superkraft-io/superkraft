@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <script> try { var $ = jQuery = require("jquery") } catch(err) {} </script>
+        <script src="<%= sk.routes.frontend.sk%>libs/jquery/dist/jquery.slim.min.js"></script>
+        <script src="<%= sk.routes.frontend.sk%>libs/jquery/jquery-ui/jquery-ui.min.js"></script>
+
+
+        <link rel="stylesheet" href="<%= sk.routes.frontend.sk%>libs/formantic-ui/semantic.css"/>
+        <script src="<%= sk.routes.frontend.sk%>libs/formantic-ui/semantic.min.js"></script>
+        
+
+        <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.sk%>libs/jsom/jsom.css">
+        <script src="<%= sk.routes.frontend.sk%>libs/jsom/jsom.js"></script>
+
+
+        <script src="<%= sk.routes.frontend.sk%>libs/sk_comm/sk_comm_<%= app_type %>.js"></script>
+        <script src="<%= sk.routes.frontend.sk%>libs/sk_comm/sk_comm_core.js"></script>
+
+        <script src="<%= sk.routes.frontend.sk%>libs/sk_fileSystem/sk_fileSystem_<%= app_type %>.js"></script>
+        <script src="<%= sk.routes.frontend.sk%>libs/sk_fileSystem/sk_fileSystem_core.js"></script>
+
+
+        <script src="<%= sk.routes.frontend.sk%>libs/sk_fileDrop/sk_fileDrop.js"></script>
+
+        <script src="<%= sk.routes.frontend.sk%>libs/sk_tween.js"></script>
+
+        <% if (app_type === 'dapp'){ %>
+            <script src="<%= sk.routes.frontend.sk%>libs/sk_viewController/sk_viewController.js"></script>
+        <% } %>
+
+
+        <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.sk%>libs/sk_contextMenu/sk_contextMenu.css">
+        <script src="<%= sk.routes.frontend.sk%>libs/sk_contextMenu/sk_contextMenu.js"></script>
+
+        <script src="<%= sk.routes.frontend.sk%>libs/sk_subscriptions/sk_subscriptions.js"></script>
+        <script src="<%= sk.routes.frontend.sk%>libs/sk_childMngr/sk_childMngr.js"></script>
+
+        
+
+        <script src="<%= sk.routes.frontend.sk%>libs/js-cookie/js.cookie.min.js"></script>
+
+        <%- include(globalHead) %>
+        <%- include(viewHead) %>
+
+        <script src="<%= sk.routes.frontend.sk%>libs/sk_hint/sk_hint.js"></script>
+    </head>
+
+    <%- include(sk.ui.head) %>
+
+    <% if (sk.useComplexity){ %>
+        <head>
+            <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.complexity %>complexity.css">
+            <script src="<%= sk.routes.frontend.complexity %>icons.js"></script>
+            <script src="<%= sk.routes.frontend.complexity %>comm.js"></script>
+            <script src="<%= sk.routes.frontend.complexity %>selectionManager.js"></script>
+            <script src="<%= sk.routes.frontend.complexity %>complexity.js"></script>
+
+
+            <script src="<%= sk.routes.frontend.complexity %>editor/components/objectTree.js"></script>
+            <script src="<%= sk.routes.frontend.complexity %>editor/components/stylingEditor.js"></script>
+            <script src="<%= sk.routes.frontend.complexity %>editor/components/attributeEditor.js"></script>
+            <script src="<%= sk.routes.frontend.complexity %>editor/components/iconList.js"></script>
+
+            
+
+            <link rel="stylesheet" href="<%= sk.routes.frontend.complexity %>codeEditor/codemirror/theme/vscode-dark.css">
+
+            <link rel="stylesheet" href="<%= sk.routes.frontend.complexity %>codeEditor/codemirror/lib/codemirror.css">
+            <script src="<%= sk.routes.frontend.complexity %>codeEditor/codemirror/lib/codemirror.js"></script>
+            <script src="<%= sk.routes.frontend.complexity %>codeEditor/codemirror/mode/javascript/javascript.js"></script>
+            <script src="<%= sk.routes.frontend.complexity %>codeEditor/bakery.js"></script>
+            <script src="<%= sk.routes.frontend.complexity %>codeEditor/codeEditor.js"></script>
+
+            <script src="<%= sk.routes.frontend.complexity %>editor/editor.js"></script>
+        </head>
+    <% } %>
+    
+    <body>
+        <%- include(viewBodyScripts.start) %>
+        
+        <script src="<%= sk.routes.frontend.view %>view.js"></script>
+
+        <%- include(sk.ui.script) %>
+
+        <script>
+            sk.l10n = <%- JSON.stringify(l10n) %>
+        </script>
+        <script src="<%= sk.routes.frontend.sk%>libs/sk_l10n/sk_l10n.js"></script>
+
+        <script>
+             <% if (sk.useComplexity){ %>
+                sk.complexity = {
+                    core: new sk_ui_complexity()
+                }
+                sk.complexity.comm = new sk_ui_complexity_comm()
+                sk.complexity.comm.init()
+            <% } %>
+
+            
+            
+            sk.userData = <%- JSON.stringify(userData) %>
+
+            sk.init().then(()=>{
+                sk.app = (new sk_ui_component({parent: {element: document.body}}))
+                sk.app.setup(_c => {
+                    _c.classAdd('sk_app')
+
+                    _c.styling = 'ttb'
+
+                    if (sk.app_type === 'dapp' && !sk.noTitle){
+                        _c.titlebar = _c.add.dappTitlebar(_c => {
+                            _c.os    = sk.os
+                            _c.title = sk.title
+                            _c.icon  = sk.paths.icon
+                        })
+                    }
+                    
+
+                    _c.body = _c.add.component(_c => {
+                        _c.classAdd('sk_ui_appBody ' + (sk.app_type !== 'dapp' ? 'sk_ui_noTitlebar' : ''))
+                    
+                        _c.view = new sk._view({parent: _c})
+                        _c.children.add(_c.view)
+                    })
+
+                    <% if (sk.useComplexity){ %>
+                        sk.complexity.editor = new sk_ui_complexity_editor({app: _c})
+                        sk.complexity.codeEditor = new sk_ui_complexity_codeEditor(_c)
+                    <% } %>
+                })
+            })
+
+            if (sk.app_type === 'dapp'){
+                document.body.onresize = event => {
+                    if (!sk.window.resizing) sk.window.maximize(true)
+                }
+
+                function updateOnlineStatus () {
+                    sk.online = navigator.onLine
+                    sk.comm.main('setOnlineStatus', {online: sk.online})
+                }
+            
+                window.addEventListener('online'  , ()=>{ updateOnlineStatus() })
+                window.addEventListener('offline' , ()=>{ updateOnlineStatus() })
+                updateOnlineStatus()
+            }
+            
+        </script>
+
+
+        <%- include(viewBodyScripts.end) %>
+    </body>
+</html>

@@ -1,0 +1,30 @@
+.sk_ui_checkbox {
+    padding: 0px;
+}
+
+.sk_ui_checkbox:hover {
+    background-color: transparent;
+}
+
+.sk_ui_checkbox:hover > .sk_ui_icon {
+    border: solid 1px white;
+}
+
+.sk_ui_checkbox > .sk_ui_icon {
+    border: solid 1px rgb(89, 89, 89) !important;
+    border-radius: 4px;
+    padding: 4px 3px;
+    font-size: 10px;
+
+    
+}
+
+.sk_ui_checkbox > .sk_ui_icon > .icon {
+    transform: scale(0.5);
+    opacity: 0;
+}
+
+.sk_ui_checkbox_on {
+    transform: scale(1) !important;
+    opacity: 1 !important;
+}

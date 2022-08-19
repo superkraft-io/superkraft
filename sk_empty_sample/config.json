@@ -1,0 +1,9 @@
+{
+    "isWhat": {
+        "env": "dev"
+    },
+
+    "webserver": {
+        "ports": {"http": 80, "https": 443}
+    }
+}
