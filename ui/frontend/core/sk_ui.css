@@ -167,7 +167,7 @@ i.icon, i.icons, i.flag {
 
 .sk_ui_spin_slow {
     animation-name: sk_ui_spin;
-    animation-duration: 10000ms;
+    animation-duration: 3000ms;
     animation-iteration-count: infinite;
     animation-timing-function: linear; 
 }
@@ -180,3 +180,35 @@ i.icon, i.icons, i.flag {
         transform:rotate(360deg);
     }
 }
+
+
+.sk_ui_glow_pulse {
+    animation-name: sk_ui_glow_pulse;
+    animation-duration: 3000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear; 
+}
+  
+:root {
+    --sk_ui_glow_pulse_1: inset 0px 0px 0px 0px rgba(255, 255, 255, 0.0);
+    --sk_ui_glow_pulse_2: inset 0px 0px 50px 0px rgba(255, 255, 255, 0.2);
+}
+@keyframes sk_ui_glow_pulse {
+    0% {
+        -webkit-box-shadow: var(--sk_ui_glow_pulse_1);
+        -moz-box-shadow: var(--sk_ui_glow_pulse_1);
+        box-shadow: var(--sk_ui_glow_pulse_1);
+    }
+    50% {
+        -webkit-box-shadow: var(--sk_ui_glow_pulse_2);
+        -moz-box-shadow: var(--sk_ui_glow_pulse_2);
+        box-shadow: var(--sk_ui_glow_pulse_2);
+    }
+    100% {
+        -webkit-box-shadow: var(--sk_ui_glow_pulse_1);
+        -moz-box-shadow: var(--sk_ui_glow_pulse_1);
+        box-shadow: var(--sk_ui_glow_pulse_1);
+    }
+}
+
+

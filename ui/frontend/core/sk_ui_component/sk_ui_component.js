@@ -227,6 +227,12 @@ class sk_ui_component {
         })*/
 
 
+        this.attributes.add({friendlyName: 'Emphasise', name: 'emphasise', type: 'bool', onSet: val => {
+            this.classRemove('sk_ui_glow_pulse')
+            if (val) this.classAdd('sk_ui_glow_pulse')
+        }})
+
+
 
 
         this.attributes.add({friendlyName: 'Sortable', name: 'sortable', type: 'bool', onSet: val => {
