@@ -97,7 +97,7 @@ class JSOM_ {
                 var firstObject = true
 
                 function setupElement(element){
-                    element.transition = animation => { return new Promise(resolve => { $(element).transition({animation: animation, duration: 100, onComplete: ()=>{resolve()}}) }) }
+                    element.transition = animation => { return new Promise(resolve => { $(element).transition({animation: animation, duration: 190, onComplete: ()=>{resolve()}}) }) }
                 }
 
                 function parseObject(tree, root, prepend){

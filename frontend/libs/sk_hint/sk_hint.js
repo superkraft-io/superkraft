@@ -7,8 +7,8 @@ class SK_Hint {
         this.hookMouseEvents()
     }
 
-    set content(val){
-        this.__content = val
+    set text(val){
+        this.__text = val
     }
 
     set position(val = 'bottom center'){
@@ -26,7 +26,7 @@ class SK_Hint {
     }
 
     config(opt){
-        if (opt.text) this.content = opt.text
+        this.text = opt.text
         if (opt.position) this.position = opt.position
         if (opt.instaShow) this.instaShow = opt.instaShow
     }
@@ -35,7 +35,7 @@ class SK_Hint {
 
     hookMouseEvents(){
         this.opt.parent.element.addEventListener('mouseenter', ()=>{
-            this.show()
+            if (this.__text) this.show()
         })
 
         this.opt.parent.element.addEventListener('mouseleave', ()=>{
@@ -44,7 +44,7 @@ class SK_Hint {
     }
 
     async onHide(){
-        if (!this.__content || !this.created) return
+        if (!this.created) return
         clearTimeout(this.hintTimer)
         await this.__hint.hide()
         this.__hint.remove()
@@ -52,10 +52,10 @@ class SK_Hint {
     }
 
     show(){
-        if (!this.__content || this.created) return
+        if (!this.__text || this.created) return
         this.__hint = new sk_ui_hint({parent: sk.app, noHint: true, target: this.opt.parent})
         this.__hint.setup(_c => {
-            _c.content = this.__content
+            _c.content = this.__text
             _c.position = this.__position
             //_c.updatePosition()
 

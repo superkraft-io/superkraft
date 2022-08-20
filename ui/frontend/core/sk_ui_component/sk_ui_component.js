@@ -483,6 +483,35 @@ class sk_ui_component {
         this.onFileDrop = cb
         sk.fileDrop.subscribe(this)
     }
+
+
+
+    hideShow(opt){
+        return new Promise(async resolve =>{
+            var animation = opt.animation || 'fade'
+            
+            if (opt.onBefore) await opt.onBefore()
+
+            var handleAnim = direction => {
+                return new Promise(resolve => {
+                    this.transition(animation + ' ' + direction)
+                    for (var i in opt.with) opt.with[i].transition(animation + ' ' + direction)
+
+                    setTimeout(()=>{ resolve() }, 200)
+                })
+            }
+
+            await handleAnim('out')
+            
+            if (opt.onHidden) await opt.onHidden()
+
+            await handleAnim('in')
+
+            if (opt.onDone) await opt.onDone()
+
+            resolve()
+        })
+    }
 }
 
 

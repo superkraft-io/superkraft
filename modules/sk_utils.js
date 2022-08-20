@@ -5,16 +5,22 @@ module.exports = class SK_Window {
     }
 
     loadActions(srcPath){
-        var actionsPath = srcPath
-        var actionsFiles = fs.readdirSync(actionsPath)
-        var actions = {}
-        for (var i = 0; i < actionsFiles.length; i++){
-            var actionName = actionsFiles[i].split('.')[0]
-            var action = new (require(actionsPath + actionName + '.js'))(this.window)
-            actions[actionName] = action
+        try {
+            var actionsPath = srcPath
+            var actionsFiles = fs.readdirSync(actionsPath)
+            var actions = {}
+            for (var i = 0; i < actionsFiles.length; i++){
+                var actionName = actionsFiles[i].split('.')[0]
+                var action = new (require(actionsPath + actionName + '.js'))(this.window)
+                actions[actionName] = action
+            }
+
+            return actions
+        } catch(err) {
+            console.error(err)
         }
 
-        return actions
+        return {}
     }
 
     captureActions(route, actions, onValidate){
