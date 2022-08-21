@@ -237,74 +237,11 @@ class sk_ui_button extends sk_ui_component {
 
 
     addStatusIndicator(opt){
-        var defOpt = {
-            ...{
-                status: '',
-                autohide: true,
-            },
-
-            ...opt
-        }
-
-        var statuses = {
-            loader  : 'circle notch loader',
-            ok      : 'green check circle outline',
-            fail    : 'times circle outline red',
-            warning : 'exclamation triangle icon yellow',
-            
-            external : 'external alternate',
-        }
-
-        return this.label.add.icon(_c => {
-            if (defOpt.prepend) _c.moveBefore(this._icon)
-
-            _c.icon = statuses[defOpt.status]
-            _c.size = 0
-            _c.iconElement.style.opacity = 0
-
-            if (defOpt.status === 'loader') _c.spinning = true
-
-            if (defOpt.side === 'left') _c.moveBefore(this.label)
-
-            setTimeout(()=>{
-                _c.size = 14
-
-                if (defOpt.side === 'left'){
-                    _c.marginRight = 6
-                    _c.marginLeft = -6
-                } else {
-                    _c.marginLeft = 6
-                    _c.marginRight = -6
-                }
-
-                setTimeout(()=>{
-                    _c.iconElement.style.opacity = 1
-                }, 250)
-            }, 100)
-        
-            _c.destroy = ()=>{
-                return new Promise(resolve => {
-                    _c.iconElement.style.opacity = 0
-
-                    setTimeout(()=>{
-                        _c.size = 0
-                        _c.marginLeft = 0
-                        _c.marginRight = 0
-                        setTimeout(() => {
-                            _c.remove()
-                            if (defOpt.onDestroy) defOpt.onDestroy()
-                            resolve()
-                        }, 200)
-                    }, 200)
-                })
-            }
-
-
-            if (!defOpt.autohide) return
-
-            setTimeout(()=>{
-               _c.destroy() 
-            }, 3000)
+        return this.add.statusIndicator(_c => {
+            _c.status = opt.status
+            _c.side = opt.side
+            _c.size = 16
+            _c.autohide = opt.autohide
         })
     }
 }
