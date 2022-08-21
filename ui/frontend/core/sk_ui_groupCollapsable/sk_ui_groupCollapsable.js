@@ -54,11 +54,11 @@ class sk_ui_groupCollapsable extends sk_ui_group {
         this.attributes.add({friendlyName: 'Collapsed', name: 'collapsed', type: 'bool', onSet: async val => {
             if (val){
                 this.classAdd('sk_ui_groupCollapsable_collapsed')
-                this.collapseButton._icon.style.transform = 'rotate(-180deg)'
+                this.collapseButton._icon.style.transform = ''
                 
             } else {
                 this.classRemove('sk_ui_groupCollapsable_collapsed')
-                this.collapseButton._icon.style.transform = ''
+                this.collapseButton._icon.style.transform = 'rotate(-180deg)'
             }
 
             if (this.onCollapsed) this.onCollapsed(val)
