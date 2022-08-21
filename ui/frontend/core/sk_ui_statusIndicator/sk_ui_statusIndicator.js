@@ -2,6 +2,7 @@ class sk_ui_statusIndicator extends sk_ui_component {
     constructor(opt){
         super(opt)
 
+        this.classAdd('sk_ui_statusIndicator_right')
         this.compact = true
 
         this.attributes.add({friendlyName: 'Status', name: 'status', type: 'text', onSet: async val => {
@@ -43,8 +44,11 @@ class sk_ui_statusIndicator extends sk_ui_component {
         }})
 
         this.attributes.add({friendlyName: 'Side', name: 'side', type: 'text', onSet: val => {
-            if (val === 'left') return this.moveBefore(this.parent.children[0])
-            else if (val === 'right')  this.moveBefore(this.parent.children[this.parent.children - 1])
+            this.classRemove('sk_ui_statusIndicator_left sk_ui_statusIndicator_right')
+            this.classAdd('sk_ui_statusIndicator_' + val)
+            
+            if (val === 'left') return this.moveBefore(this.parent.children.children[0])
+            else if (val === 'right')  this.moveBefore(this.parent.children.children[this.parent.children.children - 1])
         }})
     }
 

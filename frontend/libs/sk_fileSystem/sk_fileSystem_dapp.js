@@ -8,13 +8,8 @@ var sk_filesystem = {
             if (opt.multiple) properties.push('multiSelections')
             if (opt.dontAddToRecent) properties.push('dontAddToRecent')
 
-            var res = await dialog.showOpenDialog(win, {
-                title: opt.title,
-                properties: properties,
-                filters: opt.filters,
-                buttonLabel: opt.buttonLabel,
-                message: opt.message
-            })
+            var res = await sk.comm.main('dialog', {type: 'open', settings: opt})
+            
 
             if (res.canceled) return reject()
 
@@ -24,18 +19,15 @@ var sk_filesystem = {
 
     saveDialog: (opt = {})=>{
         return new Promise(async (resolve, reject) => {
+            
+            
             var properties = []
 
             if (opt.multiple) properties.push('multiSelections')
             if (opt.dontAddToRecent) properties.push('dontAddToRecent')
 
-            var res = await dialog.showSaveDialog(win, {
-                title: opt.title,
-                properties: properties,
-                filters: opt.filters,
-                buttonLabel: opt.buttonLabel,
-                message: opt.message
-            })
+            var res = await sk.comm.main('dialog', {type: 'open', settings: opt})
+            
 
             if (res.canceled) return reject()
 
@@ -43,3 +35,4 @@ var sk_filesystem = {
         })
     }
 }
+

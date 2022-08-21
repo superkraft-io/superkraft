@@ -1,2 +1,10 @@
 .sk_ui_statusIndicator {
 }
+
+.sk_ui_statusIndicator_left + .sk_ui_label {
+    margin-left: 8px
+}
+
+.sk_ui_statusIndicator_right - .sk_ui_label {
+    margin-right: 8px
+}
