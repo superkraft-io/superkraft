@@ -244,7 +244,7 @@ class sk_ui_component {
             if (!val) return
 
             $('#' + this.element.id).sortable({
-                placeholder: 'sk_ui_component_sorbable_placeholder',
+                placeholder: 'sk_ui_component_sortable_placeholder sk_ui_pulsate sk_ui_glow_pulse',
                 start: (_e, _ui)=>{
                     _ui.item[0].sk_ui_obj.animate = false
                     if (this.onSortStart) this.onSortStart(_e, _ui)
