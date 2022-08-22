@@ -685,13 +685,14 @@ class sk_ui_contextMenuMngr {
 
         this.activeWhenParentDisabled = false
         this.__button = 'right'
-        this.allowPropagation = true
     }
 
     set items(val){
         if (!this.__items) this.setEventListener()
         this.__items = val
     }
+
+    get items(){ return this.__items }
 
     set button(val){ this.__button = val }
 
@@ -705,10 +706,12 @@ class sk_ui_contextMenuMngr {
             for (var i in path){
                 var element = path[i]
                 
-                try { 
-                    var cm = element.sk_ui_obj.contextMenu
+                try {
+                    var suo = element.sk_ui_obj
+                    var cm = suo.contextMenu
                     if (this.parent.element.id === element.id) return false
-                    if (cm.blockPropagation !== false) return true
+                    if (cm.items) return true
+                    if (cm.blockPropagation) return true
                 } catch(err) {
                 }
             }

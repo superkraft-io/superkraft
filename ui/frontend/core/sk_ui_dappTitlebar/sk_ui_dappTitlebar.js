@@ -80,7 +80,7 @@ class sk_ui_dappTitlebar_actions extends sk_ui_component {
         })
 
         this.minimize = this.add.fromNew(sk_ui_dappTitlebar_actions_button, _c => {
-            _c.classAdd('sk_ui_dappTitlebar_actions_button_miniimizeBtn');
+            _c.classAdd('sk_ui_dappTitlebar_actions_button_minimizeBtn');
             _c.icon = 'window minimize outline'
             _c.onClick = ()=>{ sk.window.minimize() }
         })
@@ -91,9 +91,9 @@ class sk_ui_dappTitlebar_actions extends sk_ui_component {
 
         this['configureFor_' + os]()
         
-        this.close.configureForOS(os)
-        this.maximize.configureForOS(os)
-        this.minimize.configureForOS(os)
+        this.close.configureForOS(os, 'close')
+        this.maximize.configureForOS(os, 'maximize')
+        this.minimize.configureForOS(os, 'minimize')
 
         if (!sk.window.closable    ) this.close.remove()
         if (!sk.window.maximizable ) this.maximize.remove()
@@ -108,30 +108,27 @@ class sk_ui_dappTitlebar_actions extends sk_ui_component {
     }
 
     configureFor_mac(){
+        this.minimize.moveBefore(this.maximize)
         this.maximize.icon = 'sort'
+        this.minimize.icon = 'minus'
     }
 }
 
 class sk_ui_dappTitlebar_actions_button extends sk_ui_button {
     constructor(opt){
         super(opt)
-
-        this.styling += ' fullheight'
-
         this.type = 'icon'
     }
 
-    configureForOS(os){
+    configureForOS(os, action){
         this.classAdd('sk_ui_dappTitlebar_actions_button_' + os)
-
-        this['configureFor_' + os]()
+        this.classAdd('sk_ui_dappTitlebar_actions_button_' + os + '_' + action)
+        this['configureFor_' + os](os, action)
     }
 
-    configureFor_win(){
+    configureFor_win(os, action){
+   }
 
-    }
-
-    configureFor_mac(){
-        
+    configureFor_mac(os, action){
     }
 }
