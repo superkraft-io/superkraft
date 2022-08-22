@@ -232,6 +232,11 @@ class sk_ui_component {
             if (val) this.classAdd('sk_ui_glow_pulse')
         }})
 
+        this.attributes.add({friendlyName: 'Pulsate', name: 'pulsate', type: 'bool', onSet: val => {
+            this.classRemove('sk_ui_pulsate')
+            if (val) this.classAdd('sk_ui_pulsate')
+        }})
+
 
 
 

@@ -212,3 +212,24 @@ i.icon, i.icons, i.flag {
 }
 
 
+
+.sk_ui_pulsate {
+    animation-name: sk_ui_pulsate;
+    animation-duration: 1500ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear; 
+}
+  
+@keyframes sk_ui_pulsate {
+    0% {
+        opacity: 0.25;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.25;
+    }
+}
+
+
