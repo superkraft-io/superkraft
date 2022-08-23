@@ -41,8 +41,8 @@ class sk_ui_hint extends sk_ui_component {
     }
 
     hide(){
-        if (this.style.display !== '') return
-        return this.transition('scale out')
+        //if (this.style.display !== '') return
+        return this.transition('fade ' + this.results.animation + ' out')
     }
 
     

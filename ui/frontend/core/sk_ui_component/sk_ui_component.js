@@ -400,10 +400,21 @@ class sk_ui_component {
                 this.style.transform = ''
 
                 setTimeout(()=>{
-
-
                     resolve()
                 }, 210)
+
+                setTimeout(()=>{
+                    this.style.width        = ''
+                    this.style.marginRight  = ''
+                    this.style.paddingLeft  = ''
+                    this.style.paddingRight = ''
+
+                    this.style.height        = ''
+                    this.style.marginBottom  = ''
+                    this.style.paddinTop     = ''
+                    this.style.paddingBottom = ''
+                    resolve()
+                }, 500)
             }, 5)
         })
     }

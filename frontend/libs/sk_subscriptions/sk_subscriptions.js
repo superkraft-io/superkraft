@@ -41,6 +41,13 @@ class SK_Subscriptions {
             event.clearClientHooks(client)
         }
     }
+
+    clearEvent(eventID){
+        var event = this.events[eventID]
+        if (!event) return
+        event.clearAllHooks()
+        delete this.events[eventID]
+    }
 }
 
 class SK_Subscription_Event {
@@ -78,6 +85,10 @@ class SK_Subscription_Event {
             var _client = this.clients[i].client
             if (_client.id === client.id) this.clients.splice(i, 1)
         }
+    }
+
+    clearAllHooks(){
+        this.clients = []
     }
 }
 
