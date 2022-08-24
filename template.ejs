@@ -124,7 +124,7 @@
                     
 
                     _c.body = _c.add.component(_c => {
-                        _c.classAdd('sk_ui_appBody ' + (sk.app_type !== 'dapp' ? 'sk_ui_noTitlebar' : ''))
+                        _c.classAdd('sk_ui_appBody ' + (sk.app_type !== 'dapp' || sk.noTitle ? 'sk_ui_noTitlebar' : ''))
                     
                         _c.view = new sk._view({parent: _c})
                         _c.children.add(_c.view)

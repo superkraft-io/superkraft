@@ -77,7 +77,9 @@ class SK_Subscription_Event {
     broadcast(client, value){
         this.value = value
         this.lastSender = client
-        for (var i in this.clients) this.clients[i].callback(client, value)
+        for (var i in this.clients){
+            this.clients[i].callback(client, value)
+        }
     }
 
     clearClientHooks(client){
