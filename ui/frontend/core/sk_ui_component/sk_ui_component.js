@@ -281,7 +281,7 @@ class sk_ui_component {
 
 
         this.contextMenu = new sk_ui_contextMenuMngr(this)
-        this.subscriptions = new SK_Subscription_Client()
+        this.ums = new SK_UMS_Client()
         if (!opt.noHint) this._hint = new SK_Hint({parent: this})
 
         /********/
@@ -322,7 +322,7 @@ class sk_ui_component {
 
         if (this.onBeforeRemove) await this.onBeforeRemove(this)
 
-        this.subscriptions.clear()
+        this.ums.clear()
         sk.fileDrop.unsubscribe(this)
         this.children.clear()
         this.element.remove()
@@ -350,7 +350,7 @@ class sk_ui_component {
 
     show(opt){
         return new Promise(resolve =>{
-            if (!opt.animation){
+            if (!opt || (opt && !opt.animation)){
                 this.element.style.display = ''
                 return resolve()
             }
@@ -396,7 +396,7 @@ class sk_ui_component {
                     this.style.paddingBottom = currentValues.padding.bottom
                 }
 
-                this.opacity = 0
+                this.opacity = opt.maxOpacity || 0
                 this.style.transform = ''
 
                 setTimeout(()=>{
@@ -421,7 +421,7 @@ class sk_ui_component {
     
     hide(opt){
         return new Promise(resolve =>{
-            if (!opt.animation){
+            if (!opt || (opt && !opt.animation)){
                 this.element.style.display = 'none'
                 return resolve()
             }

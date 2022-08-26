@@ -33,13 +33,13 @@
 
         <% if (app_type === 'dapp'){ %>
             <script src="<%= sk.routes.frontend.sk%>libs/sk_viewController/sk_viewController.js"></script>
+            <script src="<%= sk.routes.frontend.sk%>libs/sk_ums/sk_ums.js"></script>
         <% } %>
 
 
         <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.sk%>libs/sk_contextMenu/sk_contextMenu.css">
         <script src="<%= sk.routes.frontend.sk%>libs/sk_contextMenu/sk_contextMenu.js"></script>
 
-        <script src="<%= sk.routes.frontend.sk%>libs/sk_subscriptions/sk_subscriptions.js"></script>
         <script src="<%= sk.routes.frontend.sk%>libs/sk_childMngr/sk_childMngr.js"></script>
 
         
@@ -107,6 +107,12 @@
             
             sk.userData = <%- JSON.stringify(userData) %>
 
+
+
+            if (sk.app_type === 'dapp'){
+                sk.ums = new SK_UMS()
+            }
+
             sk.init().then(()=>{
                 sk.app = (new sk_ui_component({parent: {element: document.body}}))
                 sk.app.setup(_c => {
@@ -144,7 +150,9 @@
 
                 function updateOnlineStatus () {
                     sk.online = navigator.onLine
+                    //sk.online = false
                     sk.comm.main('setOnlineStatus', {online: sk.online})
+                    sk.ums.broadcast('isOnline', undefined, sk.online)
                 }
             
                 window.addEventListener('online'  , ()=>{ updateOnlineStatus() })

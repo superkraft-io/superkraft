@@ -59,6 +59,14 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
                 createWindow()
             }
         })*/
+
+
+        global.sk.ums = new (require('../../modules/sk_ums.js'))({app: app})
+        
+        sk.online = false
+        global.sk.ums.on('isOnline', res => {
+            sk.online = res.data
+        })
     }
 
     waitForReady(){

@@ -36,11 +36,6 @@ module.exports = class Superkraft {
         }
         var sk = global.sk
 
-        if (sk.type === 'dapp'){
-            sk.online = false
-            sk.onOnlineChanged = opt.onOnlineChanged
-        }
-
         sk.paths.sk_frontend = sk.paths.superkraft + 'frontend/'
 
         /****************/
