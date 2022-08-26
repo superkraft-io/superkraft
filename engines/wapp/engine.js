@@ -106,7 +106,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
                     var reject = msg => {
                         _res.rejected = true
                         _res.error = msg
-                        rW(_res)
+                        res.send(_res)
                         return
                     }
 
