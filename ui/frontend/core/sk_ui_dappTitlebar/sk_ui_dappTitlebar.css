@@ -122,27 +122,27 @@
     font-size: 8px;
 }
 
-.sk_ui_dappTitlebar_actions_button_closeBtn {
+.sk_ui_dappTitlebar_actions_button_mac_close {
     background-color: var(--sk_ui_dappTitlebar_color_button_close_mac);
 }
 
-.sk_ui_dappTitlebar_actions_button_minimizeBtn {
+.sk_ui_dappTitlebar_actions_button_mac_minimize {
     background-color: var(--sk_ui_dappTitlebar_color_button_minimize_mac);
 }
 
-.sk_ui_dappTitlebar_actions_button_maximizeBtn {
+.sk_ui_dappTitlebar_actions_button_mac_maximize {
     background-color: var(--sk_ui_dappTitlebar_color_button_maximize_mac);
 }
 
 
-.sk_ui_dappTitlebar_actions_button_closeBtn:hover {
+.sk_ui_dappTitlebar_actions_button_mac_close:hover {
     background-color: var(--sk_ui_dappTitlebar_color_button_close_mac) !important;
 }
 
-.sk_ui_dappTitlebar_actions_button_minimizeBtn:hover {
+.sk_ui_dappTitlebar_actions_button_mac_minimize:hover {
     background-color: var(--sk_ui_dappTitlebar_color_button_minimize_mac) !important;
 }
 
-.sk_ui_dappTitlebar_actions_button_maximizeBtn:hover {
+.sk_ui_dappTitlebar_actions_button_mac_maximize:hover {
     background-color: var(--sk_ui_dappTitlebar_color_button_maximize_mac) !important;
 }
