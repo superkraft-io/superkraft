@@ -37,8 +37,8 @@
         <% } %>
 
 
-        <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.sk%>libs/sk_contextMenu/sk_contextMenu.css">
-        <script src="<%= sk.routes.frontend.sk%>libs/sk_contextMenu/sk_contextMenu.js"></script>
+        <!--<link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.sk%>libs/sk_contextMenu/sk_contextMenu.css">
+        <script src="<%= sk.routes.frontend.sk%>libs/sk_contextMenu/sk_contextMenu.js"></script>-->
 
         <script src="<%= sk.routes.frontend.sk%>libs/sk_childMngr/sk_childMngr.js"></script>
 
@@ -116,6 +116,8 @@
             sk.init().then(()=>{
                 sk.app = (new sk_ui_component({parent: {element: document.body}}))
                 sk.app.setup(_c => {
+                    sk._cM = _c.contextMenu
+
                     _c.classAdd('sk_app')
 
                     _c.styling = 'ttb'
@@ -160,6 +162,14 @@
                 updateOnlineStatus()
             }
             
+
+            document.addEventListener('mousedown', _e => {
+                sk.ums.broadcast('sk_ui_contextMenu', undefined, {hide: true})
+            })
+
+            /*document.addEventListener('mouseup', _e => {
+                sk.ums.broadcast('sk_ui_contextMenu', undefined, {hide: true})
+            })*/
         </script>
 
 

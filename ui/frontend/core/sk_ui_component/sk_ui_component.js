@@ -280,7 +280,8 @@ class sk_ui_component {
         this.vertical = true
 
 
-        this.contextMenu = new sk_ui_contextMenuMngr(this)
+        //this.contextMenu = new sk_ui_contextMenuMngr(this)
+        this.contextMenu = new SK_ContextMenu({parent: this})
         this.ums = new SK_UMS_Client()
         if (!opt.noHint) this._hint = new SK_Hint({parent: this})
 
