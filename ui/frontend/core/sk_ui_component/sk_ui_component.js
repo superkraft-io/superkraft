@@ -321,16 +321,17 @@ class sk_ui_component {
     async remove(opt){
         if (opt) if (opt.animation) await this.hide(opt)
 
-        if (this.onBeforeRemove) await this.onBeforeRemove(this)
+        if (this._hint) this._hint.hide()
 
         this.ums.clear()
         sk.fileDrop.unsubscribe(this)
+        
+
+        if (this.onBeforeRemove) await this.onBeforeRemove(this)
         this.children.clear()
         this.element.remove()
         this.parent.children.delete(this.child_idx)
 
-        if (this._hint) this._hint.hide()
-        
         if (this.onRemove) this.onRemove(this)
     }
 

@@ -63,7 +63,7 @@ class SK_ContextMenu {
         if (!items) return console.error('Cannot show context menu with empty items list')
 
         if (this.menu){
-            this.menu.remove()
+            this.menu.close()
             this.menu = undefined
             return
         }
@@ -86,17 +86,56 @@ class SK_ContextMenu {
     }
 }
 
+
+class sk_ui_contextMenu_shortcut extends sk_ui_component {
+    constructor(opt){
+        super(opt)
+
+        this.vertical = false
+        this.compact = true
+    }
+
+    setCombination(val){
+        var split = val.toLowerCase().split('+')
+
+        var specialCharacters = '^fn⇧⌥alt⌘'
+
+        var addSpecial = val => {
+            this.add.label(_c => {
+                _c.classAdd('sk_ui_contextMenu_shortcut_specialChar')
+                _c.text = val
+            })
+        }
+        if (split.includes('^'))     addSpecial('^')
+        if (split.includes('fn'))    addSpecial('fn')
+        if (split.includes('shift')) addSpecial('⇧')
+        if (split.includes('alt') || split.includes('option')) addSpecial((sk.os === 'darwin' ? '⌥' : 'Alt'))
+        if (split.includes('cmd') || split.includes('command')) addSpecial('⌘')
+
+        var last = split[split.length - 1]
+        
+        if (specialCharacters.indexOf(last) > -1) return
+
+        this.add.label(_c => {
+            _c.text = last.toUpperCase()
+        })
+    }
+}
+
+
 class sk_ui_contextMenu extends sk_ui_component {
     constructor(opt){
         super(opt)
         this.compact = true
+
+        this.menuChain = ''
 
         this.ums.on('sk_ui_contextMenu', res => {
             if (res.first) return
 
             var data = res.data
 
-            if (data.hide) this.remove()
+            if (data.hide) this.close()
         })
 
         this.element.addEventListener('mouseenter', _e => {
@@ -116,31 +155,106 @@ class sk_ui_contextMenu extends sk_ui_component {
         this.__items = val
     }
 
-    show(opt){
-        return new Promise(async resolve => {
-            this.assemble()
-            this.configIconOffset()
-            this.style.left = this.position.x + 'px'
-            this.style.top = this.position.y + 'px'
-            await this.transition('fade in')
-            resolve()
-        })
-    }
-
     async onBeforeRemove(opt){
         return new Promise(async resolve => {
-            this.transition('fade out')
-            if (this.cmParent.onMenuHide) this.cmParent.onMenuHide()
+            if (this.cmParent && this.cmParent.onMenuHide) this.cmParent.onMenuHide()
+            await this.transition('fade out')
             resolve()
         })
     }
 
+    close(){
+        if (this.parentItem) this.parentItem.classRemove('sk_ui_contextMenu_Item_submenuExpanded')
+        this.closeSubmenus()
+        this.remove()
+    }
+
+
+    calcPos(){
+        var appRect = sk.app.rect
+        var menuRect = this.rect
+
+
+        
+
+        if (this.position.x + menuRect.width > appRect.width){
+            this.expandLeftwards = true
+            this.position.x = appRect.width - menuRect.width
+        }
+
+        if (this.position.y + menuRect.height > appRect.height){
+            this.position.y = appRect.height - menuRect.height
+        }
+
+        if (!this.isSubmenu) return
+
+        var parentItemRect = this.parentItem.rect
+
+        var rangesIntersect = (a, b)=>{
+            if (a.min >= b.max || a.max <= b.min) return false
+            return true
+        }
+        
+        if (
+            rangesIntersect(
+                {
+                    min: this.position.x,
+                    max: this.position.x + menuRect.width
+                },
+                
+                {
+                    min: parentItemRect.left,
+                    max: parentItemRect.left + parentItemRect.width
+                }
+            )
+        ){
+            this.submenuDirection = 'left'
+            this.position.x = parentItemRect.left - menuRect.width
+        }
+    }
+
+    show(opt){
+        return new Promise(async resolve => {
+
+            if (this.parentItem) this.parentItem.classAdd('sk_ui_contextMenu_Item_submenuExpanded')
+
+            this.assemble()
+
+            this.configIconOffset()
+
+            this.calcPos()
+
+            this.classAdd('sk_ui_contextMenu_activated')
+            
+            this.style.left = this.position.x + 'px'
+            this.style.top = this.position.y + 'px'
+            this.style.opacity = 0
+            
+            setTimeout(()=>{ this.style.opacity = 1 }, 10)
+
+            await this.transition('fade in')
+
+            this.canClose = true
+
+            resolve()
+        })
+    }
+
+    
+
     assemble(){
+        if (this.isSubmenu){
+            this.menuChain += ' sk_ui_contextMenu_submenu_of_' + this.parentMenu.uuid
+            this.classAdd(this.menuChain)
+        }
+
+
         this.sk_items = []
         for (var i in this.__items){
             var item = this.__items[i]
             this.sk_items.push(
                 this.add.fromNew(sk_ui_contextMenu_Item, _c => {
+                    _c.parentMenu = this
                     _c.config(item)
                 })
             )
@@ -148,16 +262,26 @@ class sk_ui_contextMenu extends sk_ui_component {
     }
 
     closeSubmenus(opt = {}){
+        
+        document.querySelectorAll('.sk_ui_contextMenu_submenu_of_' + this.uuid).forEach(_c => {
+            if (opt.ignore && opt.ignore === _c.sk_ui_obj.uuid) return
+            clearTimeout(_c.sk_ui_obj.showTimer)
+            _c.sk_ui_obj.close()
+        })
+        /*
+        for (var i in this.sk_items){
+            var item = this.sk_items[i]
+            if (item.submenu && item.uuid !== opt.ignore.uuid){
+                document.querySelectorAll('.sk_ui_contextMenu_submenu_of_' + this.uuid).forEach(_c => {
+                    _c.sk_ui_obj.close()
+                })
+            }
+        }*/
+
+        return
         for (var i in this.sk_items){
             var item = this.sk_items[i]
             if (item.submenu && item.uuid !== opt.ignore.uuid) item.closeSubmenu({force: true})
-        }
-    }
-
-    hasAnySubmenusOpen(){
-        for (var i in this.sk_items){
-            var item = this.sk_items[i]
-            if (item.hasAnySubmenusOpen()) return true
         }
     }
 
@@ -200,12 +324,22 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
             _c.vertical = false
             
         })
+
     }
+
+    get submenu(){
+        var _q = document.querySelector('.sk_ui_contextMenu_submenu_of_' + this.submenuID)
+        if (!_q) return
+        var el = _q[0]
+        if (!el) return
+        return el.sk_ui_obj
+    }
+
+    
 
     onBeforeRemove(){
         return new Promise(resolve => {
-            this.classAdd('sk_ui_ignoreMouse')
-            this.closeSubmenu()
+            if (this.submenu) this.submenu.classAdd('sk_ui_ignoreMouse')
             resolve()
         })
     }
@@ -250,42 +384,59 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
             }
         }
 
+        /*if (this.opt.shortcut && !this.opt.items){
+            this.rightSide.add.fromNew(sk_ui_contextMenu_shortcut, _c => {
+                _c.setCombination(this.opt.shortcut)
+            })
+        }*/
+
         
 
         this.element.addEventListener('mouseup', _e => {
+            if (!this.parent.canClose) return
             if (this.opt.items) return _e.stopPropagation()
             this.opt.onClick(this)
+            sk.ums.broadcast('sk_ui_contextMenu', undefined, {hide: true})
         })
 
         if (this.opt.items){
             this.classRemove('sk_ui_contextMenu_Item_interactable')
 
             this.element.addEventListener('mouseleave', _e => {
-                setTimeout(()=>{
-                    this.closeSubmenu()
-                }, 10)
+                clearTimeout(this.showTimer)
+
+                this.closeTimer = setTimeout(()=>{
+
+                    var submenu = this.submenu
+                    if (submenu && !submenu.focused){
+                        submenu.close()
+                    }
+                }, 100)
             })
         }
+        
             
         this.element.addEventListener('mouseenter', _e => {
-            this.closeSubmenu({level: 1})
-            
-            this.parent.closeSubmenus({ignore: this})
-
-            if (!this.opt.items || this.submenu) return
-
-
-            this.classAdd('sk_ui_contextMenu_Item_submenuExpanded')
+            this.parentMenu.closeSubmenus({ignore: this.submenuID})
+            if (!this.opt.items) return
+            if (this.submenu) return
 
             var rect = this.rect
 
-            this.submenu = sk.app.add.contextMenu(async _c => {
-                _c.cmParent = this
+            clearTimeout(this.closeTimer)
+            clearTimeout(this.showTimer)
+            sk.app.add.contextMenu(async _c => {
+                this.submenuID = _c.uuid
+                _c.parentMenu = this.parentMenu
+                _c.parentItem = this
                 _c.isSubmenu = true
+                _c.submenuDirection = this.parent.submenuDirection
                 _c.items = this.opt.items
                 _c.position = {x: rect.left + rect.width, y: rect.top - 6}
-                await _c.show()
-                _c.canClose = true
+                
+                this.showTimer = setTimeout(()=>{
+                    _c.show()
+                }, 150)
             })
         })
     }
@@ -300,31 +451,5 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
 
     as_separator(){
         this.classAdd('sk_ui_contextMenu_Item_Separator')
-    }
-
-    closeSubmenu(opt = {}){
-        if (!this.submenu) return
-        if (!opt.force){
-            if (this.submenu.focused) return
-            if (!this.submenu.canClose) return
-        }
-        
-
-
-
-
-        var level = opt.level || 0
-        if (level > 0){
-            this.submenu.closeSubmenus({ignore: this})
-            return
-        }
-
-        this.submenu.remove()
-        this.submenu = undefined
-        this.classRemove('sk_ui_contextMenu_Item_submenuExpanded')
-    }
-
-    hasAnySubmenusOpen(){
-        if (this.submenu) return this.submenu.hasAnySubmenusOpen()
     }
 }

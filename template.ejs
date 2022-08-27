@@ -164,12 +164,14 @@
             
 
             document.addEventListener('mousedown', _e => {
-                sk.ums.broadcast('sk_ui_contextMenu', undefined, {hide: true})
+                document.querySelectorAll('.sk_ui_contextMenu').forEach(_c => { _c.sk_ui_obj.close() })
             })
 
-            /*document.addEventListener('mouseup', _e => {
-                sk.ums.broadcast('sk_ui_contextMenu', undefined, {hide: true})
-            })*/
+            document.addEventListener('keydown', _e => {
+                if (_e.code = 27) return document.querySelectorAll('.sk_ui_contextMenu').forEach(_c => { _c.sk_ui_obj.close() })
+
+                //sk.shortcuts.tryExecute(_e)
+            })
         </script>
 
 

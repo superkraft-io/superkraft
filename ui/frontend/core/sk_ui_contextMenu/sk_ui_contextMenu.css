@@ -1,5 +1,5 @@
 .sk_ui_contextMenu {
-    z-index: 99999 !important;
+    z-index: -1;
     position: absolute;
     border: solid 0.75px #000000;
     border-radius: 8px;
@@ -10,8 +10,14 @@
     -webkit-backdrop-filter: blur(25px);
     padding: 5px;
     box-shadow: 0px 0px 0px 1px #72727286 inset, 0px 8px 20px 0px #00000052;
+    opacity: 0;
+}
+
+.sk_ui_contextMenu_activated {
+    z-index: 99999 !important;
     display: none;
 }
+
 
 .sk_ui_contextMenu_Item {
     height: 24px;
@@ -35,7 +41,7 @@
 }
 
 .sk_ui_contextMenu_Item_rightSide {
-    margin-left: 16px;
+    margin-left: 32px;
 }
 
 .sk_ui_contextMenu_Item_rightSide > .sk_ui_icon > #icon {
@@ -63,6 +69,10 @@
 
 .sk_ui_contextMenu_Item_Header {
     margin-top: 10px;
+}
+
+.sk_ui_contextMenu_Item_Header:first-child {
+    margin-top: 0px;
 }
 
 .sk_ui_contextMenu_Item_Header > .sk_ui_contextMenu_Item_content > .sk_ui_label {
@@ -94,4 +104,19 @@
 .sk_ui_contextMenu_Item_hasIcon {
     width: 16px;
     margin-right: 8px !important;
+}
+
+
+
+.sk_ui_contextMenu_shortcut > .sk_ui_label {
+    opacity: 0.5;
+    margin-right: 3px;
+}
+
+.sk_ui_contextMenu_shortcut > .sk_ui_label:last-child {
+    margin-right: 0px;
+}
+
+.sk_ui_contextMenu_shortcut_specialChar {
+    font-size: 12px;
 }
