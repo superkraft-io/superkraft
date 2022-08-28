@@ -1,0 +1,9 @@
+.sk_ui_miniActionBtn {
+    background-color: var(--sk_ui_color_dark_grey);
+    border-radius: 6px;
+    padding: 6px 10px;
+}
+
+.sk_ui_miniActionBtn:hover {
+    background-color: var(--sk_ui_color_dark_grey_2);
+}

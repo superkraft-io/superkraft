@@ -1,8 +1,13 @@
 
 .sk_ui_hint {
-    z-index: -1;
     position: absolute;
     padding: 4px 6px;
+    max-width: 256px;
+}
+
+.sk_ui_hint_hidden {
+    z-index: -1 !important;
+    opacity: 0;
 }
 
 .sk_ui_hint_topMost {

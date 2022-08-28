@@ -53,8 +53,11 @@ class sk_ui_statusIndicator extends sk_ui_component {
     }
 
     destroy(){
-        this.indicator = undefined
-        this.remove({animation: 'width'})
+        return new Promise(async resolve => {
+            this.indicator = undefined
+            await this.remove({animation: 'width'})
+            resolve()
+        })
     }
 
     configAs_loader(){

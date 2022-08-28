@@ -14,6 +14,13 @@ class SK_ContextMenu {
 
     get items(){ return this.__items }
 
+
+    set position(val){
+        this.__position = val
+    }
+
+    get position(){ return this.__position }
+
     set button(val){ this.__button = val }
 
     setEventListener(){
@@ -48,6 +55,7 @@ class SK_ContextMenu {
 
     handleMouseEvent(_e){
         if (this.parent.disabled && !this.activeWhenParentDisabled) return
+        if (this.menu) return
         this.show({_e: _e})
     }
 
@@ -62,6 +70,9 @@ class SK_ContextMenu {
 
         if (!items) return console.error('Cannot show context menu with empty items list')
 
+        
+
+
         if (this.menu){
             this.menu.close()
             this.menu = undefined
@@ -71,7 +82,7 @@ class SK_ContextMenu {
         this.menu = sk.app.add.contextMenu(_c => {
             _c.cmParent = this
             _c.items = items
-            _c.position = this.position || {x: opt._e.clientX, y: opt._e.clientY}
+            _c.position = this.__position || {x: opt._e.clientX, y: opt._e.clientY}
             _c.show()
         })
 
@@ -83,6 +94,10 @@ class SK_ContextMenu {
     onMenuHide(){
         this.parent.classRemove('sk_ui_contextMenu_Item_highlightParent')
         this.menu = undefined
+    }
+
+    onItemClicked(item){
+        if (this.onItemClicked) this.onItemClicked(item)
     }
 }
 
@@ -155,6 +170,18 @@ class sk_ui_contextMenu extends sk_ui_component {
         this.__items = val
     }
 
+    set position(val){
+        this.__position = val
+    }
+
+    get position(){
+        if (this.__position instanceof Function){
+            return this.__position({menuRect: this.rect})
+        } else {
+            return this.__position
+        }
+    }
+
     async onBeforeRemove(opt){
         return new Promise(async resolve => {
             if (this.cmParent && this.cmParent.onMenuHide) this.cmParent.onMenuHide()
@@ -175,16 +202,19 @@ class sk_ui_contextMenu extends sk_ui_component {
         var menuRect = this.rect
 
 
+        var position = this.position
         
 
-        if (this.position.x + menuRect.width > appRect.width){
+        if (position.x + menuRect.width > appRect.width){
             this.expandLeftwards = true
-            this.position.x = appRect.width - menuRect.width
+            position.x = appRect.width - menuRect.width
         }
 
-        if (this.position.y + menuRect.height > appRect.height){
-            this.position.y = appRect.height - menuRect.height
+        if (position.y + menuRect.height > appRect.height){
+            position.y = appRect.height - menuRect.height
         }
+
+        this.__adjustedPosition = position
 
         if (!this.isSubmenu) return
 
@@ -198,8 +228,8 @@ class sk_ui_contextMenu extends sk_ui_component {
         if (
             rangesIntersect(
                 {
-                    min: this.position.x,
-                    max: this.position.x + menuRect.width
+                    min: position.x,
+                    max: position.x + menuRect.width
                 },
                 
                 {
@@ -209,8 +239,10 @@ class sk_ui_contextMenu extends sk_ui_component {
             )
         ){
             this.submenuDirection = 'left'
-            this.position.x = parentItemRect.left - menuRect.width
+            position.x = parentItemRect.left - menuRect.width
         }
+
+        this.__adjustedPosition = position
     }
 
     show(opt){
@@ -226,8 +258,8 @@ class sk_ui_contextMenu extends sk_ui_component {
 
             this.classAdd('sk_ui_contextMenu_activated')
             
-            this.style.left = this.position.x + 'px'
-            this.style.top = this.position.y + 'px'
+            this.style.left = this.__adjustedPosition.x + 'px'
+            this.style.top = this.__adjustedPosition.y + 'px'
             this.style.opacity = 0
             
             setTimeout(()=>{ this.style.opacity = 1 }, 10)
@@ -254,6 +286,7 @@ class sk_ui_contextMenu extends sk_ui_component {
             var item = this.__items[i]
             this.sk_items.push(
                 this.add.fromNew(sk_ui_contextMenu_Item, _c => {
+                    _c.cmParent = this.cmParent
                     _c.parentMenu = this
                     _c.config(item)
                 })
@@ -350,6 +383,7 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
 
     config(opt){
         this.opt = opt
+        this.opt._item = this
         if (opt.separator) this.as_separator()
         else if (opt.header) this.as_header()
         else this.as_item()
@@ -392,10 +426,14 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
 
         
 
+        this.element.addEventListener('click', _e => {
+            this.cmParent.onItemClicked(this.opt)
+        })
+
         this.element.addEventListener('mouseup', _e => {
             if (!this.parent.canClose) return
             if (this.opt.items) return _e.stopPropagation()
-            this.opt.onClick(this)
+            if (this.opt.onClick) this.opt.onClick(this.opt)
             sk.ums.broadcast('sk_ui_contextMenu', undefined, {hide: true})
         })
 
@@ -427,6 +465,7 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
             clearTimeout(this.showTimer)
             sk.app.add.contextMenu(async _c => {
                 this.submenuID = _c.uuid
+                _c.cmParent = this.cmParent
                 _c.parentMenu = this.parentMenu
                 _c.parentItem = this
                 _c.isSubmenu = true

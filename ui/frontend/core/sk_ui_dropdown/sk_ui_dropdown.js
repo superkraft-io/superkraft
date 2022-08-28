@@ -13,30 +13,27 @@ class sk_ui_dropdown extends sk_ui_button {
             _c.icon = 'caret down'
         })
 
-        this.onClick = ()=>{
-            if (this.menu){
-                this.menu.hide()
-                this.menu = undefined
-                
-                return
-            }
 
+        this.contextMenu.button = 'left'
+
+        this.contextMenu.position = opt => {
             var rect = this.rect
-            this.menu = sk._cM.show({
-                toggle: true,
-                pos: {x: rect.x, y: rect.y + rect.height - 14},
-                sender: this.element,
-                items: this._items || {},
-                onItemClicked: item => {
-                    this.text = item.label
-                    this.selectedItem = item
-                    if (this.onItemClicked) this.onItemClicked(item)
-                }
-            })
+            console.log(JSON.stringify(opt.menuRect))
+            var pos = {x: (rect.x + rect.width/2) - opt.menuRect.width/2, y: rect.y + rect.height}
+            return pos
+        }
+
+        this.contextMenu.onItemClicked = itemData => {
+            this.text = itemData.label
+            this.selectedItem = itemData
+            if (this.onItemClicked) this.onItemClicked(itemData)
         }
     }
 
-    set items(items){ this._items = items }
+    set items(items){
+        this._items = items
+        this.contextMenu.items = this._items
+    }
 
     selectByID(id, identifier = 'id'){
         for (var i in this._items){

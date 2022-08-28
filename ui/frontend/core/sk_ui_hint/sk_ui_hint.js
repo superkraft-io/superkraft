@@ -2,8 +2,9 @@ class sk_ui_hint extends sk_ui_component {
     constructor(opt){
         super(opt)
         
-        this.classAdd('sk_ui_ignoreMouse')
-        this.classRemove('transition')
+        
+        this.classAdd('sk_ui_ignoreMouse sk_ui_hint_hidden')
+        this.animate = false
 
         this.frosted = 'clear'
 
@@ -11,6 +12,7 @@ class sk_ui_hint extends sk_ui_component {
         
         this.label = this.add.label(_c => {
             _c.text = '<3'
+            _c.wrap = true
         })
 
         this.results = {}
@@ -34,6 +36,7 @@ class sk_ui_hint extends sk_ui_component {
         
 
         this.classAdd('sk_ui_hint_topMost')
+        this.classRemove('sk_ui_hint_hidden')
         this.transition('fade ' + this.results.animation + ' in')
 
         this.element.style.left = this.results.x + 'px'
@@ -133,5 +136,12 @@ class sk_ui_hint extends sk_ui_component {
 
         this.positionFuncs.a()
         this.positionFuncs.b(true)
+
+        if (this.results.x < 0) this.results.x = 0
+        if (this.results.y < 0) this.results.y = 0
+
+        var appRect = sk.app.rect
+        if (this.results.x + hintInfo.rect.width > appRect.width) this.results.x = appRect.width - hintInfo.rect.width
+        if (this.results.y + hintInfo.rect.height > appRect.height) this.results.y = appRect.height - hintInfo.rect.height
     }
 }
