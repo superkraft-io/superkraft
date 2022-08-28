@@ -109,9 +109,7 @@
 
 
 
-            if (sk.app_type === 'dapp'){
-                sk.ums = new SK_UMS()
-            }
+            sk.ums = new SK_UMS()
 
             sk.init().then(()=>{
                 sk.app = (new sk_ui_component({parent: {element: document.body}}))
