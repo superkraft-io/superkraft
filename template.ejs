@@ -162,7 +162,7 @@
             
 
             document.addEventListener('mousedown', _e => {
-                document.querySelectorAll('.sk_ui_contextMenu').forEach(_c => { _c.sk_ui_obj.close() })
+                document.querySelectorAll('.sk_ui_contextMenu').forEach(_c => { _c.sk_ui_obj.close({fromGlobal: true}) })
             })
 
             document.addEventListener('keydown', _e => {

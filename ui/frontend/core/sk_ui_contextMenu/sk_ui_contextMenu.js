@@ -23,6 +23,11 @@ class SK_ContextMenu {
 
     set button(val){ this.__button = val }
 
+
+    setup(cb){
+        cb(this)
+    }
+
     setEventListener(){
         var shouldIgnore = path => {
             if (this.parent.element.id === path[0].id) return false
@@ -46,16 +51,28 @@ class SK_ContextMenu {
         }
 
         this.parent.element.addEventListener('contextmenu', _e => {
-            if (shouldIgnore(_e.path)) return
             _e.preventDefault()
+            _e.stopPropagation()
+            if (shouldIgnore(_e.path)) return
             if (this.__button === 'right') this.handleMouseEvent(_e)
         })
-        this.parent.element.addEventListener('click', _e => { if (this.__button === 'left') this.handleMouseEvent(_e) })
+        this.parent.element.addEventListener('click', _e => {
+            _e.preventDefault()
+            _e.stopPropagation()
+            if (this.__button === 'left') this.handleMouseEvent(_e)
+        })
     }
 
     handleMouseEvent(_e){
         if (this.parent.disabled && !this.activeWhenParentDisabled) return
-        if (this.menu) return
+        if (this.menu){
+            if (this.toggle){
+                this.menu.close({fromThis: true})
+                this.menu = undefined
+                return
+            }
+        }
+
         this.show({_e: _e})
     }
 
@@ -73,10 +90,9 @@ class SK_ContextMenu {
         
 
 
-        if (this.menu){
+        if (this.menu && !this.toggle){
             this.menu.close()
             this.menu = undefined
-            return
         }
 
         this.menu = sk.app.add.contextMenu(_c => {
@@ -91,8 +107,14 @@ class SK_ContextMenu {
         if (this.highlightParent) this.parent.classAdd('sk_ui_contextMenu_Item_highlightParent')
     }
 
-    onMenuHide(){
+    onMenuHide(opt){
         this.parent.classRemove('sk_ui_contextMenu_Item_highlightParent')
+        
+        if (this.toggle){
+            if (opt && opt.fromThis) this.menu = undefined
+            return
+        }
+        
         this.menu = undefined
     }
 
@@ -184,13 +206,14 @@ class sk_ui_contextMenu extends sk_ui_component {
 
     async onBeforeRemove(opt){
         return new Promise(async resolve => {
-            if (this.cmParent && this.cmParent.onMenuHide) this.cmParent.onMenuHide()
+            if (this.cmParent && this.cmParent.onMenuHide) this.cmParent.onMenuHide(this.closeOpt)
             await this.transition('fade out')
             resolve()
         })
     }
 
-    close(){
+    close(opt){
+        this.closeOpt = opt
         if (this.parentItem) this.parentItem.classRemove('sk_ui_contextMenu_Item_submenuExpanded')
         this.closeSubmenus()
         this.remove()
@@ -212,6 +235,10 @@ class sk_ui_contextMenu extends sk_ui_component {
 
         if (position.y + menuRect.height > appRect.height){
             position.y = appRect.height - menuRect.height
+        }
+
+        if (position.y < 0){
+            position.y = 0
         }
 
         this.__adjustedPosition = position
@@ -295,27 +322,11 @@ class sk_ui_contextMenu extends sk_ui_component {
     }
 
     closeSubmenus(opt = {}){
-        
         document.querySelectorAll('.sk_ui_contextMenu_submenu_of_' + this.uuid).forEach(_c => {
             if (opt.ignore && opt.ignore === _c.sk_ui_obj.uuid) return
             clearTimeout(_c.sk_ui_obj.showTimer)
             _c.sk_ui_obj.close()
         })
-        /*
-        for (var i in this.sk_items){
-            var item = this.sk_items[i]
-            if (item.submenu && item.uuid !== opt.ignore.uuid){
-                document.querySelectorAll('.sk_ui_contextMenu_submenu_of_' + this.uuid).forEach(_c => {
-                    _c.sk_ui_obj.close()
-                })
-            }
-        }*/
-
-        return
-        for (var i in this.sk_items){
-            var item = this.sk_items[i]
-            if (item.submenu && item.uuid !== opt.ignore.uuid) item.closeSubmenu({force: true})
-        }
     }
 
     anyItemHasIcon(){
@@ -406,12 +417,12 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
 
         if (this.opt.icon){
             if (/\p{Emoji}/u.test(this.opt.icon)){
-                this.leftSide.iconContainer.add.label(_c => {
+                this.leftSide.icon = this.leftSide.iconContainer.add.label(_c => {
                     _c.text = this.opt.icon
                 })
                 this.hasIcon = true
             } else {
-                this.leftSide.iconContainer.add.icon(_c => {
+                this.leftSide.icon = this.leftSide.iconContainer.add.icon(_c => {
                     _c.icon = this.opt.icon
                 })
                 this.hasIcon = true
@@ -478,6 +489,8 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
                 }, 150)
             })
         })
+
+        if (this.cmParent.onItemCreated) this.cmParent.onItemCreated(this)
     }
 
     as_header(){

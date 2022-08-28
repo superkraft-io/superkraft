@@ -9,7 +9,11 @@ class sk_ui_l10n_selector extends sk_ui_button {
 
         this.roundness = 8
 
-        
+        this.onClick = (sender, _e) => {
+            _e.stopPropagation()
+            _e.preventDefault()
+            return false
+        }
 
 
         this.countries = {
@@ -51,36 +55,38 @@ class sk_ui_l10n_selector extends sk_ui_button {
             this.text = currSelCountry.name
         }
 
-        this.countryItemsList = []
-        for (var i in sk.l10n.countries){
-            var countryCode = sk.l10n.countries[i]
-            this.countryItemsList.push({
-                       
-                label: this.countries[countryCode].name,
-                countryCode: countryCode,
-                icon: this.countries[countryCode].flag + ' flag',
-                onClick: res =>{
-                    Cookies.set('country', res.countryCode)
-                    window.location.reload()
-                }
-            })
+        this.contextMenu.items = ()=>{
+            var countryItemsList = []
+            for (var i in sk.l10n.countries){
+                var countryCode = sk.l10n.countries[i]
+                countryItemsList.push({
+                        
+                    label: this.countries[countryCode].name,
+                    countryCode: countryCode,
+                    icon: this.countries[countryCode].flag + ' flag',
+                    onClick: res =>{
+                        Cookies.set('country', res.countryCode)
+                        window.location.reload()
+                    }
+                })
+            }
+
+            return countryItemsList
         }
 
-        this.element.addEventListener('click', _e => {
-            var rect = this.rect
-            sk._cM.show({
-                pos: {x: rect.x, y: rect.y},
-                direction: 'up',
-                origin: 'bottom',
-                sender: this.element,
-                toggle: true,
-                items: this.countryItemsList,
+        this.contextMenu.setup(_c => {
+            _c.button = 'left'
+            _c.direction = 'up'
+            _c.toggle = true
 
-                onItemCreated: item => {
-                    item.icn.classList.remove('icon')
-                    item.icon.style.marginRight = '8px'
-                }
-            })
+            _c.position = opt => {
+                return {x: this.rect.left, y: this.rect.y - opt.menuRect.height}
+            }
         })
+        
+        this.contextMenu.onItemCreated = item => {
+            item.leftSide.icon.iconElement.classList.remove('icon')
+            item.leftSide.icon.marginRight = 8
+        }
     }
 }
