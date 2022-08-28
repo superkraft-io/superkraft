@@ -58,6 +58,9 @@ module.exports = class SK_UMS {
     }
 
     broadcastToFrontend(eventID, data){
+        if (data.fromFrontend){
+            var x = 0
+        }
         this.toFE('broadcast', eventID, data)
     }
 

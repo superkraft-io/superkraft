@@ -406,6 +406,7 @@ class sk_ui_component {
                 }, 210)
 
                 setTimeout(()=>{
+                    return
                     this.style.width        = ''
                     this.style.marginRight  = ''
                     this.style.paddingLeft  = ''

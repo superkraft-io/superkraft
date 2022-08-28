@@ -144,7 +144,9 @@ class SK_UMS_Event {
 
         for (var i = this.clients.length - 1; i > -1; i--){
             var _client = this.clients[i].client
-            if (_client.id === client.id) this.clients.splice(i, 1)
+            if (_client.id === client.id){
+                this.clients.splice(i, 1)
+            }
         }
     }
 

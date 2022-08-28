@@ -96,7 +96,7 @@ class SK_ContextMenu {
         this.menu = undefined
     }
 
-    onItemClicked(item){
+    _onItemClicked(item){
         if (this.onItemClicked) this.onItemClicked(item)
     }
 }
@@ -427,7 +427,7 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
         
 
         this.element.addEventListener('click', _e => {
-            this.cmParent.onItemClicked(this.opt)
+            this.cmParent._onItemClicked(this.opt)
         })
 
         this.element.addEventListener('mouseup', _e => {
