@@ -75,6 +75,15 @@ i.icon, i.icons, i.flag {
               user-select: none;
 }
 
+.sk_ui_allowSelect {
+    -webkit-touch-callout: text;
+      -webkit-user-select: text;
+       -khtml-user-select: text;
+         -moz-user-select: text;
+          -ms-user-select: text;
+              user-select: text;
+}
+
 .sk_ui_ignoreMouse {
     pointer-events: none;
 }

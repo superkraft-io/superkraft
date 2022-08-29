@@ -95,7 +95,13 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                 
 
                 var userData = undefined
-                if (this.onForwardUserData) userData = await this.onForwardUserData(auth_token, validationRes)
+                if (this.onForwardUserData){
+                    try {
+                        userData = await this.onForwardUserData(auth_token, validationRes, {req: req, res: res})
+                    } catch(err) {
+                        return res.redirect('/404')
+                    }
+                }
                
                 
                 

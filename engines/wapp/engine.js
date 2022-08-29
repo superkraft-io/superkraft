@@ -9,6 +9,8 @@ const cors              = require('cors')
 const bodyParser        = require('body-parser')
 const cookieParser      = require("cookie-parser")
 
+const helmet      = require("helmet")
+
 
 module.exports = class SK_WebEngine extends SK_RootEngine {
     constructor(opt){
@@ -37,6 +39,19 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
         
 
 
+        /*app.use(helmet.contentSecurityPolicy({
+            directives: {
+             defaultSrc: ["'self'"],
+             styleSrc: ["'self'","'unsafe-inline'" ,'unpkg.com', 'cdn.jsdelivr.net', 'fonts.googleapis.com', 'use.fontawesome.com'],
+             scriptSrc: ["'self'","'unsafe-inline'",'js.stripe.com','google.com',],
+             frameSrc: ["'self'",'js.stripe.com'],
+             fontSrc:["'self'",'fonts.googleapis.com','fonts.gstatic.com','use.fontawesome.com']
+           }
+        }));
+        */
+
+        
+        /*
         app.use(function (req, res, next) {
 
             // Website you wish to allow to connect
@@ -51,11 +66,38 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
             // Set to true if you need the website to include cookies in the requests sent
             // to the API (e.g. in case you use sessions)
             res.setHeader('Access-Control-Allow-Credentials', true);
+
+
+            res.setHeader("Content-Security-Policy", "script-src 'self' https://google.com/*");
+            
         
             // Pass to next layer of middleware
             next();
-        });
+        });*/
         
+
+        /*const scriptSources = [
+            "'self'",
+            "'unsafe-inline'",
+            "'unsafe-eval'",
+            "https://www.google.com/recaptcha/"
+        ]
+
+        const frameSources = [
+            "'self'",
+            "https://www.google.com/recaptcha/"
+        ]
+
+        const scriptSrcElemArr = [
+            "script-src-elem www."
+        ]
+
+        
+        app.use(
+            helmet({
+                contentSecurityPolicy: false,
+            })
+        )*/
         
         app.set('view-engine', 'ejs')
 
