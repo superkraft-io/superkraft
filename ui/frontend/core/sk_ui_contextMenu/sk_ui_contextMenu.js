@@ -397,13 +397,18 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
         this.opt._item = this
         if (opt.separator) this.as_separator()
         else if (opt.header) this.as_header()
+        else if (opt.input) this.as_input()
         else this.as_item()
     }
 
     as_item(){
+        if (this.opt.onCustomize) return this.opt.onCustomize(this)
+
         if (!this.opt.disabled){
             this.classAdd('sk_ui_contextMenu_Item_enabled sk_ui_contextMenu_Item_interactable')
-        } 
+        }
+
+        
 
         this.content.add.label(_c => {
             _c.text = this.opt.label
@@ -503,5 +508,28 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
 
     as_separator(){
         this.classAdd('sk_ui_contextMenu_Item_Separator')
+    }
+
+    as_input(){
+        this.rightSide.marginLeft = 0.01
+        this.content.styling += ' fullwidth'
+        var input = this.content.add.input(_c => {
+            _c.styling += ' fullwidth'
+            _c.type = this.opt.input
+            _c.value = this.opt.value || ''
+            _c.onChanged = val => {
+                if (this.opt.onChanged) this.opt.onChanged({sender: this, val: val})
+            }
+        })
+
+        if (this.opt.input === 'color'){
+            var style = input.input.style
+            style.borderStyle = 'none'
+            style.padding = '0px'
+            style.borderWidth = '0px'
+            style.backgroundColor = 'transparent'
+            style.borderColor = 'transparent'
+            style.color = 'white'
+        }
     }
 }
