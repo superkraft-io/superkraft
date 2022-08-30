@@ -1,5 +1,5 @@
-var sk_filesystem = {
-    openDialog: (opt = {})=>{
+var sk_dialog = {
+    open: (opt = {})=>{
         return new Promise(async (resolve, reject) => {
             var properties = [
                 (opt.directories ? 'openDirectory' : 'openFile')
@@ -24,7 +24,7 @@ var sk_filesystem = {
         })
     },
 
-    saveDialog: (opt = {})=>{
+    save: (opt = {})=>{
         return new Promise(async (resolve, reject) => {
             
             
@@ -46,6 +46,17 @@ var sk_filesystem = {
             if (res.canceled) return reject()
 
             resolve(res.filePath)
+        })
+    },
+
+    message(opt){
+        return new Promise(async (resolve, reject) => {
+            if (opt.native){
+                var res = await sk.comm.main('dialog', {type: 'message', settings: opt})
+                return resolve(res)
+            }
+            
+            //show SK modal with opt formatting
         })
     }
 }

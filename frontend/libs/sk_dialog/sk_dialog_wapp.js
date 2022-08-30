@@ -1,22 +1,6 @@
-var sk_filesystem = {
-    openDialog: (opt = {})=>{
+var sk_dialog = {
+    open: (opt = {})=>{
         return new Promise(resolve => {
-            /*var fileSelectBucket = JSOM.parse({root: document.body, tree: {
-                input_fileSelect: {
-                    type: 'file',
-                    style: 'display: none;',
-
-                    events: {
-                        change: () => {
-                            var files = fileSelectBucket.fileSelect.files
-                            fileSelectBucket.fileSelect.remove()
-                            resolve(files)
-                        }
-                    }
-                }
-            }})
-            fileSelectBucket.fileSelect.click()*/
-
             var input = document.createElement('input')
             input.setAttribute('type', 'file')
             input.style.display = 'none'
@@ -42,6 +26,16 @@ var sk_filesystem = {
                 resolve(input.files)
             }
             input.click()
+        })
+    },
+
+    message(opt){
+        return new Promise(async (resolve, reject) => {
+            if (opt.native){
+                if (confirm(opt.text) === true) resolve()
+                else reject()
+                return
+            }
         })
     }
 }
