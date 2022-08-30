@@ -52,10 +52,15 @@ class sk_ui_list extends sk_ui_component {
                     _c.onIconChanged = ()=>{
                         this.updateIconWidth()
                     }
+
+                    
                 })
 
                 this.list.push(item)
                 if (this.onNewItem) this.onNewItem(item)
+
+                if (opt.icon) item.icon = opt.icon
+
                 return item
             }
         }

@@ -42,13 +42,26 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
         /*app.use(helmet.contentSecurityPolicy({
             directives: {
              defaultSrc: ["'self'"],
-             styleSrc: ["'self'","'unsafe-inline'" ,'unpkg.com', 'cdn.jsdelivr.net', 'fonts.googleapis.com', 'use.fontawesome.com'],
-             scriptSrc: ["'self'","'unsafe-inline'",'js.stripe.com','google.com',],
-             frameSrc: ["'self'",'js.stripe.com'],
-             fontSrc:["'self'",'fonts.googleapis.com','fonts.gstatic.com','use.fontawesome.com']
+             styleSrc: ["'self'","'unsafe-inline'", '*.googleapis.com'],
+             scriptSrc: ["'self'","'unsafe-inline'", '*.stripe.com', 'stripe.com', 'google.com',],
+             frameSrc: ["'self'",'*.stripe.com'],
+             fontSrc:["'self'",'*.googleapis.com','*.gstatic.com']
            }
         }));
         */
+/*
+        app.use(helmet.contentSecurityPolicy({
+            directives: {
+                //efaultSrc: ["'self'"],
+                //styleSrc: ["'self'","'unsafe-inline'", '*.googleapis.com'],
+                scriptSrc: ["'self'", "'unsafe-inline'", 'https://checkout.stripe.com'],
+                frameSrc: ["'self'", 'https://checkout.stripe.com'],
+                //fontSrc:["'self'",'*.googleapis.com','*.gstatic.com'],
+                connectSrc: ["'self'", "https://checkout.stripe.com"],
+                imgSrc: ["'self'", "https://*.stripe.com"]
+           }
+        }));
+        
 
         
         /*
