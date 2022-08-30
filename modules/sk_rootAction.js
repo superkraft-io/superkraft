@@ -1,6 +1,7 @@
 module.exports = class SK_RootAction {
     constructor(view){
         this.view = view
+        if (this.init) this.init()
     }
 
     run(view, opt, srcOpt, validationRes){
