@@ -1,5 +1,9 @@
 :root {
     --sk_ui_color_very_dark_grey: rgb(20, 20, 20);
+    --sk_ui_color_very_dark_grey_75: rgba(20, 20, 20, 0.75);
+    --sk_ui_color_very_dark_grey_50: rgba(20, 20, 20, 0.5);
+    --sk_ui_color_very_dark_grey_25: rgba(20, 20, 20, 0.25);
+    
     --sk_ui_color_very_dark_grey_2: rgb(32, 32, 32);
 
     --sk_ui_color_dark_grey: rgb(48, 48, 48);

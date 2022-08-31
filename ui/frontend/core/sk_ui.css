@@ -20,7 +20,7 @@ body {
 }
 
 .sk_ui_frosted.sk_ui_face_color {
-    background-color: var(--sk_ui_color_very_dark_grey);
+    background-color: var(--sk_ui_color_very_dark_grey_75);
 }
 
 .sk_app {
