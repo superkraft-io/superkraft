@@ -53,7 +53,7 @@
 }
 
 .sk_ui_button_toggled {
-    background-color: var(--sk_ui_button_toggled_button_color);
+    background-color: var(--sk_ui_button_toggled_button_color) !important;
 }
 
 .sk_ui_button_toggled > .sk_ui_label {
@@ -65,7 +65,7 @@
 }
 
 .sk_ui_button_toggled:hover {
-    background-color: var(--sk_ui_button_toggled_button_color_hover);
+    background-color: var(--sk_ui_button_toggled_button_color_hover) !important;
 }
 
 .sk_ui_button_toggled:hover > .sk_ui_label {
