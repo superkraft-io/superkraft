@@ -32,7 +32,9 @@ module.exports = class Superkraft {
 
             useComplexity: opt.useComplexity,
 
-            country: 'en'
+            country: 'en',
+
+            csp: {...{}, ...opt.csp}
         }
         var sk = global.sk
 

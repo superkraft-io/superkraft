@@ -49,18 +49,23 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
            }
         }));
         */
-/*
-        app.use(helmet.contentSecurityPolicy({
-            directives: {
-                //efaultSrc: ["'self'"],
-                //styleSrc: ["'self'","'unsafe-inline'", '*.googleapis.com'],
-                scriptSrc: ["'self'", "'unsafe-inline'", 'https://checkout.stripe.com'],
-                frameSrc: ["'self'", 'https://checkout.stripe.com'],
-                //fontSrc:["'self'",'*.googleapis.com','*.gstatic.com'],
-                connectSrc: ["'self'", "https://checkout.stripe.com"],
-                imgSrc: ["'self'", "https://*.stripe.com"]
+
+        var csp = {defaultSrc: ["'self'"]}
+        for (var _i in global.sk.csp) csp[_i] = ["'self'", ...global.sk.csp[_i]]
+        app.use(helmet.contentSecurityPolicy({ directives: csp }))
+
+
+        /*app.use(helmet.contentSecurityPolicy({
+        directives: {
+            defaultSrc: ["'self'"],
+            //styleSrc: ["'self'","'unsafe-inline'", '*.googleapis.com'],
+            scriptSrc: ["'self'","'unsafe-inline'", '*.stripe.com'],
+            frameSrc: ["'self'",'*.stripe.com'],
+            fontSrc:["'self'",'*.googleapis.com','*.gstatic.com'],
+            connectSrc: ["'self'", "*.stripe.com"],
+            imgSrc: ["'self'", "*.stripe.com"]
            }
-        }));
+        }));*/
         
 
         
