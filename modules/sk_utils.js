@@ -12,6 +12,7 @@ module.exports = class SK_Window {
             for (var i = 0; i < actionsFiles.length; i++){
                 var actionName = actionsFiles[i].split('.')[0]
                 var action = new (require(actionsPath + actionName + '.js'))(this.window)
+                action.id = actionName
                 actions[actionName] = action
             }
 
