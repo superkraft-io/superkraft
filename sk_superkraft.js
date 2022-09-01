@@ -20,7 +20,9 @@ module.exports = class Superkraft {
                 icons: opt.icons,
 
                 globalActions: opt.globalActions,
-                globalFrontend: opt.globalFrontend
+                globalFrontend: opt.globalFrontend,
+
+                posts: opt.postsRoot
             },
 
             database: opt.database,
@@ -82,6 +84,8 @@ module.exports = class Superkraft {
         await sk.engine.initViews()
 
         if (sk.engine.start) await sk.engine.start()
+
+        if (opt.onReady) opt.onReady()
     }
 }
 

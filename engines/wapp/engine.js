@@ -155,6 +155,8 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
         var posts = fs.readdirSync(postsFolder)
         posts.forEach(_filename => {
+            if (_filename.toLocaleLowerCase().indexOf('.ds_store') > -1) return
+            
             var postName = _filename.split('.')[0]
                 try {
                 var postModule = new (require(postsFolder + _filename))()
@@ -210,6 +212,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
             var config = global.sk.config
             if (config.isWhat.env === 'dev'){
                 http.createServer(this.app).listen(config.webserver.ports.http)
+                resolve()
             } else {
                 https.createServer({
                     ca      : fs.readFileSync(config.cert.ca_bundle),

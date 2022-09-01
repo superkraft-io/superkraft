@@ -28,6 +28,9 @@ module.exports = class sk_RootEngine {
 
             for (var i = 0; i < viewsToLoad.length; i++){
                 var viewName = viewsToLoad[i]
+                
+                if (viewName.toLocaleLowerCase().indexOf('.ds_store') > -1) continue
+
                 var viewPath = global.sk.paths.views + viewName + '/main.js'
                 try {
                     var view = new (require(viewPath))()
