@@ -218,7 +218,7 @@ class ss_ui_complexity {
                 _e.preventDefault()
 
                 try {
-                    if (this.attributes.find('text')){
+                    if (this.sk_attributes.find('text')){
                         var newVal = prompt('', this.text)
                                 
                         if (newVal === null) return

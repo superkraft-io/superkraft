@@ -1,6 +1,6 @@
 class sk_ui_table extends sk_ui_component {
-    constructor(opt){
-        super(opt)
+    sk_constructor(opt){
+        super.sk_constructor(opt)
         
 
         this.element.remove()
@@ -39,8 +39,8 @@ class sk_ui_table extends sk_ui_component {
 }
 
 class sk_ui_tableRow extends sk_ui_component {
-    constructor(opt){
-        super(opt)
+    sk_constructor(opt){
+        super.sk_constructor(opt)
 
         this.element.remove()
         
@@ -69,8 +69,8 @@ class sk_ui_tableRow extends sk_ui_component {
 }
 
 class sk_ui_tableColumn extends sk_ui_component {
-    constructor(opt){
-        super(opt)
+    sk_constructor(opt){
+        super.sk_constructor(opt)
 
         this.element.remove()
 

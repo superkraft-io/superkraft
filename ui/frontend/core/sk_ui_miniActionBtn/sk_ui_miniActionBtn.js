@@ -1,5 +1,5 @@
 class sk_ui_miniActionBtn extends sk_ui_button {
-    constructor(opt){
-        super(opt)
+    sk_constructor(opt){
+        super.sk_constructor(opt)
     }
 }

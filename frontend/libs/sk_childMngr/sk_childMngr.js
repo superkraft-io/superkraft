@@ -52,8 +52,9 @@ class SK_ChildMngr {
                     return
                 }
         
-                var _c = new _component({parent: this.opt.parent})
-                
+                var _c = document.createElement('sk-ui-' + component.toLowerCase() )//new _component({parent: this.opt.parent})
+                _c.sk_constructor({parent: this.opt.parent})
+
                 this.add(_c)
         
                 if (cb) cb(_c)

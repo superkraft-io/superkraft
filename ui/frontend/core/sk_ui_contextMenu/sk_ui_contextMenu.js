@@ -125,8 +125,8 @@ class SK_ContextMenu {
 
 
 class sk_ui_contextMenu_shortcut extends sk_ui_component {
-    constructor(opt){
-        super(opt)
+    sk_constructor(opt){
+        super.sk_constructor(opt)
 
         this.vertical = false
         this.compact = true
@@ -161,8 +161,8 @@ class sk_ui_contextMenu_shortcut extends sk_ui_component {
 
 
 class sk_ui_contextMenu extends sk_ui_component {
-    constructor(opt){
-        super(opt)
+    sk_constructor(opt){
+        super.sk_constructor(opt)
         this.compact = true
 
         this.menuChain = ''
@@ -345,8 +345,8 @@ class sk_ui_contextMenu extends sk_ui_component {
 }
 
 class sk_ui_contextMenu_Item extends sk_ui_component {
-    constructor(opt){
-        super(opt)
+    sk_constructor(opt){
+        super.sk_constructor(opt)
 
         this.styling = 'left middle'
         this.compact = true

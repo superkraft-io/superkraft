@@ -1,13 +1,22 @@
-class sk_ui_component {
-    constructor(opt){
+class sk_ui_component extends HTMLElement {
+    constructor(){
+        super()
+
+        this.sk_object = {}
+    }
+
+    sk_constructor(opt){
+        this.autoInit = true
+        opt.parent.element.appendChild(this)
+
         this.sk_ui_opt = opt
         this.parent = this.sk_ui_opt.parent
         this.parentClassName = Object.getPrototypeOf(this.constructor).name
 
-        this.attributes = new sk_ui_attributes(this)
+        this.sk_attributes = new sk_ui_attributes(this)
         
 
-        this.children = new SK_ChildMngr({parent: this})
+        this.sk_children = new SK_ChildMngr({parent: this})
         
         
         
@@ -33,15 +42,15 @@ class sk_ui_component {
         /******    Attributes    ******/
 
         if (this.constructor.name === 'sk_ui_component'){
-            this.attributes.add({friendlyName: 'Pseudo Class', name: 'pseudoClassName',  type: 'text', onSet: val => {
+            this.sk_attributes.add({friendlyName: 'Pseudo Class', name: 'pseudoClassName',  type: 'text', onSet: val => {
                 this.onPseudoClassSet(val)
             }})
         }
 
-        this.attributes.add({notEditable: true, friendlyName: 'Multi Comp.', name: 'multiComponent',  type: 'bool'})
+        this.sk_attributes.add({notEditable: true, friendlyName: 'Multi Comp.', name: 'multiComponent',  type: 'bool'})
 
         
-        this.attributes.add({friendlyName: 'Vertical', name: 'vertical',  type: 'bool', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'Vertical', name: 'vertical',  type: 'bool', onSet: val => {
             this.classRemove('sk_ui_component_spaced_horizontal')
             this.classRemove('sk_ui_component_spaced_vertical')
 
@@ -54,26 +63,26 @@ class sk_ui_component {
             }
         }})
 
-        this.attributes.add({friendlyName: 'Compact', name: 'compact',  type: 'bool', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'Compact', name: 'compact',  type: 'bool', onSet: val => {
             this.classRemove('sk_ui_component_spaced_horizontal')
             this.classRemove('sk_ui_component_spaced_vertical')
             
             if (!val) this.classAdd('sk_ui_component_spaced' + (this.vertical ? '_vertical' : '_horizontal'))
         }})
         
-        this.attributes.add({friendlyName: 'Animate', name: 'animate',  type: 'bool', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'Animate', name: 'animate',  type: 'bool', onSet: val => {
             this.classRemove('sk_ui_transition')
             if (val) this.classAdd('sk_ui_transition')
         }})
 
-        this.attributes.add({friendlyName: 'ID', name: 'uuid',  type: 'text', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'ID', name: 'uuid',  type: 'text', onSet: val => {
             this.classRemove(this.element.id)
             this.element.id = val
             this.classAdd(this.element.id)
             if (this.onUUIDSet) this.onUUIDSet(val)
         }})
 
-        this.attributes.add({
+        this.sk_attributes.add({
             notEditable: true,
             friendlyName: 'Styling',
             name: 'styling',
@@ -103,7 +112,7 @@ class sk_ui_component {
             }
         })
 
-        this.attributes.add({
+        this.sk_attributes.add({
             friendlyName: 'Frosted',
             name: 'frosted',
             type: 'list',
@@ -123,12 +132,12 @@ class sk_ui_component {
             }
         })
 
-        this.attributes.add({friendlyName: 'Fade Indicate', name: 'fade_indicate',  type: 'bool', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'Fade Indicate', name: 'fade_indicate',  type: 'bool', onSet: val => {
             this.classRemove('sk_ui_fade_indicate')
             if (val) this.classAdd('sk_ui_fade_indicate')
         }})
 
-        this.attributes.add({friendlyName: 'Can Move View', name: 'canMoveView',  type: 'bool', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'Can Move View', name: 'canMoveView',  type: 'bool', onSet: val => {
             this.classRemove('sk_ui_canMoveView')
             this.classAdd('sk_ui_cannotMoveView')
             if (val){
@@ -138,12 +147,12 @@ class sk_ui_component {
         }})
         
 
-        this.attributes.add({friendlyName: 'Pointer Events', name: 'pointerEvents',  type: 'text', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'Pointer Events', name: 'pointerEvents',  type: 'text', onSet: val => {
             this.style.pointerEvents = ''
             if (val) this.style.pointerEvents = val
         }})
 
-        this.attributes.categories.new({name: 'CSS'}, _cat => {
+        this.sk_attributes.categories.new({name: 'CSS'}, _cat => {
             _cat.add({
                 friendlyName: 'Roundness',
                 name: 'roundness',
@@ -210,7 +219,7 @@ class sk_ui_component {
                 })
             }
 
-            this.attributes.categories.new({name: opt.friendlyName, horizontal: true}, _cat => {
+            this.sk_attributes.categories.new({name: opt.friendlyName, horizontal: true}, _cat => {
                 opt.labels.forEach(_label => { addAttr(_cat, _label)})
             })
         }
@@ -227,12 +236,12 @@ class sk_ui_component {
         })*/
 
 
-        this.attributes.add({friendlyName: 'Emphasise', name: 'emphasise', type: 'bool', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'Emphasise', name: 'emphasise', type: 'bool', onSet: val => {
             this.classRemove('sk_ui_glow_pulse')
             if (val) this.classAdd('sk_ui_glow_pulse')
         }})
 
-        this.attributes.add({friendlyName: 'Pulsate', name: 'pulsate', type: 'bool', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'Pulsate', name: 'pulsate', type: 'bool', onSet: val => {
             this.classRemove('sk_ui_pulsate')
             if (val) this.classAdd('sk_ui_pulsate')
         }})
@@ -240,7 +249,7 @@ class sk_ui_component {
 
 
 
-        this.attributes.add({friendlyName: 'Sortable', name: 'sortable', type: 'bool', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'Sortable', name: 'sortable', type: 'bool', onSet: val => {
             if (!val) return
 
             $('#' + this.element.id).sortable({
@@ -329,7 +338,7 @@ class sk_ui_component {
         
 
         if (this.onBeforeRemove) await this.onBeforeRemove(this)
-        this.children.clear()
+        this.sk_children.clear()
         this.element.remove()
         this.parent.children.delete(this.child_idx)
 
@@ -477,7 +486,7 @@ class sk_ui_component {
             class: this.constructor.name,
             parentClass: this.parentClassName,
             children: [],
-            attributes: this.attributes.serialize(ignoreCSS),
+            attributes: this.sk_attributes.serialize(ignoreCSS),
             id: this.uuid,
             pseudoClassName: this.pseudoClassName
         }
@@ -485,8 +494,8 @@ class sk_ui_component {
 
         //serialize children
         if (!ignoreChildren){
-            for (var i = 0; i < this.children.length; i++){
-                var child = this.children[i]
+            for (var i = 0; i < this.sk_children.length; i++){
+                var child = this.sk_children[i]
                 json.children.push(child.serialize(child.multiComponent, includeThis))
             }
         }
@@ -621,12 +630,12 @@ class sk_ui_attributes_category {
         this.parent = parent
         this.name = info.name
         this.horizontal = info.horizontal
-        this.attributes = []
+        this.sk_attributes = []
     }
 
     findByName(name){
-        for(var i in this.attributes){
-            var attr = this.attributes[i]
+        for(var i in this.sk_attributes){
+            var attr = this.sk_attributes[i]
             if (attr.info.name === name) return attr
         }
     }
@@ -638,7 +647,7 @@ class sk_ui_attributes_category {
             if (info.onSet) existing.callbacks.set.push(info.onSet)
             if (info.onGet) existing.callbacks.get.push(info.onGet)
         } else {
-            this.attributes.push(new sk_ui_attribute(this.parent, info))
+            this.sk_attributes.push(new sk_ui_attribute(this.parent, info))
         }
     }
 }
@@ -651,7 +660,7 @@ class sk_ui_attribute {
         }
 
         var attribute = Object.defineProperty(
-            parent,
+            parent.sk_object,
             info.name,
             {
                 get: ()=>{

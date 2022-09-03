@@ -1,6 +1,6 @@
 class sk_ui_switch extends sk_ui_component {
-    constructor(opt){
-        super(opt)
+    sk_constructor(opt){
+        super.sk_constructor(opt)
         
         this.multiComponent = true
 
@@ -29,7 +29,7 @@ class sk_ui_switch extends sk_ui_component {
             if (this.onChanged) this.onChanged(this.toggled)
         }
 
-        this.attributes.add({
+        this.sk_attributes.add({
             friendlyName: 'Toggled',
             name: 'toggled',
             type: 'bool',
@@ -45,7 +45,7 @@ class sk_ui_switch extends sk_ui_component {
             }
         })
 
-        this.attributes.add({
+        this.sk_attributes.add({
             friendlyName: 'Flipped',
             name: 'flipped',
             type: 'bool',

@@ -1,7 +1,7 @@
 
 class sk_ui_list extends sk_ui_component {
-    constructor(opt){
-        super(opt)
+    sk_constructor(opt){
+        super.sk_constructor(opt)
 
         this.styling = 'ttb'
         this.vertical = 'none'
@@ -68,12 +68,12 @@ class sk_ui_list extends sk_ui_component {
 
         /************/
 
-        this.attributes.add({friendlyName: 'Reverse', name: 'reverse', type: 'bool', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'Reverse', name: 'reverse', type: 'bool', onSet: val => {
             if (val) this.container.styling = 'btt'
             else this.container.styling = 'ttb'
         }})
 
-        this.attributes.add({friendlyName: 'Highlight On Select', name: 'highlightOnSelect', type: 'bool'})
+        this.sk_attributes.add({friendlyName: 'Highlight On Select', name: 'highlightOnSelect', type: 'bool'})
     }
 
     updateIconWidth(){

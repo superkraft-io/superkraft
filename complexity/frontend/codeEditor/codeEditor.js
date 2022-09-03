@@ -1,6 +1,6 @@
 class ss_ui_complexity_codeEditor extends ss_ui_component {
-    constructor(opt){
-        super(opt)
+    sk_constructor(opt){
+        super.sk_constructor(opt)
 
         this.classAdd('ss_ui_complexity_codeEditor')
 

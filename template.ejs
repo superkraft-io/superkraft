@@ -112,7 +112,8 @@
             sk.ums = new SK_UMS()
 
             sk.init().then(()=>{
-                sk.app = (new sk_ui_component({parent: {element: document.body}}))
+                sk.app = document.createElement('sk-ui-component')
+                sk.app.sk_constructor({parent: {element: document.body}})
                 sk.app.setup(_c => {
                     sk._cM = _c.contextMenu
 
@@ -131,9 +132,10 @@
 
                     _c.body = _c.add.component(_c => {
                         _c.classAdd('sk_ui_appBody ' + (sk.app_type !== 'dapp' || sk.noTitle ? 'sk_ui_noTitlebar' : ''))
-                    
-                        _c.view = new sk._view({parent: _c})
-                        _c.children.add(_c.view)
+
+                        document.createElement('sk-ui-appview')
+                        sk.app.sk_constructor({parent: _c})
+                        //_c.sk_children.add(_c.view)
                     })
 
                     <% if (sk.useComplexity){ %>

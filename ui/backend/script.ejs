@@ -178,6 +178,27 @@
         }
     }
 
+    for (var _l in sk.ui.components.lists){
+        var list = sk.ui.components.lists[_l]
+        for (var _c in list){
+            var component = list[_c]
+            try {
+                customElements.define('sk-ui-' + _c.toLowerCase(), component)
+            } catch(err) {
+                var x = 0
+            }
+        }
+    }
+    customElements.define('sk-ui-appview', SK_App_View)
+
+    window.addEventListener('DOMNodeInserted', _e => {
+        var sk_dom = _e.srcElement
+        if (!sk_dom) return
+        if (!sk_dom.sk_constructor) return
+        if (sk_dom.autoInit) return
+        sk_dom.sk_constructor({parent: {element: _e.path[0]}})
+    })
+
     <% if (app_type === 'dapp'){ %>
         sk.views = {
             <% for (var i = 0; i < views.length; i++){ %>

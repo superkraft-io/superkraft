@@ -1,6 +1,6 @@
 class sk_ui_button extends sk_ui_component {
-    constructor(opt){
-        super(opt)
+    sk_constructor(opt){
+        super.sk_constructor(opt)
         this.multiComponent = true
 
         this.classAdd('sk_ui_button_enabled')
@@ -76,21 +76,21 @@ class sk_ui_button extends sk_ui_component {
         }
 
         
-        this.attributes.add({friendlyName: 'Disabled', name: 'disabled', type: 'bool', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'Disabled', name: 'disabled', type: 'bool', onSet: val => {
             this.classRemove('sk_ui_button_enabled')
             if (!val) this.classAdd('sk_ui_button_enabled')
         }})
 
 
-        this.attributes.add({friendlyName: 'Text', name: 'text', type: 'text', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'Text', name: 'text', type: 'text', onSet: val => {
             this.label.text = val
         }})
 
-        this.attributes.add({friendlyName: 'L10N', name: 'l10n', type: 'text', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'L10N', name: 'l10n', type: 'text', onSet: val => {
             this.label.l10n = val
         }})
         
-        this.attributes.add({friendlyName: 'Type', name: 'type', type: 'list',
+        this.sk_attributes.add({friendlyName: 'Type', name: 'type', type: 'list',
             items: [
                 {name: 'Icon', value: 'icon'},
                 {name: 'Simple', value: 'simple'}
@@ -110,31 +110,31 @@ class sk_ui_button extends sk_ui_component {
             }
         })
 
-        this.attributes.add({friendlyName: 'Vertical', name: 'vertical', type: 'bool', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'Vertical', name: 'vertical', type: 'bool', onSet: val => {
             this.classRemove('sk_ui_button_vertical')
             if (val) this.classAdd('sk_ui_button_vertical')
         }})
 
-        this.attributes.add({friendlyName: 'Toggle', name: 'toggle', type: 'bool'})
+        this.sk_attributes.add({friendlyName: 'Toggle', name: 'toggle', type: 'bool'})
 
-        this.attributes.add({friendlyName: 'Toggled', name: 'toggled', type: 'bool', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'Toggled', name: 'toggled', type: 'bool', onSet: val => {
             this.classRemove('sk_ui_button_toggled')
             if (val) this.classAdd('sk_ui_button_toggled')
             if (this.onToggled) this.onToggled(this.toggled)
         }})
 
-        this.attributes.add({friendlyName: 'Icon', name: 'icon', type: 'icon', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'Icon', name: 'icon', type: 'icon', onSet: val => {
             this._icon.icon = val
         }})
 
-        this.attributes.add({friendlyName: 'Size', name: 'size', type: 'number', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'Size', name: 'size', type: 'number', onSet: val => {
             try { this.label.size = val } catch(err) {}
             try { this._icon.size = val } catch(err) {}
         }})
 
 
 
-        this.attributes.add({friendlyName: 'Go To', name: 'gotoURL', type: 'text', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'Go To', name: 'gotoURL', type: 'text', onSet: val => {
             this.goto = undefined
             this.goto_ = undefined
 
@@ -142,7 +142,7 @@ class sk_ui_button extends sk_ui_component {
             this.goto_ = val
         }})
 
-        this.attributes.add({friendlyName: 'Same Page', name: 'samePageGoto', type: 'bool', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'Same Page', name: 'samePageGoto', type: 'bool', onSet: val => {
             this.goto = undefined
             this.goto_ = undefined
 
@@ -150,7 +150,7 @@ class sk_ui_button extends sk_ui_component {
             this.goto = this.gotoURL
         }})
 
-        this.attributes.add({
+        this.sk_attributes.add({
             friendlyName: 'Style',
             name: 'buttonStyle',
 

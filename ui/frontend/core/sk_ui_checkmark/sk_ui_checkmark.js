@@ -1,6 +1,6 @@
 class sk_ui_checkmark extends sk_ui_component {
-    constructor(opt){
-        super(opt)
+    sk_constructor(opt){
+        super.sk_constructor(opt)
 
         this.currentClasses = {
             loader: 'sk_ui_checkmark_circle-loader',
@@ -19,7 +19,7 @@ class sk_ui_checkmark extends sk_ui_component {
 
         this.style.overflow = 'hidden'
 
-        this.attributes.add({
+        this.sk_attributes.add({
             friendlyName: 'Size',
             name: 'size',
             type: 'number',

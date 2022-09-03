@@ -1,6 +1,6 @@
 class sk_ui_checkbox extends sk_ui_button {
-    constructor(opt){
-        super(opt)
+    sk_constructor(opt){
+        super.sk_constructor(opt)
 
         this.styling = 'left middle fullwidth'
         
@@ -14,7 +14,7 @@ class sk_ui_checkbox extends sk_ui_button {
         }
 
 
-        this.attributes.add({friendlyName: 'Checked', name: 'checked', type: 'bool', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'Checked', name: 'checked', type: 'bool', onSet: val => {
             if (val){
                 this._icon.iconElement.classList.add('sk_ui_checkbox_on')
                 if (this.onChecked) this.onChecked(this)

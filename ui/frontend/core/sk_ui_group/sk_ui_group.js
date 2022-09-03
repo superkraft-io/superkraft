@@ -1,6 +1,6 @@
 class sk_ui_group extends sk_ui_component {
-    constructor(opt){
-        super(opt)
+    sk_constructor(opt){
+        super.sk_constructor(opt)
 
         this.styling = 'left top ttb'
         this.compact = true
@@ -22,7 +22,7 @@ class sk_ui_group extends sk_ui_component {
             _c.classAdd('sk_ui_group_container')
         })
 
-        this.attributes.add({friendlyName: 'Header', name: 'header', type: 'text', onSet: val => { this._header.text = val }})
-        this.attributes.add({friendlyName: 'Clear', name: 'clear', type: 'bool', onSet: val => { this['class' + (val ? 'Remove' : 'Add')]('sk_ui_group_opaque') }})
+        this.sk_attributes.add({friendlyName: 'Header', name: 'header', type: 'text', onSet: val => { this._header.text = val }})
+        this.sk_attributes.add({friendlyName: 'Clear', name: 'clear', type: 'bool', onSet: val => { this['class' + (val ? 'Remove' : 'Add')]('sk_ui_group_opaque') }})
     }
 }

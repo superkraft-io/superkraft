@@ -1,6 +1,6 @@
 class sk_ui_hint extends sk_ui_component {
-    constructor(opt){
-        super(opt)
+    sk_constructor(opt){
+        super.sk_constructor(opt)
         
         
         this.classAdd('sk_ui_ignoreMouse sk_ui_hint_hidden')

@@ -1,13 +1,13 @@
 class sk_ui_dappTitlebar extends sk_ui_component {
-    constructor(opt){
-        super(opt)
+    sk_constructor(opt){
+        super.sk_constructor(opt)
 
         this.styling += ' fullwidth'
 
         this.vertical = 'none'
         this.canMoveView = true
         
-        this.attributes.add({friendlyName: 'OS', name: 'os', type: 'string', onSet: val =>{
+        this.sk_attributes.add({friendlyName: 'OS', name: 'os', type: 'string', onSet: val =>{
             var os = 'win'
             if (val.indexOf('darwin') > -1) os = 'mac'
 
@@ -18,32 +18,32 @@ class sk_ui_dappTitlebar extends sk_ui_component {
             this._title   = this.add.fromNew(sk_ui_dappTitlebar_title)
         }})
 
-        this.attributes.add({friendlyName: 'Closable', name: 'closable', type: 'bool', onSet: val =>{
+        this.sk_attributes.add({friendlyName: 'Closable', name: 'closable', type: 'bool', onSet: val =>{
             
         }})
 
-        this.attributes.add({friendlyName: 'Maximizable', name: 'maximizable', type: 'bool', onSet: val =>{
+        this.sk_attributes.add({friendlyName: 'Maximizable', name: 'maximizable', type: 'bool', onSet: val =>{
             
         }})
 
-        this.attributes.add({friendlyName: 'Minimizable', name: 'minimizable', type: 'bool', onSet: val =>{
+        this.sk_attributes.add({friendlyName: 'Minimizable', name: 'minimizable', type: 'bool', onSet: val =>{
             
         }})
 
 
-        this.attributes.add({friendlyName: 'Icon', name: 'icon', type: 'string', onSet: val =>{
+        this.sk_attributes.add({friendlyName: 'Icon', name: 'icon', type: 'string', onSet: val =>{
             this._title.icon.url = val
         }})
 
-        this.attributes.add({friendlyName: 'Title', name: 'title', type: 'string', onSet: val =>{
+        this.sk_attributes.add({friendlyName: 'Title', name: 'title', type: 'string', onSet: val =>{
             this._title.label.text = val
         }})
     }
 }
 
 class sk_ui_dappTitlebar_title extends sk_ui_component {
-    constructor(opt){
-        super(opt)
+    sk_constructor(opt){
+        super.sk_constructor(opt)
 
         this.styling += ' fullheight'
         this.vertical = false
@@ -62,8 +62,8 @@ class sk_ui_dappTitlebar_title extends sk_ui_component {
 }
 
 class sk_ui_dappTitlebar_actions extends sk_ui_component {
-    constructor(opt){
-        super(opt)
+    sk_constructor(opt){
+        super.sk_constructor(opt)
 
         this.styling += ' fullheight'
         this.vertical = false
@@ -115,8 +115,8 @@ class sk_ui_dappTitlebar_actions extends sk_ui_component {
 }
 
 class sk_ui_dappTitlebar_actions_button extends sk_ui_button {
-    constructor(opt){
-        super(opt)
+    sk_constructor(opt){
+        super.sk_constructor(opt)
         this.type = 'icon'
     }
 

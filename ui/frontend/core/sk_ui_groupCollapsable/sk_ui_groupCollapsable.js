@@ -1,6 +1,6 @@
 class sk_ui_groupCollapsable extends sk_ui_group {
-    constructor(opt){
-        super(opt)
+    sk_constructor(opt){
+        super.sk_constructor(opt)
 
         this.classAdd('sk_ui_groupCollapsable_collapsable_false')
 
@@ -39,19 +39,19 @@ class sk_ui_groupCollapsable extends sk_ui_group {
 
         
 
-        this.attributes.add({friendlyName: 'Collapsable', name: 'collapsable', type: 'bool', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'Collapsable', name: 'collapsable', type: 'bool', onSet: val => {
             if (val) this.classAdd('sk_ui_groupCollapsable_collapsable')
             else this.classRemove('sk_ui_groupCollapsable_collapsable')
 
             updateCollapseHandle(val)
         }})
 
-        this.attributes.add({friendlyName: 'Collapse On Icon', name: 'collapseOnIcon', type: 'bool', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'Collapse On Icon', name: 'collapseOnIcon', type: 'bool', onSet: val => {
             updateCollapseHandle(val, (val ? this.collapseButton : this.top))
         }})
 
 
-        this.attributes.add({friendlyName: 'Collapsed', name: 'collapsed', type: 'bool', onSet: async val => {
+        this.sk_attributes.add({friendlyName: 'Collapsed', name: 'collapsed', type: 'bool', onSet: async val => {
             if (val){
                 this.classAdd('sk_ui_groupCollapsable_collapsed')
                 this.collapseButton._icon.style.transform = ''

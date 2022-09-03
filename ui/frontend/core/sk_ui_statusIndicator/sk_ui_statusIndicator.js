@@ -1,11 +1,11 @@
 class sk_ui_statusIndicator extends sk_ui_component {
-    constructor(opt){
-        super(opt)
+    sk_constructor(opt){
+        super.sk_constructor(opt)
 
         this.classAdd('sk_ui_statusIndicator_right')
         this.compact = true
 
-        this.attributes.add({friendlyName: 'Status', name: 'status', type: 'text', onSet: async val => {
+        this.sk_attributes.add({friendlyName: 'Status', name: 'status', type: 'text', onSet: async val => {
             if (this.indicator){
                 await this.hide({animation: 'width'})
                 this.indicator.remove()
@@ -29,11 +29,11 @@ class sk_ui_statusIndicator extends sk_ui_component {
             
         }})
 
-        this.attributes.add({friendlyName: 'Size', name: 'size', type: 'number', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'Size', name: 'size', type: 'number', onSet: val => {
             this.indicator.size = val
         }})
 
-        this.attributes.add({friendlyName: 'Autohide', name: 'autohide', type: 'number', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'Autohide', name: 'autohide', type: 'number', onSet: val => {
             if (!val) return clearTimeout(this.autohideTimer)
 
             if (val === true) val = 3000
@@ -43,7 +43,7 @@ class sk_ui_statusIndicator extends sk_ui_component {
             }, val)
         }})
 
-        this.attributes.add({friendlyName: 'Side', name: 'side', type: 'text', onSet: val => {
+        this.sk_attributes.add({friendlyName: 'Side', name: 'side', type: 'text', onSet: val => {
             this.classRemove('sk_ui_statusIndicator_left sk_ui_statusIndicator_right')
             this.classAdd('sk_ui_statusIndicator_' + val)
             

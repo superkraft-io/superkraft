@@ -1,6 +1,6 @@
 class sk_ui_prompter extends sk_ui_modal {
-    constructor(opt){
-        super(opt)
+    sk_constructor(opt){
+        super.sk_constructor(opt)
 
         this.header = this.content.add.label(_c => _c.size = 18 )
 
