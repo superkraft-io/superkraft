@@ -22,6 +22,8 @@ class sk_ui_checkbox extends sk_ui_button {
                 this._icon.iconElement.classList.remove('sk_ui_checkbox_on')
                 if (this.onUnchecked) this.onUnchecked(this)
             }
+
+            if (this.onChanged) this.onChanged(val)
         }})
         
     }

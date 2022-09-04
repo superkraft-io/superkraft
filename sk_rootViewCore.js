@@ -36,7 +36,7 @@ module.exports = class sk_RootViewCore {
             
             //load actions
             this.actions = global.sk.utils.loadActions(opt.root + 'actions/')
-            try { this.actions = {...this.actions, ...global.sk.utils.loadActions(global.sk.paths.globalActions)} } catch(err) {}
+            try { this.actions = {...this.actions, ...global.sk.globalActions } } catch(err) {}
             global.sk.utils.captureActions(
                 this.id,
                 this.actions,

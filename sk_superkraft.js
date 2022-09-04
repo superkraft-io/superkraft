@@ -79,6 +79,8 @@ module.exports = class Superkraft {
         sk.actions = sk.utils.loadActions(__dirname + '/engines/' + opt.type + '/global_actions/')
         sk.utils.captureActions('root', sk.actions)
 
+        sk.globalActions = global.sk.utils.loadActions(global.sk.paths.globalActions)
+
         
         await sk.engine.waitForReady()
         await sk.engine.initViews()

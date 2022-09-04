@@ -104,4 +104,11 @@ class sk_ui_list extends sk_ui_component {
             this.list.splice(i, 1)
         }
     }
+
+    findItemByInfo(key, value){
+        for (var i in this.list){
+            var item = this.list[i]
+            if (item.info[key] === value) return item
+        }
+    }
 }
