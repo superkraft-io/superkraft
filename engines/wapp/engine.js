@@ -36,86 +36,12 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
         
         app.use(bodyParser.json())
         app.use(bodyParser.urlencoded({ extended: true }))
-        
-
-
-        /*app.use(helmet.contentSecurityPolicy({
-            directives: {
-             defaultSrc: ["'self'"],
-             styleSrc: ["'self'","'unsafe-inline'", '*.googleapis.com'],
-             scriptSrc: ["'self'","'unsafe-inline'", '*.stripe.com', 'stripe.com', 'google.com',],
-             frameSrc: ["'self'",'*.stripe.com'],
-             fontSrc:["'self'",'*.googleapis.com','*.gstatic.com']
-           }
-        }));
-        */
+    
 
         var csp = {defaultSrc: ["'self'"]}
         for (var _i in global.sk.csp) csp[_i] = ["'self'", ...global.sk.csp[_i]]
         app.use(helmet.contentSecurityPolicy({ directives: csp }))
 
-
-        /*app.use(helmet.contentSecurityPolicy({
-        directives: {
-            defaultSrc: ["'self'"],
-            //styleSrc: ["'self'","'unsafe-inline'", '*.googleapis.com'],
-            scriptSrc: ["'self'","'unsafe-inline'", '*.stripe.com'],
-            frameSrc: ["'self'",'*.stripe.com'],
-            fontSrc:["'self'",'*.googleapis.com','*.gstatic.com'],
-            connectSrc: ["'self'", "*.stripe.com"],
-            imgSrc: ["'self'", "*.stripe.com"]
-           }
-        }));*/
-        
-
-        
-        /*
-        app.use(function (req, res, next) {
-
-            // Website you wish to allow to connect
-            res.setHeader('Access-Control-Allow-Origin', '*');
-        
-            // Request methods you wish to allow
-            res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-        
-            // Request headers you wish to allow
-            res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-        
-            // Set to true if you need the website to include cookies in the requests sent
-            // to the API (e.g. in case you use sessions)
-            res.setHeader('Access-Control-Allow-Credentials', true);
-
-
-            res.setHeader("Content-Security-Policy", "script-src 'self' https://google.com/*");
-            
-        
-            // Pass to next layer of middleware
-            next();
-        });*/
-        
-
-        /*const scriptSources = [
-            "'self'",
-            "'unsafe-inline'",
-            "'unsafe-eval'",
-            "https://www.google.com/recaptcha/"
-        ]
-
-        const frameSources = [
-            "'self'",
-            "https://www.google.com/recaptcha/"
-        ]
-
-        const scriptSrcElemArr = [
-            "script-src-elem www."
-        ]
-
-        
-        app.use(
-            helmet({
-                contentSecurityPolicy: false,
-            })
-        )*/
         
         app.set('view-engine', 'ejs')
 
@@ -218,13 +144,14 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
                 var certOpt = undefined
 
                 try {
-                    var certOpt = {
-                        ca      : fs.readFileSync(config.cert.ca_bundle),
-                        cert    : fs.readFileSync(config.cert.crt),
-                        key     : fs.readFileSync(config.cert.key)
-                    }
+                    var certOpt = {}
+                    if (config.cert.ca_bundle) certOpt.ca_bundle = fs.readFileSync(config.cert.ca_bundle)
+                    if (config.cert.crt) certOpt.crt = fs.readFileSync(config.cert.crt)
+                    if (config.cert.key) certOpt.key = fs.readFileSync(config.cert.key)
+
                 } catch(err) {
-                    console.error('No HTTPS certificates found')
+                    console.error('HTTPS certificates failed')
+                    console.error(err)
                 }
 
                 https.createServer(certOpt, this.app)
