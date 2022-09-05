@@ -1,5 +1,6 @@
 .sk_ui_group {
     border-radius: 6px;
+    padding: 6px 8px 8px 8px;
 }
 
 .sk_ui_group_opaque {
@@ -13,8 +14,7 @@
 /* top container */
 .sk_ui_group_top {
     border-radius: 4px 4px 0px 0px;
-    padding-left: 8px;
-    margin-bottom: 6px
+    margin-bottom: 12px
 }
 
 
