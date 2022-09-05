@@ -156,12 +156,12 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
                         }
                     }
 
-                    if (config.cert.cert){
+                    if (config.cert.crt){
                         try {
-                            certOpt.cert = fs.readFileSync(config.cert.cert)
-                            console.log('cert loaded...')
+                            certOpt.crt = fs.readFileSync(config.cert.crt)
+                            console.log('crt loaded...')
                         } catch(err) {
-                            console.error('cert failed')
+                            console.error('crt failed')
                         }
                     }
 
@@ -171,6 +171,15 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
                             console.log('key loaded...')
                         } catch(err) {
                             console.error('key failed')
+                        }
+                    }
+
+                    if (config.cert.p7b){
+                        try {
+                            certOpt.p7b = fs.readFileSync(config.cert.p7b)
+                            console.log('p7b loaded...')
+                        } catch(err) {
+                            console.error('p7b failed')
                         }
                     }
 
