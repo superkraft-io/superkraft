@@ -158,7 +158,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
                     if (config.cert.crt){
                         try {
-                            certOpt.crt = fs.readFileSync(config.cert.crt)
+                            certOpt.cert = fs.readFileSync(config.cert.cert)
                             console.log('crt loaded...')
                         } catch(err) {
                             console.error('crt failed')
