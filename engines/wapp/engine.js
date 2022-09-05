@@ -214,11 +214,20 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
                 http.createServer(this.app).listen(config.webserver.ports.http)
                 resolve()
             } else {
-                https.createServer({
-                    ca      : fs.readFileSync(config.cert.ca_bundle),
-                    cert    : fs.readFileSync(config.cert.crt),
-                    key     : fs.readFileSync(config.cert.key)
-                }, this.app)
+
+                var certOpt = undefined
+
+                try {
+                    var certOpt = {
+                        ca      : fs.readFileSync(config.cert.ca_bundle),
+                        cert    : fs.readFileSync(config.cert.crt),
+                        key     : fs.readFileSync(config.cert.key)
+                    }
+                } catch(err) {
+                    console.error('No HTTPS certificates found')
+                }
+
+                https.createServer(certOpt, this.app)
                 .listen(config.webserver.ports.https, function() {
                     console.log("[ENGINE] Listening on " + config.webserver.ports.https)
                     resolve()
