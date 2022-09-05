@@ -145,9 +145,34 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
                 try {
                     var certOpt = {}
-                    if (config.cert.ca_bundle) certOpt.ca_bundle = fs.readFileSync(config.cert.ca_bundle)
-                    if (config.cert.crt) certOpt.crt = fs.readFileSync(config.cert.crt)
-                    if (config.cert.key) certOpt.key = fs.readFileSync(config.cert.key)
+                    console.log('Setting up HTTPS certificate...')
+
+                    if (config.cert.ca_bundle){
+                        try {
+                            certOpt.ca_bundle = fs.readFileSync(config.cert.ca_bundle)
+                            console.log('ca_bundle loaded...')
+                        } catch(err) {
+                            console.error('ca_bundle failed')
+                        }
+                    }
+
+                    if (config.cert.crt){
+                        try {
+                            certOpt.crt = fs.readFileSync(config.cert.crt)
+                            console.log('crt loaded...')
+                        } catch(err) {
+                            console.error('crt failed')
+                        }
+                    }
+
+                    if (config.cert.key){
+                        try {
+                            certOpt.key = fs.readFileSync(config.cert.key)
+                            console.log('key loaded...')
+                        } catch(err) {
+                            console.error('key failed')
+                        }
+                    }
 
                 } catch(err) {
                     console.error('HTTPS certificates failed')
