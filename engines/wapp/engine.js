@@ -147,12 +147,12 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
                     var certOpt = {}
                     console.log('Setting up HTTPS certificate...')
 
-                    if (config.cert.ca_bundle){
+                    if (config.cert.ca){
                         try {
-                            certOpt.ca_bundle = fs.readFileSync(config.cert.ca_bundle)
-                            console.log('ca_bundle loaded...')
+                            certOpt.ca = fs.readFileSync(config.cert.ca)
+                            console.log('ca bundle loaded...')
                         } catch(err) {
-                            console.error('ca_bundle failed')
+                            console.error('ca bundle failed')
                         }
                     }
 
