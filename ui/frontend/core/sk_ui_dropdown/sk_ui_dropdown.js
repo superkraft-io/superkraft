@@ -27,7 +27,9 @@ class sk_ui_dropdown extends sk_ui_button {
             this.text = itemData.label
             this.selectedItem = itemData
             if (this.onItemClicked) this.onItemClicked(itemData)
+            if (this.onItemSelected) this.onItemSelected(itemData)
         }
+
     }
 
     set items(items){
@@ -41,6 +43,7 @@ class sk_ui_dropdown extends sk_ui_button {
             if (item[identifier] === id){
                 this.text = item.label
                 this.selectedItem = item
+                if (this.onItemSelected) this.onItemSelected(item)
                 return
             }
         }

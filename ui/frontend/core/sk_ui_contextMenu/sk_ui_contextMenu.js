@@ -56,7 +56,7 @@ class SK_ContextMenu {
             if (shouldIgnore(_e.path)) return
             if (this.__button === 'right') this.handleMouseEvent(_e)
         })
-        this.parent.element.addEventListener('click', _e => {
+        this.parent.element.addEventListener('mouseup', _e => {
             _e.preventDefault()
             _e.stopPropagation()
             if (this.__button === 'left') this.handleMouseEvent(_e)
@@ -64,12 +64,13 @@ class SK_ContextMenu {
     }
 
     handleMouseEvent(_e){
+        _e.stopPropagation()
+        sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true, sender: this.menu})
         if (this.parent.disabled && !this.activeWhenParentDisabled) return
-        if (this.menu){
-            if (this.toggle){
+        if (this.toggle){
+            if (this.menu){
                 this.menu.close({fromThis: true})
                 this.menu = undefined
-                return
             }
         }
 
@@ -87,8 +88,10 @@ class SK_ContextMenu {
 
         if (!items) return console.error('Cannot show context menu with empty items list')
 
-        
-
+        if (this.skipOnce){
+            this.skipOnce = false
+            return
+        }
 
         if (this.menu && !this.toggle){
             this.menu.close()
@@ -111,8 +114,10 @@ class SK_ContextMenu {
         this.parent.classRemove('sk_ui_contextMenu_Item_highlightParent')
         
         if (this.toggle){
-            if (opt && opt.fromThis) this.menu = undefined
-            return
+            if (opt){
+                if (opt.fromThis && !this.skipOnce) this.skipOnce = true
+                if (opt.sender && this.menu && opt.sender.uuid === this.menu.uuid)this.skipOnce = true
+            }
         }
         
         this.menu = undefined
@@ -185,6 +190,12 @@ class sk_ui_contextMenu extends sk_ui_component {
 
         this.element.addEventListener('mousedown', _e => {
             _e.stopPropagation()
+        })
+
+        
+        this.ums.on('sk_ui_contextMenu-hide', val => {
+            if (val.first) return
+            this.close(val.data)
         })
     }
 
