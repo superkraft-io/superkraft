@@ -402,7 +402,7 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
     }
 
     as_item(){
-        if (this.opt.onCustomize) return this.opt.onCustomize(this)
+        if (this.opt.onCustomize) if (!this.opt.onCustomize(this)) return
 
         if (!this.opt.disabled){
             this.classAdd('sk_ui_contextMenu_Item_enabled sk_ui_contextMenu_Item_interactable')
