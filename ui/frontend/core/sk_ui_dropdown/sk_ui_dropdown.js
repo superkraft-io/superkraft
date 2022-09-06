@@ -19,7 +19,6 @@ class sk_ui_dropdown extends sk_ui_button {
 
         this.contextMenu.position = opt => {
             var rect = this.rect
-            console.log(JSON.stringify(opt.menuRect))
             var pos = {x: (rect.x + rect.width/2) - opt.menuRect.width/2, y: rect.y + rect.height}
             return pos
         }
