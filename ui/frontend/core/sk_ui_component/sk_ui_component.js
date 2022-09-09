@@ -242,7 +242,7 @@ class sk_ui_component {
 
         this.attributes.add({friendlyName: 'Sortable', name: 'sortable', type: 'bool', onSet: val => {
             if (!val) return
-
+            
             $('#' + this.element.id).sortable({
                 placeholder: 'sk_ui_component_sortable_placeholder sk_ui_pulsate sk_ui_glow_pulse',
                 connectWith: val,
