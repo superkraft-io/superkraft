@@ -52,13 +52,11 @@ class SK_ContextMenu {
 
         this.parent.element.addEventListener('contextmenu', _e => {
             _e.preventDefault()
-            _e.stopPropagation()
             if (shouldIgnore(_e.path)) return
             if (this.__button === 'right') this.handleMouseEvent(_e)
         })
         this.parent.element.addEventListener('mouseup', _e => {
             _e.preventDefault()
-            _e.stopPropagation()
             if (this.__button === 'left') this.handleMouseEvent(_e)
         })
     }
