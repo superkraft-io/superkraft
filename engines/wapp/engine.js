@@ -156,12 +156,12 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
                         }
                     }
 
-                    if (config.cert.crt){
+                    if (config.cert.cert){
                         try {
-                            certOpt.crt = fs.readFileSync(config.cert.crt)
-                            console.log('crt loaded...')
+                            certOpt.cert = fs.readFileSync(config.cert.cert)
+                            console.log('cert loaded...')
                         } catch(err) {
-                            console.error('crt failed')
+                            console.error('cert failed')
                         }
                     }
 
@@ -190,7 +190,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
                 https.createServer(certOpt, this.app)
                 .listen(config.webserver.ports.https, function() {
-                    console.log("[ENGINE] Listening on " + config.webserver.ports.https)
+                    console.log("[WAPP ENGINE] Listening on " + config.webserver.ports.https)
                     resolve()
                 })
     
