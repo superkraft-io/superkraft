@@ -87,8 +87,11 @@ class sk_ui_list extends sk_ui_component {
             this.classRemove('sk_ui_list_no_icons')
             for (var i in this.list){
                 var item = this.list[i]
+
+                if (item.iconVisible) continue
                 
                 item._icon.show({animation: 'width'})
+                item.iconVisible = true
             }
         }        
     }
