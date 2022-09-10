@@ -29,6 +29,20 @@ class SK_ContextMenu {
     }
 
     setEventListener(){
+        var getElPath = _el => {
+            var path = [];
+            var currentElem = _el;
+            while (currentElem) {
+                path.push(currentElem);
+                currentElem = currentElem.parentElement;
+            }
+            if (path.indexOf(window) === -1 && path.indexOf(document) === -1)
+                path.push(document);
+            if (path.indexOf(window) === -1)
+                path.push(window);
+            return path;
+        }
+
         var shouldIgnore = path => {
             if (this.parent.element.id === path[0].id) return false
 
@@ -52,7 +66,7 @@ class SK_ContextMenu {
 
         this.parent.element.addEventListener('contextmenu', _e => {
             _e.preventDefault()
-            if (shouldIgnore(_e.path)) return
+            if (shouldIgnore(getElPath(_e.currentTarget))) return
             if (this.__button === 'right') this.handleMouseEvent(_e)
         })
         this.parent.element.addEventListener('mousedown', _e => {

@@ -52,6 +52,8 @@ module.exports = class sk_ui {
         this.components.core   = this.getComponentsFromPath(this.paths.frontend.core, 'component')
         this.components.shared = this.getComponentsFromPath(this.paths.frontend.shared)
         this.components.global = this.getComponentsFromPath(this.paths.frontend.global)
+
+        //this.optimize()
     }
 
     listCustom(path){
@@ -72,6 +74,35 @@ module.exports = class sk_ui {
             root: this.root
         }
     }
+
+    /*
+    optimize(){
+        var merged = {
+            js: '',
+            css: ''
+        }
+
+        var coreDirs = fs.readdirSync(this.paths.frontend.core)
+
+        for (var i in coreDirs){
+            var dirName = coreDirs[i]
+            var fullPaths = {
+                js: this.paths.frontend.core + dirName + '/' + dirName + '.js',
+                css: this.paths.frontend.core + dirName + '/' + dirName + '.css'
+            }
+            try {
+                merged.js += fs.readFileSync(fullPaths.js) + '\n\n'
+                console.log('merged ' + dirName)
+                merged.css += fs.readFileSync(fullPaths.css) + '\n\n'
+            } catch(err) {
+                var x = 0
+            }
+        }
+
+        console.log(merged.js)
+        console.log(merged.js.length)
+    }
+    */
 }
 
 class sk_ui_wapp {
