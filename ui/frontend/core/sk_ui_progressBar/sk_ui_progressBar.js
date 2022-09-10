@@ -44,6 +44,15 @@ class sk_ui_progressBar extends sk_ui_component {
                 })
 
                 return this
+            },
+
+            bar: opt => {
+                this.classAdd('sk_ui_progressBar_bar sk_ui_color_dark_grey')
+                this.content = this.add.component(_c => {
+                    _c.classAdd('sk_ui_progressBar_bar_content sk_ui_gradient_blue')
+                })
+                
+                return this
             }
         }
     }
@@ -53,6 +62,10 @@ class sk_ui_progressBar extends sk_ui_component {
     }
 
     set progress(val){
-        this.pB.animate(1/100*val)
+        try {
+            this.pB.animate(1/100*val)
+        } catch(err) {
+            this.content.style.width = val + '%'
+        }
     }
 }

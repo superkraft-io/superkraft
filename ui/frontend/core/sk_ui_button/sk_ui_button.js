@@ -123,6 +123,11 @@ class sk_ui_button extends sk_ui_component {
             if (this.onToggled) this.onToggled(this.toggled)
         }})
 
+        this.attributes.add({friendlyName: 'Primary', name: 'primary', type: 'bool', onSet: val => {
+            this.classRemove('sk_ui_button_primary')
+            if (val) this.classAdd('sk_ui_button_primary')
+        }})
+
         this.attributes.add({friendlyName: 'Icon', name: 'icon', type: 'icon', onSet: val => {
             this._icon.icon = val
         }})

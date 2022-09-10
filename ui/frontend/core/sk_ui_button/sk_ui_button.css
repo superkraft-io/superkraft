@@ -13,8 +13,20 @@
     opacity: 0.5;
 }
 
-.sk_ui_button.active:hover {
-    background-color: var(--sk_ui_color_blue_dark);
+.sk_ui_button_primary {
+    background-color: var(--sk_ui_color_blue) !important;
+}
+
+.sk_ui_button_primary:hover {
+    background-color: var(--sk_ui_color_blue_dark) !important;
+}
+
+.sk_ui_button_primary > .sk_ui_label {
+    color: white;
+}
+
+.sk_ui_button_primary > .sk_ui_icon > #icon {
+    color: white;
 }
 
 

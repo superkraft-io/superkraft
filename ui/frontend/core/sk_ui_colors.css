@@ -57,9 +57,14 @@
 }
 
 .sk_ui_color_blue {
-    background-color: var(--sk_ui_blue);
+    background-color: var(--sk_ui_color_blue);
 }
 
 .sk_ui_color_blue_dark {
     background-color: var(--sk_ui_color_blue_dark);
+}
+
+
+.sk_ui_color_dark_grey {
+    background-color: var(--sk_ui_color_dark_grey);
 }

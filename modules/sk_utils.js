@@ -18,7 +18,7 @@ module.exports = class SK_Window {
 
             return actions
         } catch(err) {
-            console.error(err)
+            //console.error(err)
         }
 
         return {}
