@@ -2,10 +2,18 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title></title>
-        <!--<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />-->
+        <title><%= title %></title>
+        <link rel="icon" type="image/x-icon" href="<%= sk.routes.frontend.favIcon %>">
 
+        <!-- mobile meta -->
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="apple-touch-icon" href="<%= sk.routes.frontend.mobile.icon %>">
+        <link rel="apple-touch-startup-image" href="<%= sk.routes.frontend.mobile.launchImage %>">
+        <meta name="apple-mobile-web-app-title" content="<%= sk.routes.frontend.mobile.title %>">
+        <% if (sk.routes.frontend.mobile.hideNativeUI){ %><meta name="apple-mobile-web-app-capable" content="yes"></meta><% } %>
+        <% if (sk.routes.frontend.mobile.statusBarStyle){ %><meta name="apple-mobile-web-app-status-bar-style" content="<%= sk.routes.frontend.mobile.statusBarStyle %>"><% } %>
+        <!-------- end ----- -->
 
         <script> try { var $ = jQuery = require("jquery") } catch(err) {} </script>
         <script src="<%= sk.routes.frontend.sk%>libs/jquery/dist/jquery.slim.min.js"></script>

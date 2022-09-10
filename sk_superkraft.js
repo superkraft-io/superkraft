@@ -36,7 +36,9 @@ module.exports = class Superkraft {
 
             country: 'en',
 
-            csp: {...{}, ...opt.csp}
+            csp: {...{}, ...opt.csp},
+
+            mobile: opt.mobile || {}
         }
         var sk = global.sk
 

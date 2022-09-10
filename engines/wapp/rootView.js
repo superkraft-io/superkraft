@@ -17,7 +17,18 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                     app: '',
                     global: '/global',
 
-                    complexity: '/complexity/'
+                    complexity: '/complexity/',
+
+                    favIcon: global.sk.paths.icons.favIcon,
+
+                    mobile: {
+                        icon: global.sk.paths.icons.app,
+                        launchImage: global.sk.mobile.launchImage,
+                        title: global.sk.mobile.title,
+                        hideNativeUI: global.sk.mobile.hideNativeUI,
+                        statusBarStyle: global.sk.mobile.statusBarStyle,
+
+                    }
                 }
             }
             
