@@ -1,3 +1,7 @@
+.sk_ui_component {
+    z-index: 1;
+}
+
 .sk_ui_hint {
     z-index: 9999 !important;
     position: absolute;

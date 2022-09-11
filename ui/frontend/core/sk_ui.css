@@ -15,8 +15,8 @@ body {
 }
 
 .sk_ui_frosted {
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
 }
 
 .sk_ui_frosted.sk_ui_face_color {

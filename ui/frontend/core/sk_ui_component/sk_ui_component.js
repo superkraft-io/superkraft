@@ -16,7 +16,7 @@ class sk_ui_component {
         
 
         this.bucket = JSOM.parse({root: this.parent.element,
-            tree: { div_element: { class: 'sk_component sk_ui_transition sk_ui_noSelect', styling: 'c' }}
+            tree: { div_element: { class: 'sk_component sk_ui_transition sk_ui_noSelect ' + (sk.isOnMobile ? 'sk_ui_isOnMobile' : ''), styling: 'c' }}
         })
 
         

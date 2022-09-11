@@ -188,13 +188,16 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
                     console.error(err)
                 }
 
-                https.createServer(certOpt, this.app)
-                .listen(config.webserver.ports.https, function() {
+                this.servers = {}
+                
+                this.servers.https = https.createServer(certOpt, this.app)
+                
+                this.servers.https.listen(config.webserver.ports.https, function() {
                     console.log("[WAPP ENGINE] Listening on " + config.webserver.ports.https)
                     resolve()
                 })
     
-                http.createServer(
+                this.servers.http = http.createServer(
                     function (req, res) {
                         try {
                             res.writeHead(301, { "Location": "https://" + req.headers['host'].replace(80, 443) + req.url })
@@ -203,7 +206,9 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
                             console.error('Invalid request: ' + req.url + '      ' + JSON.stringify(req.headers))
                         }
                     }
-                ).listen(config.webserver.ports.http)
+                )
+                
+                this.servers.http.listen(config.webserver.ports.http)
             }
         })
     }
