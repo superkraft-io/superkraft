@@ -2,7 +2,7 @@
     z-index: 1;
 }
 
-.sk_ui_hint {
+/*.sk_ui_hint {
     z-index: 9999 !important;
     position: absolute;
     padding: 2px 10px;
@@ -14,7 +14,7 @@
     height: fit-content;
     min-width: 0px;
     min-height: 0px;
-}
+}*/
 
 .sk_ui_component_spaced_horizontal > .sk_ui_component {
     margin-right: 8px

@@ -434,24 +434,27 @@ class sk_ui_component {
             this.width = rect.width
             this.height = rect.height
 
-            if (opt.animation === 'width'){
-                this.width = 0.01
-                this.marginRight = 0.01
-                this.paddingLeft = 0.1
-                this.paddingRight = 0.1
-            } else if (opt.animation === 'height'){
-                this.height = 0.01
-                this.marginBottom = 0.01
-                this.paddinTop = 0.1
-                this.paddingBottom = 0.1
-            }
-
+            
             this.opacity = 0.01
             this.style.transform = 'scale(0)'
+            setTimeout(()=>{
+                
+                if (opt.animation === 'width'){
+                    this.width = 0.01
+                    this.marginRight = 0.01
+                    this.paddingLeft = 0.1
+                    this.paddingRight = 0.1
+                } else if (opt.animation === 'height'){
+                    this.height = 0.01
+                    this.marginBottom = 0.01
+                    this.paddinTop = 0.1
+                    this.paddingBottom = 0.1
+                }
+            }, 10)
 
             setTimeout(()=>{
                 resolve()
-            }, 210)
+            }, 225)
         })
     }
 
