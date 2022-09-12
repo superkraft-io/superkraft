@@ -130,26 +130,33 @@
             },
 
             bytesToFormat(size){
-                var format = 'B'
-                
-                if (size > 1000){
-                    size = (size / 1000).toFixed(0)
-                    format = 'KB'
+                var formatsList = []
+                var highest = {size: size, format: 'B'}
+
+                var addFormat = (size, format)=>{
+                    highest = {size: size, format: format.toUpperCase() + 'B'}
+                    formatsList.push(highest)
                 }
 
                 
-                if (size > 1000){
+
+                var formats = 'kmgtp'
+                var divisionIdx = -1
+                var divide = ()=>{
+                    divisionIdx++
                     size = (size / 1000).toFixed(2)
-                    format = 'MB'
+                    addFormat(size, formats[divisionIdx])
                 }
 
-                
-                if (size > 1000){
-                    size = (size / 1000).toFixed(2)
-                    format = 'GB'
-                }
+                var sizeStr = size.toString()
+                var divisionSteps = Math.floor(sizeStr.length / 3)
+                console.log(divisionSteps)
+                for (var i = 0; i < divisionSteps; i++) divide()
 
-                return {size: size, format: format}
+                var res = {size: highest.size, format: highest.format, formats: formatsList}
+                console.log(res)
+
+                return res
             }
         },
 
