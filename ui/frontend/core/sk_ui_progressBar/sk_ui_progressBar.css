@@ -75,3 +75,9 @@
     bottom: 0px;
     border-radius: 32px;
 }
+
+.sk_ui_progressBar_hintHandle {
+    position: absolute;
+    max-width: 0px !important;
+    right: 0px;
+}

@@ -47,10 +47,23 @@ class sk_ui_progressBar extends sk_ui_component {
             },
 
             bar: opt => {
+                this.compact = true
+                this.vertical = false
                 this.classAdd('sk_ui_progressBar_bar sk_ui_color_dark_grey')
                 this.content = this.add.component(_c => {
                     _c.classAdd('sk_ui_progressBar_bar_content sk_ui_gradient_blue')
+                    
                 })
+
+                this.contentHidden = this.add.component(_c => {
+                    _c.classAdd('sk_ui_progressBar_bar_content')
+                    _c.opacity = 0.01
+                    _c.animate = false
+                    this.hintHandle = _c.add.component(_c => {
+                        _c.classAdd('sk_ui_progressBar_hintHandle')
+                    })
+                })
+                
                 
                 return this
             }
@@ -66,6 +79,8 @@ class sk_ui_progressBar extends sk_ui_component {
             this.pB.animate(1/100*val)
         } catch(err) {
             this.content.style.width = val + '%'
+            this.contentHidden.style.width = val + '%'
+            if (this.hintProgress) this.hintHandle.hint({text: val + '%', instaShow: true})
         }
     }
 }

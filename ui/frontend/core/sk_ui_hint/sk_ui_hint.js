@@ -22,13 +22,15 @@ class sk_ui_hint extends sk_ui_component {
         this.label.text = val
     }
 
-    
-    show(autohide){
-        if (!autohide){
-            clearTimeout(this.hintHider)
-            this.hintHider = setTimeout(async ()=>{
-                await this.onHide()
-            }, 3000)
+    resetAutoHide(){
+        clearTimeout(this.hintHider)
+        this.hintHider = setTimeout(async ()=>{
+            await this.onHide()
+        }, 3000)
+    }
+    show(autoHide){
+        if (!autoHide){
+            this.resetAutoHide()
         }
         
         this.calcPos()
@@ -48,7 +50,12 @@ class sk_ui_hint extends sk_ui_component {
         return this.transition('fade ' + this.results.animation + ' out')
     }
 
-    
+    updatePos(){
+        this.resetAutoHide()
+        this.calcPos()
+        this.element.style.left = this.results.x + 'px'
+        this.element.style.top = this.results.y + 'px'
+    }
 
     calcPos(){
         this.opacity = 0

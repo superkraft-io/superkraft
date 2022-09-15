@@ -52,7 +52,15 @@ class SK_Hint {
     }
 
     show(){
-        if (!this.__text || this.created) return
+        if (!this.__text) return
+
+        
+        if (this.__hint){
+            this.__hint.content = this.__text
+            this.__hint.updatePos()
+            return
+        }
+
         this.__hint = new sk_ui_hint({parent: sk.app, noHint: true, target: this.opt.parent})
         this.__hint.setup(_c => {
             _c.content = this.__text

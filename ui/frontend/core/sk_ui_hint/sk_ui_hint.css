@@ -3,6 +3,21 @@
     position: absolute;
     padding: 4px 6px;
     max-width: 256px;
+
+    position: absolute;
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+
+    width: fit-content;
+    height: fit-content;
+    min-width: 0px;
+    min-height: 0px;
+
+    
+    background-color: rgba(55, 55, 55, 0.5);
+    
+    transition: 200ms;
 }
 
 .sk_ui_hint_hidden {

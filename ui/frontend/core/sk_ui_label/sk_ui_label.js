@@ -8,7 +8,19 @@ class sk_ui_label extends sk_ui_component {
 
         this.styling = 'left'
 
-        this.attributes.add({friendlyName: 'Text', name: 'text', type: 'text', onSet: val => { this.element.innerText = val }})
+        this.attributes.add({friendlyName: 'Text', name: 'text', type: 'text', onSet: async val => {
+            if (!this.fadeOnChange) return this.element.innerText = val
+
+            var currentOpacity = this.opacity
+            this.opacity = 0
+            await sk.utils.sleep(200)
+            this.element.innerText = val
+            this.opacity = currentOpacity
+        }})
+
+        this.attributes.add({friendlyName: 'Fade On Change', name: 'fadeOnChange', type: 'bool'})
+        
+        
         this.attributes.add({friendlyName: 'Size', name: 'size', type: 'number', units: {max: 50}, css: 'font-size?px'})
         this.attributes.add({friendlyName: 'Weight', name: 'weight', type: 'number', units: {step: 100, min: 0, max: 900}, css: 'font-weight?'})
         this.attributes.add({friendlyName: 'Color', name: 'color', type: 'color', css: 'color?'})
