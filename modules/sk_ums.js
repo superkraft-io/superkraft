@@ -70,7 +70,7 @@ module.exports = class SK_UMS {
     }
     on(eventID, cb){
         var existingEvent = this.addOrGet(eventID)
-        existingEvent.hook((sender, val)=>{ cb(sender, val) })
+        existingEvent.hook(res => { cb(res) })
     }
 
     /*off(eventID, client){
@@ -99,7 +99,7 @@ class SK_UMS_Event {
     async hook(cb){
         this.hooks.push((sender, data)=>{ cb(sender, data) })
 
-        if (this.data !== undefined) cb(this.lastSender, this.data)
+        if (this.data !== undefined) cb({first: true, sender: this.lastSender, data: this.data})
     }
 
     release(client){

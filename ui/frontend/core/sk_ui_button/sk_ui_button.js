@@ -199,7 +199,7 @@ class sk_ui_button extends sk_ui_component {
 
 
         if (this.loaderIndicator) await this.loaderIndicator.destroy()
-        if (this.actionStatusIndicator) await  this.actionStatusIndicator.destroy()
+        if (this.actionStatusIndicator) await this.actionStatusIndicator.destroy()
         this.loaderCreateTimer = setTimeout(()=>{
             this.loaderIndicator = this.addStatusIndicator({status: 'loader', autohide: false})
         }, 250)

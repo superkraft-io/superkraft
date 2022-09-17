@@ -3,6 +3,11 @@
     padding: 8px 12px;
     position: relative;
     overflow: hidden;
+    opacity: 0.5;
+}
+
+.sk_ui_button_enabled {
+    opacity: 1;
 }
 
 .sk_ui_button_enabled:hover {

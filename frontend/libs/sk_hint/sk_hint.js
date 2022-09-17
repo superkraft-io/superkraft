@@ -2,8 +2,9 @@ class SK_Hint {
     constructor(opt){
         this.opt = opt
 
-        this.position = ''
-        this.autoHide = true
+        this.position   = ''
+        this.autoHide   = true
+        this.limitWidth = true
 
         this.hookMouseEvents()
     }
@@ -28,9 +29,10 @@ class SK_Hint {
 
     config(opt){
         this.text = opt.text
-        if (opt.position) this.position   = opt.position
-        if (opt.instaShow) this.instaShow = opt.instaShow
-        if (opt.autoHide) this.autoHide   = opt.autoHide
+        if (opt.position)   this.position   = opt.position
+        if (opt.instaShow)  this.instaShow  = opt.instaShow
+        if (opt.autoHide   !== undefined) this.autoHide   = opt.autoHide
+        if (opt.limitWidth !== undefined) this.limitWidth = opt.limitWidth
     }
     
     get created(){ return this.__hint }
@@ -76,7 +78,7 @@ class SK_Hint {
         this.__hint.setup(_c => {
             _c.content = this.__text
             _c.position = this.__position
-            //_c.updatePosition()
+            if (!this.limitWidth) _c.style.maxWidth = '100%'
             this.currentHintUUID = _c.uuid
             _c.onHide = uuid =>{ if (uuid === this.currentHintUUID) this.onHide() }
         })
