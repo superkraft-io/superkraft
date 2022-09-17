@@ -166,7 +166,10 @@
     sk.fileDrop = new sk_fileDrop()
 
     sk.window = {
-        close    : terminate => { sk.comm.main('windowAction', {action: 'close', terminate: terminate}) },
+        close    : async terminate => {
+            await sk.app.transition('scale out')
+            sk.comm.main('windowAction', {action: 'close', terminate: terminate})
+        },
         minimize : ()=>{ sk.comm.main('windowAction', {action: 'minimize'}) },
         maximize : reset => {
             sk.window.resizing = true

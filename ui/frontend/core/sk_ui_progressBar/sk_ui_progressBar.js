@@ -80,7 +80,7 @@ class sk_ui_progressBar extends sk_ui_component {
         } catch(err) {
             this.content.style.width = val + '%'
             this.contentHidden.style.width = val + '%'
-            if (this.hintProgress) this.hintHandle.hint({text: val + '%', instaShow: true})
+            if (this.hintProgress) this.hintHandle.hint({text: val + '%', instaShow: true, position: 'right center'})
         }
     }
 }

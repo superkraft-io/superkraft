@@ -6,7 +6,7 @@ body {
     background-color: transparent;
     color: white;
     font-size: 14px;
-    border-radius: var(--view-radius);
+    border-radius: var(--view-radius) !important;
     overflow: hidden !important;
 }
 
@@ -42,6 +42,16 @@ body {
     right: 0px;
     bottom: 0px;
     background-color: var(--sk_ui_color_very_dark_grey);
+}
+
+.sk_ui_appBody_dapp {
+    border-radius: var(--view-radius) !important;
+    overflow: hidden !important;
+}
+
+.sk_ui_appBody_dapp_withTitle {
+    border-top-left-radius: 0px !important;
+    border-top-right-radius: 0px !important;
 }
 
 .sk_ui_appBody.sk_ui_noTitlebar {

@@ -7,8 +7,8 @@ class sk_ui_image extends sk_ui_component {
         }})
 
         this.attributes.add({friendlyName: 'Size', name: 'size', type: 'number', units: {min: 32, max: 512}, onSet: val => {
-            this.style.width = val + 'px'
-            this.style.height = val + 'px'
+            this.style.minWidth = val + 'px'
+            this.style.minHeight = val + 'px'
         }})
     }
 }

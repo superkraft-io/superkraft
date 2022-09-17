@@ -11,11 +11,10 @@ class sk_ui_label extends sk_ui_component {
         this.attributes.add({friendlyName: 'Text', name: 'text', type: 'text', onSet: async val => {
             if (!this.fadeOnChange) return this.element.innerText = val
 
-            var currentOpacity = this.opacity
-            this.opacity = 0
-            await sk.utils.sleep(200)
-            this.element.innerText = val
-            this.opacity = currentOpacity
+            this.hideShow_2({onHidden: async ()=>{ return new Promise(resolve => {
+                this.element.innerText = val
+                resolve()
+            })}})
         }})
 
         this.attributes.add({friendlyName: 'Fade On Change', name: 'fadeOnChange', type: 'bool'})
@@ -37,14 +36,23 @@ class sk_ui_label extends sk_ui_component {
                 return
             }
 
-            var asHTML = (phrase.indexOf('!html!') > -1 ? true : false)
-            
-            if (asHTML){
-                this.vertical = true
-                this.element.innerHTML = phrase.replace('!html!', '').trim()
-            } else {
-                this.element.innerText = phrase
+            var change = ()=>{
+                var asHTML = (phrase.indexOf('!html!') > -1 ? true : false)
+                
+                if (asHTML){
+                    this.vertical = true
+                    this.element.innerHTML = phrase.replace('!html!', '').trim()
+                } else {
+                    this.element.innerText = phrase
+                }
             }
+
+            if (!this.fadeOnChange) return change()
+
+            this.hideShow_2({onHidden: async ()=>{ return new Promise(resolve => {
+                change()
+                resolve()
+            })}})
         }})
     }
 }

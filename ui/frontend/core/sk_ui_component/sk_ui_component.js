@@ -535,6 +535,25 @@ class sk_ui_component {
             resolve()
         })
     }
+
+    async hideShow_2(opt){
+        var currentPulsateState = this.pulsate
+        this.pulsate = false
+        var currentOpacity = this.opacity
+        try { 
+            if ((parseFloat(currentOpacity)*10000) < 10000) currentOpacity = 1
+        } catch(err) {
+            currentOpacity = 1
+        }
+        this.opacity = 0.01
+        await sk.utils.sleep(200)
+
+        await opt.onHidden()
+        
+        this.opacity = currentOpacity
+        await sk.utils.sleep(200)
+        this.pulsate = currentPulsateState
+    }
 }
 
 

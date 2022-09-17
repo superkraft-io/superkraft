@@ -25,7 +25,7 @@ class sk_ui_hint extends sk_ui_component {
     resetAutoHide(){
         clearTimeout(this.hintHider)
         this.hintHider = setTimeout(async ()=>{
-            await this.onHide()
+            await this.onHide(this.uuid)
         }, 3000)
     }
     show(autoHide){

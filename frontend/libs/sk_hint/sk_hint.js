@@ -3,6 +3,7 @@ class SK_Hint {
         this.opt = opt
 
         this.position = ''
+        this.autoHide = true
 
         this.hookMouseEvents()
     }
@@ -27,8 +28,9 @@ class SK_Hint {
 
     config(opt){
         this.text = opt.text
-        if (opt.position) this.position = opt.position
+        if (opt.position) this.position   = opt.position
         if (opt.instaShow) this.instaShow = opt.instaShow
+        if (opt.autoHide) this.autoHide   = opt.autoHide
     }
     
     get created(){ return this.__hint }
@@ -38,8 +40,17 @@ class SK_Hint {
             if (this.__text) this.show()
         })
 
-        this.opt.parent.element.addEventListener('mouseleave', ()=>{
-            this.onHide()
+        this.opt.parent.element.addEventListener('mouseleave', _e => {
+            var doHide = false
+            for (var i in _e.path){
+                var suo = _e.path[i].sk_ui_obj
+                if (suo && suo._hint.__hint && suo.uuid === this.opt.parent.uuid){
+                    doHide = true
+                    break
+                }
+            }
+
+            if (doHide) this.onHide()
         })
     }
 
@@ -47,7 +58,7 @@ class SK_Hint {
         if (!this.created) return
         clearTimeout(this.hintTimer)
         await this.__hint.hide()
-        this.__hint.remove()
+        try { this.__hint.remove() } catch(err) {}
         this.__hint = undefined
     }
 
@@ -66,12 +77,12 @@ class SK_Hint {
             _c.content = this.__text
             _c.position = this.__position
             //_c.updatePosition()
-
-            _c.onHide = ()=>{ this.onHide() }
+            this.currentHintUUID = _c.uuid
+            _c.onHide = uuid =>{ if (uuid === this.currentHintUUID) this.onHide() }
         })
 
         this.hintTimer = setTimeout(()=>{
-            this.__hint.show()
+            this.__hint.show(this.autoHide)
         }, 100)
     }
 

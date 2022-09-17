@@ -7,7 +7,7 @@ module.exports = class SK_Action extends SK_RootAction {
                 break;
 
             case 'minimize':
-                wnd.minimize();
+                wnd.minimize()
                 break;
 
             case 'maximize':

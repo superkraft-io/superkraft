@@ -125,6 +125,8 @@
             sk.init().then(()=>{
                 sk.app = (new sk_ui_component({parent: {element: document.body}}))
                 sk.app.setup(_c => {
+                    _c.style.display = 'none'
+
                     sk._cM = _c.contextMenu
 
                     _c.classAdd('sk_app')
@@ -141,17 +143,40 @@
                     
 
                     _c.body = _c.add.component(_c => {
-                        _c.classAdd('sk_ui_appBody ' + (sk.app_type !== 'dapp' || sk.noTitle ? 'sk_ui_noTitlebar' : ''))
+                        _c.classAdd('sk_ui_appBody')
+                        if (sk.noTitle || sk.app_type === 'wapp') _c.classAdd('sk_ui_noTitlebar')
                     
+                        if (sk.app_type === 'dapp'){
+                            _c.classAdd('sk_ui_appBody_dapp')
+                            if (!sk.noTitle) _c.classAdd('sk_ui_appBody_dapp_withTitle')
+                        }
+
                         _c.view = new sk._view({parent: _c})
                         _c.children.add(_c.view)
                     })
-
                     <% if (sk.useComplexity){ %>
                         sk.complexity.editor = new sk_ui_complexity_editor({app: _c})
                         sk.complexity.codeEditor = new sk_ui_complexity_codeEditor(_c)
                     <% } %>
+
+                    _c.ums.on('sk_view_cmd', res => {
+                        if (res.data.viewID !== sk.id) return
+
+                        switch (res.data.action) {
+                            case 'show':
+                                _c.transition('scale in')
+                                break;
+
+                            case 'show':
+                                _c.transition('scale in')
+                                break;
+                        
+                            default:
+                                break;
+                        }
+                    })
                 })
+
             })
 
             if (sk.app_type === 'dapp'){

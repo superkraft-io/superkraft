@@ -18,13 +18,6 @@ class sk_ui_icon extends sk_ui_component {
 
         this.attributes.add({friendlyName: 'Ignore Icon Def.', name: 'ignoreIconDefinition', type: 'bool'})
         this.attributes.add({hide: true, friendlyName: 'Icon', name: 'icon', type: 'icon', onSet: async val => {
-            var currentOpacity = this.opacity
-            if (this.fadeOnChange){
-                currentOpacity = this.opacity
-                this.opacity = 0
-                await sk.utils.sleep(200)
-            }
-
             if (this.onChanged) this.onChanged()
             for (var i = this.iconElement.classList.length; i > -1; i--) if (this.iconElement.classList[i] !== 'transition') this.iconElement.classList.remove(this.iconElement.classList[i])
             if (!this.ignoreIconDefinition) this.iconElement.classList.add('icon')
@@ -32,9 +25,17 @@ class sk_ui_icon extends sk_ui_component {
             if (!val) return
 
             var split = val.split(' ')
-            for (var i = 0; i < split.length; i++) this.iconElement.classList.add(split[i])
 
-            this.opacity = currentOpacity
+            var change = ()=>{
+                for (var i = 0; i < split.length; i++) this.iconElement.classList.add(split[i])
+            }
+
+            if (!this.fadeOnChange) return change()
+
+            this.hideShow_2({onHidden: async ()=>{ return new Promise(resolve => {
+                change()
+                resolve()
+            })}})
         }})
         
         this.attributes.add({friendlyName: 'Fade On Change', name: 'fadeOnChange', type: 'bool'})
