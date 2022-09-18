@@ -3,7 +3,9 @@ const {app, BrowserWindow, dialog, ipcMain } = require('electron')
 module.exports = class SK_Action extends SK_RootAction {
     async exec(opt, res, view, _v){
         if (opt.type === 'open' || opt.type === 'save'){
-            var fileRes = await dialog['show' + (opt.type === 'open' ? 'Open' : 'Save') + 'Dialog'](opt.options)
+            var defOpt = {}
+            defOpt = {...defOpt, ...opt.options}
+            var fileRes = await dialog['show' + (opt.type === 'open' ? 'Open' : 'Save') + 'Dialog'](_v, defOpt)
             res.resolve(fileRes)
         }
 

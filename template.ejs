@@ -141,7 +141,7 @@
                         })
                     }
                     
-
+                    
                     _c.body = _c.add.component(_c => {
                         _c.classAdd('sk_ui_appBody')
                         if (sk.noTitle || sk.app_type === 'wapp') _c.classAdd('sk_ui_noTitlebar')
@@ -159,16 +159,38 @@
                         sk.complexity.codeEditor = new sk_ui_complexity_codeEditor(_c)
                     <% } %>
 
-                    _c.ums.on('sk_view_cmd', res => {
+                    _c.ums.on('sk_view_cmd-' + sk.id, async res => {
                         if (res.data.viewID !== sk.id) return
 
                         switch (res.data.action) {
                             case 'show':
+                                if (_c.visible){
+                                    _c.style.transition = '100ms'
+                                    var pulseOnce = async ()=>{
+                                        _c.style.transition = '100ms'
+                                        _c.opacity = 0.8
+                                        _c.style.transform = 'scale(0.99)'
+                                        _c.style.filter = 'blur(5px)'
+                                        await sk.utils.sleep(100)
+                                        _c.opacity = 1
+                                        _c.style.transform = 'scale(1)'
+                                        _c.style.filter = ''
+                                        return sk.utils.sleep(100)
+                                    }
+                                    await pulseOnce()
+                                    await pulseOnce()
+                                    _c.style.transition = ''
+                                    return
+                                }
+                                _c.visible = true
                                 _c.transition('scale in')
                                 break;
 
-                            case 'show':
-                                _c.transition('scale in')
+                            case 'hide':
+                                if (!_c.visible) return
+                                
+                                await _c.transition('scale out')
+                                _c.visible = false
                                 break;
                         
                             default:

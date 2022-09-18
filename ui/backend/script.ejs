@@ -166,16 +166,19 @@
     sk.fileDrop = new sk_fileDrop()
 
     sk.window = {
-        close    : async terminate => {
-            await sk.app.transition('scale out')
-            sk.comm.main('windowAction', {action: 'close', terminate: terminate})
-        },
+        close    : async terminate => { sk.comm.main('windowAction', {action: 'close', terminate: terminate}) },
         minimize : ()=>{ sk.comm.main('windowAction', {action: 'minimize'}) },
         maximize : reset => {
             sk.window.resizing = true
             sk.comm.main('windowAction', {action: 'maximize', reset: reset})
             setTimeout(()=>{ sk.window.resizing = false }, 100)
         },
+
+        reload: ()=>{
+            sk.app.body.view.remove()
+            sk.app.body.view = new sk._view({parent: sk.app.body})
+            sk.app.body.children.add(sk.app.body.view)
+        }
     }
 
     sk.ui = {
