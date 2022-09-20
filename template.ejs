@@ -9,11 +9,13 @@
         <% if (sk.routes.frontend.mobile){ %>
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <meta name="apple-mobile-web-app-capable" content="yes">
+            <meta name="mobile-web-app-capable" content="yes"> <!-- chrome -->
+            <meta name="apple-touch-fullscreen" content="yes"> 
             <link rel="apple-touch-icon" href="<%= sk.routes.frontend.mobile.icon %>">
-            <link rel="apple-touch-startup-image" href="<%= sk.routes.frontend.mobile.launchImage %>">
             <meta name="apple-mobile-web-app-title" content="<%= sk.routes.frontend.mobile.title %>">
-            <% if (sk.routes.frontend.mobile.hideNativeUI){ %><meta name="apple-mobile-web-app-capable" content="yes"></meta><% } %>
-            <% if (sk.routes.frontend.mobile.statusBarStyle){ %><meta name="apple-mobile-web-app-status-bar-style" content="<%= sk.routes.frontend.mobile.statusBarStyle %>"><% } %>
+            <% if (sk.routes.frontend.mobile.hideNativeUI){ %> <meta name="apple-mobile-web-app-capable" content="yes"></meta> <% } %>
+            <% if (sk.routes.frontend.mobile.statusBarStyle){ %> <meta name="apple-mobile-web-app-status-bar-style" content="<%= sk.routes.frontend.mobile.statusBarStyle %>"> <% } %>
+            <% if (sk.routes.frontend.mobile.splashHTML){ %> <%- sk.routes.frontend.mobile.splashHTML %> <% } %>
         <% } %>
         <!-------- end ----- -->
 

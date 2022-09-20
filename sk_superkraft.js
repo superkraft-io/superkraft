@@ -74,6 +74,7 @@ module.exports = class Superkraft {
         global.SK_RootView = require('./engines/' + opt.type + '/rootView.js')
         global.SK_RootEngine = require('./sk_rootEngine.js')
         sk.engine = new (require('./engines/' + opt.type + '/engine.js'))()
+        await sk.engine.init()
 
         if (opt.useComplexity) global.sk.complexity.init()
 
