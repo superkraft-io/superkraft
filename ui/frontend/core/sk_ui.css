@@ -10,6 +10,16 @@ body {
     overflow: hidden !important;
 }
 
+button {
+    background: transparent;
+    outline: none; /* Optional */
+    border: 0;
+}
+
+button:active, button:focus {
+    outline: solid 1px var(--sk_ui_color_blue) !important;
+}
+
 .sk_ui_face_color {
     background-color: var(--sk_ui_color_very_dark_grey);
 }

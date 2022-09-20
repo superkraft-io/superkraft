@@ -14,6 +14,20 @@ module.exports = class SK_WAPP_Mobile {
         console.error('[SK MOBILE] ' + msg)
     }
 
+    assembleFrontendInfo(){
+        var info = {}
+        if (global.sk.mobile){
+            info.mobile = {
+                icon: global.sk.paths.icons.app,
+                title: global.sk.mobile.title,
+                hideNativeUI: global.sk.mobile.hideNativeUI,
+                statusBarStyle: global.sk.mobile.statusBarStyle,
+            }
+
+            if (global.sk.mobile.splash) info.splash = {ejs: global.sk.mobile.splash.container + 'sk_splash.ejs'}
+        }
+    }
+
     init(){
         return new Promise(async resolve => {
             var fail = msg => {
@@ -21,13 +35,15 @@ module.exports = class SK_WAPP_Mobile {
                 resolve()
             }
 
-            if (!global.sk.mobile.splash.route) return fail('No route set for splash images')
-            if (!global.sk.mobile.splash.container) return fail('No output container defined for splash images')
-            
-            if (!fs.existsSync(global.sk.mobile.splash.container + 'sk_splash.ejs')){
-                this.pwaAssetGenerator = require('pwa-asset-generator')
-                if (!global.sk.mobile.splash.input) return fail('No input file defined for splash images')
-                await this.generateSplashImages()
+            if (global.sk.mobile.splash){
+                if (!global.sk.mobile.splash.route) return fail('No route set for splash images')
+                if (!global.sk.mobile.splash.container) return fail('No output container defined for splash images')
+                
+                if (!fs.existsSync(global.sk.mobile.splash.container + 'sk_splash.ejs')){
+                    this.pwaAssetGenerator = require('pwa-asset-generator')
+                    if (!global.sk.mobile.splash.input) return fail('No input file defined for splash images')
+                    await this.generateSplashImages()
+                }
             }
             resolve()
         })
