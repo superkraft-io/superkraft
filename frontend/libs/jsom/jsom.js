@@ -102,7 +102,7 @@ class JSOM_ {
                             $(element).transition({animation: animation, duration: 190})
                             setTimeout(()=>{
                                 resolve()
-                            }, 200)
+                            }, 190)
                         })
                     }
                 }

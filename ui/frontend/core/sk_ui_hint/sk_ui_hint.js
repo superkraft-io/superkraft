@@ -3,7 +3,7 @@ class sk_ui_hint extends sk_ui_component {
         super(opt)
         
         
-        this.classAdd('sk_ui_ignoreMouse sk_ui_hint_hidden')
+        this.classAdd('sk_ui_hint_hidden')
         this.animate = false
 
         this.frosted = 'clear'
@@ -17,7 +17,9 @@ class sk_ui_hint extends sk_ui_component {
 
         this.results = {}
 
-
+        this.element.addEventListener('mouseenter', ()=>{
+            this.onHide(this.uuid)
+        })
     }
 
     monitorParentPosition(){
