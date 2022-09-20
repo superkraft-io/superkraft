@@ -22,19 +22,16 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                     favIcon: global.sk.paths.icons.favIcon,
 
                     mobile: {
+                        splash: { ejs: global.sk.mobile.splash.container + 'sk_splash.ejs' },
                         icon: global.sk.paths.icons.app,
                         title: global.sk.mobile.title,
                         hideNativeUI: global.sk.mobile.hideNativeUI,
                         statusBarStyle: global.sk.mobile.statusBarStyle,
-
                     }
                 }
             }
             
             if (global.sk.complexity) this.routes.frontend.complexity = '/complexity/'
-
-            if (global.sk.engine.mobile.splashHTML) this.routes.frontend.mobile.splashHTML = global.sk.engine.mobile.splashHTML.join('\n')
-
 
 
             await this._init(opt)

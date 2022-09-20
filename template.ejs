@@ -15,7 +15,7 @@
             <meta name="apple-mobile-web-app-title" content="<%= sk.routes.frontend.mobile.title %>">
             <% if (sk.routes.frontend.mobile.hideNativeUI){ %> <meta name="apple-mobile-web-app-capable" content="yes"></meta> <% } %>
             <% if (sk.routes.frontend.mobile.statusBarStyle){ %> <meta name="apple-mobile-web-app-status-bar-style" content="<%= sk.routes.frontend.mobile.statusBarStyle %>"> <% } %>
-            <% if (sk.routes.frontend.mobile.splashHTML){ %> <%- sk.routes.frontend.mobile.splashHTML %> <% } %>
+            <% if (sk.routes.frontend.mobile.splash.ejs){ %> <%- include(sk.routes.frontend.mobile.splash.ejs) %> <% } %>
         <% } %>
         <!-------- end ----- -->
 
