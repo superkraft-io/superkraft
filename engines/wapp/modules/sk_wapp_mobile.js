@@ -48,8 +48,8 @@ module.exports = class SK_WAPP_Mobile {
             const appleDeviceSpecsForLaunchImages = this.pwaAssetGenerator.appleDeviceSpecsForLaunchImages
 
             this.splashHTML = appleDeviceSpecsForLaunchImages.map(spec => {   
-                var _p = `<link key="apple-splash-${spec.portrait.width}-${spec.portrait.height}" rel="apple-touch-startup-image" href="${global.sk.mobile.splash.route}apple-splash-${spec.portrait.width}-${spec.portrait.height}.jpg" media="device-width: ${spec.portrait.width / spec.scaleFactor}px) and (device-height: ${spec.portrait.height / spec.scaleFactor}px) and (-webkit-device-pixel-ratio: ${spec.scaleFactor}) and (orientation: portrait)" />`
-                var _l = `<link key="apple-splash-${spec.landscape.width}-${spec.landscape.height}" rel="apple-touch-startup-image" href="${global.sk.mobile.splash.route}apple-splash-${spec.landscape.width}-${spec.landscape.height}.jpg" media="device-width: ${spec.landscape.width / spec.scaleFactor}px) and (device-height: ${spec.landscape.height / spec.scaleFactor}px) and (-webkit-device-pixel-ratio: ${spec.scaleFactor}) and (orientation: landscape)" />`
+                var _p = `<link key="apple-splash-${spec.portrait.width}-${spec.portrait.height}" rel="apple-touch-startup-image" href="${global.sk.mobile.splash.route}apple-splash-${spec.portrait.width}-${spec.portrait.height}.jpg" media="screen and (device-width: ${spec.portrait.width / spec.scaleFactor}px) and (device-height: ${spec.portrait.height / spec.scaleFactor}px) and (-webkit-device-pixel-ratio: ${spec.scaleFactor}) and (orientation: portrait)" />`
+                var _l = `<link key="apple-splash-${spec.landscape.width}-${spec.landscape.height}" rel="apple-touch-startup-image" href="${global.sk.mobile.splash.route}apple-splash-${spec.landscape.width}-${spec.landscape.height}.jpg" media="screen and (device-width: ${spec.landscape.width / spec.scaleFactor}px) and (device-height: ${spec.landscape.height / spec.scaleFactor}px) and (-webkit-device-pixel-ratio: ${spec.scaleFactor}) and (orientation: landscape)" />`
 
                 return _p + '\n' + _l
             })
