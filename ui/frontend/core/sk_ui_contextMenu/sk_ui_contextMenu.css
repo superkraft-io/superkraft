@@ -6,8 +6,6 @@
     background-color: #31313182;
     min-width: 8rem;
     min-height: 2rem;
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
     padding: 5px;
     box-shadow: 0px 0px 0px 1px #72727286 inset, 0px 8px 20px 0px #00000052;
     opacity: 0;

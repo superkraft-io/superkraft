@@ -184,6 +184,7 @@ class sk_ui_contextMenu extends sk_ui_component {
     constructor(opt){
         super(opt)
         this.compact = true
+        this.frosted = 'clear'
 
         this.menuChain = ''
 
