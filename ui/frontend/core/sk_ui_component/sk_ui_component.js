@@ -462,7 +462,26 @@ class sk_ui_component {
         this.element.scrollIntoView({behavior: "smooth"})
     }
 
-    get rect(){ return this.element.getBoundingClientRect() }
+    get rect(){
+        function inViewport (element) {
+            if (!element) return false;
+            if (1 !== element.nodeType) return false;
+          
+            var html = document.documentElement;
+            var rect = element.getBoundingClientRect();
+          
+            return !!rect &&
+              rect.bottom >= 0 &&
+              rect.right >= 0 && 
+              rect.left <= html.clientWidth &&
+              rect.top <= html.clientHeight;
+        }
+          
+        var res = this.element.getBoundingClientRect()
+        res.inView = inViewport(this.element)
+
+        return res
+    }
     
     hint(opt){
         this._hint.config(opt)

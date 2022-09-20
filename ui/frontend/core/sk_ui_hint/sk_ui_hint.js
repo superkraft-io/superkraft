@@ -16,21 +16,46 @@ class sk_ui_hint extends sk_ui_component {
         })
 
         this.results = {}
+
+
+    }
+
+    monitorParentPosition(){
+        this.parentPosMonitor = setInterval(()=>{
+            var pRect = this.suoParent.rect
+            if (this.lastPRect && (pRect.x !== this.lastPRect.x || pRect.y !== this.lastPRect.y)){
+                if (!this.sticky){
+                    clearInterval(this.parentPosMonitor)
+                    this.onHide(this.uuid)
+                } else {
+                    console.log('sticky')
+                    this.updatePos()
+                }
+                return
+            }
+
+            this.lastPRect = pRect
+        }, 10)
     }
 
     set content(val){
         this.label.text = val
     }
 
-    resetAutoHide(){
-        clearTimeout(this.hintHider)
-        this.hintHider = setTimeout(async ()=>{
-            await this.onHide(this.uuid)
-        }, 3000)
+    resetAutoHide(duration = 3000){
+        setInterval(this.hintHider)
+        this.hintHider = setInterval(async ()=>{
+            this.onHide(this.uuid, true)
+
+
+        }, duration)
     }
+
     show(autoHide){
-        if (!autoHide){
-            this.resetAutoHide()
+        if (autoHide){
+            var duration = (!Number.isNaN(autoHide) ? autoHide : undefined)
+            if (autoHide === true) duration = 3000
+            this.resetAutoHide(duration)
         }
         
         this.calcPos()
@@ -43,11 +68,14 @@ class sk_ui_hint extends sk_ui_component {
 
         this.element.style.left = this.results.x + 'px'
         this.element.style.top = this.results.y + 'px'
+
+        setTimeout(()=>{
+            this.monitorParentPosition()
+        }, (this.sticky ? 0 : 200))
     }
 
-    hide(){
-        //if (this.style.display !== '') return
-        return this.transition('fade ' + this.results.animation + ' out')
+    hide(instant = false){
+        if (!instant) return this.transition('fade ' + this.results.animation + ' out')
     }
 
     updatePos(){

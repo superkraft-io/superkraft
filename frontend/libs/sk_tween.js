@@ -17,7 +17,7 @@ class sk_tween {
         this.last    = 0
         this.current = 0
         this.steps   = 0
-        this.speed   = 25
+        this.speed   = opt.speed || 25
 
         
 
@@ -27,7 +27,7 @@ class sk_tween {
             if (tween.id > this.id) this.id = tween.id + 1
         }
 
-        window.tweens.list.push(this)
+        if (!opt.decoupled) window.tweens.list.push(this)
     }
 
     easeOutQuint(t, b, c, d){ return c * ((t = t / d - 1) * t * t * t * t + 1) + b; }

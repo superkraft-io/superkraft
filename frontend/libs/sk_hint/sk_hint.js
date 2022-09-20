@@ -7,6 +7,20 @@ class SK_Hint {
         this.limitWidth = true
 
         this.hookMouseEvents()
+
+        
+
+
+
+        let options = {
+            root: opt.parent.element,
+            rootMargin: '0px',
+            threshold: 1.0
+          }
+          
+          let observer = new IntersectionObserver(()=>{
+            console.log('moved')
+          }, options);
     }
 
     set text(val){
@@ -30,9 +44,12 @@ class SK_Hint {
     config(opt){
         this.text = opt.text
         if (opt.position)   this.position   = opt.position
-        if (opt.instaShow)  this.instaShow  = opt.instaShow
         if (opt.autoHide   !== undefined) this.autoHide   = opt.autoHide
         if (opt.limitWidth !== undefined) this.limitWidth = opt.limitWidth
+        if (opt.sticky     !== undefined) this.sticky     = opt.sticky
+
+        
+        if (opt.instaShow)  this.instaShow  = opt.instaShow //must always be last
     }
     
     get created(){ return this.__hint }
@@ -59,13 +76,14 @@ class SK_Hint {
     async onHide(){
         if (!this.created) return
         clearTimeout(this.hintTimer)
+        clearInterval(this.__hint.parentPosMonitor)
         await this.__hint.hide()
         try { this.__hint.remove() } catch(err) {}
         this.__hint = undefined
     }
 
     show(){
-        if (!this.__text) return
+        if (!this.__text || !this.opt.parent.rect.inView) return
 
         
         if (this.__hint){
@@ -76,8 +94,11 @@ class SK_Hint {
 
         this.__hint = new sk_ui_hint({parent: sk.app, noHint: true, target: this.opt.parent})
         this.__hint.setup(_c => {
-            _c.content = this.__text
-            _c.position = this.__position
+            _c.suoParent = this.opt.parent
+            _c.content   = this.__text
+            _c.position  = this.__position
+            _c.sticky    = this.sticky
+            if (this.sticky) _c.animated = false
             if (!this.limitWidth) _c.style.maxWidth = '100%'
             this.currentHintUUID = _c.uuid
             _c.onHide = uuid =>{ if (uuid === this.currentHintUUID) this.onHide() }
