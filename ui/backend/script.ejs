@@ -21,13 +21,22 @@
         //_cM: new ContextMenu(),
 
         toast: {
-            do: (_msg, _class, _position)=>{
-                $('body').toast({message: _msg, class: _class, position: _position || 'top center'})
+            do: (_msg, opt = {})=>{
+                var defOpt = {
+                    ...{
+                        message: _msg,
+                        class: opt.class,
+                        position: opt.position || 'top center'
+                    },
+
+                    ...opt
+                }
+                $('body').toast(defOpt)
             },
 
-            success : msg => { sk.toast.do(msg, 'success') },
-            error   : msg => { sk.toast.do(msg, 'error')   },
-            warning : msg => { sk.toast.do(msg, 'warning') }
+            success : (msg, opt)=>{ sk.toast.do(msg, {...{class: 'success'}, ...opt}) },
+            error   : (msg, opt)=>{ sk.toast.do(msg, {...{class: 'error'}  , ...opt}) },
+            warning : (msg, opt)=>{ sk.toast.do(msg, {...{class: 'warning'}, ...opt}) }
         },
 
         openURL: url => { sk.comm.main('openURL', {url: url}) },

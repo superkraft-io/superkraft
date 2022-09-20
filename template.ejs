@@ -125,7 +125,7 @@
             sk.init().then(()=>{
                 sk.app = (new sk_ui_component({parent: {element: document.body}}))
                 sk.app.setup(_c => {
-                    _c.style.display = 'none'
+                    if (sk.app_type === 'dapp') _c.style.display = 'none'
 
                     sk._cM = _c.contextMenu
 

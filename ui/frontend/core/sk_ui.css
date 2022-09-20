@@ -3,7 +3,7 @@
 }
 
 body {
-    background-color: transparent;
+    background-color: var(--sk_ui_color_very_dark_grey);
     color: white;
     font-size: 14px;
     border-radius: var(--view-radius) !important;
