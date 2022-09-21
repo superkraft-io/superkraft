@@ -5,11 +5,9 @@
         <title><%= title %></title>
         <link rel="icon" type="image/x-icon" href="<%= sk.routes.frontend.favIcon %>">
 
-        <!-- mobile meta -->
         <% if (sk.routes.frontend.mobile){ %>
             <%- include(sk.routes.frontend.mobile.main) %>
         <% } %>
-        <!-------- end ----- -->
 
         <script> try { var $ = jQuery = require("jquery") } catch(err) {} </script>
         <script src="<%= sk.routes.frontend.sk%>libs/jquery/dist/jquery.slim.min.js"></script>

@@ -24,7 +24,7 @@ module.exports = class SK_WAPP_Mobile {
         console.error('[SK MOBILE] ' + msg)
     }
 
-    templatAdd(str, val){
+    templateAdd(str, val){
         this.viewTemplate += str.replace('<%>', val)
     }
 
@@ -82,26 +82,27 @@ module.exports = class SK_WAPP_Mobile {
             
 
             var manifest = {}
-            if (global.sk.paths.icons.app) this.templatAdd('<link rel="apple-touch-icon" href="<%>">', global.sk.paths.icons.app)
-            if (global.sk.mobile.name) this.templatAdd('<meta name="apple-mobile-web-app-title" content="<%>">', global.sk.mobile.name)
+            if (global.sk.paths.icons.app) this.templateAdd('<link rel="apple-touch-icon" href="<%>">', global.sk.paths.icons.app)
+            if (global.sk.mobile.name) this.templateAdd('<meta name="apple-mobile-web-app-title" content="<%>">', global.sk.mobile.name)
             if (global.sk.mobile.nativeStyle){
                 var nS = global.sk.mobile.nativeStyle
                 if (nS === true) nS = 'standalone'
                 if (nS !== undefined && nS !== false && nS !== true) manifest.display = nS
-                this.templatAdd('<meta name="apple-mobile-web-app-capable" content="yes"></meta>')
-                this.templatAdd('<meta name="mobile-web-app-capable" content="yes">')
+                this.templateAdd('<meta name="apple-mobile-web-app-capable" content="yes"></meta>')
+                this.templateAdd('<meta name="mobile-web-app-capable" content="yes">')
             }
-            if (global.sk.mobile.statusBarStyle) this.templatAdd('<meta name="apple-mobile-web-app-status-bar-style" content="<%>">', global.sk.mobile.statusBarStyle)
+            if (global.sk.mobile.statusBarStyle) this.templateAdd('<meta name="apple-mobile-web-app-status-bar-style" content="<%>">', global.sk.mobile.statusBarStyle)
+            
+            fs.writeFileSync(this.paths.manifest, JSON.stringify(manifest))
+            this.templateAdd('\n<link rel="manifest" href="<%>" />', this.routes.manifest)
+
             if (fs.existsSync(this.paths.splashTemplate)){
                 this.viewInfo.splash = this.paths.splashTemplate
-                this.templatAdd('<%- include(sk.routes.frontend.mobile.splash) %>')
+                this.templateAdd('<%- include(sk.routes.frontend.mobile.splash) %>')
             }
             
 
             fs.writeFileSync(this.paths.mainTemplate, this.viewTemplate)
-
-            fs.writeFileSync(this.paths.manifest, JSON.stringify(manifest))
-            this.templatAdd('<link rel="manifest" href="<%>" />', this.routes.manifest)
 
             resolve()
         })
