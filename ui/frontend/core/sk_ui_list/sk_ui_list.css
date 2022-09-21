@@ -5,6 +5,7 @@
 }
 
 .sk_ui_list_header {
+    padding: 1px;
     width: 100%;
     border-bottom: solid 1px var(--sk_ui_color_dark_grey_2);
 }
@@ -14,6 +15,7 @@
 }
 
 .sk_ui_list_footer {
+    padding: 1px;
     width: 100%;
     border-top: solid 1px var(--sk_ui_color_dark_grey_2);
 }

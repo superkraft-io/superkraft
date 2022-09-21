@@ -2,17 +2,22 @@
     --view-radius: 8px;
 }
 
+html {
+    width: 100%; /* needed for disabling scalling in iOS with the user-scalable=no option */
+}
+
 body {
     background-color: var(--sk_ui_color_very_dark_grey);
     color: white;
     font-size: 14px;
     border-radius: var(--view-radius) !important;
     overflow: hidden !important;
+    touch-action: none; /* needed for disabling scrolling of body in iOS */
 }
 
 button {
     background: transparent;
-    outline: none; /* Optional */
+    outline: none;
     border: 0;
 }
 

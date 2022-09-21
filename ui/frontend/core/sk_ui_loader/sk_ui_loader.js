@@ -2,7 +2,8 @@ class sk_ui_loader extends sk_ui_component {
     constructor(opt){
         super(opt)
 
-        this.classAdd('ui active cetered inline loader')
+        this.classAdd('ui active centered inline loader')
+        this.element.style.color = 'white'
 
         this.styling = 'left'
 
@@ -12,8 +13,13 @@ class sk_ui_loader extends sk_ui_component {
         }})
 
         this.attributes.add({friendlyName: 'Color', name: 'color', type: 'text', onSet: val => {
-            this.classRemove('primary secondary red orange yellow olive green teal blue violet purple pink brown grey black')
-            this.classAdd(val)
+            var colors = 'primary secondary red orange yellow olive green teal blue violet purple pink brown grey black'
+            
+            this.classRemove(colors)
+            this.element.style.color = ''
+
+            if (colors.indexOf(val)) this.classAdd(val)
+            else this.element.style.color = val
         }})
 
         this.attributes.add({friendlyName: 'Size', name: 'size', type: 'number', onSet: val => {
@@ -70,7 +76,7 @@ class sk_ui_loader extends sk_ui_component {
         .ui.loader_<id> {
             width: <width>px !important;
             height: <height>px !important;
-            font-size: <widtht>px;
+            font-size: <fontSize>px;
         }
 
 
@@ -98,6 +104,7 @@ class sk_ui_loader extends sk_ui_component {
         .split('<height>')      .join(height)
         .split('<offset>')      .join(width/2)
         .split('<thickness>')   .join(borderThickness)
+        .split('<fontSize>')   .join(width/2)
 
         return adaptedCSS
 

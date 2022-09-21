@@ -9,7 +9,6 @@ module.exports = class SK_WAPP_Mobile {
         var viewInfo = {}
 
         this.viewTemplate = `
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="apple-touch-fullscreen" content="yes">
         `
 
@@ -82,6 +81,11 @@ module.exports = class SK_WAPP_Mobile {
             
 
             var manifest = {}
+
+            var props = ['width=device-width', 'initial-scale=1.0']
+            if (!global.sk.mobile.allowScaling) props.push('user-scalable=no')
+            this.templateAdd(`<meta name="viewport" content="${props.join(', ')}">`)
+            
             if (global.sk.paths.icons.app) this.templateAdd('<link rel="apple-touch-icon" href="<%>">', global.sk.paths.icons.app)
             if (global.sk.mobile.name) this.templateAdd('<meta name="apple-mobile-web-app-title" content="<%>">', global.sk.mobile.name)
             if (global.sk.mobile.nativeStyle){
