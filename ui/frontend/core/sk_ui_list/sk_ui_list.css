@@ -24,6 +24,7 @@
 
 
 .sk_ui_list_container {
+    padding: 1px;
     width: 100%;
     overflow-y: auto;
     overflow-x: hidden;
