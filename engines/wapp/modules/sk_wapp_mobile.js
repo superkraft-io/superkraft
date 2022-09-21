@@ -73,8 +73,7 @@ module.exports = class SK_WAPP_Mobile {
             
             this.opt.xapp.use(this.routes.container, this.opt.express.static(this.paths.container))
 
-            if (mopts.manifest) fs.writeFileSync(this.paths.manifest, JSON.stringify(mopts.manifest))
-
+            
             if (!fs.existsSync(this.paths.splashTemplate)){
                 if (!mopts.splash.input) return fail('No input file defined for splash images')
                 this.pwaAssetGenerator = require('pwa-asset-generator')
@@ -93,7 +92,6 @@ module.exports = class SK_WAPP_Mobile {
                 this.templatAdd('<meta name="mobile-web-app-capable" content="yes">')
             }
             if (global.sk.mobile.statusBarStyle) this.templatAdd('<meta name="apple-mobile-web-app-status-bar-style" content="<%>">', global.sk.mobile.statusBarStyle)
-            if (fs.existsSync(this.paths.manifest)) this.templatAdd('<link rel="manifest" href="<%>" />', this.routes.manifest)
             if (fs.existsSync(this.paths.splashTemplate)){
                 this.viewInfo.splash = this.paths.splashTemplate
                 this.templatAdd('<%- include(sk.routes.frontend.mobile.splash) %>')
@@ -101,6 +99,9 @@ module.exports = class SK_WAPP_Mobile {
             
 
             fs.writeFileSync(this.paths.mainTemplate, this.viewTemplate)
+
+            fs.writeFileSync(this.paths.manifest, JSON.stringify(manifest))
+            this.templatAdd('<link rel="manifest" href="<%>" />', this.routes.manifest)
 
             resolve()
         })
