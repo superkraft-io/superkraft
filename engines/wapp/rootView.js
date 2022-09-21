@@ -19,11 +19,11 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
                     complexity: '/complexity/',
 
-                    favIcon: global.sk.paths.icons.favIcon,
-
-                    mobile: global.sk.engine.mobile.assembleFrontendInfo()
+                    favIcon: global.sk.paths.icons.favIcon
                 }
             }
+
+            if (global.sk.mobile) this.routes.frontend.mobile = global.sk.engine.mobile.viewInfo
             
             if (global.sk.complexity) this.routes.frontend.complexity = '/complexity/'
 

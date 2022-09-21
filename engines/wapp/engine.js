@@ -19,9 +19,6 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
     init(){
         return new Promise(async resolve => {
-            this.mobile = new (require('./modules/sk_wapp_mobile.js'))()
-            await this.mobile.init()
-
             this.express = express
             global.sk.app = this.express()
             var app = global.sk.app
@@ -123,6 +120,16 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
                     console.error(err)
                 }
             })
+
+
+
+            this.mobile = new (require('./modules/sk_wapp_mobile.js'))({
+                express: this.express,
+                xapp: app,
+                mopts: global.sk.mobile
+            })
+            await this.mobile.init()
+
 
             resolve()
         })
