@@ -711,6 +711,7 @@ class sk_ui_attribute {
                         if (val === 0) newVal = ''
                         parent.style[info.css.split('?')[0]] = newVal
                     } else {
+                        if (parent['__' + info.name] === val) return
                         parent['__' + info.name] = val
                     }
 

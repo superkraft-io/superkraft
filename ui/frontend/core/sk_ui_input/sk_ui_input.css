@@ -18,3 +18,16 @@
     background:rgb(93, 177, 255);
     color: white;
 }
+
+
+
+.sk_ui_input_color_green > #inputEl > input{
+    background-color: #1f321f;
+    border: solid 1px #3da33d;
+}
+
+
+.sk_ui_input_color_red > #inputEl > input{
+    background-color: #1e0000;
+    border: solid 1px #9d0000;
+}

@@ -11,7 +11,6 @@ class sk_ui_infoLabel extends sk_ui_component {
 
         this._label = this.add.lbl(_c => {
             _c.text = ''
-            _c.weight = 600
             _c.size = 12
             _c.fadeOnChange = true
         })
@@ -26,6 +25,11 @@ class sk_ui_infoLabel extends sk_ui_component {
 
         this.attributes.add({friendlyName: 'Icon', name: 'icon', type: 'text', onSet: val => {
             this._icon.icon = val
+        }})
+
+        this.attributes.add({friendlyName: 'Size', name: 'size', type: 'text', onSet: val => {
+            this._icon.size = val
+            this._label.size = val
         }})
     }
 }

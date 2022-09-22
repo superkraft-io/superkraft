@@ -201,7 +201,7 @@ class sk_ui_button extends sk_ui_component {
         if (this.loaderIndicator) await this.loaderIndicator.destroy()
         if (this.actionStatusIndicator) await this.actionStatusIndicator.destroy()
         this.loaderCreateTimer = setTimeout(()=>{
-            this.loaderIndicator = this.addStatusIndicator({status: 'loader', autohide: false})
+            this.loaderIndicator = this.addStatusIndicator({status: 'loader', autoHide: false})
         }, 250)
 
 
@@ -232,11 +232,11 @@ class sk_ui_button extends sk_ui_component {
 
         this.awaitingAction = undefined
         if (res.rejected || res.status === false){
-            this.actionStatusIndicator = this.addStatusIndicator({status: 'fail', autohide: true, onDestroy: ()=>{ this.actionStatusIndicator = undefined }})
+            this.actionStatusIndicator = this.addStatusIndicator({status: 'fail', autoHide: true, onDestroy: ()=>{ this.actionStatusIndicator = undefined }})
             return this.actionPromise.reject(res)
         }
 
-        this.actionStatusIndicator = this.addStatusIndicator({status: 'ok', autohide: true, onDestroy: ()=>{ this.actionStatusIndicator = undefined }})
+        this.actionStatusIndicator = this.addStatusIndicator({status: 'ok', autoHide: true, onDestroy: ()=>{ this.actionStatusIndicator = undefined }})
         this.actionPromise.resolve(res)
     }
 
@@ -246,7 +246,7 @@ class sk_ui_button extends sk_ui_component {
             _c.status = opt.status
             _c.side = opt.side
             _c.size = 16
-            _c.autohide = opt.autohide
+            _c.autoHide = opt.autoHide
         })
     }
 }

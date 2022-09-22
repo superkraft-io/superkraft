@@ -9,10 +9,10 @@ class sk_ui_label extends sk_ui_component {
         this.styling = 'left'
 
         this.attributes.add({friendlyName: 'Text', name: 'text', type: 'text', onSet: async val => {
-            if (!this.fadeOnChange) return this.element.innerText = val
+            if (!this.fadeOnChange) return this.element.innerHTML = val
 
             this.hideShow_2({onHidden: async ()=>{ return new Promise(resolve => {
-                this.element.innerText = val
+                this.element.innerHTML = val
                 resolve()
             })}})
         }})

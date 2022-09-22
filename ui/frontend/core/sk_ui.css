@@ -21,8 +21,12 @@ button {
     border: 0;
 }
 
-button:active, button:focus {
-    outline: solid 1px var(--sk_ui_color_blue) !important;
+button:focus-visible {
+    outline: 0;
+    /*outline: solid 1px var(--sk_ui_color_blue) !important;*/
+    -webkit-box-shadow: inset 0px 0px 0px 1px var(--sk_ui_color_blue); 
+            box-shadow: inset 0px 0px 0px 1px var(--sk_ui_color_blue);
+
 }
 
 .sk_ui_face_color {

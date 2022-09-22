@@ -1,6 +1,6 @@
 class sk_ui_linkButton extends sk_ui_button {
     constructor(opt){
-        super(opt)
+        super(opt, 'a')
 
         this.styling = 'left middle fullwidth'
         

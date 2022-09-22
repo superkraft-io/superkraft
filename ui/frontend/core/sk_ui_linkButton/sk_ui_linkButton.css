@@ -1,5 +1,6 @@
 .sk_ui_linkButton {
     cursor: pointer;
+    background-color: transparent !important;
 }
 
 .sk_ui_linkButton:hover {
@@ -8,4 +9,5 @@
 
 .sk_ui_linkButton:hover > .sk_ui_label {
     text-decoration: underline;
+    color: white !important;
 }

@@ -26,7 +26,17 @@ class sk_ui_input extends sk_ui_component {
         this.attributes.add({friendlyName: 'Type', name: 'type', type: 'list', items: ['text', 'password', 'email'], onSet: val => { this.inputBucket.input.type = val }})
         this.attributes.add({friendlyName: 'Value', name: 'value', type: 'text', onSet: val => { this.inputBucket.input.value = val }})
         //this.attributes.add({friendlyName: 'Auto-Complete', name: 'autocomplete', type: 'bool', onSet: val => { this.inputBucket.input.autocomplete = val }})
+        this.attributes.add({friendlyName: 'Name', name: 'name', type: 'text', onSet: val => { this.inputBucket.input.name = val }})
         
+
+        this.attributes.add({friendlyName: 'Color', name: 'color', type: 'text', onSet: val => {
+            var colors = ['red', 'green']
+            colors.forEach(_clr => this.classRemove('sk_ui_input_color_' + _clr))
+            if (colors.includes(val)) this.classAdd('sk_ui_input_color_' + val)
+        }})
+        
+
+
         this.input = this.inputBucket.input
     }
 }

@@ -33,12 +33,12 @@ class sk_ui_statusIndicator extends sk_ui_component {
             this.indicator.size = val
         }})
 
-        this.attributes.add({friendlyName: 'Autohide', name: 'autohide', type: 'number', onSet: val => {
-            if (!val) return clearTimeout(this.autohideTimer)
+        this.attributes.add({friendlyName: 'autoHide', name: 'autoHide', type: 'number', onSet: val => {
+            if (!val) return clearTimeout(this.autoHideTimer)
 
             if (val === true) val = 3000
 
-            this.autohideTimer = setTimeout(()=>{
+            this.autoHideTimer = setTimeout(()=>{
                 this.destroy()
             }, val)
         }})

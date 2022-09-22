@@ -73,10 +73,12 @@ module.exports = class SK_WAPP_Mobile {
             this.opt.xapp.use(this.routes.container, this.opt.express.static(this.paths.container))
 
             
-            if (!fs.existsSync(this.paths.splashTemplate)){
-                if (!mopts.splash.input) return fail('No input file defined for splash images')
-                this.pwaAssetGenerator = require('pwa-asset-generator')
-                await this.generateSplashImages()
+            if (mopts.splash){
+                if (!fs.existsSync(this.paths.splashTemplate)){
+                    if (!mopts.splash.input) return fail('No input file defined for splash images')
+                    this.pwaAssetGenerator = require('pwa-asset-generator')
+                    await this.generateSplashImages()
+                }
             }
             
 
