@@ -4,7 +4,7 @@
 
 
 .sk_ui_component_spaced_horizontal > .sk_ui_component {
-    margin-right: 8px
+    margin-right: 12px
 }
 
 
@@ -13,7 +13,7 @@
 }
 
 .sk_ui_component_spaced_vertical > .sk_ui_component {
-    margin-bottom: 8px
+    margin-bottom: 12px
 }
 
 

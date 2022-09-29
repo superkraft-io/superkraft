@@ -1,4 +1,8 @@
 
+.sk_ui_groupCollapsable > .sk_ui_group_top {
+    padding: 6px;
+}
+
 .sk_ui_groupCollapsable_collapsed > .sk_ui_group_container {
     height: 0px;
     padding: 0px;
@@ -6,13 +10,12 @@
 }
 
 .sk_ui_groupCollapsable_collapsed > .sk_ui_group_top {
-    border-radius: 4px;
     margin-bottom: 0px;
 }
 
 /* top container */
 .sk_ui_groupCollapsable > .sk_ui_group_top:hover {
-    background-color: rgb(63, 63, 63);
+    background-color: var(--sk_ui_color_black_50);
 }
 
 .sk_ui_groupCollapsable > .sk_ui_group_top:active {
@@ -25,6 +28,11 @@
 }
 
 
-.sk_ui_groupCollapsable_collapsable_false > .sk_ui_group_top > .sk_ui_groupCollapsabl_collapseButton {
+.sk_ui_groupCollapsable_collapsable_false > .sk_ui_group_top > .sk_ui_groupCollapsable_collapseButton {
     opacity: 0;
+}
+
+.sk_ui_groupCollapsable_collapseButton  {
+    padding: 0px !important;
+    border-radius: 100%;
 }

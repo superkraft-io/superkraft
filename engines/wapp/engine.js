@@ -57,7 +57,8 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
                         core   : global.sk.ui.paths.frontend.core,
                         shared : global.sk.ui.paths.frontend.shared,
                         view   : global.sk.ui.paths.frontend.view,
-                        global : global.sk.ui.paths.frontend.global
+                        global : global.sk.ui.paths.frontend.global,
+                        font   : global.sk.ui.paths.frontend.font
                     },
                     app: global.sk.paths.app_frontend,
                 }
@@ -68,13 +69,16 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
             app.use('/sk', this.express.static(this.paths.frontend.sk))
             
             app.use('/', this.express.static(this.paths.frontend.app.split('\\').join('/')))
-
-            if (global.sk.complexity) app.use('/complexity', this.express.static(global.sk.complexity.paths.frontend))
+       
             
             global.sk.app.use(global.sk.ui.routes.core, this.express.static(this.paths.frontend.ui.core))
             global.sk.app.use(global.sk.ui.routes.shared, this.express.static(this.paths.frontend.ui.shared))
 
+            if (global.sk.ui.routes.font) global.sk.app.use(global.sk.ui.routes.font, this.express.static(this.paths.frontend.ui.font))
 
+
+            if (global.sk.complexity) app.use('/complexity', this.express.static(global.sk.complexity.paths.frontend))
+            
             /*********************/
 
             var postsFolder = global.sk.skModule.opt.postsRoot
@@ -215,7 +219,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
                 this.servers.http = http.createServer(
                     function (req, res) {
                         try {
-                            res.writeHead(301, { "Location": "https://" + req.headers['host'].replace(80, 443) + req.url })
+                            res.writeHead(301, { "Location": "https://" + req.headers['host'].replace(80, 443) + req.url + '/' })
                             res.end()
                         } catch(e) {
                             console.error('Invalid request: ' + req.url + '      ' + JSON.stringify(req.headers))

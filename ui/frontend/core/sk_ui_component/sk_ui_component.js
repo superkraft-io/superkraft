@@ -17,7 +17,7 @@ class sk_ui_component {
 
         var tree = {}
         var htmlTag = opt.htmlTag  || 'div'
-        tree[htmlTag + '_element'] = { class: 'sk_component sk_ui_transition sk_ui_noSelect ' + (sk.isOnMobile ? 'sk_ui_isOnMobile' : ''), styling: 'c' }
+        tree[htmlTag + '_element'] = { class: 'sk_component sk_ui_transition sk_ui_noSelect' + (sk.isOnMobile ? ' sk_ui_isOnMobile' : '') + (sk.mobile.isStandalone ? ' sk_ui_isMobileStandalone' : ''), styling: 'c' }
         this.bucket = JSOM.parse({root: this.parent.element, tree: tree})
 
         
@@ -464,12 +464,21 @@ class sk_ui_component {
     }
 
     get rect(){
-        function inViewport (element) {
-            if (!element) return false;
-            if (1 !== element.nodeType) return false;
-          
+        // new `IntersectionObserver` constructor
+        const observer = new IntersectionObserver((entries) => {
+            for (const entry of entries){
+                this.__bounds = entry.boundingClientRect
+            }
+
+            observer.disconnect();
+        })
+
+        observer.observe(this.element)
+
+        var inViewport = ()=>{
             var html = document.documentElement;
-            var rect = element.getBoundingClientRect();
+            //var rect = this.__bounds
+            var rect = this.element.getBoundingClientRect();
           
             return !!rect &&
               rect.bottom >= 0 &&
@@ -478,8 +487,9 @@ class sk_ui_component {
               rect.top <= html.clientHeight;
         }
           
+        //var res = this.__bounds
         var res = this.element.getBoundingClientRect()
-        res.inView = inViewport(this.element)
+        res.inView = inViewport()
 
         return res
     }
@@ -494,6 +504,16 @@ class sk_ui_component {
     classRemove(val){  $(this.element).removeClass(val) }
 
 
+    async blink(){
+        for (var i = 0; i < 2; i++){
+            this.classAdd('sk_ui_blinkClr')
+            await sk.utils.sleep(150)
+            this.classRemove('sk_ui_blinkClr')
+            await sk.utils.sleep(150)
+        }
+    }
+
+    
     serialize(ignoreChildren, includeThis, ignoreCSS){
         //serialize this
         var json = {

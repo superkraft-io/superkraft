@@ -38,7 +38,9 @@ module.exports = class Superkraft {
 
             csp: {...{}, ...opt.csp},
 
-            mobile: opt.mobile || {}
+            mobile: opt.mobile || {},
+
+            ui: opt.ui || {}
         }
         var sk = global.sk
 

@@ -27,25 +27,25 @@ class sk_ui_groupCollapsable extends sk_ui_group {
         }
 
         var onMouseEnter = _e => {
-            this._header.marginLeft = 8
+            //this._header.marginLeft = 8
         }
 
         var onMouseLeave = _e => {
-            this._header.marginLeft = 0
+            //this._header.marginLeft = 0
         }
 
         var collapseHandle = this.top
 
         var updateCollapseHandle = (activate, handle) => {
             collapseHandle.element.removeEventListener('click', onCollapse)
-            collapseHandle.element.removeEventListener('mouseenter', onMouseEnter)
-            collapseHandle.element.removeEventListener('mouseleave', onMouseLeave)
+            //collapseHandle.element.removeEventListener('mouseenter', onMouseEnter)
+            //collapseHandle.element.removeEventListener('mouseleave', onMouseLeave)
             if (handle) collapseHandle = handle
             if (activate){
                 this.classRemove('sk_ui_groupCollapsable_collapsable_false')
                 collapseHandle.element.addEventListener('click', onCollapse)
-                collapseHandle.element.addEventListener('mouseenter', onMouseEnter)
-                collapseHandle.element.addEventListener('mouseleave', onMouseLeave)
+                //collapseHandle.element.addEventListener('mouseenter', onMouseEnter)
+                //collapseHandle.element.addEventListener('mouseleave', onMouseLeave)
             } else {
                 this.classAdd('sk_ui_groupCollapsable_collapsable_false')
             }

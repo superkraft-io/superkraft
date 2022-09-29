@@ -1,24 +1,28 @@
 .sk_ui_group {
-    border-radius: 6px;
-    padding: 6px 8px 8px 8px;
-}
-
-.sk_ui_group_opaque {
-    background-color: rgb(26, 26, 26);
-}
-
-.sk_ui_group_container {
+    border-radius: 8px;
     overflow: hidden;
 }
 
+.sk_ui_group_opaque {
+    background-color: var(--sk_ui_color_very_dark_grey_75);
+}
+
+
+
 /* top container */
 .sk_ui_group_top {
-    border-radius: 4px 4px 0px 0px;
-    margin-bottom: 12px
+    padding: 0px 6px;
 }
 
 
 .sk_ui_group_header {
     font-weight: 600;
     width: 100%;
+}
+
+
+
+.sk_ui_group_container {
+    overflow: hidden;
+    padding: 8px;
 }

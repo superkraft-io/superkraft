@@ -77,10 +77,9 @@ class SK_ContextMenu {
 
     handleMouseEvent(_e){
         _e.stopPropagation()
-        
-        
-        
+
         sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true, sender: this.menu})
+        
         if (this.parent.disabled && !this.activeWhenParentDisabled) return
         if (this.toggle){
             if (this.menu){
@@ -131,7 +130,7 @@ class SK_ContextMenu {
         if (this.toggle){
             if (opt){
                 if (opt.fromThis && !this.skipOnce) this.skipOnce = true
-                if (opt.sender && this.menu && opt.sender.uuid === this.menu.uuid)this.skipOnce = true
+                if (this.menu && opt.sender  && opt.sender.uuid === this.menu.uuid) this.skipOnce = true
             }
         }
         

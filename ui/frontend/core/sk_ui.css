@@ -48,6 +48,7 @@ button:focus-visible {
 
     border-radius: var(--view-radius);
     overflow: hidden !important;
+    touch-action: none;
 }
 
 .sk_app > div {
@@ -61,6 +62,7 @@ button:focus-visible {
     right: 0px;
     bottom: 0px;
     background-color: var(--sk_ui_color_very_dark_grey);
+    touch-action: none;
 }
 
 .sk_ui_appBody_dapp {
@@ -85,6 +87,7 @@ button:focus-visible {
 i.icon, i.icons, i.flag {
     margin: 0 !important;
     /*line-height: unset;*/
+    width: 1em;
 }
 
 .hidden {
@@ -230,6 +233,7 @@ i.icon, i.icons, i.flag {
 :root {
     --sk_ui_glow_pulse_1: inset 0px 0px 0px 0px rgba(255, 255, 255, 0.0);
     --sk_ui_glow_pulse_2: inset 0px 0px 50px 0px rgba(255, 255, 255, 0.2);
+    --sk_ui_blinkClr: inset 0px 0px 90px 0px rgba(255, 255, 255, 0.589);
 }
 @keyframes sk_ui_glow_pulse {
     0% {
@@ -271,3 +275,8 @@ i.icon, i.icons, i.flag {
 }
 
 
+.sk_ui_blinkClr {
+    -webkit-box-shadow: var(--sk_ui_glow_pulse_2);
+    -moz-box-shadow: var(--sk_ui_glow_pulse_2);
+    box-shadow: var(--sk_ui_blinkClr);
+}

@@ -1,0 +1,57 @@
+.sk_ui_overflowContainer {
+    position: relative;
+}
+
+.sk_ui_overflowContainer_contentWrapper {
+    width: 100%;
+    position: relative;
+}
+
+.sk_ui_overflowContainer_content {
+    width: 100%;
+    position: absolute;
+}
+
+.sk_ui_overflowContainer_scrollbarWrapper {
+    position: relative;
+    width: 0px;
+    height: 100%;
+    opacity: 0;
+}
+
+.sk_ui_overflowContainer_native_scrollbar {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: var(--sk_ui_scrollbar_width);
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    opacity: 0;
+}
+
+.sk_ui_overflowContainer_native_scrollbar_fakeContent {
+    padding: 1px;
+}
+
+.sk_ui_overflowContainer_scrollbar {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: var(--sk_ui_color_scrollbar_track);
+    z-index: 5;
+    border-radius: var(--sk_ui_scrollbar_track_radius);
+    pointer-events: none;
+}
+
+.sk_ui_overflowContainer_scrollbar_handle {
+    position: absolute;
+    width: 100%;
+    background-color: var(--sk_ui_color_scrollbar_thumb);
+    border-radius: var(--sk_ui_scrollbar_thumb_radius);
+}
+
+.sk_ui_overflowContainer_scrollbar_handle:hover {
+    background-color: var(--sk_ui_color_dark_grey_2);
+}

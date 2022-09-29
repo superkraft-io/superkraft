@@ -1,4 +1,9 @@
 :root {
+    --sk_ui_color_black: black;
+    --sk_ui_color_black_75: rgba(0, 0, 0, 0.75);
+    --sk_ui_color_black_50: rgba(0, 0, 0, 0.5);
+    --sk_ui_color_black_25: rgba(0, 0, 0, 0.25);
+
     --sk_ui_color_very_dark_grey: rgb(20, 20, 20);
     --sk_ui_color_very_dark_grey_75: rgba(20, 20, 20, 0.75);
     --sk_ui_color_very_dark_grey_50: rgba(20, 20, 20, 0.5);
@@ -52,9 +57,9 @@
     --sk_ui_color_scrollbar_track: var(--sk_ui_color_very_dark_grey_2);
     --sk_ui_color_scrollbar_thumb: var(--sk_ui_color_grey);
 
-    --sk_ui_scrollbar_width: 6px;
-    --sk_ui_scrollbar_track_radius: 6px;
-    --sk_ui_scrollbar_thumb_radius: 6px;
+    --sk_ui_scrollbar_width: 8px;
+    --sk_ui_scrollbar_track_radius: 8px;
+    --sk_ui_scrollbar_thumb_radius: 8px;
 }
 
 .sk_ui_color_blue {

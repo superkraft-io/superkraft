@@ -3,3 +3,7 @@
     margin-top: 8px;
     margin-bottom: 8px;
 }
+
+.sk_ui_infoLabel > .sk_ui_icon {
+    margin-right: 8px;
+}

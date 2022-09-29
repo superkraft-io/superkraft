@@ -12,6 +12,17 @@
         <script> try { var $ = jQuery = require("jquery") } catch(err) {} </script>
         <script src="<%= sk.routes.frontend.sk%>libs/jquery/dist/jquery.slim.min.js"></script>
         <script src="<%= sk.routes.frontend.sk%>libs/jquery/jquery-ui/jquery-ui.min.js"></script>
+        
+        <script src="<%= sk.routes.frontend.sk%>libs/ua_parser/ua_parser.min.js"></script>
+        
+        <% if (sk.ui && sk.ui.font){ %>
+            <%- include(sk.ui.font) %>
+        <% } %>
+        <link rel="stylesheet" type="text/css" href="/sk_ui_font/sk_ui_font.css">
+        
+
+        <script src="<%= sk.routes.frontend.sk%>libs/sk_mobile/sk_mobile.js"></script>
+        
 
         <script src="<%= sk.routes.frontend.sk%>libs/sk_helpers.js"></script>
 
@@ -49,7 +60,12 @@
 
         <script src="<%= sk.routes.frontend.sk%>libs/js-cookie/js.cookie.min.js"></script>
 
+       
+
         <%- include(globalHead) %>
+
+        
+        <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.view%>view.css">
         <%- include(viewHead) %>
 
         <script src="<%= sk.routes.frontend.sk%>libs/sk_hint/sk_hint.js"></script>
@@ -211,12 +227,12 @@
             }
             
 
-            document.addEventListener('mousedown', _e => {
+            document.addEventListener('click', _e => {
                 sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true})
             })
 
             document.addEventListener('keydown', _e => {
-                if (_e.code = 27) return sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true})
+                if (_e.which === 27) return sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true})
             })
         </script>
 

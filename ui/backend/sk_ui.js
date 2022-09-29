@@ -20,6 +20,10 @@ module.exports = class sk_ui {
         this.refresh()
 
         this.endpoint = (opt.endpoint === 'wapp' ? new sk_ui_wapp(this) : new sk_ui_dapp(this))
+
+
+        this.fontMngr = new (require('./sk_ui_fontMngr.js'))({parent: this})
+        this.fontMngr.init()
     }
 
     getDirectories(source){
@@ -61,7 +65,7 @@ module.exports = class sk_ui {
     }
 
     renderInfo(viewUIComponentsPath){
-        return {
+        var results = {
             head: __dirname + '/head.ejs',
             script: __dirname + '/script.ejs',
             components: {
@@ -71,8 +75,12 @@ module.exports = class sk_ui {
                 global: this.components.global,
             },
 
-            root: this.root
+            root: this.root,
         }
+
+        if (this.paths.font) results.font = this.paths.font + 'sk_ui_font.ejs'
+
+        return results
     }
 
     /*
@@ -103,6 +111,7 @@ module.exports = class sk_ui {
         console.log(merged.js.length)
     }
     */
+        
 }
 
 class sk_ui_wapp {
