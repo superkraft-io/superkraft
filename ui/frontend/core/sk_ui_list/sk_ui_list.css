@@ -42,7 +42,7 @@
 }
 
 ::-webkit-scrollbar {
-    background:  var(--sk_ui_color_scrollbar) !important;
+    background: var(--sk_ui_color_scrollbar) !important;
     width: var(--sk_ui_scrollbar_width) !important;
 }
 

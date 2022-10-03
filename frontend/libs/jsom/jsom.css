@@ -5,6 +5,7 @@
 
 .jsomStyle_scrollable {
     overflow: auto;
+    touch-action: auto; 
 }
 
 

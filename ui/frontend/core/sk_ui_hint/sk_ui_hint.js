@@ -30,7 +30,6 @@ class sk_ui_hint extends sk_ui_component {
                     clearInterval(this.parentPosMonitor)
                     this.onHide(this.uuid)
                 } else {
-                    console.log('sticky')
                     this.updatePos()
                 }
                 return

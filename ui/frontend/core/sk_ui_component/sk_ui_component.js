@@ -5,7 +5,7 @@ class sk_ui_component {
         this.parentClassName = Object.getPrototypeOf(this.constructor).name
 
         this.attributes = new sk_ui_attributes(this)
-        
+        //this.events = new sk_ui_mouseEventsMngr({parent: this})
 
         this.children = new SK_ChildMngr({parent: this})
         
@@ -17,7 +17,15 @@ class sk_ui_component {
 
         var tree = {}
         var htmlTag = opt.htmlTag  || 'div'
-        tree[htmlTag + '_element'] = { class: 'sk_component sk_ui_transition sk_ui_noSelect' + (sk.isOnMobile ? ' sk_ui_isOnMobile' : '') + (sk.mobile.isStandalone ? ' sk_ui_isMobileStandalone' : ''), styling: 'c' }
+
+        var _classes = ['sk_component', 'sk_ui_transition', 'sk_ui_noSelect', 'sk_ui_' + sk.browser()]
+
+        if (sk.isOnMobile){
+            _classes.push('sk_ui_isOnMobile')
+            if (sk.mobile.isStandalone) _classes.push('sk_ui_isMobileStandalone sk_ui_mobile_noScroll')
+        }
+        
+        tree[htmlTag + '_element'] = { class: _classes.join(' '), styling: 'c' }
         this.bucket = JSOM.parse({root: this.parent.element, tree: tree})
 
         
@@ -238,8 +246,11 @@ class sk_ui_component {
             if (val) this.classAdd('sk_ui_pulsate')
         }})
 
-
-
+        /*
+        this.attributes.add({friendlyName: 'Scrollable', name: 'scrollable', type: 'bool', onSet: val => {
+            bodyScrollLock.disableBodyScroll(this.element)
+        }})
+        */
 
         this.attributes.add({friendlyName: 'Sortable', name: 'sortable', type: 'bool', onSet: val => {
             if (!val) return
@@ -833,3 +844,51 @@ class sk_ui_contextMenuMngr {
         })
     }
 }
+
+
+
+/*********/
+
+/*
+class sk_ui_mouseEventsMngr {
+    constructor(opt){
+        this.opt = opt
+        this.parent = opt.parent
+
+        this.events = {}
+    }
+
+    on(event, cb){
+        if (!this.events[event]){
+            this.events[event] = []
+            this.parent.element.addEventListener(event, _e => {
+                this.tryBroadcast(event, _e)
+            })
+        }
+        
+        var event = this.events[event]
+        event.push(cb)
+    }
+
+    off(event){
+        var event = this.events[event]
+        if (!event) return
+
+    }
+
+    tryBroadcast(event, _e){
+        var event = this.events[event]
+        if (!event) return
+        for (var i in event) event[i](_e)
+    }
+
+    bubble(_e){
+        for (var i in _e.path){
+            var el = _e.path[i]
+            var suo = el.sk_ui_obj
+            if (!suo) continue
+            suo.events.tryBroadcast(_e.type, _e)
+        }
+    }
+}
+*/

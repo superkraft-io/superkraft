@@ -57,4 +57,11 @@ class sk_tween {
         this.steps = 1000
         this.target = val
     }
+
+    stop(){
+        this.target  = this.current
+        this.steps   = 0
+        this.last    = this.current
+        console.log('============= stopped')
+    }
 }

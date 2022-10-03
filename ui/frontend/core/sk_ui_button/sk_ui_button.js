@@ -32,7 +32,7 @@ class sk_ui_button extends sk_ui_component {
 
             if (this.__toggle) this.toggled = !this.__toggled
 
-            if (this.onClick) this.onClick(this, _e)
+            if (this.onClick) this.onClick(_e)
 
             this.handleAction()
         }
@@ -49,30 +49,35 @@ class sk_ui_button extends sk_ui_component {
 
             
         } else {
-            this.element.ontouchmove = ()=>{
+            this.element.ontouchmove = _e => {
                 if (this.disabled) return
+                if (this.onTouchMove) this.onTouchMove(_e)
                 touchDragged = true
             }
-            this.element.ontouchstart = ()=>{
+            this.element.ontouchstart = _e => {
                 if (this.disabled) return
+                if (this.onTouchStart) this.onTouchStart(_e)
                 touchDragged = false
             }
             this.element.ontouchend = _e => {
                 if (this.disabled) return
-                if (!touchDragged) handleOnClickEvent(_e)
+                if (!touchDragged){
+                    if (this.onTouchEnd) this.onTouchEnd(_e)
+                    handleOnClickEvent(_e)
+                }
             }
         }
 
-        this.element.onmouseenter = ()=>{
-            if (this.onMouseEnter) this.onMouseEnter(this)
+        this.element.onmouseenter = _e => {
+            if (this.onMouseEnter) this.onMouseEnter(this, _e)
         }
 
-        this.element.onmouseleave = ()=>{
-            if (this.onMouseLeave) this.onMouseLeave(this)
+        this.element.onmouseleave = _e => {
+            if (this.onMouseLeave) this.onMouseLeave(this, _e)
         }
 
-        this.element.ondblclick = ()=>{
-            if (this.onDoubleClick) this.onDoubleClick(this)
+        this.element.ondblclick = _e => {
+            if (this.onDoubleClick) this.onDoubleClick(this, _e)
         }
 
         
@@ -117,11 +122,18 @@ class sk_ui_button extends sk_ui_component {
 
         this.attributes.add({friendlyName: 'Toggle', name: 'toggle', type: 'bool'})
 
-        this.attributes.add({friendlyName: 'Toggled', name: 'toggled', type: 'bool', onSet: val => {
+        this.attributes.add({friendlyName: 'Toggle State', name: 'toggleState', type: 'bool', onSet: val => {
             this.classRemove('sk_ui_button_toggled')
             if (val) this.classAdd('sk_ui_button_toggled')
+        }})
+        
+        this.attributes.add({friendlyName: 'Toggled', name: 'toggled', type: 'bool', onSet: val => {
+            this.toggleState = val
             if (this.onToggled) this.onToggled(this.toggled)
         }})
+
+        
+
 
         this.attributes.add({friendlyName: 'Primary', name: 'primary', type: 'bool', onSet: val => {
             this.classRemove('sk_ui_button_primary')

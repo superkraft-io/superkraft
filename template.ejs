@@ -14,6 +14,8 @@
         <script src="<%= sk.routes.frontend.sk%>libs/jquery/jquery-ui/jquery-ui.min.js"></script>
         
         <script src="<%= sk.routes.frontend.sk%>libs/ua_parser/ua_parser.min.js"></script>
+
+        <script src="<%= sk.routes.frontend.sk%>libs/bodyScrollLock/bodyScrollLock.js"></script>
         
         <% if (sk.ui && sk.ui.font){ %>
             <%- include(sk.ui.font) %>
@@ -133,6 +135,8 @@
             sk.init().then(()=>{
                 sk.app = (new sk_ui_component({parent: {element: document.body}}))
                 sk.app.setup(_c => {
+                    _c.scrollable = true
+                    
                     if (sk.app_type === 'dapp') _c.style.display = 'none'
 
                     sk._cM = _c.contextMenu

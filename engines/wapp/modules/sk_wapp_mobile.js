@@ -82,7 +82,9 @@ module.exports = class SK_WAPP_Mobile {
             }
             
 
-            var manifest = {}
+            var manifest = {
+                scope: '/192.168.1.13'
+            }
 
             var props = ['width=device-width', 'initial-scale=1.0']
             if (!global.sk.mobile.allowScaling) props.push('user-scalable=no')
@@ -92,7 +94,7 @@ module.exports = class SK_WAPP_Mobile {
             if (global.sk.mobile.name) this.templateAdd('<meta name="apple-mobile-web-app-title" content="<%>">', global.sk.mobile.name)
             if (global.sk.mobile.nativeStyle){
                 var nS = global.sk.mobile.nativeStyle
-                if (nS === true) nS = 'standalone'
+                if (nS === true) nS = 'fullscreen'
                 if (nS !== undefined && nS !== false && nS !== true) manifest.display = nS
                 this.templateAdd('<meta name="apple-mobile-web-app-capable" content="yes"></meta>')
                 this.templateAdd('<meta name="mobile-web-app-capable" content="yes">')

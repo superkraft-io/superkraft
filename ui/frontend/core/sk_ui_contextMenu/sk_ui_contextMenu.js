@@ -69,10 +69,10 @@ class SK_ContextMenu {
             if (shouldIgnore(getElPath(_e.currentTarget))) return
             if (this.__button === 'right') this.handleMouseEvent(_e)
         })
-        this.parent.element.addEventListener('click', _e => {
+        this.parent.onClick = _e => {
             _e.preventDefault()
             if (this.__button === 'left') this.handleMouseEvent(_e)
-        })
+        }
     }
 
     handleMouseEvent(_e){

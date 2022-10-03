@@ -1,25 +1,27 @@
-.sk_ui_overflowContainer {
+.sk_ui_iceRink {
     position: relative;
 }
 
-.sk_ui_overflowContainer_contentWrapper {
+.sk_ui_iceRink_contentWrapper {
     width: 100%;
     position: relative;
 }
 
-.sk_ui_overflowContainer_content {
+.sk_ui_iceRink_content {
     width: 100%;
     position: absolute;
+    /*border: solid 1px red;*/
 }
 
-.sk_ui_overflowContainer_scrollbarWrapper {
-    position: relative;
+.sk_ui_iceRink_scrollbarWrapper {
+    position: absolute;
     width: 0px;
     height: 100%;
+    right: 0px;
     opacity: 0;
 }
 
-.sk_ui_overflowContainer_native_scrollbar {
+.sk_ui_iceRink_native_scrollbar {
     position: absolute;
     left: 0px;
     top: 0px;
@@ -31,11 +33,11 @@
     opacity: 0;
 }
 
-.sk_ui_overflowContainer_native_scrollbar_fakeContent {
+.sk_ui_iceRink_native_scrollbar_fakeContent {
     padding: 1px;
 }
 
-.sk_ui_overflowContainer_scrollbar {
+.sk_ui_iceRink_scrollbar {
     position: relative;
     width: 100%;
     height: 100%;
@@ -45,13 +47,33 @@
     pointer-events: none;
 }
 
-.sk_ui_overflowContainer_scrollbar_handle {
+.sk_ui_iceRink_scrollbar_handle {
     position: absolute;
     width: 100%;
+    min-height: 32px;
     background-color: var(--sk_ui_color_scrollbar_thumb);
     border-radius: var(--sk_ui_scrollbar_thumb_radius);
 }
 
-.sk_ui_overflowContainer_scrollbar_handle:hover {
+.sk_ui_iceRink_scrollbar_handle:hover {
     background-color: var(--sk_ui_color_dark_grey_2);
+}
+
+
+
+
+.sk_ui_iceRink_velocityLine {
+    width: 1px;
+    background-color: red;
+    position: absolute;
+    z-index: 99999999;
+}
+
+.sk_ui_iceRink_debugWnd {
+    width: 256px;
+    right: 0px;
+    top: 0px;
+    background-color: rgb(37, 37, 37);
+    position: absolute;
+    z-index: 99999999;
 }

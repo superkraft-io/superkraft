@@ -4,6 +4,7 @@
 
 html {
     width: 100%; /* needed for disabling scalling in iOS with the user-scalable=no option */
+    touch-action: none; 
 }
 
 body {
@@ -27,6 +28,10 @@ button:focus-visible {
     -webkit-box-shadow: inset 0px 0px 0px 1px var(--sk_ui_color_blue); 
             box-shadow: inset 0px 0px 0px 1px var(--sk_ui_color_blue);
 
+}
+
+.sk_ui_mobile_noScroll {
+    touch-action: none; 
 }
 
 .sk_ui_face_color {
