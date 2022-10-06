@@ -449,8 +449,8 @@ class sk_ui_component {
             
             this.opacity = 0.01
             this.style.transform = 'scale(0)'
-            setTimeout(()=>{
-                
+
+            var doHide = ()=>{
                 if (opt.animation === 'width'){
                     this.width = 0.01
                     this.marginRight = 0.01
@@ -462,11 +462,10 @@ class sk_ui_component {
                     this.paddinTop = 0.1
                     this.paddingBottom = 0.1
                 }
-            }, 10)
+            }
+            setTimeout(()=>{ doHide() }, 10)
 
-            setTimeout(()=>{
-                resolve()
-            }, 225)
+            setTimeout(()=>{ resolve() }, 225)
         })
     }
 

@@ -1,4 +1,8 @@
 .sk_ui_input {
+    height: 36px;
+}
+
+.sk_ui_input.sk_ui_isOnDesktop {
     height: 32px;
 }
 
@@ -10,8 +14,9 @@
 .sk_ui_input > #inputEl > input{
     background-color: #202020;
     color: white !important;
-    padding: 4px;
+    padding: 4px 8px;
     border: solid 1px #414141;;
+    border-radius: 8px;
 }
 
 .sk_ui_input > #inputEl > input::selection {

@@ -8,7 +8,7 @@ window.tweens = {
     }
 }
 
-class sk_tween {
+class SK_Tween {
     constructor(opt){
         this.tag = opt.tag
         this.onChanged = opt.onChanged

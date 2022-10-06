@@ -1,9 +1,13 @@
 .sk_ui_button {
     width: fit-content;
-    padding: 8px 12px;
+    padding: 12px 16px;
     position: relative;
     overflow: hidden;
     opacity: 0.5;
+}
+
+.sk_ui_button.sk_ui_isOnDesktop {
+    padding: 8px 12px;
 }
 
 .sk_ui_button_enabled {
@@ -92,7 +96,7 @@
 
 
 .sk_ui_button_style_thin {
-    padding: 0px 5px;
+    padding: 02px 5px;
 }
 
 .sk_ui_button_style_thin > .sk_ui_icon {
@@ -109,6 +113,13 @@
 .sk_ui_button_style_action > .sk_ui_label {
     font-weight: 500;
 }
+
+
+.sk_ui_button_appearance_action {
+    background-color: var(--sk_ui_color_dark_grey_2);
+    border-radius: 6px;
+}
+
 
 
 

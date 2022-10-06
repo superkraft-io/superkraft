@@ -184,6 +184,22 @@ class sk_ui_button extends sk_ui_component {
             }
         })
 
+        this.attributes.add({
+            friendlyName: 'Appearance',
+            name: 'appearance',
+
+            type: 'list',
+            items: [
+                {name: 'Normal', value: 'normal', default: true},
+                {name: 'Action', value: 'action'}
+            ],
+            
+            onSet: val => {
+                this.classRemove('sk_ui_button_appearance_' + this.appearance)
+                this.classAdd('sk_ui_button_appearance_' + val)
+            }
+        })
+
 
 
         this.vertical = false

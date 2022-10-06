@@ -95,6 +95,10 @@ i.icon, i.icons, i.flag {
     width: 1em;
 }
 
+.icon.cloud {
+    margin-left: -2px !important;
+}
+
 .hidden {
     display: none;
 }

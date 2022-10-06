@@ -16,7 +16,8 @@
     padding: 4px 3px;
     font-size: 10px;
 
-    
+    width: 16px;
+    height: 16px
 }
 
 .sk_ui_checkbox > .sk_ui_icon > .icon {
