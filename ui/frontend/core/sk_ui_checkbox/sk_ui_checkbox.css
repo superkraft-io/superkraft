@@ -13,16 +13,15 @@
 .sk_ui_checkbox > .sk_ui_icon {
     border: solid 1px rgb(89, 89, 89) !important;
     border-radius: 4px;
-    padding: 4px 3px;
+    padding: 2px;
     font-size: 10px;
 
     width: 16px;
     height: 16px
 }
 
-.sk_ui_checkbox > .sk_ui_icon > .icon {
-    transform: scale(0.5);
-    opacity: 0;
+.sk_ui_checkbox > .sk_ui_icon.sk_ui_safari {
+    padding-top: 3px;
 }
 
 .sk_ui_checkbox_on {

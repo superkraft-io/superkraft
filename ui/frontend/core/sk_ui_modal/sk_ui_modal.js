@@ -10,6 +10,7 @@ class sk_ui_modal extends sk_ui_component {
         this.dimmer = this.add.component(_c => {
             _c.classAdd('sk_ui_modal_dimmer')
             _c.element.onclick = _e => {
+                if (!this.shown) return
                 _e.preventDefault()
                 this.hide()
             }
@@ -51,6 +52,7 @@ class sk_ui_modal extends sk_ui_component {
             if (this.onShow) this.onShow()
             await this.transition('fade in')
             await this.content.transition('scale in')
+
             if (this.onShown) this.onShown()
             if (this.pB) this.pB.progress = 100
 
@@ -58,6 +60,8 @@ class sk_ui_modal extends sk_ui_component {
                 if (this._autoClose !== false) this.hide()
             }, this._autoClose)
 
+            this.shown = true
+            
             resolve()
         })
     }

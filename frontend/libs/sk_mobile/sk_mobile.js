@@ -17,8 +17,8 @@ class SK_Mobile {
 
     update(){
         if (!sk.isOnMobile) return
-        if (this.test_iOS()) this.os = 'ios'
-        if (this.test_android()) this.os = 'android'
+        if (this.test_iOS()) sk.os = 'ios'
+        if (this.test_android()) sk.os = 'android'
 
         this.isStandalone = this.appIsStandalone()
 
@@ -45,7 +45,7 @@ class SK_Mobile {
     }
     
     appIsStandalone(){
-        if (this.os) return ('standalone' in window.navigator) && (window.navigator.standalone)
+        if (sk.os) return ('standalone' in window.navigator) && (window.navigator.standalone)
     }
 
     updateOrientation(){

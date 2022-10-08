@@ -90,7 +90,7 @@ button:focus-visible {
 }
 
 i.icon, i.icons, i.flag {
-    margin: 0 !important;
+    /*margin: 0 !important;*/
     /*line-height: unset;*/
     width: 1em;
 }

@@ -22,6 +22,9 @@ class sk_ui_iceRink extends sk_ui_component {
                 wheelMS = Date.now()
                 wheelInertia = 0
             }
+
+            
+            this.tween.stop()
         }
         
         this.scrollbarWrapper = this.add.component(_c => {
@@ -65,7 +68,13 @@ class sk_ui_iceRink extends sk_ui_component {
         
                 var top = contentWrapperRect.top - this.parent.rect.top + this.scrollbar.offset.top
                 _c.style.top = top + 'px'
-                _c.style.left = (contentWrapperRect.left + contentWrapperRect.width - _c.rect.width + this.scrollbar.offset.right) + 'px'
+
+                if (this.scrollbar.decoupled){
+                    _c.style.right = (this.scrollbar.decoupled === 'outside' ? '-10px' : '0px')
+                } else {
+                    _c.style.left = (this.content.storedWidth - _c.rect.width + this.scrollbar.offset.right) + 'px'
+                }
+
                 _c.style.height = (contentWrapperRect.height - this.scrollbar.offset.bottom - this.scrollbar.offset.top) + 'px'
             }
         })
@@ -91,6 +100,7 @@ class sk_ui_iceRink extends sk_ui_component {
 
 
                     this.scrollbarNative.fakeContent.style.minHeight = cRect.height + 'px'
+                    this.content.storedWidth = cRect.width
                     this.content.storedHeight = cRect.height
 
                     this.scroller.contentHeight = cRect.height
@@ -233,9 +243,6 @@ class sk_ui_iceRink extends sk_ui_component {
                 if (!this.canScroll) return
                 _c.element.style.cursor = 'grabbing'
                 _c.element.style.userSelect = 'none'
-
-
-               
             }
 
             _c.element.addEventListener('mousedown', mouseDownHandler)
@@ -275,6 +282,7 @@ class sk_ui_iceRink extends sk_ui_component {
 
             _c.onDecoupled = decoupled => {
                 if (decoupled){
+                    this.scrollbarWrapper.style.left = ''
                     this.scrollbarWrapper.style.right = (decoupled === 'outside' ? '-10px' : '0px')
                 } else {
                     this.scrollbarWrapper.style.right = ''
@@ -295,11 +303,50 @@ class sk_ui_iceRink extends sk_ui_component {
 
         }
 
+
+
+
+        /*******/
+
+
+
+        this.tween = new SK_Tween({
+            speed: 10,
+            onChanged: res => {
+                this.scroller.value = res.current
+            }
+        })
+
+
+        var lastOverscrollVal = 0
         this.preRubberbandPos = 0
         this.scroller = new sk_scroller({parent: this,
+            onStep: ()=>{
+                this.tween.step()
+            },
+
+            onStop: ()=>{
+                this.tween.stop()
+            },
+
             onChanged: res => {
                 this.setContentPos(res)
                 updateHandleTopPos(0-res)
+                
+                if (this.onOverscroll){
+                    var diff = this.content.storedHeight - this.storedHeight
+
+                    var overscrolls = {
+                        top: 0-res,
+                        bottom: 0-(diff - res)
+                    }
+
+                    var overscroll = 0
+                    if (overscrolls.top > 0) overscroll = overscrolls.top
+                    //if (overscrolls.top < 0 && overscrolls.bottom < 0) overscroll = overscrolls.bottom
+                    if (overscroll !== lastOverscrollVal) this.onOverscroll(overscroll)
+                    lastOverscrollVal = overscroll
+                }
             }
         })
 
@@ -309,18 +356,15 @@ class sk_ui_iceRink extends sk_ui_component {
 
 
 
-        /*******/
-
-        this.tween = new SK_Tween({
-            speed: 100,
-            onChanged: res => {
-                this.scroller.value = res
-            }
-        })
+        
     }
 
-    scrollTo(element){
-        
+    scrollToChild(component){
+        this.lastYPos = this.scroller.value
+        this.tween.current = this.lastYPos
+        var cRect = component.rect
+        var newY = 0-((0-this.lastYPos) + cRect.top)
+        this.tween.to(newY)
     }
 }
 
@@ -432,6 +476,8 @@ class sk_scroller {
                 this.step()
             }
             
+            if (this.opt.onStep) this.opt.onStep()
+
             window.requestAnimationFrame(step)
         }
         window.requestAnimationFrame(step)
@@ -506,6 +552,7 @@ class sk_scroller {
     stop(){
         this.__run = false
         this.__inertia = 0
+        if (this.opt.onStop) this.opt.onStop()
     }
 
 

@@ -58,6 +58,8 @@ class sk_ui_button extends sk_ui_component {
                 if (this.disabled) return
                 if (this.onTouchStart) this.onTouchStart(_e)
                 touchDragged = false
+
+                _e.preventDefault()
             }
             this.element.ontouchend = _e => {
                 if (this.disabled) return

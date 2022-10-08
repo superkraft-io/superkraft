@@ -18,11 +18,12 @@ class sk_ui_component {
         var tree = {}
         var htmlTag = opt.htmlTag  || 'div'
 
-        var _classes = ['sk_component', 'sk_ui_transition', 'sk_ui_noSelect', 'sk_ui_' + sk.browser()]
+        var _classes = ['sk_component', 'sk_ui_transition', 'sk_ui_noSelect', 'sk_ui_os_' + sk.os, 'sk_ui_' + sk.browser()]
 
         if (sk.isOnMobile){
             _classes.push('sk_ui_isOnMobile')
             if (sk.mobile.isStandalone) _classes.push('sk_ui_isMobileStandalone sk_ui_mobile_noScroll')
+            _classes.push('sk_ui_mobile_orientation_' + sk.mobile.orientation)
         }
         
         tree[htmlTag + '_element'] = { class: _classes.join(' '), styling: 'c' }
@@ -321,8 +322,6 @@ class sk_ui_component {
 
         _classHierarchy.push('sk_ui_component')
 
-        if (sk.isOnMobile) _classHierarchy.push('sk_ui_isOnMobile')
-
         return _classHierarchy
     }
 
@@ -469,8 +468,17 @@ class sk_ui_component {
         })
     }
 
+
+    getParentIceRink(){
+        return (this.parent.classHas('sk_ui_iceRink') ? this.parent : this.parent.getParentIceRink())
+    }
+
     scrollTo(){
-        this.element.scrollIntoView({behavior: "smooth"})
+        var parentIceRink = this.getParentIceRink()
+
+        if (!parentIceRink) return this.element.scrollIntoView({behavior: "smooth"})
+
+        parentIceRink.scrollToChild(this)
     }
 
     get rect(){
@@ -510,8 +518,9 @@ class sk_ui_component {
 
     
 
-    classAdd(val){  $(this.element).addClass(val) }
-    classRemove(val){  $(this.element).removeClass(val) }
+    classAdd(val = ''){ val.split(' ').forEach(_class => this.element.classList.add(_class)) }
+    classRemove(val = ''){ val.split(' ').forEach(_class => { try { this.element.classList.remove(_class) } catch (err) { }}) }
+    classHas(val = ''){ return this.element.classList.contains(val) }
 
 
     async blink(){

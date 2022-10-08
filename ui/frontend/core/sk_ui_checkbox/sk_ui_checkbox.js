@@ -6,18 +6,24 @@ class sk_ui_checkbox extends sk_ui_button {
         
         this._icon.iconElement.classList.add('transition')
 
-        this.icon = 'check'
+        this.icon = ''
 
         this.onClick = ()=>{
             this.checked = !this.checked
         }
 
+        this._icon.fadeOnChange = true
 
 
         this.attributes.add({friendlyName: 'Checked State', name: 'checked_state', type: 'bool', onSet: val => {
-            if (val) this._icon.iconElement.classList.add('sk_ui_checkbox_on')
+            /*if (val) this._icon.iconElement.classList.add('sk_ui_checkbox_on')
             else this._icon.iconElement.classList.remove('sk_ui_checkbox_on')
+            */
+
             this.__checked = val
+
+            if (val) this.icon = 'check'
+            else this.icon = 'none'
         }})
 
         this.attributes.add({friendlyName: 'Checked', name: 'checked', type: 'bool', onSet: val => {
