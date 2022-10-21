@@ -4,7 +4,6 @@ class SK_Mobile {
         this.update()
 
         this.debugData = {}
-
     }
 
     get debugStr(){
@@ -31,7 +30,7 @@ class SK_Mobile {
             this.updateOrientation()
         })
         
-        setTimeout(()=>{ this.updateOrientation() }, 100)
+        setTimeout(()=>{ this.updateOrientation() }, 30)
     }
 
     test_iOS(){
@@ -49,10 +48,18 @@ class SK_Mobile {
     }
 
     updateOrientation(){
-        if (sk.isOnMobile && window.innerWidth > window.innerHeight) this.orientation = 'landscape'
-        else this.orientation = 'portrait'
+        var orientation = ''
+        if (sk.isOnMobile && window.innerWidth > window.innerHeight) orientation = 'landscape'
+        else orientation = 'portrait'
         
-        this.orientation = (window.orientation.toString().indexOf('90') > -1 ? 'landscape' : 'portrait')
+        
+
+        orientation = (window.orientation.toString().indexOf('90') > -1 ? 'landscape' : 'portrait')
+        
+        if (orientation === this.orientation) return
+
+
+        this.orientation = orientation
 
         this.debugData = {
             'sk.isOnMobile': sk.isOnMobile,
@@ -62,7 +69,7 @@ class SK_Mobile {
             'this.lockOrientation': this.lockOrientation
         }
         
-       
+    
 
         var elementList = document.getElementsByTagName('*')
         for(var i = 0; i < elementList.length; i++){
@@ -76,6 +83,7 @@ class SK_Mobile {
                 try {
                     sk.app.body.transition('fade out')
                     this.screenOrientationMsg = sk.app.add.mobileOrientationMsg(_c => {
+                        //_c.style.zIndex = 0
                         _c.transition('fade in')
                     })
                 } catch(err) {
@@ -83,9 +91,9 @@ class SK_Mobile {
                 }
             } else {
                 if (this.screenOrientationMsg){
-                    // this.screenOrientationMsg.transition('fade out').then(()=>{
-                        this.screenOrientationMsg.remove()
-                    //})
+                    this.screenOrientationMsg.transition('fade out').then(async ()=>{
+                        this.screenOrientationMsg.element.remove()
+                    })
                     sk.app.body.transition('fade in')
                 }
             }
