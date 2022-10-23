@@ -275,8 +275,19 @@ class sk_ui_button extends sk_ui_component {
         return this.add.statusIndicator(_c => {
             _c.status = opt.status
             _c.side = opt.side
-            _c.size = 16
-            _c.autoHide = opt.autoHide
+            
+            if (opt.autoHide !== false) _c.autoHide = true
+
+            
+            _c.indicator.animate = false
+            _c.size = opt.size || 16
+            _c.indicator.animate = true
+
+            if (opt.onHidden){
+                _c.onHidden = ()=>{
+                    opt.onHidden()
+                }
+            }
         })
     }
 }

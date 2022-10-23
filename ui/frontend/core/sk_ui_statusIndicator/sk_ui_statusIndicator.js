@@ -30,7 +30,7 @@ class sk_ui_statusIndicator extends sk_ui_component {
         }})
 
         this.attributes.add({friendlyName: 'Size', name: 'size', type: 'number', onSet: val => {
-            this.indicator.size = val
+            if (this.indicator) this.indicator.size = val
         }})
 
         this.attributes.add({friendlyName: 'autoHide', name: 'autoHide', type: 'number', onSet: val => {
@@ -56,6 +56,7 @@ class sk_ui_statusIndicator extends sk_ui_component {
         return new Promise(async resolve => {
             this.indicator = undefined
             await this.remove({animation: 'width'})
+            if (this.onHidden) this.onHidden()
             resolve()
         })
     }
