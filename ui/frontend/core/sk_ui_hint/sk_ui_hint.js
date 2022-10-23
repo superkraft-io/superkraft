@@ -70,9 +70,11 @@ class sk_ui_hint extends sk_ui_component {
         this.element.style.left = this.results.x + 'px'
         this.element.style.top = this.results.y + 'px'
 
-        setTimeout(()=>{
-            this.monitorParentPosition()
-        }, (this.sticky ? 0 : 200))
+        if (this.hideOnMove !== false){
+            setTimeout(()=>{
+                this.monitorParentPosition()
+            }, (this.sticky ? 0 : 200))
+        }
     }
 
     hide(instant = false){

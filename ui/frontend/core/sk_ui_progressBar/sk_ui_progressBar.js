@@ -58,7 +58,7 @@ class sk_ui_progressBar extends sk_ui_component {
                 this.contentHidden = this.add.component(_c => {
                     _c.classAdd('sk_ui_progressBar_bar_content')
                     _c.opacity = 0.01
-                    _c.animate = false
+                    //_c.animate = false
                     this.hintHandle = _c.add.component(_c => {
                         _c.classAdd('sk_ui_progressBar_hintHandle')
                     })
@@ -80,7 +80,7 @@ class sk_ui_progressBar extends sk_ui_component {
         } catch(err) {
             this.content.style.width = val + '%'
             this.contentHidden.style.width = val + '%'
-            if (this.hintProgress) this.hintHandle.hint({text: val + '%', instaShow: true, position: 'right center'})
+            if (this.hintProgress) this.hintHandle.hint({text: val + '%', instaShow: true, position: 'right center', sticky: true, hideOnMove: false})
         }
     }
 }
