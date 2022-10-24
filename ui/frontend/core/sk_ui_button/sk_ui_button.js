@@ -279,9 +279,11 @@ class sk_ui_button extends sk_ui_component {
             if (opt.autoHide !== false) _c.autoHide = true
 
             
-            _c.indicator.animate = false
-            _c.size = opt.size || 16
-            _c.indicator.animate = true
+            if (opt.size){
+                if (_c.indicator) _c.indicator.animate = false
+                _c.size = opt.size || 16
+                if (_c.indicator) _c.indicator.animate = true
+            }
 
             if (opt.onHidden){
                 _c.onHidden = ()=>{

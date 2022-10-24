@@ -83,7 +83,7 @@ module.exports = class SK_WAPP_Mobile {
             
 
             var manifest = {
-                scope: '/192.168.1.13'
+                scope: '/localhost'
             }
 
             var props = ['width=device-width', 'initial-scale=1.0']

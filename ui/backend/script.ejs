@@ -93,6 +93,11 @@
             })
         },
 
+        urlParams: ()=>{
+            const urlSearchParams = new URLSearchParams(window.location.search)
+            return Object.fromEntries(urlSearchParams.entries())
+        },
+
         init: ()=>{
             return new Promise(async (resolve, reject)=>{
                 var res = await sk.comm.main('getInfo')
