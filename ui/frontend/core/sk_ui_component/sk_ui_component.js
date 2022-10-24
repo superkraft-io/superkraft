@@ -521,7 +521,8 @@ class sk_ui_component {
     classAdd(val = ''){
         val.split(' ').forEach(_class => {
             try { this.element.classList.add(_class) } catch(err) {}
-        }) }
+        })
+    }
     classRemove(val = ''){ val.split(' ').forEach(_class => { try { this.element.classList.remove(_class) } catch (err) { }}) }
     classHas(val = ''){ return this.element.classList.contains(val) }
 
