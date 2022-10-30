@@ -24,6 +24,7 @@ class sk_ui_component {
             _classes.push('sk_ui_isOnMobile')
             if (sk.mobile.isStandalone) _classes.push('sk_ui_isMobileStandalone sk_ui_mobile_noScroll')
             _classes.push('sk_ui_mobile_orientation_' + sk.mobile.orientation)
+            _classes.push(sk.mobile.getDeviceClasses())
         }
         
         tree[htmlTag + '_element'] = { class: _classes.join(' '), styling: 'c' }

@@ -58,7 +58,9 @@
             warning : (msg, opt)=>{ sk.toast.do(msg, {...{class: 'warning'}, ...opt}) }
         },
 
-        openURL: url => { sk.comm.main('openURL', {url: url}) },
+        openURL: url => {
+            sk.comm.main('openURL', {url: url})
+        },
         downloadURL: (url, filename)=>{
             return new Promise((resolve, reject)=>{
                 var fail = err => {

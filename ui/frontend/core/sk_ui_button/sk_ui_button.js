@@ -18,7 +18,7 @@ class sk_ui_button extends sk_ui_component {
         
 
         var handleOnClickEvent = async _e => {
-            _e.stopPropagation()
+            if (_e.stopPropagation) _e.stopPropagation()
 
             if (sk.app_type === 'dapp'){
                 if (this.goto || this.goto_){
@@ -40,11 +40,15 @@ class sk_ui_button extends sk_ui_component {
 
         
         var touchDragged = false
+
+        this.doClick = _e => {
+            if (this.disabled) return
+            handleOnClickEvent(_e || {})
+        }
         
         if (!sk.isOnMobile){
             this.element.addEventListener('click', _e => {
-                if (this.disabled) return
-                handleOnClickEvent(_e)
+                this.doClick(_e)
             })
 
             

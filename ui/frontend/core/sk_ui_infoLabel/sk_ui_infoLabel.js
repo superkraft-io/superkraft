@@ -9,7 +9,7 @@ class sk_ui_infoLabel extends sk_ui_component {
             _c.fadeOnChange = true
         })
 
-        this._label = this.add.lbl(_c => {
+        this._label = this.add.text(_c => {
             _c.text = ''
             _c.size = 12
             _c.fadeOnChange = true
