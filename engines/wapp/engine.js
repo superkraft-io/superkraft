@@ -219,7 +219,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
                 this.servers.http = http.createServer(
                     function (req, res) {
                         try {
-                            res.writeHead(301, { "Location": "https://" + req.headers['host'].replace(80, 443) + req.url + '/' })
+                            res.writeHead(301, { "Location": "https://" + req.headers['host'].replace(config.webserver.ports.http, config.webserver.ports.https) + req.url })
                             res.end()
                         } catch(e) {
                             console.error('Invalid request: ' + req.url + '      ' + JSON.stringify(req.headers))
