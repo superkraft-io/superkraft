@@ -159,12 +159,15 @@ class sk_ui_iceRink extends sk_ui_component {
 
 
             const mouseMoveHandler = _e => {
+                
                 this.content.style.pointerEvents = 'none'
 
                 var x = (_e.clientX || _e.touches[0].clientX)
                 var y = (_e.clientY || _e.touches[0].clientY)
                 const dx = x - pos.x
                 const dy = y - pos.y
+
+                if ((dy < 0 ? 0-dy : dy) < 3) return
 
                 if (dy >= 0) direction = 'down'
                 else direction = 'up'

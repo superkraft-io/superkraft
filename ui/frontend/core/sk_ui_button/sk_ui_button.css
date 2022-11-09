@@ -4,6 +4,11 @@
     position: relative;
     overflow: hidden;
     opacity: 0.5;
+    pointer-events: none;
+}
+
+.sk_ui_button > * {
+    pointer-events: none;
 }
 
 .sk_ui_button.sk_ui_isOnDesktop {
@@ -12,6 +17,7 @@
 
 .sk_ui_button_enabled {
     opacity: 1;
+    pointer-events: all;
 }
 
 .sk_ui_button_enabled:hover {

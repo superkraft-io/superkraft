@@ -100,13 +100,13 @@
     background-color: inherit !important;
 }
 
-.sk_ui_dappTitlebar_actions_button_mac > .sk_ui_icon > #icon {
+.sk_ui_dappTitlebar_actions_button_mac > .sk_ui_icon {
     font-size: 10px;
     opacity: 0;
     color: black;
     margin-top: 1px !important;
 }
-.sk_ui_dappTitlebar_actions_mac:hover > .sk_ui_dappTitlebar_actions_button_mac > .sk_ui_icon > #icon {
+.sk_ui_dappTitlebar_actions_mac:hover > .sk_ui_dappTitlebar_actions_button_mac > .sk_ui_icon {
     opacity: 0.5;
 }
 .sk_ui_dappTitlebar_actions_button_mac:active {
