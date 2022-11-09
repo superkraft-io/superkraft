@@ -71,12 +71,15 @@ module.exports = class Superkraft {
 
         if (opt.useComplexity) global.sk.complexity = new ( require(__dirname + '/complexity/backend/sk_complexity.js'))
 
-
-        global.SK_RootViewCore = require('./sk_rootViewCore.js')
-        global.SK_RootView = require('./engines/' + opt.type + '/rootView.js')
         global.SK_RootEngine = require('./sk_rootEngine.js')
         sk.engine = new (require('./engines/' + opt.type + '/engine.js'))()
         await sk.engine.init()
+        
+        global.SK_RootViewCore = require('./sk_rootViewCore.js')
+        global.SK_RootView = require('./engines/' + opt.type + '/rootView.js')
+        
+       
+        
 
         if (opt.useComplexity) global.sk.complexity.init()
 
