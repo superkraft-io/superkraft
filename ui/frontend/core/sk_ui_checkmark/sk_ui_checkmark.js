@@ -57,6 +57,23 @@ class sk_ui_checkmark extends sk_ui_component {
             }
         })
 
+        this.attributes.add({
+            friendlyName: 'Color',
+            name: 'color',
+            type: 'string',
+            onSet: val => {
+                var loader = this.checkmarkBucket.loader
+                var check = this.checkmarkBucket.check
+
+                loader.style.borderLeftColor = val
+
+                if (this.isChecked){
+                    loader.style.borderColor = val
+                    check.syle.borderLeftColor = val
+                }
+            }
+        })
+
         this.size = 100
     }
 
@@ -69,11 +86,7 @@ class sk_ui_checkmark extends sk_ui_component {
 
         this.checkmarkBucket.loader.classList.add(this.currentClasses.loaderComplete)
         this.checkmarkBucket.check.transition('scale in')
-    }
-
-    set color(val){
-        this.__color = val
-        //this.checkmarkBucket.loader.style.borderLeftColor   = val
+        this.isChecked = true
     }
 
     generateCSS(id, width, height){
@@ -99,7 +112,7 @@ class sk_ui_checkmark extends sk_ui_component {
             -webkit-animation: none !important;
             animation: none !important;
             border-color: #5cb85c !important;
-            transition: border 500ms ease-out;
+            transition: border 200ms ease-out;
         }
          
         .sk_ui_checkmark-check-<id>.sk_ui_checkmark-check-draw-<id>:after {

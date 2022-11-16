@@ -9,7 +9,7 @@ class sk_ui_dappTitlebar extends sk_ui_component {
         
         this.attributes.add({friendlyName: 'OS', name: 'os', type: 'string', onSet: val =>{
             var os = 'win'
-            if (val.indexOf('darwin') > -1) os = 'mac'
+            if (val.indexOf('macos') > -1) os = 'mac'
 
             this.classAdd('sk_ui_dappTitlebar_' + os)
 

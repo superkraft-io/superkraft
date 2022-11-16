@@ -38,7 +38,7 @@ class TitleBar {
             var icons = {
                 close: 'close',
                 minimize: 'minus',
-                maximize: (opt.os === 'win32' ? 'square outline' : 'sort')
+                maximize: (opt.os === 'win' ? 'square outline' : 'sort')
             }
 
             var tree = {
@@ -55,7 +55,7 @@ class TitleBar {
             JSOM.parse({root: this.bucket.windowActions, tree: tree})
         }
 
-        if (opt.os === 'win32'){
+        if (opt.os === 'win'){
             if (sk.window.minimizable) addActionBtn('minimize')
             if (sk.window.maximizable) addActionBtn('maximize')
             if (sk.window.closable) addActionBtn('close')

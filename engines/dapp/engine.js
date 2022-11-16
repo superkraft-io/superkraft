@@ -3,19 +3,36 @@ const fs = require('fs')
 var _electron =  require('electron')
 const { app, BrowserWindow, dialog, ipcMain } = _electron
 
+var _os = require('os')
+
 
 module.exports = class SK_LocalEngine extends SK_RootEngine {
     constructor(opt){
         super()
+        this.getSysInfo()
+    }
+
+    getSysInfo(){
+        var os = _os.platform()
+        if (os === 'darwin') os = 'macos'
+        else os = 'win'
+
+
+        var arch = 'x64'
+       if (global.sai.os.cpus()[0].model.includes('Apple')) arch = 'arm'
+
+        global.sk.sysInfo = {
+            os: os,
+            arch: arch
+        }
+
     }
 
     init(){
         return new Promise(resolve => {
-        
-
+            global.sk._os = _os
             global.sk.app = app
-            global.sk.os = require('os')
-
+            
             const WebSockets_Callback = require('wscb')
             var wscb = new WebSockets_Callback({asElectron: true,
                 onUnexpectedMessage: msg => {

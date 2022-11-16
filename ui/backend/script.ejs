@@ -61,37 +61,49 @@
         openURL: url => {
             sk.comm.main('openURL', {url: url})
         },
-        downloadURL: (url, filename)=>{
+        downloadURL: (url, filename, targetDir)=>{
             return new Promise((resolve, reject)=>{
                 var fail = err => {
                     console.error(err)
                     reject()
                 }
 
-                //if (!filename) return fail('No filename set for download')
 
-                var xhr = new XMLHttpRequest()
-                xhr.open('GET', url, true)
-                xhr.responseType = 'blob'
-                xhr.onload = e => {
-                    if (e.target.status === 200) {
-                        var blob = e.target.response
-                        var link = document.createElement('a')
-                        link.href = window.URL.createObjectURL(blob)
-                        
-                        if (!filename){
-                            var split = e.target.responseURL.split('/')
-                            filename = split[split.length - 1]
+                var asWapp = ()=>{
+                    //if (!filename) return fail('No filename set for download')
+
+                    var xhr = new XMLHttpRequest()
+                    xhr.open('GET', url, true)
+                    xhr.responseType = 'blob'
+                    xhr.onload = e => {
+                        if (e.target.status === 200) {
+                            var blob = e.target.response
+                            var link = document.createElement('a')
+                            link.href = window.URL.createObjectURL(blob)
+                            
+                            if (!filename){
+                                var split = e.target.responseURL.split('/')
+                                filename = split[split.length - 1]
+                            }
+                            
+                            link.download = filename
+                            link.click()
+                            return resolve()
                         }
-                        
-                        link.download = filename
-                        link.click()
-                        return resolve()
-                    }
 
-                    fail(e.target.statusText)
+                        fail(e.target.statusText)
+                    }
+                    xhr.send()
                 }
-                xhr.send()
+
+                
+
+                var asDapp = ()=>{
+
+                }
+
+                if (sk.app_type === 'wapp') asWapp()
+                else asDapp()
             })
         },
 
@@ -104,6 +116,7 @@
             return new Promise(async (resolve, reject)=>{
                 var res = await sk.comm.main('getInfo')
                 sk.os      = res.os
+                sk.arch    = res.arch
                 sk.main    = res.main
                 sk.noTitle = res.view.noTitle
                 sk.version = res.version

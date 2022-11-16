@@ -165,7 +165,7 @@ class sk_ui_contextMenu_shortcut extends sk_ui_component {
         if (split.includes('^'))     addSpecial('^')
         if (split.includes('fn'))    addSpecial('fn')
         if (split.includes('shift')) addSpecial('⇧')
-        if (split.includes('alt') || split.includes('option')) addSpecial((sk.os === 'darwin' ? '⌥' : 'Alt'))
+        if (split.includes('alt') || split.includes('option')) addSpecial((sk.os === 'macos' ? '⌥' : 'Alt'))
         if (split.includes('cmd') || split.includes('command')) addSpecial('⌘')
 
         var last = split[split.length - 1]

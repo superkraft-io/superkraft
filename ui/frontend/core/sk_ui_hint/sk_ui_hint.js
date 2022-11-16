@@ -10,7 +10,7 @@ class sk_ui_hint extends sk_ui_component {
 
         this.target = opt.target
         
-        this.label = this.add.label(_c => {
+        this.label = this.add.text(_c => {
             _c.text = '<3'
             _c.wrap = true
         })

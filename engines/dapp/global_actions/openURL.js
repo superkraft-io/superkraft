@@ -12,7 +12,7 @@ module.exports = class SK_Action extends SK_RootAction {
 
         if (opt.browser || isValidHttpUrl(opt.url)) return shell.openExternal(path)
 
-        if (global.sk.os.platform() === 'win32') shell.openPath(path)
+        if (global.sk.sysInfo.os === 'win') shell.openPath(path)
         else shell.showItemInFolder(path)
 
         res.resolve({})

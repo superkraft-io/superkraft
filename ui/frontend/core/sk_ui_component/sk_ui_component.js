@@ -244,8 +244,9 @@ class sk_ui_component {
         }})
 
         this.attributes.add({friendlyName: 'Pulsate', name: 'pulsate', type: 'bool', onSet: val => {
-            this.classRemove('sk_ui_pulsate')
-            if (val) this.classAdd('sk_ui_pulsate')
+            var speeds = ['slow', 'normal', 'fast']
+            this.classRemove(speeds.join(' sk_ui_pulsate'))
+            if (val) this.classAdd('sk_ui_pulsate' + (val !== true ? '_' + val : '_normal'))
         }})
 
         /*

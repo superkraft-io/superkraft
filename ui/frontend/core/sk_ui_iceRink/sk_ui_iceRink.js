@@ -358,8 +358,6 @@ class sk_ui_iceRink extends sk_ui_component {
         }})
 
 
-
-        
     }
 
     scrollToChild(component){
@@ -368,6 +366,11 @@ class sk_ui_iceRink extends sk_ui_component {
         var cRect = component.rect
         var newY = 0-((0-this.lastYPos) + cRect.top)
         this.tween.to(newY)
+    }
+
+    scrollTo(val){
+        this.tween.current = this.preRubberbandPos
+        this.tween.to(val)
     }
 }
 

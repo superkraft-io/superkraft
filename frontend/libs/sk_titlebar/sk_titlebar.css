@@ -13,11 +13,11 @@
     color: rgb(175, 175, 175);
 }
 
-.titlebar.win32 {
+.titlebar.win {
     height: 1.7rem;
 }
 
-.titlebar.darwin  {
+.titlebar.macos  {
     height: 1.8rem;
 }
 
@@ -56,17 +56,17 @@
 
 /* windows */
 
-.windowActions.win32 {
+.windowActions.win {
     right: 0px;
 }
 
 
-.titleBarActionBtn.win32 > #icon {
+.titleBarActionBtn.win > #icon {
     font-size: 12px;
     color: rgb(133, 133, 133);
 }
 
-.titleBarActionBtn.win32 {
+.titleBarActionBtn.win {
     width: 2.7rem;
     height: 1.7rem;
     color: white;
@@ -90,19 +90,19 @@
     background-color: rgb(241, 36, 0);
 }
 
-/* darwin */
+/* macos */
 
-.windowActions.darwin {
+.windowActions.macos {
     left: 0px;
 }
 
-.titleBarActionBtn.darwin > #icon {
+.titleBarActionBtn.macos > #icon {
     font-size: 9px;
     opacity: 0;
     color: black;
 }
 
-.windowActions:hover > .titleBarActionBtn.darwin > #icon {
+.windowActions:hover > .titleBarActionBtn.macos > #icon {
     opacity: 0.5;
 }
 
@@ -110,11 +110,11 @@
     transform: rotate(-45deg);
 }
 
-.titleBarActionBtn.darwin:hover > #icon {
+.titleBarActionBtn.macos:hover > #icon {
     opacity: 0.3;
 }
 
-.titleBarActionBtn.darwin {
+.titleBarActionBtn.macos {
     margin-left: 0.5rem;
     width: 0.9rem;
     height: 0.9rem;
@@ -124,19 +124,19 @@
     background-color: #565656;
 }
 
-.titleBarActionBtn.darwin:active {
+.titleBarActionBtn.macos:active {
     filter: brightness(1.4);
 }
 
-.windowActions:hover > .titleBarActionBtn.darwin.closeBtn {
+.windowActions:hover > .titleBarActionBtn.macos.closeBtn {
     background-color: rgb(236, 106, 84);
 }
 
-.windowActions:hover > .titleBarActionBtn.darwin.minimizeBtn {
+.windowActions:hover > .titleBarActionBtn.macos.minimizeBtn {
     background-color: rgb(244, 191, 79);
 }
 
-.windowActions:hover > .titleBarActionBtn.darwin.maximizeBtn {
+.windowActions:hover > .titleBarActionBtn.macos.maximizeBtn {
     background-color: rgb(97, 197, 83);
 }
 
