@@ -12,6 +12,19 @@
     /*border: solid 1px red;*/
 }
 
+.sk_ui_iceRink_content_blocker {
+    z-index: 999999;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: solid 1px red;
+    background-color: transparent;
+}
+
+.sk_ui_iceRink_content_blocker_hidden {
+    display: none;
+}
+
 .sk_ui_iceRink_scrollbarWrapper {
     position: absolute;
     width: 0px;

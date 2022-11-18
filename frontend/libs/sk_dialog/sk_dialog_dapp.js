@@ -33,14 +33,7 @@ var sk_dialog = {
             if (opt.multiple) properties.push('multiSelections')
             if (opt.dontAddToRecent) properties.push('dontAddToRecent')
 
-            var defOpts = {
-                title: opt.title,
-                properties: properties,
-                filters: opt.filters,
-                buttonLabel: opt.buttonLabel,
-                message: opt.message
-            }
-            var res = await sk.comm.main('dialog', {type: 'open', settings: opt})
+            var res = await sk.comm.main('dialog', {type: 'save', options: opt})
             
 
             if (res.canceled) return reject()

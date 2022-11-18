@@ -132,13 +132,17 @@ class sk_ui_button extends sk_ui_component {
         this.attributes.add({friendlyName: 'Toggle', name: 'toggle', type: 'bool'})
 
         this.attributes.add({friendlyName: 'Toggle State', name: 'toggleState', type: 'bool', onSet: val => {
-            this.classRemove('sk_ui_button_toggled')
-            if (val) this.classAdd('sk_ui_button_toggled')
+            this.classRemove(this.toggleClass || 'sk_ui_button_toggled')
+            if (val) this.classAdd(this.toggleClass || 'sk_ui_button_toggled')
         }})
         
         this.attributes.add({friendlyName: 'Toggled', name: 'toggled', type: 'bool', onSet: val => {
             this.toggleState = val
             if (this.onToggled) this.onToggled(this.toggled)
+        }})
+
+        this.attributes.add({friendlyName: 'Toggle Class', name: 'toggleClass', type: 'text', onSet: val => {
+            
         }})
 
         
@@ -208,6 +212,8 @@ class sk_ui_button extends sk_ui_component {
                 this.classAdd('sk_ui_button_appearance_' + val)
             }
         })
+
+        
 
 
 

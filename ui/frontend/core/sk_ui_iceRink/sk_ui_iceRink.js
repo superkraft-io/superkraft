@@ -158,16 +158,18 @@ class sk_ui_iceRink extends sk_ui_component {
             }
 
 
-            const mouseMoveHandler = _e => {
-                
-                this.content.style.pointerEvents = 'none'
 
+            const mouseMoveHandler = _e => {
                 var x = (_e.clientX || _e.touches[0].clientX)
                 var y = (_e.clientY || _e.touches[0].clientY)
                 const dx = x - pos.x
                 const dy = y - pos.y
 
-                if ((dy < 0 ? 0-dy : dy) < 3) return
+                var delta = (dy < 0 ? 0-dy : dy)
+                if (delta < 3) return 
+
+
+                if (delta > 10) sk.ums.broadcast('sk_ui_block_userInteractons', undefined, {block: true})
 
                 if (dy >= 0) direction = 'down'
                 else direction = 'up'
@@ -188,7 +190,11 @@ class sk_ui_iceRink extends sk_ui_component {
             }
 
             const mouseUpHandler = _e => {
-                this.content.style.pointerEvents = ''
+                pos = undefined
+
+                sk.ums.broadcast('sk_ui_block_userInteractons', undefined, {block: false})
+
+                //this.content.style.pointerEvents = ''
 
                 _c.element.removeEventListener('mousemove', mouseMoveHandler)
                 document.removeEventListener('mousemove', mouseMoveHandler)
@@ -228,20 +234,22 @@ class sk_ui_iceRink extends sk_ui_component {
                 _c.element.addEventListener('mousemove', mouseMoveHandler)
                 document.addEventListener('mousemove', mouseMoveHandler)
 
+                
                 _c.element.addEventListener('mouseup', mouseUpHandler)
                 document.addEventListener('mouseup', mouseUpHandler)
 
 
                 _c.element.addEventListener('touchmove', mouseMoveHandler)
+                //document.addEventListener('touchmove', mouseUpHandler)
 
                 _c.element.addEventListener('touchend', mouseUpHandler)
                 document.addEventListener('touchend', mouseUpHandler)
+                
 
 
                 this.scroller.stop()
             
                 this.content.last_posY = this.scroller.__value
-
 
                 if (!this.canScroll) return
                 _c.element.style.cursor = 'grabbing'
