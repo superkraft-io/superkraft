@@ -1,6 +1,6 @@
 class sk_ui_button extends sk_ui_component {
     constructor(opt){
-        super({...opt, ...{htmlTag: 'button'}})
+        super({...opt, ...{htmlTag: 'a'}})
         this.multiComponent = true
 
         this.classAdd('sk_ui_button_enabled')
