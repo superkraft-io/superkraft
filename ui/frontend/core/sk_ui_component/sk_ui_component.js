@@ -249,12 +249,6 @@ class sk_ui_component {
             if (val) this.classAdd('sk_ui_pulsate' + (val !== true ? '_' + val : '_normal'))
         }})
 
-        /*
-        this.attributes.add({friendlyName: 'Scrollable', name: 'scrollable', type: 'bool', onSet: val => {
-            bodyScrollLock.disableBodyScroll(this.element)
-        }})
-        */
-
         this.attributes.add({friendlyName: 'Sortable', name: 'sortable', type: 'bool', onSet: val => {
             if (!val) return
             
