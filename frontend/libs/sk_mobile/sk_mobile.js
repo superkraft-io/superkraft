@@ -857,7 +857,10 @@ class SK_Mobile {
                 'sk_ui_device_gen_' + device.generation
             ]
 
-            if (device.homeButton === false) classes.push('sk_ui_device_noHomeButton')
+            if (device.homeButton === false){
+                this.homeButton = device.homeButton
+                classes.push('sk_ui_device_noHomeButton')
+            }
 
             allClasses.push(classes.join(' '))
         }

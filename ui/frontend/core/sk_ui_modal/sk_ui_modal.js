@@ -4,7 +4,7 @@ class sk_ui_modal extends sk_ui_component {
         
 
         this.frosted = true
-
+        this.compact = true
         
 
         this.dimmer = this.add.component(_c => {
@@ -16,12 +16,27 @@ class sk_ui_modal extends sk_ui_component {
             }
         })
 
-        this.add.component(_c => {
-            _c.styling = 'center middle'
+        /*this.add.component(_c => {
+            _c.styling = 'center middle ttb'
             _c.classAdd('sk_ui_modal_contentWrapper')
+            _c.vertical = true
+            _c.compact = true
             
-            this.content = _c.add.component(_c => {
+            this.contentContainer = _c.add.component(_c => {
                 _c.classAdd('sk_ui_modal_content face_color')
+                _c.styling += ' fullheight'
+                _c.vertical = true
+                _c.compact = true
+
+                _c.add.iceRink(_c => {
+                    _c.styling += ' fullheight fullwidth'
+                    _c.vertical = true
+                    _c.content.styling += ' ttb'
+                    _c.content.vertical = true
+                    _c.hideHandle = true
+                    this.content = _c.content
+                    _c.content.margin = 16
+                })
 
                 this.closeBtn = _c.add.button(_c => {
                     _c.classAdd('sk_ui_modal_closeBtn')
@@ -33,13 +48,56 @@ class sk_ui_modal extends sk_ui_component {
                     }
                 })
             })
+        })*/
+
+        this.contentContainer = this.add.component(_c => {
+            _c.styling = 'center middle ttb'
+            _c.classAdd('sk_ui_modal_contentWrapper')
+            _c.vertical = true
+            _c.compact = true
+            _c.animate = false
+
+            _c.add.iceRink(_c => {
+                _c.styling += ' fullheight'
+
+                _c.vertical = true
+                _c.scroller.scrollbar = true
+                _c.autoHeight = true
+                _c.compact = true
+                _c.scrollbar.offset.right = 16
+                if (sk.isOnMobile) _c.scrollbar.offset.bottom = 16
+
+                _c.content.setup(_c => {
+                    _c.styling += ' ttb'
+                    _c.vertical = true
+                    _c.paddingTop = 16
+                    if (sk.isOnMobile && !sk.mobile.homeButton) _c.paddingBottom = 32
+
+                    _c.style.width = 'fit-content'
+
+                    this.closeBtn = _c.add.button(_c => {
+                        _c.classAdd('sk_ui_modal_closeBtn')
+                        _c.icon = 'close'
+                        _c.type = 'clear icon'
+                        _c.onClick = ()=>{
+                            if (this.reject) this.reject()
+                            this.hide()
+                        }
+                    })
+                })
+
+                this.content = _c.content
+
+            })
+
+            
         })
     }
 
     hide(){
         return new Promise(async resolve => {
             if (this.onHide) this.onHide()
-            await this.content.transition('scale out')
+            //this.contentContainer.transition('scale out')
             await this.transition('fade out')
             if (this.onHidden) this.onHidden()
             resolve()
@@ -50,8 +108,9 @@ class sk_ui_modal extends sk_ui_component {
     show(){
         return new Promise(async resolve => {
             if (this.onShow) this.onShow()
+            //this.contentContainer.transition('scale in')
             await this.transition('fade in')
-            await this.content.transition('scale in')
+            
 
             if (this.onShown) this.onShown()
             if (this.pB) this.pB.progress = 100
@@ -82,7 +141,7 @@ class sk_ui_modal extends sk_ui_component {
         }
 
         if (!val.includes('dimmer')) this.dimmer.remove()
-        if (val.includes('content')) this.content.element.addEventListener('click', ()=>{ this.hide() })
+        if (val.includes('content')) this.contentContainer.element.addEventListener('click', ()=>{ this.hide() })
     }
 
     set autoclose(val){

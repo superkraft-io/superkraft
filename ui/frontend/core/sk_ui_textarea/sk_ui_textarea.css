@@ -1,0 +1,13 @@
+.sk_ui_textarea {
+    height: 36px;
+    background-color: #202020;
+    color: white !important;
+    padding: 4px 8px;
+    border: solid 1px #414141;;
+    border-radius: 8px;
+}
+
+.sk_ui_textarea::selection {
+    background:rgb(93, 177, 255);
+    color: white;
+}

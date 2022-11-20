@@ -72,7 +72,7 @@ class sk_ui_iceRink extends sk_ui_component {
                 if (this.scrollbar.decoupled){
                     _c.style.right = (this.scrollbar.decoupled === 'outside' ? '-10px' : '0px')
                 } else {
-                    _c.style.left = (this.content.storedWidth - _c.rect.width + this.scrollbar.offset.right) + 'px'
+                    _c.style.left = this.content.rect.left + (this.content.storedWidth - _c.rect.width + this.scrollbar.offset.right) + 'px'
                 }
 
                 _c.style.height = (contentWrapperRect.height - this.scrollbar.offset.bottom - this.scrollbar.offset.top) + 'px'
@@ -83,6 +83,7 @@ class sk_ui_iceRink extends sk_ui_component {
             _c.classAdd('sk_ui_iceRink_contentWrapper')
             _c.styling = 'top center fullwidth fullheight'
             _c.moveBefore(this.scrollbarWrapper)
+            _c.compact = true
 
 
             this.content = _c.add.component(_c => {
@@ -97,6 +98,15 @@ class sk_ui_iceRink extends sk_ui_component {
 
                 var observer = new ResizeObserver(()=>{
                     var cRect = _c.rect
+                    
+                    //account for padding and margin
+                    var getCSSVal = prop => {
+                        var val = 0
+                        try { val = parseFloat(getComputedStyle(_c.element).getPropertyValue(prop)) } catch(err) {}
+                        return  val
+                    }
+
+                    cRect.height += getCSSVal('padding-top') + getCSSVal('padding-bottom')
 
 
                     this.scrollbarNative.fakeContent.style.minHeight = cRect.height + 'px'
@@ -109,6 +119,9 @@ class sk_ui_iceRink extends sk_ui_component {
 
                     
                     this.scrollbarWrapper.updatePosition(this.contentWrapper.rect)
+
+                    if (this.autoHeight) this.contentWrapper.style.height = cRect.height + 'px'
+                    
                 }).observe(_c.element)
 
 
@@ -118,6 +131,9 @@ class sk_ui_iceRink extends sk_ui_component {
                 this.setContentPos = val => {
                     this.preRubberbandPos = val
                     _c.posY = val
+
+
+
                     _c.style.transform = `translate(0px, ${val}px)`
                     this.scrollbarNative.element.scrollTop = 0-val
                 }
@@ -280,6 +296,8 @@ class sk_ui_iceRink extends sk_ui_component {
             }
 
             _c.onShow = ()=>{
+                if (this.hideHandle) return
+
                 this.scrollbarWrapper.style.width = (sk.isOnMobile ? '4px' : 'var(--sk_ui_scrollbar_width)')
                 this.scrollbarWrapper.opacity = 1
                 this.canScroll = true
@@ -292,7 +310,7 @@ class sk_ui_iceRink extends sk_ui_component {
             }
 
             _c.onDecoupled = decoupled => {
-                if (decoupled){
+                if (decoupled && !this.hideHandle){
                     this.scrollbarWrapper.style.left = ''
                     this.scrollbarWrapper.style.right = (decoupled === 'outside' ? '-10px' : '0px')
                 } else {
@@ -363,6 +381,16 @@ class sk_ui_iceRink extends sk_ui_component {
 
         this.attributes.add({friendlyName: 'Hide Overflow', name: 'hideOverflow', type: 'bool', onSet: val => {
             this.contentWrapper.style.overflow = (val ? 'hidden' : '')
+        }})
+
+        this.attributes.add({friendlyName: 'Hide handle', name: 'hideHandle', type: 'bool', onSet: val => {
+            if (!val) return
+            this.scrollbarWrapper.style.width = '0px'
+            this.scrollbarWrapper.opacity = 0.01
+        }})
+
+        this.attributes.add({friendlyName: 'Auto Height', name: 'autoHeight', type: 'bool', onSet: val => {
+            this.contentWrapper.styling = 'top center fullwidth ' + (!val ? 'fullheight' : '')
         }})
 
 
