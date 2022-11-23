@@ -201,13 +201,13 @@
                                     return
                                 }
                                 _c.visible = true
-                                _c.transition('scale in')
+                                _c.transition('fade in')
                                 break;
 
                             case 'hide':
                                 if (!_c.visible) return
                                 
-                                await _c.transition('scale out')
+                                await _c.transition('fade out')
                                 _c.visible = false
                                 break;
                         

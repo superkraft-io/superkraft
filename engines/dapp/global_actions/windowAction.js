@@ -24,6 +24,10 @@ module.exports = class SK_Action extends SK_RootAction {
                     wnd.unmaximize()
                 }
                 break;
+
+            case 'reload':
+                window.reload()
+                break;
         
             default:
                 try {

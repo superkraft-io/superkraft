@@ -88,18 +88,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             if (this.alreadyLoaded) return
             this.alreadyLoaded = true
         
-            ejse.data({
-                ...{
-                    l10n: {
-                        countries: sk.l10n.listCountries(),
-                        phrases: sk.l10n.getForCountry(global.sk.country)
-                    }
-                },
-
-                ...this.viewInfo,
-                ...{userData: {}}
-            })
-            this._view.loadURL('file://' + global.sk.paths.superkraft + '/template.ejs')
+            this.reload()
         })
 
 
@@ -109,6 +98,22 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         } catch(err) {
 
         }
+    }
+
+    reload(){
+        ejse.data({
+            ...{
+                l10n: {
+                    countries: sk.l10n.listCountries(),
+                    phrases: sk.l10n.getForCountry(global.sk.country)
+                }
+            },
+
+            ...this.viewInfo,
+            ...{userData: {}}
+        })
+
+        this._view.loadURL('file://' + global.sk.paths.superkraft + '/template.ejs')
     }
 
     show(){
