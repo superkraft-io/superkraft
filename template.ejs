@@ -130,6 +130,9 @@
 
             sk.ums = new SK_UMS()
 
+
+            if (sk.app_type === 'wapp') document.body.classList.add('sk_ui_appType_wapp')
+
             sk.init().then(()=>{
                 sk.app = (new sk_ui_component({parent: {element: document.body}}))
                 sk.app.setup(_c => {

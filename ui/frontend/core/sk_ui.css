@@ -8,12 +8,16 @@ html {
 }
 
 body {
-    background-color: transparent !important;
+    background-color: transparent;
     color: white;
     font-size: 14px;
     border-radius: var(--view-radius) !important;
     overflow: hidden !important;
     touch-action: none; /* needed for disabling scrolling of body in iOS */
+}
+
+body.sk_ui_appType_wapp {
+    background-color: var(--sk_ui_color_very_dark_grey) !important;
 }
 
 button {
