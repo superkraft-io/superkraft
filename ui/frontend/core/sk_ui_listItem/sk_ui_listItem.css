@@ -29,7 +29,7 @@
 }
 
 
-.sk_ui_listItem.selected {
+.sk_ui_listItem .selected {
     background: var(--sk_ui_color_dark_grey_2);
     color: white;
 }

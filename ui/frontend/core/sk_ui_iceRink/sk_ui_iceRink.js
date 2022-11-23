@@ -87,9 +87,10 @@ class sk_ui_iceRink extends sk_ui_component {
 
 
             this.content = _c.add.component(_c => {
+                _c.classAdd('sk_ui_iceRink_content')
+                
                 _c.styling = 'top center'
                 _c.animate = false
-                _c.classAdd('sk_ui_iceRink_content')
 
                 
                 this.add = _c.add

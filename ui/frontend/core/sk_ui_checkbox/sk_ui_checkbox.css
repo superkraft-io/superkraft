@@ -16,8 +16,8 @@
     padding: 2px;
     font-size: 10px;
 
-    width: 16px;
-    height: 16px
+    min-width: 16px;
+    min-height: 16px
 }
 
 .sk_ui_checkbox > .sk_ui_icon.sk_ui_safari {
