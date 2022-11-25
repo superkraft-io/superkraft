@@ -98,6 +98,8 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         } catch(err) {
 
         }
+
+        if (this.onAfterCreated) this.onAfterCreated({view: this._view})
     }
 
     reload(){
