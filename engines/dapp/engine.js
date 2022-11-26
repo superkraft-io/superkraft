@@ -3,6 +3,7 @@ const fs = require('fs')
 var _electron =  require('electron')
 const { app, BrowserWindow, dialog, ipcMain } = _electron
 
+
 var _os = require('os')
 
 
@@ -68,7 +69,7 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
                 // On macOS it is common for applications and their menu bar
                 // to stay active until the user quits explicitly with Cmd + Q
                 if (global.sk.sysInfo.os !== 'macos'){
-                    app.quit()
+                    app.exit()
                 }
             })
             
