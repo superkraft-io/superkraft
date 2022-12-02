@@ -130,4 +130,9 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             this._view.hide()
         }, 250)
     }
+
+    close(){
+        if (!this._view) return
+        this._view.close()
+    }
 }

@@ -232,6 +232,13 @@ i.icon, i.icons, i.flag {
     animation-iteration-count: infinite;
     animation-timing-function: linear; 
 }
+
+.sk_ui_spin_extra_slow {
+    animation-name: sk_ui_spin;
+    animation-duration: 26000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear; 
+}
   
 @keyframes sk_ui_spin {
     from {

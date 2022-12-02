@@ -52,7 +52,7 @@ class sk_ui_dappTitlebar_title extends sk_ui_component {
         this.icon = this.add.image(_c => {
             _c.size = 16
             _c.marginRight = 8
-            _c.canMoveView = true
+            //_c.canMoveView = true
         })
         this.label = this.add.label(_c => {
             _c.canMoveView = true

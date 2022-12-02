@@ -33,6 +33,7 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
         return new Promise(resolve => {
             global.sk._os = _os
             global.sk.app = app
+
             
             const WebSockets_Callback = require('wscb')
             var wscb = new WebSockets_Callback({asElectron: true,
@@ -68,9 +69,12 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
             app.on('window-all-closed', () => {
                 // On macOS it is common for applications and their menu bar
                 // to stay active until the user quits explicitly with Cmd + Q
-                if (global.sk.sysInfo.os !== 'macos'){
+                /*if (global.sk.sysInfo.os !== 'macos'){
                     app.exit()
                 }
+                */
+
+                this.terminate()
             })
             
             /*
@@ -98,6 +102,7 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
     waitForReady(){
         return new Promise(resolve => {
             app.on('ready', ()=>{
+                this.deeplink = new (require('./modules/sk_dapp_deeplink.js'))()
                 global.sk.country = app.getLocale().split('-')[0]
                 resolve()
             })
@@ -108,5 +113,21 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
         global.sk.wscb.on(cmd, async (msg, rW) => {
             cb(msg, rW)
         })
+    }
+
+    async terminate(){
+        this.closeAllViews()
+        global.sk.timers.destroyAll()
+
+        if (global.sk.onBeforeTerminate) await global.sk.onBeforeTerminate()
+
+        process.exit()
+    }
+
+    closeAllViews(){
+        for (var i in global.sk.views){
+            var view = global.sk.views[i]
+            view.close()
+        }
     }
 }

@@ -30,6 +30,8 @@ module.exports = class Superkraft {
 
             modules: {},
             utils: new (require('./modules/sk_utils.js'))(),
+            timers: new (require('./modules/sk_timers.js'))(),
+
             views: {},
 
             useComplexity: opt.useComplexity,
@@ -38,6 +40,7 @@ module.exports = class Superkraft {
 
             csp: {...{}, ...opt.csp},
 
+            dapp: opt.dapp || {},
             mobile: opt.mobile || {},
 
             ui: opt.ui || {}
@@ -89,6 +92,7 @@ module.exports = class Superkraft {
 
         sk.globalActions = global.sk.utils.loadActions(global.sk.paths.globalActions)
 
+        if (opt.onPreStart) opt.onPreStart()
         
         await sk.engine.waitForReady()
         await sk.engine.initViews()
