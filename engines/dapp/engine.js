@@ -130,4 +130,8 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
             view.close()
         }
     }
+
+    flog(data){
+        global.sk.ums.broadcast('sk_flog', data)
+    }
 }

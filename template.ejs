@@ -247,6 +247,13 @@
             document.addEventListener('keydown', _e => {
                 if (_e.which === 27) return sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true})
             })
+
+            if (sk.app_type === 'dapp'){
+                sk.ums.on('sk_flog', res => {
+                    if (res.first) return
+                    console.log(res.data)
+                })
+            }
         </script>
 
 

@@ -9,8 +9,8 @@ module.exports = class SK_DAPP_Deeplink {
 
         this.configSchemes()
 
-        if (global.sk.sysInfo.os === 'win') this.osModule = new SK_DAPP_Deeplink_win()
-        else this.osModule = new SK_DAPP_Deeplink_macos()
+        if (global.sk.sysInfo.os === 'win') this.osModule = new SK_DAPP_Deeplink_win({parent: this})
+        else this.osModule = new SK_DAPP_Deeplink_macos({parent: this})
 
         this.osModule.init()
 
@@ -22,6 +22,29 @@ module.exports = class SK_DAPP_Deeplink {
 
     configSchemes(){
         global.sk.app.setAsDefaultProtocolClient(global.sk.dapp.deeplink.scheme)
+    }
+
+    parseData(data){
+        try {
+            var results = {pairs: {}}
+
+            var str = data.replace(global.sk.dapp.deeplink.scheme + '://', '')
+
+            var qSplit = str.split('?')
+            results.start = qSplit[0]
+
+            var pairsSplit = qSplit[1].split('&')
+
+            for (var i in pairsSplit){
+                var pair = pairsSplit[i]
+                var pSplit = pair.split('=')
+                results.pairs[pSplit[0]] = pSplit[1]
+            }
+
+            return results
+        } catch(err) {
+            var x = 0
+        }
     }
 }
 
@@ -48,33 +71,10 @@ class SK_DAPP_Deeplink_win {
     init(){
         var deeplinkData = undefined
 
-        var setDeeplinkData = data => {
-            try {
-                var results = {pairs: {}}
-
-                var str = data.replace(global.sk.dapp.deeplink.scheme + '://', '')
-
-                var qSplit = str.split('?')
-                results.start = qSplit[0]
-
-                var pairsSplit = qSplit[1].split('&')
-
-                for (var i in pairsSplit){
-                    var pair = pairsSplit[i]
-                    var pSplit = pair.split('=')
-                    results.pairs[pSplit[0]] = pSplit[1]
-                }
-
-                deeplinkData = results
-            } catch(err) {
-                var x = 0
-            }
-        }
-
         for (var i = 0; i < process.argv.length; i++){
             var entry = process.argv[i]
             if (entry.indexOf(global.sk.dapp.deeplink.scheme + '://') > -1){
-                setDeeplinkData(entry)
+                deeplinkData = this.opt.parent.parseData(entry)
                 break
             }
         }
@@ -125,7 +125,12 @@ class SK_DAPP_Deeplink_macos {
     }
 
     init(){
-        
+        global.sk.app.on('open-url', (event, url)=>{
+            event.preventDefault()
+
+            var data =  this.opt.parent.parseData(url)
+            global.sk.ums.broadcast('sk_deeplink', data)
+        })
     }
 
     monitor(){
