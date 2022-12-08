@@ -763,6 +763,8 @@ class sk_ui_attribute {
 
         if (info.onSet) this.callbacks.set.push(info.onSet)
         if (info.onGet) this.callbacks.get.push(info.onGet)
+
+        if (info.default) parent['__' + info.name] = info.default
     }
 
     iterateCallbacks(which, value){

@@ -1,0 +1,31 @@
+.sk_ui_rating {
+    line-height: inherit;
+}
+
+
+.sk_ui_rating_icon {
+    position: relative;
+    padding: 4px;
+}
+
+.sk_ui_rating_icon_placeholderIcon {
+    color: var(--sk_ui_color_grey);
+}
+
+.sk_ui_rating_icon_activeIcon {
+    position: absolute;
+    color: rgb(255, 238, 0);
+    
+    opacity: 0 !important;
+    transform: scale(0.5);
+}
+
+.sk_ui_rating_icon:active > .sk_ui_rating_icon_activeIcon {
+    transform: scale(0.75) !important;
+    opacity: 0.5 !important;
+}
+
+.sk_ui_rating_icon_activeIcon_activated {
+    opacity: 1 !important;
+    transform: scale(1);
+}

@@ -69,6 +69,11 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                         var auth_res = await global.sk.engine.isAuthTokenValid(auth_token, true)
                     
                         if (auth_res){
+                            if (auth_res.error === 'invalid_token'){
+                                return res.redirect('/logout')
+                            }
+
+
                             //check ban
                             var latestRestrictionRes = await global.sk.database.do.getLatestRestriction({user_id: auth_res.userID})
                             if (latestRestrictionRes.latestRestriction){
@@ -81,11 +86,15 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                             if (this.info.onAuthOk) return res.redirect(this.info.onAuthOk)
                             
                             //check if activated
-                            var isAccActivated = (await global.sk.database.do.isAccActivated(auth_token)).accActivated
-                            if (isAccActivated){
-                                if (this.info.onAccActivated) return res.redirect(this.info.onAccActivated)
-                            } else {
-                                if (this.info.onAccNotActivated) return res.redirect(this.info.onAccNotActivated)
+                            try {
+                                var isAccActivated = (await global.sk.database.do.isAccActivated(auth_token)).accActivated
+                                if (isAccActivated){
+                                    if (this.info.onAccActivated) return res.redirect(this.info.onAccActivated)
+                                } else {
+                                    if (this.info.onAccNotActivated) return res.redirect(this.info.onAccNotActivated)
+                                }
+                            } catch(err) {
+                                return res.redirect(this.info.onAccNotActivated)
                             }
                             
                         } else {

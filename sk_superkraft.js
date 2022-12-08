@@ -76,6 +76,7 @@ module.exports = class Superkraft {
 
         global.SK_RootEngine = require('./sk_rootEngine.js')
         sk.engine = new (require('./engines/' + opt.type + '/engine.js'))()
+        
         await sk.engine.init()
         
         global.SK_RootViewCore = require('./sk_rootViewCore.js')
@@ -97,8 +98,12 @@ module.exports = class Superkraft {
         await sk.engine.waitForReady()
         await sk.engine.initViews()
 
-        if (sk.engine.start) await sk.engine.start()
 
+        if (sk.engine.start){    
+            
+            await sk.engine.start()
+        }
+        
         if (opt.onReady) opt.onReady()
     }
 }

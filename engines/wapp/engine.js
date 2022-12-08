@@ -108,6 +108,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
                             var auth_token = req.cookies.auth_token
                             if (!auth_token) return reject('access_denied')
                             var isAuthTokenValid = await global.sk.engine.isAuthTokenValid(auth_token)
+                            if (isAuthTokenValid === 'invalid_token') return reject('invalid_token')
                             if (!isAuthTokenValid) return reject('access_denied')
                         }
 
@@ -236,13 +237,16 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
     isAuthTokenValid(authToken, returnAuthRes){
         return new Promise(async resolve => {
-            var isValid = false
+            var validationRes = false
             try {
                 var authRes = await global.sk.database.do.authenticate(authToken)
-                isValid = true
-            } catch(err) { }
+                if (!authRes.error) validationRes = true
+                if (authRes.error === 'invalid_token') validationRes = 'invalid_token'
+            } catch(err) {
+                validationRes = 'invalid_token'
+            }
 
-            resolve((returnAuthRes ? authRes : isValid))
+            resolve((returnAuthRes ? authRes : validationRes))
         })
     }
 

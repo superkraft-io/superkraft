@@ -197,17 +197,57 @@
                 }
             },
 
-            humanReadableDuration: msDuration => {
-                const h = Math.floor(msDuration / 1000 / 60 / 60);
-                const m = Math.floor((msDuration / 1000 / 60 / 60 - h) * 60);
-                const s = Math.floor(((msDuration / 1000 / 60 / 60 - h) * 60 - m) * 60);
+            humanReadableTime: opt => {
+                
+                var result = ''
 
-                // To get time format 00:00:00
-                const seconds = s < 10 ? `0${s}` : `${s}`;
-                const minutes = m < 10 ? `0${m}` : `${m}`;
-                const hours = h < 10 ? `0${h}` : `${h}`;
+                var defOpt = {...{
+                    include: ['hours', 'minutes', 'seconds'],
+                    humanReadable: true
+                }, ...opt}
 
-                return `${h} ${window.l10n.engine.getPhrase(157).toLowerCase()}`// ${minutes}m ${seconds}s`;
+                if (defOpt.humanReadable){
+                    var h = defOpt.time.getHours()
+                    var m = defOpt.time.getMinutes()
+                    
+                    const hours = h < 10 ? `0${h}` : `${h}`
+                    const minutes = m < 10 ? `0${m}` : `${m}`
+                    
+                    var _time = `${hours}:${minutes}`
+
+                    var diff = (Date.now() - defOpt.time.getTime())
+                    var elapsedHours = Math.floor(diff / 1000 / 60 / 60)
+                    if (elapsedHours < 24){
+                        result = sk.l10n.getPhrase('today') + ' ' + _time
+                    } else {
+                        if (elapsedHours >= 48){ result = defOpt.time.toLocaleString() }
+                        else {
+                            if (elapsedHours >= 24) result = sk.l10n.getPhrase('yesterday') + ' ' + _time
+                        }
+                    }
+                } else {
+                    var time = opt.time.getTime()
+
+                    const h = Math.floor(defOpt.time / 1000 / 60 / 60)
+                    const m = Math.floor((defOpt.time / 1000 / 60 / 60 - h) * 60)
+                    const s = Math.floor(((defOpt.time / 1000 / 60 / 60 - h) * 60 - m) * 60)
+
+                    // To get time format 00:00:00
+                    const seconds = s < 10 ? `0${s}` : `${s}`;
+                    const minutes = m < 10 ? `0${m}` : `${m}`;
+                    const hours = h < 10 ? `0${h}` : `${h}`;
+
+
+                    var arr = []
+                    if (defOpt.include.includes('hours')) arr.push(`${h}h`)
+                    if (defOpt.include.includes('minutes')) arr.push(`${h}m`)
+                    if (defOpt.include.includes('seconds')) arr.push(`${h}s`)
+
+                    
+                    result = arr.join(' ')
+                }
+
+                return result
             },
 
             bytesToFormat(size){
@@ -259,21 +299,11 @@
             sk.comm.main('windowAction', {action: 'maximize', reset: reset})
             setTimeout(()=>{ sk.window.resizing = false }, 100)
         },
-
-        reload: ()=>{
-
-            return
-
-            sk.app.body.view.remove()
-            sk.app.body.view = new sk._view({parent: sk.app.body})
-            sk.app.body.children.add(sk.app.body.view)
+        
+        reload: async ()=>{
+            if (sk.app_type === 'dapp') await sk.comm.main('windowAction', {action: 'reload'})
+            location.reload()
         }
-    }
-
-    sk.window.__reload = location.reload
-    sk.window.reload = async ()=>{
-        if (sk.app_type === 'dapp') await sk.comm.main('windowAction', {action: 'reload'})
-        sk.window.__reload()
     }
 
     sk.ui = {

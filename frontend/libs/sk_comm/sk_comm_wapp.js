@@ -47,7 +47,13 @@ var sk_communicator = {
             }
     
             if (opt.files){
-                for (var i = 0; i < opt.files.length; i++) formAdd('file' + (i+1), opt.files[i])
+                opt.data.b64_filenames = {}
+                for (var i = 0; i < opt.files.length; i++){
+                    var file = opt.files[i]
+                    var fileIndex = 'file' + (i+1)
+                    opt.data.b64_filenames[fileIndex] = btoa(encodeURIComponent(opt.files[i].name))
+                    formAdd(fileIndex, file)
+                }
                 delete opt.files
             }
 
@@ -111,8 +117,20 @@ var sk_communicator = {
     
             try {
                 req.open('POST', opt.cmd, true)
-                if (!isMultiForm) req.setRequestHeader('Content-Type', 'application/json')
-                req.send((isMultiForm ? payload : JSON.stringify(payload)))
+                if (!isMultiForm){
+                    req.setRequestHeader('Content-Type', 'application/json')
+                    req.send(JSON.stringify(payload))
+                } else {
+                    /*function randomString(len) {
+                        var p = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+                        return [...Array(len)].reduce(a=>a+p[~~(Math.random()*p.length)],'');
+                    }
+                    var boundary = '----WebKitFormBoundary' + randomString(16)
+                    
+                    req.setRequestHeader("Content-Type", 'multipart/form-data; charset=UTF-8; boundary=' + boundary);
+                    */
+                    req.send(payload)
+                }
 
                 req.onreadystatechange = ()=>{
                     if (req.readyState == 4) {

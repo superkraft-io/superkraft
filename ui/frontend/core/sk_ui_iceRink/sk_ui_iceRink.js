@@ -9,7 +9,7 @@ class sk_ui_iceRink extends sk_ui_component {
         
         var wheelMS = Date.now()
         var wheelInertia = 0
-        var onWheel = _e => {
+        this.onWheel = _e => {
             this.scroller.dictator = 'wheel_or_touchpad'
 
             var factor = 0.3
@@ -60,7 +60,7 @@ class sk_ui_iceRink extends sk_ui_component {
                 })
 
                 
-                _c.element.addEventListener('wheel', onWheel)
+                _c.element.addEventListener('wheel', this.onWheel)
             })
 
             _c.updatePosition = contentWrapperRect => {
@@ -143,7 +143,7 @@ class sk_ui_iceRink extends sk_ui_component {
 
             
 
-            _c.element.addEventListener('wheel', onWheel)
+            _c.element.addEventListener('wheel', this.onWheel)
 
 
 
@@ -182,6 +182,7 @@ class sk_ui_iceRink extends sk_ui_component {
                 const dx = x - pos.x
                 const dy = y - pos.y
 
+                
                 var delta = (dy < 0 ? 0-dy : dy)
                 if (delta < 3) return 
 
@@ -203,6 +204,8 @@ class sk_ui_iceRink extends sk_ui_component {
 
                 calcVelocity()
                 
+                
+
                 this.scroller.value = this.content.last_posY + dy
             }
 
@@ -226,6 +229,14 @@ class sk_ui_iceRink extends sk_ui_component {
                 _c.element.removeEventListener('touchend', mouseUpHandler)
                 document.removeEventListener('touchend', mouseUpHandler)
             
+
+                this.__includedComponents.forEach(_c => {
+                    _c.element.removeEventListener('mousemove', mouseMoveHandler)
+                    _c.element.removeEventListener('mouseup', mouseUpHandler)
+                    _c.element.removeEventListener('touchmove', mouseMoveHandler)
+                    _c.element.removeEventListener('touchend', mouseUpHandler)
+                })
+
                 _c.element.style.cursor = ''
                 _c.element.style.removeProperty('user-select')
 
@@ -238,7 +249,7 @@ class sk_ui_iceRink extends sk_ui_component {
 
 
 
-            const mouseDownHandler = _e => {
+            this.mouseDownHandler = _e => {
                 this.scroller.dictator = 'mouse_or_finger'
 
                 pos = {
@@ -263,6 +274,13 @@ class sk_ui_iceRink extends sk_ui_component {
                 document.addEventListener('touchend', mouseUpHandler)
                 
 
+                this.__includedComponents.forEach(_c => {
+                    _c.element.addEventListener('mousemove', mouseMoveHandler)
+                    _c.element.addEventListener('mouseup', mouseUpHandler)
+                    _c.element.addEventListener('touchmove', mouseMoveHandler)
+                    _c.element.addEventListener('touchend', mouseUpHandler)
+                })
+
 
                 this.scroller.stop()
             
@@ -273,8 +291,8 @@ class sk_ui_iceRink extends sk_ui_component {
                 _c.element.style.userSelect = 'none'
             }
 
-            _c.element.addEventListener('mousedown', mouseDownHandler)
-            _c.element.addEventListener('touchstart', mouseDownHandler)
+            _c.element.addEventListener('mousedown', this.mouseDownHandler)
+            _c.element.addEventListener('touchstart', this.mouseDownHandler)
         })
 
         var observer = new ResizeObserver(()=>{
@@ -394,7 +412,7 @@ class sk_ui_iceRink extends sk_ui_component {
             this.contentWrapper.styling = 'top center fullwidth ' + (!val ? 'fullheight' : '')
         }})
 
-
+        this.__includedComponents = []
     }
 
     scrollToChild(component){
@@ -408,6 +426,24 @@ class sk_ui_iceRink extends sk_ui_component {
     scrollTo(val){
         this.tween.current = this.preRubberbandPos
         this.tween.to(val)
+    }
+
+    includeComponent(component){
+        /*component.element.removeEventListener('wheel', component.onWheel)
+        component.element.removeEventListener('mousedown', component.mouseDownHandler)
+        component.element.removeEventListener('touchstart', component.mouseDownHandler)
+        */
+
+        this.__includedComponents.push(component)
+        
+        component.element.addEventListener('wheel', this.onWheel)
+        component.element.addEventListener('mousedown', this.mouseDownHandler)
+        component.element.addEventListener('touchstart', this.mouseDownHandler)
+    }
+
+    set debug(val){
+        this.__debug = true
+        this.scroller.__debug = true
     }
 }
 
@@ -453,7 +489,6 @@ class sk_ui_iceRink_scrollbar extends sk_ui_component {
     
 
     setTop(val){
-        
         var thisHeight = this.rect.height
         var handleHeight = this.handle.rect.height
 
@@ -563,6 +598,11 @@ class sk_scroller {
         this.setInertia(val)
     }
 
+    debug(obj){
+        if (!this.__debug) return
+        console.log(obj)
+    }
+
 
 
     step(){
@@ -572,6 +612,9 @@ class sk_scroller {
         }
 
         var diff = this.contentHeight - this.containerHeight
+
+        
+        
 
         if (diff > 0){
             var factoredInertia = this.__inertia*0.2
@@ -585,7 +628,6 @@ class sk_scroller {
 
         
         if (this.opt.onChanged) this.opt.onChanged(this.__value)
-
     }
 
     start(){
