@@ -34,7 +34,8 @@ module.exports = class SK_Timers {
 
     destroy(type, timer){
         if (!timer) return this.originals.clear[type](timer)
-
+        if (!timer.opt) return this.originals.clear[type](timer)
+        
         delete this.list[timer.opt.id]
         this.originals.clear[timer.opt.type](timer.timer)
     }
