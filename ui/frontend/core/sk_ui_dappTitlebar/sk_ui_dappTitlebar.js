@@ -19,15 +19,15 @@ class sk_ui_dappTitlebar extends sk_ui_component {
         }})
 
         this.attributes.add({friendlyName: 'Closable', name: 'closable', type: 'bool', onSet: val =>{
-            
+            if (this._actions.close) this._actions.close.transition('fade ' + (val ? 'in' : 'out'))
         }})
 
         this.attributes.add({friendlyName: 'Maximizable', name: 'maximizable', type: 'bool', onSet: val =>{
-            
+            if (this._actions.maximize) this._actions.maximize.transition('fade ' + (val ? 'in' : 'out'))
         }})
 
         this.attributes.add({friendlyName: 'Minimizable', name: 'minimizable', type: 'bool', onSet: val =>{
-            
+            if (this._actions.minimize) this._actions.minimize.transition('fade ' + (val ? 'in' : 'out'))
         }})
 
 

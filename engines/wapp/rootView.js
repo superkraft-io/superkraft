@@ -44,7 +44,10 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                         },
 
                         ...this.viewInfo,
-                        ...{userData: userData}
+                        ...{
+                            userData: userData,
+                            globalData: sk.globalData
+                        }
                     }
                 )
             }

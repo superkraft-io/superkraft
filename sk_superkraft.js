@@ -25,6 +25,8 @@ module.exports = class Superkraft {
                 posts: opt.postsRoot
             },
 
+            globalData: opt.globalData || {},
+
             database: opt.database,
             l10n: opt.l10n,
 
