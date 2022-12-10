@@ -46,7 +46,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                         ...this.viewInfo,
                         ...{
                             userData: userData,
-                            globalData: sk.globalData
+                            globalData: sk.globalData,
                         }
                     }
                 )
@@ -124,7 +124,8 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                
                 
                 
-                render(res, global.sk.paths.superkraft + '/template.ejs', userData, req.cookies.country)
+                var lang = req.cookies.country || req.headers['accept-language'].split(',')[0].split('-')[0]
+                render(res, global.sk.paths.superkraft + '/template.ejs', userData, lang)
             })
         
 
