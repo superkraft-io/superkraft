@@ -66,6 +66,10 @@ class SK_Timer {
     }
 
     create(){
-        this.timer = this.opt.parent.originals.set[this.opt.type](()=>{ this.opt.cb() }, this.opt.delay)
+        try {
+            this.timer = this.opt.parent.originals.set[this.opt.type](()=>{ this.opt.cb() }, this.opt.delay)
+        } catch(err) {
+            var x = 0
+        }
     }
 }

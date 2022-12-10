@@ -32,14 +32,14 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
             await this._init(opt)
 
-            var render = (res, page, userData, country) => {
+            var render = async (res, page, userData, country) => {
                 res.render(
                     page,
                     {
                         ...{
                             l10n: {
-                                countries: sk.l10n.listCountries(),
-                                phrases: sk.l10n.getForCountry(country)
+                                countries: await sk.l10n.listCountries(),
+                                phrases: await sk.l10n.getForCountry(country)
                             }
                         },
 

@@ -20,6 +20,10 @@ body.sk_ui_appType_wapp {
     background-color: var(--sk_ui_color_very_dark_grey) !important;
 }
 
+body.sk_ui_isOnMobile {
+    background-color: var(--sk_ui_color_very_dark_grey) !important;
+}
+
 button {
     background: transparent;
     outline: none;

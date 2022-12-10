@@ -16,6 +16,9 @@ class SK_Mobile {
 
     update(){
         if (!sk.isOnMobile) return
+
+        document.body.classList.add('sk_ui_isOnMobile')
+        
         if (this.test_iOS()) sk.os = 'ios'
         if (this.test_android()) sk.os = 'android'
 
