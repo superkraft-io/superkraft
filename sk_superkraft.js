@@ -26,6 +26,7 @@ module.exports = class Superkraft {
             },
 
             globalData: opt.globalData || {},
+            dynamicGlobalData: opt.dynamicGlobalData,
 
             database: opt.database,
             l10n: opt.l10n,
@@ -40,7 +41,8 @@ module.exports = class Superkraft {
 
             country: 'en',
 
-            csp: {...{}, ...opt.csp},
+            headers: opt.headers || {},
+            csp: opt.csp || {},
 
             dapp: opt.dapp || {},
             mobile: opt.mobile || {},
@@ -50,6 +52,7 @@ module.exports = class Superkraft {
         var sk = global.sk
 
         sk.paths.sk_frontend = sk.paths.superkraft + 'frontend/'
+
 
         /****************/
 

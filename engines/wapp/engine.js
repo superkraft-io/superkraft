@@ -40,11 +40,16 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
             app.use(bodyParser.urlencoded({ extended: true }))
         
 
+            
+
+              
             var csp = {defaultSrc: ["'self'"]}
             for (var _i in global.sk.csp) csp[_i] = ["'self'", ...global.sk.csp[_i]]
+            app.use(helmet.crossOriginEmbedderPolicy())
+            app.use(helmet.crossOriginOpenerPolicy());
             app.use(helmet.contentSecurityPolicy({ directives: csp }))
-
             
+
             app.set('view-engine', 'ejs')
 
 

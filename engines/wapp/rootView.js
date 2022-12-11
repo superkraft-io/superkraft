@@ -33,6 +33,9 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             await this._init(opt)
 
             var render = async (res, page, userData, country) => {
+                var globalData = sk.globalData
+                if (sk.dynamicGlobalData) globalData = {...globalData, ...sk.dynamicGlobalData()}
+
                 res.render(
                     page,
                     {
@@ -46,7 +49,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                         ...this.viewInfo,
                         ...{
                             userData: userData,
-                            globalData: sk.globalData,
+                            globalData: globalData,
                         }
                     }
                 )
