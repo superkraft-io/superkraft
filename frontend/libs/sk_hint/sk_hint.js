@@ -6,7 +6,7 @@ class SK_Hint {
         this.autoHide   = true
         this.limitWidth = true
 
-        this.hookMouseEvents()
+       
 
         
 
@@ -25,6 +25,7 @@ class SK_Hint {
 
     set text(val){
         this.__text = val
+        if (val !== undefined) this.hookMouseEvents()
     }
 
     set position(val = 'bottom center'){
@@ -43,6 +44,7 @@ class SK_Hint {
 
     config(opt){
         this.text = opt.text
+
         if (opt.position) this.position   = opt.position
         if (opt.autoHide   !== undefined) this.autoHide   = opt.autoHide
         if (opt.limitWidth !== undefined) this.limitWidth = opt.limitWidth
@@ -50,7 +52,7 @@ class SK_Hint {
          
         this.hideOnMove = opt.hideOnMove
         
-        if (opt.instaShow)  this.instaShow  = opt.instaShow //must always be last
+        if (opt.instaShow) this.instaShow = opt.instaShow //must always be last
     }
     
     get created(){ return this.__hint }
@@ -61,6 +63,8 @@ class SK_Hint {
         })
 
         this.opt.parent.element.addEventListener('mouseleave', _e => {
+            if (this.__hint && !this.__hint.animationDone) return
+
             var doHide = false
             for (var i in _e.path){
                 var suo = _e.path[i].sk_ui_obj
@@ -100,6 +104,7 @@ class SK_Hint {
             _c.position   = this.__position
             _c.sticky     = this.sticky
             _c.hideOnMove = this.hideOnMove
+            _c.offset     = this.offset
 
             if (this.sticky) _c.animated = false
             if (!this.limitWidth) _c.style.maxWidth = '100%'

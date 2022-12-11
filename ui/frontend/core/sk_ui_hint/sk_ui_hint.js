@@ -18,6 +18,7 @@ class sk_ui_hint extends sk_ui_component {
         this.results = {}
 
         this.element.addEventListener('mouseenter', ()=>{
+            if (!this.animationDone) return
             this.onHide(this.uuid)
         })
     }
@@ -63,7 +64,9 @@ class sk_ui_hint extends sk_ui_component {
 
         this.classAdd('sk_ui_hint_topMost')
         this.classRemove('sk_ui_hint_hidden')
-        this.transition('fade ' + this.results.animation + ' in')
+        this.transition('fade ' + this.results.animation + ' in').then(()=>{
+            this.animationDone = true
+        })
 
         this.element.style.left = this.results.x + 'px'
         this.element.style.top = this.results.y + 'px'
@@ -108,6 +111,7 @@ class sk_ui_hint extends sk_ui_component {
             }
         }
         hintInfo.calc()
+
 
         var orientation = 'horizontal'
         var calcPos = {

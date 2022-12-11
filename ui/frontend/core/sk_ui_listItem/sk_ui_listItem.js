@@ -9,7 +9,7 @@ class sk_ui_listItem extends sk_ui_button {
 
 
         this.onClick = ()=>{
-            if (this.list.__highlightOnSelect) this.select()
+            if (this.list.__highlightOnSelect) this.select(false, true)
             if (this.list.onItemClicked && !this.labelEditor.editing) this.list.onItemClicked(this)
         }
         this.onMouseEnter = ()=>{ if (this.list.onItemMouseEnter && !this.labelEditor.editing) this.list.onItemMouseEnter(this) }
