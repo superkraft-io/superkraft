@@ -127,7 +127,13 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                
                 
                 
-                var lang = req.cookies.country || req.headers['accept-language'].split(',')[0].split('-')[0]
+                var lang = 'en'
+                try {
+                    lang = req.cookies.country || req.headers['accept-language'].split(',')[0].split('-')[0]
+                } catch(err) {
+                    lang = 'en'
+                }
+
                 render(res, global.sk.paths.superkraft + '/template.ejs', userData, lang)
             })
         

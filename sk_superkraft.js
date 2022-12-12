@@ -33,7 +33,7 @@ module.exports = class Superkraft {
 
             modules: {},
             utils: new (require('./modules/sk_utils.js'))(),
-            timers: new (require('./modules/sk_timers.js'))(),
+            timers: (opt.type === 'dapp' ? new (require('./modules/sk_timers.js'))() : undefined),
 
             views: {},
 
