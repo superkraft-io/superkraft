@@ -45,8 +45,11 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
               
             var csp = {defaultSrc: ["'self'"]}
             for (var _i in global.sk.csp) csp[_i] = ["'self'", ...global.sk.csp[_i]]
-            app.use(helmet.crossOriginEmbedderPolicy())
-            app.use(helmet.crossOriginOpenerPolicy());
+
+            //The following two policies will mess up social sign ins like Google and Facebook
+            //app.use(helmet.crossOriginEmbedderPolicy())
+            //app.use(helmet.crossOriginOpenerPolicy())
+            
             app.use(helmet.contentSecurityPolicy({ directives: csp }))
             
 
