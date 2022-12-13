@@ -97,8 +97,10 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
             posts.forEach(_filename => {
                 if (_filename.toLocaleLowerCase().indexOf('.ds_store') > -1) return
                 
+                if (fs.lstatSync(postsFolder + _filename).isDirectory() === true) return
+
                 var postName = _filename.split('.')[0]
-                    try {
+                try {
                     var postModule = new (require(postsFolder + _filename))()
 
                     this.posts[postName] = postModule
