@@ -52,7 +52,17 @@ class SK_ChildMngr {
 
     addComponent_fullname(component){
         this.opt.parent.add[component] = cb => {
-            return this.addComponent_func(component, cb)
+            try {
+                return this.addComponent_func(component, cb)
+            } catch(err) {
+                var stack = err.stack
+                if (typeof cb === 'object'){
+                    var msg = '[SK UI  :  ILLEGAL] You are passing an object as a callback. You probably wrote "_c = {" instead of "_c => {". Notice the "=>" in correct latter statement.'
+                    alert(msg)
+                    console.error(msg)
+                    console.error(err)
+                }
+            }
         }
     }
 
