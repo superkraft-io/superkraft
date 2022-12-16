@@ -63,7 +63,7 @@ module.exports = class sk_RootEngine {
                     try {
                         await info.view.init({
                             id: info.name,
-                            root: global.sk.paths.views + info.name + '/',
+                            root: global.sk.paths.views + info.name + '/'
                         })
 
                         global.sk.views[info.name] = info.view
@@ -75,6 +75,8 @@ module.exports = class sk_RootEngine {
                     
             }
 
+            if (this.onViewsInitialized) this.onViewsInitialized()
+            
             resolve()
         })
     }

@@ -103,11 +103,7 @@ module.exports = class Superkraft {
         await sk.engine.waitForReady()
         await sk.engine.initViews()
 
-
-        if (sk.engine.start){    
-            
-            await sk.engine.start()
-        }
+        if (sk.engine.start) await sk.engine.start()
         
         if (opt.onReady) opt.onReady()
     }

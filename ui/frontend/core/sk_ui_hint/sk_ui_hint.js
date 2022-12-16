@@ -19,7 +19,7 @@ class sk_ui_hint extends sk_ui_component {
 
         this.element.addEventListener('mouseenter', ()=>{
             if (!this.animationDone) return
-            this.onHide(this.uuid)
+            if (!this.hiding) this.onHide(this.uuid)
         })
     }
 
@@ -30,6 +30,7 @@ class sk_ui_hint extends sk_ui_component {
                 if (!this.sticky){
                     clearInterval(this.parentPosMonitor)
                     this.onHide(this.uuid)
+                    this.hiding = true
                 } else {
                     this.updatePos()
                 }
@@ -48,6 +49,7 @@ class sk_ui_hint extends sk_ui_component {
         clearTimeout(this.hintHider)
         this.hintHider = setTimeout(async ()=>{
             this.onHide(this.uuid, true)
+            this.hiding = true
         }, duration)
     }
 

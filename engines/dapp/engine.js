@@ -33,6 +33,7 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
         return new Promise(resolve => {
             global.sk._os = _os
             global.sk.app = app
+            this.app = app
 
             
             const WebSockets_Callback = require('wscb')
@@ -127,11 +128,42 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
     closeAllViews(){
         for (var i in global.sk.views){
             var view = global.sk.views[i]
-            view.close()
+            if (view.closed === false) view.close()
         }
     }
 
     flog(data){
         global.sk.ums.broadcast('sk_flog', data)
+    }
+
+
+    onViewsInitialized(){
+        for (var i in global.sk.views){
+            var view = global.sk.views[i]
+            view.onClosed = ()=>{ this.onViewClosed() }
+        }
+    }
+
+    checkIfAllViewsClosed(){
+        var created = []
+
+        for (var i in global.sk.views){
+            var view = global.sk.views[i]
+            var _view = view._view
+            if (_view) created.push(view)
+        }
+
+        if (created.length === 0) return
+
+        for (var i in created){
+            var view = created[i]
+            if (view.closed === false) return
+        }
+        
+        return true
+    }
+
+    onViewClosed(){
+        if (this.checkIfAllViewsClosed()) this.terminate()
     }
 }

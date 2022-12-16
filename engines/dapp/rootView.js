@@ -91,6 +91,10 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             this.reload()
         })
 
+        this._view.on('closed'      , ()=>{ this.setClosed() })
+        this._view.on('session-end' , ()=>{ this.setClosed() })
+        this._view.on('hide'        , ()=>{ this.setClosed() })
+
 
 
         try {
@@ -124,6 +128,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
     show(){
         if (!this._view) this.create()
         this._view.show()
+        this.closed = false
         sk.ums.broadcast('sk_view_cmd-' + this.id, {viewID: this.id, action: 'show'})
     }
 
@@ -131,11 +136,17 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         sk.ums.broadcast('sk_view_cmd-' + this.id, {viewID: this.id, action: 'hide'})
         setTimeout(()=>{
             this._view.hide()
+            this.setClosed()
         }, 250)
     }
 
     close(){
         if (!this._view) return
         this._view.close()
+    }
+
+    setClosed(){
+        this.closed = true
+        if (this.onClosed) this.onClosed()
     }
 }

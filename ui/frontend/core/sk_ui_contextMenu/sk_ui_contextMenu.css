@@ -1,14 +1,18 @@
 .sk_ui_contextMenu {
     z-index: -1;
     position: absolute;
-    border: solid 0.75px #000000;
-    border-radius: 8px;
+    
     background-color: #31313182;
     min-width: 8rem;
     min-height: 2rem;
     padding: 5px;
     box-shadow: 0px 0px 0px 1px #72727286 inset, 0px 8px 20px 0px #00000052;
     opacity: 0;
+}
+
+.sk_ui_contextMenu:not(.sk_ui_os_win) {
+    border: solid 0.75px #000000;
+    border-radius: 8px;
 }
 
 .sk_ui_contextMenu_activated {
