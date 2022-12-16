@@ -67,7 +67,10 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                     if (validationRes.redirect) return res.redirect(validationRes.redirect)
                 }
 
-                if (this.info.checkAuth){
+                var doCheckAuth = true
+                if (this.onPreAuth) try { await this.onPreAuth({req: req, res: res, validationRes: validationRes}) } catch(err) { doCheckAuth = false }
+                
+                if (this.info.checkAuth && doCheckAuth){
                     if (!auth_token){
                         if (this.info.onAuthFail) return res.redirect(this.info.onAuthFail)
                         if (!this.info.bypassOnAuthFail) return res.redirect('/404')
