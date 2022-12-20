@@ -3,15 +3,27 @@ class sk_ui_shareBtn extends sk_ui_iconButton {
         super(opt)
         
         this.icon = 'share alternate'
+        
         this.width = 38
-        this.hint({text: sk.l10n.getPhrase('share'), position: 'left center'})
-
         this.roundness = 8
 
+        this.hint({text: sk.l10n.getPhrase('share'), position: 'top center'})
+
         this.onClick = (sender, _e) => {
-            sk.app.add.fromNew(sk_ui_shareBtn_modal, _c => {
-                _c.show()
+            if (!navigator.share){
+                sk.app.add.fromNew(sk_ui_shareBtn_modal, _c => {
+                    _c.show()
+                })
+                return
+            }
+
+            navigator.share({
+                title: 'Splitter.ai',
+                text: 'Check out https://splitter.ai that uses AI for different audio related stuff. I love it!',
+                url: 'https://splitter.ai/',
             })
+            .then(() => { this.onShared() })
+            .catch(err => {this.onNotShared(err) })
         }
     }
 
