@@ -10,7 +10,7 @@ class sk_ui_shareBtn extends sk_ui_iconButton {
         this.hint({text: sk.l10n.getPhrase('share'), position: 'top center'})
 
         this.onClick = (sender, _e) => {
-            if (!navigator.share){
+            if (!navigator.share || !sk.isOnMobile){
                 sk.app.add.fromNew(sk_ui_shareBtn_modal, _c => {
                     _c.show()
                 })
@@ -36,7 +36,7 @@ class sk_ui_shareBtn_modal extends sk_ui_modal {
     constructor(opt){
         super(opt)
        
-        this.closers = []
+        this.closers = ['dimmer']
 
         this.content.setup(_c => {
             _c.add.label(_c => {
