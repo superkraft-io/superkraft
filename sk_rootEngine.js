@@ -31,9 +31,11 @@ module.exports = class sk_RootEngine {
                 
                 if (viewName.toLocaleLowerCase().indexOf('.ds_store') > -1) continue
 
-                var viewPath = global.sk.paths.views + viewName + '/main.js'
+                var viewRoot = global.sk.paths.views + viewName + '/'
+                var viewPath = viewRoot + 'main.js'
                 try {
                     var view = new (require(viewPath))()
+                    view.root = viewRoot
                     if (view.info.mainRedirect){
                         view = new (require(view.info.mainRedirect))
                     }

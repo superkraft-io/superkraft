@@ -22,7 +22,9 @@ module.exports = class Superkraft {
                 globalActions: opt.globalActions,
                 globalFrontend: opt.globalFrontend,
 
-                posts: opt.postsRoot
+                posts: opt.postsRoot,
+
+                vanillaFrontend: opt.vanillaFrontend,
             },
 
             globalData: opt.globalData || {},

@@ -95,7 +95,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
             var posts = fs.readdirSync(postsFolder)
             posts.forEach(_filename => {
-                if (_filename.toLocaleLowerCase().indexOf('.ds_store') > -1) return
+                if (_filename.toLowerCase().indexOf('.ds_store') > -1) return
                 
                 if (fs.lstatSync(postsFolder + _filename).isDirectory() === true) return
 

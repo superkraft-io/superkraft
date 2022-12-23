@@ -58,6 +58,9 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             global.sk.app.use(this.routes.frontend.view, global.sk.engine.express.static(opt.root + 'frontend/'))
             global.sk.app.use(this.routes.frontend.global, global.sk.engine.express.static(global.sk.paths.globalFrontend))
         
+
+            if (this.info.vanilla) global.sk.app.use('/vanillaFE', global.sk.engine.express.static(global.sk.paths.vanillaFrontend))
+
             global.sk.app.get(this.info.route, async (req, res)=>{
                 var auth_token = req.cookies.auth_token
 
@@ -137,7 +140,11 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                     lang = 'en'
                 }
 
-                render(res, global.sk.paths.superkraft + '/template.ejs', userData, lang)
+                var ejsPath = global.sk.paths.superkraft + '/template.ejs'
+                if (this.info.vanilla){
+                    ejsPath = this.root + 'frontend/view.ejs'
+                }
+                render(res, ejsPath, userData, lang)
             })
         
 
