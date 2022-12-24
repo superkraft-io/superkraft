@@ -105,6 +105,9 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
             app.on('ready', ()=>{
                 this.deeplink = new (require('./modules/sk_dapp_deeplink.js'))()
                 global.sk.country = app.getLocale().split('-')[0]
+
+                if (global.sk.onAppReady) global.sk.onAppReady()
+
                 resolve()
             })
         })   

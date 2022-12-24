@@ -49,7 +49,9 @@ module.exports = class Superkraft {
             dapp: opt.dapp || {},
             mobile: opt.mobile || {},
 
-            ui: opt.ui || {}
+            ui: opt.ui || {},
+
+            onAppReady: opt.onAppReady
         }
         var sk = global.sk
 
