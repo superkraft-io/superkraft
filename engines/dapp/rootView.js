@@ -93,7 +93,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
         this._view.on('closed'      , ()=>{ this.setClosed() })
         this._view.on('session-end' , ()=>{ this.setClosed() })
-        this._view.on('hide'        , ()=>{ this.setClosed() })
+        //this._view.on('hide'        , ()=>{ this.setClosed() })
 
 
 
