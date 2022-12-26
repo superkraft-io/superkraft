@@ -102,6 +102,10 @@
     <% } %>
     
     <body>
+        <script>
+            if (window.location.href[window.location.href.length - 1] === '/') window.location.href = window.location.href.substring(0, window.location.href.length - 1)
+        </script>
+
         <%- include(viewBodyScripts.start) %>
         
         <script src="<%= sk.routes.frontend.view %>view.js"></script>
