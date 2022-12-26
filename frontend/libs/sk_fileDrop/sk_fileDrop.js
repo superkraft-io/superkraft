@@ -39,7 +39,9 @@ class sk_fileDrop {
 
         this.files = undefined
         elementToHandle.addEventListener('drop',_e => {
-            this.files = _e.dataTransfer.files
+            var dt = _e.dataTransfer
+            this.files = dt.files
+            _e.files = this.files
             endDragDropEvent(_e, 'drop')
         }, false)
     }
@@ -63,7 +65,8 @@ class sk_fileDrop {
             if (action === 'end' || action === 'drop') this.removeFileDropArea(component)
 
             if (action === 'drop') {
-                var target = findFirstSubscriberOccurance(_e.path, component.uuid)
+                var path = _e.target.sk_ui_obj.getPath({elements: true})
+                var target = findFirstSubscriberOccurance(path, component.uuid)
                 if (component.onFileDrop && target) target.onFileDrop(this.files)
             }
         }

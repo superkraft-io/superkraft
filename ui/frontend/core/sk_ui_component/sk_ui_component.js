@@ -321,6 +321,21 @@ class sk_ui_component {
         return _classHierarchy
     }
 
+    getPath(opt){
+        var path = []
+
+        var getParentOf = _c => {
+            path.push((opt && opt.elements ? _c.element : _c))
+            if (_c.parent) getParentOf(_c.parent)
+        }
+
+        getParentOf(this)
+
+        console.log(path)
+
+        return path
+    }
+
 
     moveBefore(target){
         target.element.before(this.element)

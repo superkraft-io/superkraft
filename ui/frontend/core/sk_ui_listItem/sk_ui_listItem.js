@@ -38,7 +38,8 @@ class sk_ui_listItem extends sk_ui_button {
             }
 
             var onGlobalClick = _e => {
-                if (_e.path[0].editing) return
+                var path = _e.target.sk_ui_obj.getPath({elements: true})
+                if (path[0].editing) return
                 completeEditing()
             }
             document.addEventListener('click', onGlobalClick)

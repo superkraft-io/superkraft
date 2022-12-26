@@ -65,9 +65,11 @@ class SK_Hint {
         this.opt.parent.element.addEventListener('mouseleave', _e => {
             if (this.__hint && !this.__hint.animationDone) return
 
+            var path = _e.target.sk_ui_obj.getPath({elements: true})
+
             var doHide = false
-            for (var i in _e.path){
-                var suo = _e.path[i].sk_ui_obj
+            for (var i in path){
+                var suo = path[i].sk_ui_obj
                 if (suo && suo._hint.__hint && suo.uuid === this.opt.parent.uuid){
                     doHide = true
                     break
