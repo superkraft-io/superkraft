@@ -62,6 +62,8 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             if (this.info.vanilla) global.sk.app.use('/vanillaFE', global.sk.engine.express.static(global.sk.paths.vanillaFrontend))
 
             global.sk.app.get(this.info.route, async (req, res)=>{
+                global.sk.stats.increment({type: 'get', route: this.info.route})
+                
                 var auth_token = req.cookies.auth_token
 
                 if (this.onValidate){

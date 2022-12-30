@@ -106,6 +106,8 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
                     this.posts[postName] = postModule
                     
                     global.sk.app.post('/' + postModule.info.route, async (req, res)=>{
+                        global.sk.stats.increment({type: 'post', route: postModule.info.route})
+                
                         var _res = {}
                         var reject = msg => {
                             _res.rejected = true
@@ -155,6 +157,8 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
     on(cmd, cb){
         var actionRoute = '/' + cmd
         global.sk.app.post(actionRoute, (req, res) => {
+            global.sk.stats.increment({type: 'post', route: actionRoute})
+                
             cb(
                 req.body,
                 response => { res.send(response) },

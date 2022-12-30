@@ -8,6 +8,7 @@ module.exports = class Superkraft {
 
     async init(opt){
         global.sk = {
+            
             skModule: this,
             type: opt.type,
             paths: {
@@ -36,6 +37,8 @@ module.exports = class Superkraft {
             modules: {},
             utils: new (require('./modules/sk_utils.js'))(),
             timers: (opt.type === 'dapp' ? new (require('./modules/sk_timers.js'))() : undefined),
+
+            stats: new (require('./modules/sk_stats.js')),
 
             views: {},
 
