@@ -54,6 +54,8 @@ module.exports = class Superkraft {
 
             ui: opt.ui || {},
 
+            cdn: opt.cdn,
+
             onAppReady: opt.onAppReady
         }
         var sk = global.sk
@@ -75,6 +77,7 @@ module.exports = class Superkraft {
             paths: sk.paths.sk_ui 
         })
 
+        
         /****************/
         
         if (opt.config) sk.config = JSON.parse(fs.readFileSync(opt.config))
@@ -109,6 +112,13 @@ module.exports = class Superkraft {
         
         await sk.engine.waitForReady()
         await sk.engine.initViews()
+
+        if (opt.cdn && opt.cdn.export){
+            var cdnExporter = new (require('./modules/sk_cdnExporter.js'))()
+            await cdnExporter.export()
+            process.exit()
+            return
+        }
 
         if (sk.engine.start) await sk.engine.start()
         

@@ -79,6 +79,8 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
             app.use('/', this.express.static(this.paths.frontend.app.split('\\').join('/')))
        
             
+            if (global.sk.cdn && global.sk.cdn.servePath) global.sk.app.use(global.sk.cdn.route, this.express.static(global.sk.cdn.servePath))
+
             global.sk.app.use(global.sk.ui.routes.core, this.express.static(this.paths.frontend.ui.core))
             global.sk.app.use(global.sk.ui.routes.shared, this.express.static(this.paths.frontend.ui.shared))
 
@@ -86,6 +88,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
 
             if (global.sk.complexity) app.use('/complexity', this.express.static(global.sk.complexity.paths.frontend))
+
             
             /*********************/
 

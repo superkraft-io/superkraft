@@ -17,6 +17,8 @@ module.exports = class sk_ui {
             core: []
         }
 
+        
+
         this.refresh()
 
         this.endpoint = (opt.endpoint === 'wapp' ? new sk_ui_wapp(this) : new sk_ui_dapp(this))
@@ -24,6 +26,9 @@ module.exports = class sk_ui {
 
         this.fontMngr = new (require('./sk_ui_fontMngr.js'))({parent: this})
         this.fontMngr.init()
+
+
+        
     }
 
     getDirectories(source){
@@ -66,6 +71,9 @@ module.exports = class sk_ui {
 
     renderInfo(viewUIComponentsPath){
         var results = {
+            
+            useCDN: (global.sk.cdn ? true : false),
+
             head: __dirname + '/head.ejs',
             script: __dirname + '/script.ejs',
             components: {

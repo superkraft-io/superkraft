@@ -5,25 +5,38 @@
     <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui %>sk_ui_shadows.css">
 
 
-    <% for (var i = 0; i < sk.ui.components.core.length; i++){ %>
-        <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui %>sk_ui_<%= sk.ui.components.core[i] %>/sk_ui_<%= sk.ui.components.core[i] %>.css">
-                                        <script src="<%= sk.routes.frontend.ui %>sk_ui_<%= sk.ui.components.core[i] %>/sk_ui_<%= sk.ui.components.core[i] %>.js"></script>
-    <% } %>
+    <%
+        if (!sk.ui.useCDN){
+            for (var i = 0; i < sk.ui.components.core.length; i++){
+    %>
+            <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui %>sk_ui_<%= sk.ui.components.core[i] %>/sk_ui_<%= sk.ui.components.core[i] %>.css">
+                                            <script src="<%= sk.routes.frontend.ui %>sk_ui_<%= sk.ui.components.core[i] %>/sk_ui_<%= sk.ui.components.core[i] %>.js"></script>
+        <% } %>
 
-    <% for (var i = 0; i < sk.ui.components.shared.length; i++){ %>
-        <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui_shared %>sk_ui_<%= sk.ui.components.shared[i] %>/sk_ui_<%= sk.ui.components.shared[i] %>.css">
-                                        <script src="<%= sk.routes.frontend.ui_shared %>sk_ui_<%= sk.ui.components.shared[i] %>/sk_ui_<%= sk.ui.components.shared[i] %>.js"></script>
-    <% } %>
+        <% for (var i = 0; i < sk.ui.components.shared.length; i++){ %>
+            <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui_shared %>sk_ui_<%= sk.ui.components.shared[i] %>/sk_ui_<%= sk.ui.components.shared[i] %>.css">
+                                            <script src="<%= sk.routes.frontend.ui_shared %>sk_ui_<%= sk.ui.components.shared[i] %>/sk_ui_<%= sk.ui.components.shared[i] %>.js"></script>
+        <% } %>
 
-    <% for (var i = 0; i < sk.ui.components.view.length; i++){ %>
-        <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.view %>sk_ui/sk_ui_<%= sk.ui.components.view[i] %>/sk_ui_<%= sk.ui.components.view[i] %>.css">
-                                        <script src="<%= sk.routes.frontend.view %>sk_ui/sk_ui_<%= sk.ui.components.view[i] %>/sk_ui_<%= sk.ui.components.view[i] %>.js"></script>
-    <% } %>
+        <% for (var i = 0; i < sk.ui.components.view.length; i++){ %>
+            <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.view %>sk_ui/sk_ui_<%= sk.ui.components.view[i] %>/sk_ui_<%= sk.ui.components.view[i] %>.css">
+                                            <script src="<%= sk.routes.frontend.view %>sk_ui/sk_ui_<%= sk.ui.components.view[i] %>/sk_ui_<%= sk.ui.components.view[i] %>.js"></script>
+        <% } %>
 
-    <% for (var i = 0; i < sk.ui.components.global.length; i++){ %>
-        <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui_global %>sk_ui_<%= sk.ui.components.global[i] %>/sk_ui_<%= sk.ui.components.global[i] %>.css">
-                                        <script src="<%= sk.routes.frontend.ui_global %>sk_ui_<%= sk.ui.components.global[i] %>/sk_ui_<%= sk.ui.components.global[i] %>.js"></script>
-    <% } %>
+        <% for (var i = 0; i < sk.ui.components.global.length; i++){ %>
+            <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui_global %>sk_ui_<%= sk.ui.components.global[i] %>/sk_ui_<%= sk.ui.components.global[i] %>.css">
+                                            <script src="<%= sk.routes.frontend.ui_global %>sk_ui_<%= sk.ui.components.global[i] %>/sk_ui_<%= sk.ui.components.global[i] %>.js"></script>
+    <%      }
+        } else {
+    %>
+        <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui_cdn %>/sk_ui.css">
+                                        <script src="<%= sk.routes.frontend.ui_cdn %>/sk_ui.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui_cdn %>/view_<%= id %>.css">
+                                        <script src="<%= sk.routes.frontend.ui_cdn %>/view_<%= id %>.js"></script>
+    <%
+        }
+    %>
 
     <script src="<%= sk.routes.frontend.sk%>libs/progressbarjs/progressbar.min.js"></script>
     <script src="<%= sk.routes.frontend.sk%>libs/sk_repeater.js"></script>

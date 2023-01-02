@@ -13,6 +13,8 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                     ui_shared: 'sk_ui_shared/',
                     ui_global: 'sk_ui_global/',
 
+                    
+
                     app_root: '',
                     app: '',
                     global: '/global',
@@ -23,6 +25,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                 }
             }
 
+           
             if (global.sk.mobile) this.routes.frontend.mobile = global.sk.engine.mobile.viewInfo
             
             if (global.sk.complexity) this.routes.frontend.complexity = '/complexity/'
@@ -32,6 +35,10 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
             await this._init(opt)
 
+
+            if (global.sk.cdn) this.routes.frontend.ui_cdn = global.sk.cdn.route
+
+            
             var render = async (res, page, userData, country) => {
                 var globalData = sk.globalData
                 if (sk.dynamicGlobalData) globalData = {...globalData, ...sk.dynamicGlobalData()}
