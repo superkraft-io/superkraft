@@ -41,7 +41,7 @@ var sk_dialog = {
             }
 
             var cancelListener = async ()=>{
-                await sk.utils.sleep(200)
+                await sk.utils.sleep(1000)
                 
                 if (input.files.length > 0) return doResolve()
                 
