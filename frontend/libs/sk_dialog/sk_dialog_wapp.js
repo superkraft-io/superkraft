@@ -1,6 +1,8 @@
 var sk_dialog = {
     open: (opt = {})=>{
         return new Promise((resolve, reject)=>{
+            var resolved = false
+
             var input = document.createElement('input')
             input.setAttribute('type', 'file')
             input.style.display = 'none'
@@ -27,21 +29,28 @@ var sk_dialog = {
                 try { document.body.removeChild(input) } catch(err) {}
             }
 
-            var cancelListener = async ()=>{
-                await sk.utils.sleep(200)
-                
-                if (input.files.length > 0) return
+            var doResolve = ()=>{
+                if (resolved) return
 
-                reject()
-                removeInput()
-            }
-
-            input.onchange = async res => {
+                resolved = true
                 resolve(input.files)
                 
                 window.removeEventListener('focus', cancelListener)
                 window.removeEventListener('touchend', cancelListener)
                 removeInput()
+            }
+
+            var cancelListener = async ()=>{
+                await sk.utils.sleep(200)
+                
+                if (input.files.length > 0) return doResolve()
+                
+                reject()
+                removeInput()
+            }
+
+            input.onchange = async res => {
+                doResolve()
             }
 
             window.addEventListener('focus', cancelListener, { once: true })
