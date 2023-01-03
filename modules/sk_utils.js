@@ -27,6 +27,9 @@ module.exports = class SK_Window {
     captureActions(route, actions, onValidate){
         global.sk.engine.on(`action_${route}`, async (msg, rW, srcOpt) => {
             var action = actions[msg.action]
+            
+            var swID = global.sk.stats.increment({type: 'action', route: msg.action})
+
             var view = global.sk.views[msg.vid]
 
             if (route !== 'root' && global.sk.type === 'dapp') if (view.id !== msg.vid) return
@@ -54,6 +57,9 @@ module.exports = class SK_Window {
                 return reject(err)
             }
         
+            
+            global.sk.stats.end({type: 'action', route: msg.action, id: swID})
+            
             rW(res)
         })
     }
