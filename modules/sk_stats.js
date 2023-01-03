@@ -15,7 +15,7 @@ module.exports = class SK_Stats {
     }
 
     increment(opt){
-        this.oldStats = JSON.stringify(this.stats)
+        //this.oldStats = JSON.stringify(this.stats)
 
         var type = this.stats[opt.type]
 
@@ -88,9 +88,9 @@ module.exports = class SK_Stats {
     }
 
     print(){
-        var newStats = JSON.stringify(this.stats)
+        //var newStats = JSON.stringify(this.stats)
 
-        if (this.oldStats === newStats) return
+        //if (this.oldStats === newStats) return
 
         //console.log(this.stats.get)
         //console.log(this.stats.post)
@@ -108,7 +108,7 @@ module.exports = class SK_Stats {
                 var route = type[_r]
 
                 var execTime = ''
-                for (var i in route.stopwatch.list) execTime += '    ' + (route.stopwatch.list[i].time ? route.stopwatch.list[i].time : 'N/A')
+                for (var i in route.stopwatch.list) execTime += '    ' + (route.stopwatch.list[i].time ? route.stopwatch.list[i].time : '')
                 console.log(`      |- ${_r}    perSec: ${route.perSec.secVal}    time: ${execTime}`)
             }
 
