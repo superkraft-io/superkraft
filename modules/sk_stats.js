@@ -107,10 +107,8 @@ module.exports = class SK_Stats {
             for (var _r in type){
                 var route = type[_r]
 
-                var listCount =  Object.keys(route.stopwatch.list).length
-                var lastID = Object.keys(route.stopwatch.list)[listCount - 1]
-                var last =  route.stopwatch.list[lastID]
-                var execTime = (last.time ? last.time : 'N/A')
+                var execTime = ''
+                for (var i in route.stopwatch.list) execTime += '    ' + (route.stopwatch.list[i].time ? route.stopwatch.list[i].time : 'N/A')
                 console.log(`      |- ${_r}    perSec: ${route.perSec.secVal}    time: ${execTime}`)
             }
 
