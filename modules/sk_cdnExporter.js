@@ -9,6 +9,19 @@ module.exports = class SK_CDN_Exporter {
         this.opt = opt
     }
 
+    sk_minify(data){
+        var lines_new = []
+        var lines = data.split('\n')
+
+        for (var i in lines){
+            var line = lines[i].trim()
+            if (line.length === 0) continue
+            lines_new.push(line)
+        }
+
+        return lines_new.join('\n')
+    }
+
     tryMinify(filePath){
         return new Promise(async resolve => {
             var split = filePath.toLowerCase().split('.')
@@ -18,12 +31,14 @@ module.exports = class SK_CDN_Exporter {
             try {
                 var fileData = fs.readFileSync(filePath).toString()
 
-                if (ext === 'css') return resolve(await postcss([cssnano, autoprefixer]).process(fileData))
+                /*if (ext === 'css') return resolve(await postcss([cssnano, autoprefixer]).process(fileData))
                 
                 if (ext === 'js'){
                     var jsRes = uglifyJS.minify(fileData)
                     return resolve(jsRes.code)
-                }
+                }*/
+
+                resolve(this.sk_minify(fileData))
             } catch(err) {
                 return resolve('')
             }
