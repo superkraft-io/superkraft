@@ -28,7 +28,7 @@ module.exports = class SK_Window {
         global.sk.engine.on(`action_${route}`, async (msg, rW, srcOpt) => {
             var action = actions[msg.action]
             
-            var swID = global.sk.stats.increment({type: 'action', route: msg.action})
+            var _sw = global.sk.stats.increment({type: 'action', route: msg.action})
 
             var view = global.sk.views[msg.vid]
 
@@ -58,7 +58,7 @@ module.exports = class SK_Window {
             }
         
             
-            global.sk.stats.end({type: 'action', route: msg.action, id: swID})
+            _sw.end()
             
             rW(res)
         })

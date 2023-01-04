@@ -109,7 +109,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
                     this.posts[postName] = postModule
                     
                     global.sk.app.post('/' + postModule.info.route, async (req, res)=>{
-                        var swID = global.sk.stats.increment({type: 'post', route: postModule.info.route})
+                        var _sw = global.sk.stats.increment({type: 'post', route: postModule.info.route})
                 
                         var _res = {}
                         var reject = msg => {
@@ -136,7 +136,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
                         
                         postModule.exec(req, res)
 
-                        global.sk.stats.end({type: 'post', route: postModule.info.route, id: swID})
+                        _sw.end()
                     })
                 } catch(err) {
                     console.error(err)
@@ -162,13 +162,13 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
     on(cmd, cb){
         var actionRoute = '/' + cmd
         global.sk.app.post(actionRoute, (req, res) => {
-            var swID = global.sk.stats.increment({type: 'post', route: actionRoute})
+            var _sw = global.sk.stats.increment({type: 'post', route: actionRoute})
                 
             cb(
                 req.body,
                 response => {
                     res.send(response)
-                    global.sk.stats.end({type: 'post', route: actionRoute, id: swID})
+                    _sw.end()
                 },
                 {req: req, res: res}
             )

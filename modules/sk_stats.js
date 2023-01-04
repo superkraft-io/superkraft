@@ -1,16 +1,12 @@
 module.exports = class SK_Stats {
     constructor(){
-        this.stats = {
-            get: {},
-            post: {},
-            action: {}
-        }
+        this.stats = {}
 
         this.oldStats = JSON.stringify(this.stats)
 
         setInterval(()=>{
-            this.reset()
             this.print()
+            this.reset()
         }, 5000)
     }
 
@@ -18,10 +14,8 @@ module.exports = class SK_Stats {
         //this.oldStats = JSON.stringify(this.stats)
 
         var type = this.stats[opt.type]
-
-        if (opt.route === 'user'){
-            var x = 0
-        }
+        if (!type) this.stats[opt.type] = {}
+        type = this.stats[opt.type]
 
         var route = type[opt.route]
         if (!route){
@@ -49,7 +43,11 @@ module.exports = class SK_Stats {
 
         sw.list[sw.id] = {start: Date.now(), end: 0}
 
-        return sw.id
+        return {
+            end: ()=>{
+                this.end({type: opt.type, route: opt.route, id: sw.id})
+            }
+        }
     }
 
     end(opt){
@@ -108,7 +106,10 @@ module.exports = class SK_Stats {
                 var route = type[_r]
 
                 var execTime = ''
-                for (var i in route.stopwatch.list) execTime += '    ' + (route.stopwatch.list[i].time ? route.stopwatch.list[i].time : '')
+                for (var i in route.stopwatch.list){
+                    if (route.stopwatch.list[i].time) execTime += '    ' + route.stopwatch.list[i].time
+                }
+
                 console.log(`      |- ${_r}    perSec: ${route.perSec.secVal}    time: ${execTime}`)
             }
 
