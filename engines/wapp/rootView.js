@@ -7,7 +7,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                 frontend: {
                     view: this.info.route + 'vfe_frontend/',
 
-                    sk: '/sk/',
+                    sk: (global.sk.cdn ? global.sk.cdn.route + '/sk_frontend' : '/sk'),
 
                     ui: global.sk.ui.routes.core,
                     ui_shared: 'sk_ui_shared/',
@@ -24,6 +24,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                     favIcon: global.sk.paths.icons.favIcon
                 }
             }
+
 
            
             if (global.sk.mobile) this.routes.frontend.mobile = global.sk.engine.mobile.viewInfo

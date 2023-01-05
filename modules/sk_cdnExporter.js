@@ -1,8 +1,4 @@
-const fs = require('fs')
-const postcss = require('postcss')
-const cssnano = require('cssnano')
-const autoprefixer = require('autoprefixer')
-const uglifyJS = require("uglify-js");
+const fs = require('fs-extra')
 
 module.exports = class SK_CDN_Exporter {
     constructor(opt){
@@ -30,13 +26,6 @@ module.exports = class SK_CDN_Exporter {
             
             try {
                 var fileData = fs.readFileSync(filePath).toString()
-
-                /*if (ext === 'css') return resolve(await postcss([cssnano, autoprefixer]).process(fileData))
-                
-                if (ext === 'js'){
-                    var jsRes = uglifyJS.minify(fileData)
-                    return resolve(jsRes.code)
-                }*/
 
                 resolve(this.sk_minify(fileData))
             } catch(err) {
@@ -118,8 +107,9 @@ module.exports = class SK_CDN_Exporter {
 
                 var cRes = await this.consolidateView(global.sk.paths.views + view.id + '/')
 
-                if (cRes.css.length > 0) fs.writeFileSync(global.sk.paths.root + 'sk_cdnExport/view_' + view.id + '.css', cRes.css)
-                if (cRes.js.length > 0) fs.writeFileSync(global.sk.paths.root + 'sk_cdnExport/view_' + view.id + '.js', cRes.js)
+                if (!fs.existsSync(global.sk.cdn.servePath)) fs.mkdirSync(global.sk.cdn.servePath)
+                if (cRes.css.length > 0) fs.writeFileSync(global.sk.cdn.servePath + '/view_' + view.id + '.css', cRes.css)
+                if (cRes.js.length > 0) fs.writeFileSync(global.sk.cdn.servePath + '/view_' + view.id + '.js', cRes.js)
             }
 
             resolve()
@@ -152,8 +142,10 @@ module.exports = class SK_CDN_Exporter {
         return new Promise(async resolve => {
             var data = await this.consolidateUI()
 
-            fs.writeFileSync(global.sk.paths.root + 'sk_cdnExport/sk_ui.css', data.css)
-            fs.writeFileSync(global.sk.paths.root + 'sk_cdnExport/sk_ui.js', data.js)
+            fs.writeFileSync(global.sk.cdn.servePath + '/sk_ui.css', data.css)
+            fs.writeFileSync(global.sk.cdn.servePath + '/sk_ui.js', data.js)
+
+            fs.copySync(global.sk.paths.superkraft + '/frontend/', global.sk.cdn.servePath + '/sk_frontend/')
 
             resolve()
         })

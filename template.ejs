@@ -10,10 +10,10 @@
         <% } %>
 
         <script> try { var $ = jQuery = require("jquery") } catch(err) {} </script>
-        <script src="<%= sk.routes.frontend.sk%>libs/jquery/dist/jquery.slim.min.js"></script>
-        <script src="<%= sk.routes.frontend.sk%>libs/jquery/jquery-ui/jquery-ui.min.js"></script>
+        <script src="<%= sk.routes.frontend.sk%>/libs/jquery/dist/jquery.slim.min.js"></script>
+        <script src="<%= sk.routes.frontend.sk%>/libs/jquery/jquery-ui/jquery-ui.min.js"></script>
         
-        <script src="<%= sk.routes.frontend.sk%>libs/ua_parser/ua_parser.min.js"></script>
+        <script src="<%= sk.routes.frontend.sk%>/libs/ua_parser/ua_parser.min.js"></script>
         
         <% if (sk.ui && sk.ui.font){ %>
             <%- include(sk.ui.font) %>
@@ -21,44 +21,44 @@
         <link rel="stylesheet" type="text/css" href="/sk_ui_font/sk_ui_font.css">
         
 
-        <script src="<%= sk.routes.frontend.sk%>libs/sk_mobile/sk_mobile.js"></script>
+        <script src="<%= sk.routes.frontend.sk%>/libs/sk_mobile/sk_mobile.js"></script>
         
 
-        <script src="<%= sk.routes.frontend.sk%>libs/sk_helpers.js"></script>
+        <script src="<%= sk.routes.frontend.sk%>/libs/sk_helpers.js"></script>
 
-        <link rel="stylesheet" href="<%= sk.routes.frontend.sk%>libs/formantic-ui/semantic.css"/>
-        <script src="<%= sk.routes.frontend.sk%>libs/formantic-ui/semantic.min.js"></script>
+        <link rel="stylesheet" href="<%= sk.routes.frontend.sk%>/libs/formantic-ui/semantic.css"/>
+        <script src="<%= sk.routes.frontend.sk%>/libs/formantic-ui/semantic.min.js"></script>
         
 
-        <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.sk%>libs/jsom/jsom.css">
-        <script src="<%= sk.routes.frontend.sk%>libs/jsom/jsom.js"></script>
+        <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.sk%>/libs/jsom/jsom.css">
+        <script src="<%= sk.routes.frontend.sk%>/libs/jsom/jsom.js"></script>
 
 
-        <script src="<%= sk.routes.frontend.sk%>libs/sk_comm/sk_comm_<%= app_type %>.js"></script>
-        <script src="<%= sk.routes.frontend.sk%>libs/sk_comm/sk_comm_core.js"></script>
+        <script src="<%= sk.routes.frontend.sk%>/libs/sk_comm/sk_comm_<%= app_type %>.js"></script>
+        <script src="<%= sk.routes.frontend.sk%>/libs/sk_comm/sk_comm_core.js"></script>
 
-        <script src="<%= sk.routes.frontend.sk%>libs/sk_dialog/sk_dialog_<%= app_type %>.js"></script>
-        <script src="<%= sk.routes.frontend.sk%>libs/sk_dialog/sk_dialog_core.js"></script>
+        <script src="<%= sk.routes.frontend.sk%>/libs/sk_dialog/sk_dialog_<%= app_type %>.js"></script>
+        <script src="<%= sk.routes.frontend.sk%>/libs/sk_dialog/sk_dialog_core.js"></script>
 
 
-        <script src="<%= sk.routes.frontend.sk%>libs/sk_fileDrop/sk_fileDrop.js"></script>
+        <script src="<%= sk.routes.frontend.sk%>/libs/sk_fileDrop/sk_fileDrop.js"></script>
 
-        <script src="<%= sk.routes.frontend.sk%>libs/sk_tween.js"></script>
+        <script src="<%= sk.routes.frontend.sk%>/libs/sk_tween.js"></script>
 
         <% if (app_type === 'dapp'){ %>
-            <script src="<%= sk.routes.frontend.sk%>libs/sk_viewController/sk_viewController.js"></script>
+            <script src="<%= sk.routes.frontend.sk%>/libs/sk_viewController/sk_viewController.js"></script>
         <% } %>
-        <script src="<%= sk.routes.frontend.sk%>libs/sk_ums/sk_ums.js"></script>
+        <script src="<%= sk.routes.frontend.sk%>/libs/sk_ums/sk_ums.js"></script>
 
 
         <!--<link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.sk%>libs/sk_contextMenu/sk_contextMenu.css">
         <script src="<%= sk.routes.frontend.sk%>libs/sk_contextMenu/sk_contextMenu.js"></script>-->
 
-        <script src="<%= sk.routes.frontend.sk%>libs/sk_childMngr/sk_childMngr.js"></script>
+        <script src="<%= sk.routes.frontend.sk%>/libs/sk_childMngr/sk_childMngr.js"></script>
 
         
 
-        <script src="<%= sk.routes.frontend.sk%>libs/js-cookie/js.cookie.min.js"></script>
+        <script src="<%= sk.routes.frontend.sk%>/libs/js-cookie/js.cookie.min.js"></script>
 
        
 
@@ -68,7 +68,7 @@
         <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.view%>view.css">
         <%- include(viewHead) %>
 
-        <script src="<%= sk.routes.frontend.sk%>libs/sk_hint/sk_hint.js"></script>
+        <script src="<%= sk.routes.frontend.sk%>/libs/sk_hint/sk_hint.js"></script>
     </head>
 
     <%- include(sk.ui.head) %>
@@ -115,7 +115,7 @@
         <script>
             sk.l10n = <%- JSON.stringify(l10n) %>
         </script>
-        <script src="<%= sk.routes.frontend.sk%>libs/sk_l10n/sk_l10n.js"></script>
+        <script src="<%= sk.routes.frontend.sk%>/libs/sk_l10n/sk_l10n.js"></script>
 
         <script>
              <% if (sk.useComplexity){ %>
