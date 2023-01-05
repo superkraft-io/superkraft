@@ -37,12 +37,16 @@ module.exports = class SK_CDN_Exporter {
 
     consolidate(path, addFirstAndIgnore){
         return new Promise(async resolve => {
-            var dirs = fs.readdirSync(path)
-
             var data = {
                 js: '',
                 css: ''
             }
+
+            try { var dirs = fs.readdirSync(path) } catch(err) {
+                return resolve(data)
+            }
+
+            
 
             if (addFirstAndIgnore){
                 try { data.css += await this.tryMinify(path + addFirstAndIgnore + '/' + addFirstAndIgnore + '.css') } catch(err) {}
