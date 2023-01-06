@@ -98,7 +98,9 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
             var posts = fs.readdirSync(postsFolder)
             posts.forEach(_filename => {
-                if (_filename.toLowerCase().indexOf('.ds_store') > -1) return
+                var split = _filename.split('.')
+                var ext = split[split.length - 1]
+                if (ext !== 'js') return
                 
                 if (fs.lstatSync(postsFolder + _filename).isDirectory() === true) return
 
