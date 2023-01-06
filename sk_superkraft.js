@@ -113,7 +113,7 @@ module.exports = class Superkraft {
         await sk.engine.waitForReady()
         await sk.engine.initViews()
 
-        if (opt.type === 'wapp' && opt.cdn){// && opt.cdn.export){
+        if (opt.type === 'wapp' && opt.cdn && opt.cdn.export){
             console.log('[SK] Exporting CDN content...')
             var cdnExporter = new (require('./modules/sk_cdnExporter.js'))()
             await cdnExporter.export()
