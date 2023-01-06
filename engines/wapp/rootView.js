@@ -15,9 +15,9 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
                     
 
-                    app_root: '',
-                    app: '',
-                    global: '/global',
+                    app_root: (global.sk.cdn ? global.sk.cdn.route + '/app_frontend/' : '/'),
+                    app: (global.sk.cdn ? global.sk.cdn.route + '/app_frontend/' : '/'),
+                    global: (global.sk.cdn ? global.sk.cdn.route + '/app_global/' : '/global'),
 
                     complexity: '/complexity/',
 
@@ -41,6 +41,9 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
             
             var render = async (res, page, userData, country) => {
+                if (global.sk.cdn) this.routes.frontend.view = global.sk.cdn.route + '/views/' + this.id + '/'
+                
+
                 var globalData = sk.globalData
                 if (sk.dynamicGlobalData) globalData = {...globalData, ...sk.dynamicGlobalData()}
 

@@ -104,16 +104,15 @@ module.exports = class SK_CDN_Exporter {
         return new Promise(async resolve => {
             for (var _v in global.sk.views){
                 var view = global.sk.views[_v]
-
-                if (view.id === 'login_view'){
-                    var x = 0
-                }
-
                 var cRes = await this.consolidateView(global.sk.paths.views + view.id + '/')
 
-                if (!fs.existsSync(global.sk.cdn.servePath)) fs.mkdirSync(global.sk.cdn.servePath)
-                if (cRes.css.length > 0) fs.writeFileSync(global.sk.cdn.servePath + '/view_' + view.id + '.css', cRes.css)
-                if (cRes.js.length > 0) fs.writeFileSync(global.sk.cdn.servePath + '/view_' + view.id + '.js', cRes.js)
+                var viewPath = global.sk.cdn.servePath + '/views/' + view.id + '/'
+                fs.copySync(global.sk.paths.views + view.id + '/frontend', viewPath)
+                fs.removeSync(viewPath + 'sk_ui')
+                
+
+                if (cRes.css.length > 0) fs.writeFileSync(viewPath + view.id + '.css', cRes.css)
+                if (cRes.js.length > 0) fs.writeFileSync(viewPath + view.id + '.js', cRes.js)
             }
 
             resolve()
@@ -144,6 +143,10 @@ module.exports = class SK_CDN_Exporter {
 
     export(){
         return new Promise(async resolve => {
+            fs.removeSync(global.sk.cdn.servePath)
+            fs.mkdirSync(global.sk.cdn.servePath)
+            fs.mkdirSync(global.sk.cdn.servePath + '/views/')
+
             var data = await this.consolidateUI()
 
             fs.writeFileSync(global.sk.cdn.servePath + '/sk_ui.css', data.css)
@@ -151,6 +154,9 @@ module.exports = class SK_CDN_Exporter {
 
             fs.copySync(global.sk.paths.superkraft + '/frontend/', global.sk.cdn.servePath + '/sk_frontend/')
 
+            fs.copySync(global.sk.paths.app_frontend, global.sk.cdn.servePath + '/app_frontend/')
+            fs.removeSync(global.sk.cdn.servePath + '/app_frontend/sk_ui/')
+            
             resolve()
         })
     }
