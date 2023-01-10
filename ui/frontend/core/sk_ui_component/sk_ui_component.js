@@ -331,8 +331,6 @@ class sk_ui_component {
 
         getParentOf(this)
 
-        console.log(path)
-
         return path
     }
 
