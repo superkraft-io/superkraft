@@ -11,6 +11,14 @@ module.exports = class SK_Stats {
     }
 
     increment(opt){
+        return {
+            end: ()=>{
+                //do nothing
+            }
+        }
+
+        return
+
         //this.oldStats = JSON.stringify(this.stats)
 
         var type = this.stats[opt.type]
@@ -42,6 +50,7 @@ module.exports = class SK_Stats {
         sw.id++
 
         sw.list[sw.id] = {start: Date.now(), end: 0}
+        if (opt.tag) sw.list[sw.id].tag = opt.tag
 
         return {
             end: ()=>{
@@ -51,6 +60,8 @@ module.exports = class SK_Stats {
     }
 
     end(opt){
+        return
+
         var type = this.stats[opt.type]
 
         var route = type[opt.route]
@@ -85,7 +96,13 @@ module.exports = class SK_Stats {
         }
     }
 
+
+    purge(opt){
+        //this one is supposed to ensure that not more than N measurements exist in any list
+    }
+
     print(){
+        return
         //var newStats = JSON.stringify(this.stats)
 
         //if (this.oldStats === newStats) return
@@ -107,7 +124,7 @@ module.exports = class SK_Stats {
 
                 var execTime = ''
                 for (var i in route.stopwatch.list){
-                    if (route.stopwatch.list[i].time) execTime += '    ' + route.stopwatch.list[i].time
+                    if (route.stopwatch.list[i].time) execTime += '    ' + (route.stopwatch.list[i].tag ? `(${route.stopwatch.list[i]}) ` : '') + route.stopwatch.list[i].time
                 }
 
                 console.log(`      |- ${_r}    perSec: ${route.perSec.secVal}    time: ${execTime}`)

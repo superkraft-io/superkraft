@@ -29,6 +29,8 @@
 }
 
 .sk_ui_modal_closeBtn {
+    z-index: 999;
+    
     position: absolute;
 
     top: 8px;
@@ -39,9 +41,7 @@
 
 .sk_ui_modal_closeProgressBar {
     position: absolute;
-
     top: 5px;
-    right: 6px;
-
+    right: 5px;
     font-size: 18px;
 }

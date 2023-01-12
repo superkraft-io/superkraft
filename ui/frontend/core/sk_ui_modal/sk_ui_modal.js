@@ -151,7 +151,7 @@ class sk_ui_modal extends sk_ui_component {
 
         this.closeBtn.add.progressBar(_c => {
             _c.classAdd('sk_ui_modal_closeProgressBar')
-            this.pB = _c.as.circle(val)
+            this.pB = _c.as.circle({duration: val})
             _c.size = 25
             this.pB.progress = 100
         })

@@ -10,11 +10,13 @@ class sk_ui_successMessage extends sk_ui_prompter {
         this.promptContent.setup(_c => {
             //_c.styling = 'center middle ttb'
             _c.vertical = true
+            _c.width = 256
         })
 
         this.checkmark = this.promptContent.add.checkmark(_c => {
-            _c.size = 75
+            _c.size = 64
         })
+
         this.message = this.promptContent.add.label(_c => {
             _c.styling = 'center'
             _c.style.marginTop = '18px'
@@ -23,6 +25,6 @@ class sk_ui_successMessage extends sk_ui_prompter {
 
         setTimeout(()=>{ this.checkmark.check() }, 500)
 
-       this.autoclose = 5000
+        this.autoclose = 5000
     }
 }

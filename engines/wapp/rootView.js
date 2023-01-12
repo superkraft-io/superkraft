@@ -112,7 +112,13 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                             
                             //check if activated
                             try {
-                                var isAccActivated = (await global.sk.database.do.isAccActivated(auth_token)).accActivated
+                                var isAccActivated = (
+                                    this.onCheckAccActivation ?
+                                    await this.onCheckAccActivation(auth_token)
+                                    :
+                                    (await global.sk.database.do.isAccActivated(auth_token)).accActivated
+                                )
+                                
                                 if (isAccActivated){
                                     if (this.info.onAccActivated) return res.redirect(this.info.onAccActivated)
                                 } else {
