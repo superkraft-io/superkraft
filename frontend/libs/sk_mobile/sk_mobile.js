@@ -39,13 +39,13 @@ class SK_Mobile {
     }
 
     test_iOS(){
-        const userAgent = window.navigator.userAgent.toLowerCase();
-        return /iphone|ipad|ipod/.test( userAgent );
+        const userAgent = window.navigator.userAgent.toLowerCase()
+        return /iphone|ipad|ipod/.test(userAgent)
     }
 
     test_android(){
-        const userAgent = window.navigator.userAgent.toLowerCase();
-        return /android/.test(navigator.userAgent);
+        const userAgent = window.navigator.userAgent.toLowerCase()
+        return /android/.test(userAgent)
     }
     
     appIsStandalone(){
