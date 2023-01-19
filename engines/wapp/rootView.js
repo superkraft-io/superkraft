@@ -70,7 +70,11 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             global.sk.app.use(this.routes.frontend.global, global.sk.engine.express.static(global.sk.paths.globalFrontend))
         
 
-            if (this.info.vanilla) global.sk.app.use('/vanillaFE', global.sk.engine.express.static(global.sk.paths.vanillaFrontend))
+            if (this.info.vanilla){
+                global.sk.app.use('/vanillaFE', global.sk.engine.express.static(global.sk.paths.vanillaFrontend))
+                this.routes.frontend.view = {}
+                //if () 
+            }
 
             global.sk.app.get(this.info.route, async (req, res)=>{
                 global.sk.stats.increment({type: 'get', route: this.info.route})
