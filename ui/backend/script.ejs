@@ -160,6 +160,7 @@
 
         utils: {
             sleep: (delay = 1000)=>{ return new Promise(resolve => { setTimeout(()=>{ resolve() }, delay)})},
+            map: (value, aMin, aMax, bMin, bMax)=>{ return (value - aMin) * (bMax - bMin) / (aMax - aMin) + bMin },
             rgb2hex: rgb => {
                 try {
                     return `#${

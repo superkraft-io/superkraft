@@ -36,8 +36,6 @@ class sk_ui_icon extends sk_ui_component {
 
                 lastIcon = val
             }
-
-            this.styling += this.styling
             
             if (!val) return
 
