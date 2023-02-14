@@ -198,6 +198,29 @@
                 }
             },
 
+            secondsToTimestamp: (_ms, noMilliseconds)=>{
+                // Pad to 2 or 3 digits, default is 2
+                function pad(n, z) {
+                    z = z || 2;
+                    return ('00' + n).slice(-z);
+                }
+
+                var ms = _ms * 1000
+
+                var shours = Math.floor(ms / 1000 / 60 / 60)
+                var sminutes = Math.floor(ms / 1000 / 60)
+                var sseconds = Math.floor(ms / 1000)
+
+                var rhours = shours;
+                var rminutes = sminutes - (shours * 60);
+                var rseconds = sseconds - (sminutes * 60 + shours * 60 * 60);
+
+                var hourStr = ''
+                if (rhours > 0) hourStr += pad(rhours) + ':'
+
+                return hourStr + pad(rminutes) + ':' + pad(rseconds) + (!noMilliseconds ? '.' + pad(ms, 3) : '');
+            },
+
             humanReadableTime: opt => {
                 
                 var result = ''
