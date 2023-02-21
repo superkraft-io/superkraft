@@ -61,6 +61,8 @@ class SK_ChildMngr {
                     alert(msg)
                     console.error(msg)
                     console.error(err)
+                } else {
+                    console.error(err)
                 }
             }
         }

@@ -21,7 +21,7 @@
 }
 
 .sk_ui_button_enabled:hover {
-    background-color: var(--sk_ui_color_dark_grey_2);
+    background-color: var(--sk_ui_color_grey_2);
 }
 
 .sk_ui_button_enabled:active {

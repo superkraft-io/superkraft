@@ -40,7 +40,17 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
             app.use(bodyParser.urlencoded({ extended: true }))
         
 
+            app.use((err, req, res, next) => {
+                // This check makes sure this is a JSON parsing issue, but it might be
+                // coming from any middleware, not just body-parser:
             
+                if (err instanceof SyntaxError && err.status === 400 && 'body' in err){
+                    console.error({error: 'invalid_body'})
+                    return res.status(400).send({error: 'invalid_body'}) // Bad request
+                }
+            
+                next()
+            })
 
               
             var csp = {defaultSrc: ["'self'"]}

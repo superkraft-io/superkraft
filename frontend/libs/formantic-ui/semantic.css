@@ -63794,13 +63794,13 @@ a.ui.nag {
 /* Small Vertical */
 
 .ui.slider.small.vertical .inner {
-  width: 1em;
+  width: 0em;
 }
 
 .ui.slider.small.vertical .inner .track,
 .ui.slider.small.vertical .inner .track-fill {
   width: 0.3em;
-  left: 0.35em;
+  left: 0.34999999999999964em;
 }
 
 .ui.small.labeled.vertical.slider > .labels,

@@ -11,13 +11,13 @@ module.exports = class SK_Stats {
     }
 
     increment(opt){
-        return {
-            end: ()=>{
-                //do nothing
+        if (!global.sk.stats){
+            return {
+                end: ()=>{
+                    //do nothing
+                }
             }
         }
-
-        return
 
         //this.oldStats = JSON.stringify(this.stats)
 

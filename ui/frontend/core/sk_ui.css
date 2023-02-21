@@ -319,3 +319,24 @@ i.icon, i.icons, i.flag {
     -moz-box-shadow: var(--sk_ui_glow_pulse_2);
     box-shadow: var(--sk_ui_blinkClr);
 }
+
+
+
+
+.sk_ui_noScrollbar > *::-webkit-scrollbar {
+    background: transparent !important;
+    width: 0px !important;
+    height: 0px !important;
+}
+
+.sk_ui_noScrollbar > *::-webkit-scrollbar-track {
+    background:  transparent !important;
+    border-radius: 0px !important;
+    height: 0px !important;
+}
+
+.sk_ui_noScrollbar > *::-webkit-scrollbar-thumb {
+    background:  transparent !important;
+    border-radius: 0px !important;
+    height: 0px !important;
+}

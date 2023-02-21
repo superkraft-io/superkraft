@@ -72,6 +72,7 @@ class sk_ui_component {
             if (!val) this.classAdd('sk_ui_component_spaced' + (this.vertical ? '_vertical' : '_horizontal'))
         }})
         
+        this.__animate = true
         this.attributes.add({friendlyName: 'Animate', name: 'animate',  type: 'bool', onSet: val => {
             this.classRemove('sk_ui_transition')
             if (val) this.classAdd('sk_ui_transition')
@@ -272,6 +273,28 @@ class sk_ui_component {
             } catch(err) {
 
             }
+        }})
+
+
+
+
+
+        this.movres_izer = new sk_ui_movableizer_resizableizer({parent: this})
+
+        this.attributes.add({friendlyName: 'Movable', name: 'movable', type: 'text', onSet: val => {
+            if (val === false) return this.movres_izer.moveAxis = undefined
+
+            if (val === true) val = 'xy'
+
+            this.movres_izer.moveAxis = val
+        }})
+
+        this.attributes.add({friendlyName: 'Resizable', name: 'resizable', type: 'text', onSet: val => {
+            if (val === false) return this.movres_izer.resizeAxis = undefined
+
+            if (val === true) val = 'xy'
+
+            this.movres_izer.resizeAxis = val
         }})
 
         /********/
@@ -870,48 +893,347 @@ class sk_ui_contextMenuMngr {
 
 
 
-/*********/
 
-/*
-class sk_ui_mouseEventsMngr {
+//Movableizer
+
+class sk_ui_movableizer_resizableizer {
+    constructor(opt){
+        this.opt = opt
+        this.parent = opt.parent
+        
+        this.mover = new sk_ui_movableizer(opt)
+        this.mover.onStart = ()=>{ if (this.onStart) this.onStart() }
+        this.mover.onEnd = ()=>{ if (this.onEnd) this.onEnd() }
+        this.mover.onMoving = res => { if (this.onMoving) this.onMoving(res) }
+
+        this.resizer = new sk_ui_resizableizer(opt)
+        this.resizer.onResizing = res => { if (this.onResizing) this.onResizing(res) }
+    }
+
+    set moveAxis(val){
+        if (!val) return this.tryOff()
+        this.mover.axis = val
+        this.tryOn()
+    }
+
+    set resizeAxis(val){
+        if (!val) return this.tryOff()
+        this.resizer.axis = val
+        this.tryOn()
+    }
+
+
+    tryOn(){
+        if (this.active) return
+        this.on()
+    }
+
+    tryOff(){
+        if (this.moveAxis || this.resizeAxis) return
+        this.off()
+    }
+
+    on(){
+        console.log('ACTIVATING')
+        this.active = true
+
+        this.parent.element.addEventListener('mousemove', _e => this.mouseMoveHandler(_e) )
+        this.parent.element.addEventListener('touchmove', _e => this.mouseMoveHandler(_e) )
+
+        this.parent.element.addEventListener('mousedown', _e => this.handleMouseDown(_e) )
+        this.parent.element.addEventListener('touchstart', _e => this.handleMouseDown(_e) )
+        
+        this.parent.element.addEventListener('mouseup',  _e => this.mouseUpHandler(_e) )
+        this.parent.element.addEventListener('touchend',  _e => this.mouseUpHandler(_e) )
+    }
+
+    off(){
+        this.active = false
+
+        this.parent.element.removeEventListener('mouseup', this.mouseUpHandler)
+        this.parent.element.removeEventListener('touchend', this.mouseUpHandler)
+        
+        document.removeEventListener('mouseup', this.mouseUpHandler)
+
+        
+        this.parent.element.removeEventListener('mousemove', this.mouseMoveHandler)
+        this.parent.element.removeEventListener('touchmove', this.mouseMoveHandler)
+        
+        document.removeEventListener('mousemove', this.mouseMoveHandler)
+        document.removeEventListener('touchmove', this.mouseMoveHandler)
+    }
+
+    /************/
+
+
+   
+
+    mouseMoveHandler(_e){
+        if (this.resizing) return
+
+        _e.preventDefault()
+        _e.stopPropagation()
+
+        if (this.resizer.testPoint(_e)){
+            this.canMove = false
+            return this.canResize = true
+        }
+
+        
+
+        this.canResize = false
+
+        this.canMove = true
+    }
+
+
+    mouseUpHandler(_e){        
+        this.resizing = false
+        this.moving = false
+    }
+
+    handleMouseDown(_e){
+        if (!this.canResize && !this.canMove) return
+        
+        _e.preventDefault()
+        _e.stopPropagation()
+
+        if (this.canResize){
+            this.resizing = true
+            this.resizer.mouseDownHandler(_e)
+        } else {
+            this.moving = true
+            this.mover.mouseDownHandler(_e)
+        }
+    }
+}
+
+class sk_ui_movableizer {
     constructor(opt){
         this.opt = opt
         this.parent = opt.parent
 
-        this.events = {}
+
+        this.mouseUpHandler = _e => {
+            _e.preventDefault()
+            _e.stopPropagation()
+
+            this.parent.element.removeEventListener('mousemove', this.mouseMoveHandler)
+            this.parent.element.removeEventListener('touchmove', this.mouseMoveHandler)
+            
+            this.parent.element.removeEventListener('mouseup', this.mouseUpHandler)
+            this.parent.element.removeEventListener('touchend', this.mouseUpHandler)
+
+            document.removeEventListener('mousemove', this.mouseMoveHandler)
+            document.removeEventListener('touchmove', this.mouseMoveHandler)
+            
+            document.removeEventListener('mouseup', this.mouseUpHandler)
+            document.removeEventListener('touchend', this.mouseUpHandler)
+
+
+            this.mdPos = undefined
+            
+            this.parent.animate = this.animateTmp
+            
+            this.moving = false
+    
+            if (this.onEnd) this.onEnd(_e)
+        }
+    
+        this.mouseMoveHandler = _e => {  
+            _e.preventDefault()
+            _e.stopPropagation()
+            
+            var diff = {
+                x: this.mdPos.x - ((_e.clientX || _e.touches[0].clientX) - this.parent.parent.rect.left) - this.origin.x,
+                y: this.mdPos.y - ((_e.clientY || _e.touches[0].clientY) - this.parent.parent.rect.top) - this.origin.y
+            }
+    
+            var newPos = {
+                x: this.mdPos.x - diff.x,
+                y: this.mdPos.y - diff.y
+            }
+            
+    
+            if (newPos.x < 0) newPos.x = 0
+            //if (newPos.x > this.parent.rect.width - this.parent.parent.rect.width) newPos = this.parent.parent.rect.width - this.parent.rect.width
+    
+            if (newPos.y < 0) newPos.y = 0
+            //if (newPos.y > this.parent.rect.height - this.parent.parent.rect.height) newPos = this.parent.parent.rect.height - this.parent.rect.height
+    
+            if (this.axis.indexOf('x') > -1) this.parent.style.left = newPos.x + 'px'
+            if (this.axis.indexOf('y') > -1) this.parent.style.top = newPos.y + 'px'
+
+            if (this.onMoving) this.onMoving({event: _e, position: newPos})
+        }
     }
 
-    on(event, cb){
-        if (!this.events[event]){
-            this.events[event] = []
-            this.parent.element.addEventListener(event, _e => {
-                this.tryBroadcast(event, _e)
-            })
+    mouseDownHandler(_e){
+        this.mdPos = {
+            x: (_e.clientX || _e.touches[0].clientX) - this.parent.parent.rect.left,
+            y: (_e.clientY || _e.touches[0].clientY) - this.parent.parent.rect.top
         }
+
+        this.origin = {
+            x: this.parent.rect.left - this.parent.parent.rect.left - this.mdPos.x,
+            y: this.parent.rect.top - this.parent.parent.rect.top - this.mdPos.y,
+        }
+
+        this.animateTmp = this.parent.animate
+        this.parent.animate = false
         
-        var event = this.events[event]
-        event.push(cb)
-    }
 
-    off(event){
-        var event = this.events[event]
-        if (!event) return
+        this.parent.element.addEventListener('mousemove', this.mouseMoveHandler)
+        this.parent.element.addEventListener('touchmove', this.mouseMoveHandler)
+        
+        this.parent.element.addEventListener('mouseup', this.mouseUpHandler)
+        this.parent.element.addEventListener('touchend', this.mouseUpHandler)
 
-    }
 
-    tryBroadcast(event, _e){
-        var event = this.events[event]
-        if (!event) return
-        for (var i in event) event[i](_e)
-    }
+        document.addEventListener('mousemove', this.mouseMoveHandler)
+        document.addEventListener('touchmove', this.mouseMoveHandler)
+        
+        document.addEventListener('mouseup', this.mouseUpHandler)
+        document.addEventListener('touchend', this.mouseUpHandler)
 
-    bubble(_e){
-        for (var i in _e.path){
-            var el = _e.path[i]
-            var suo = el.sk_ui_obj
-            if (!suo) continue
-            suo.events.tryBroadcast(_e.type, _e)
-        }
+
+        if (this.onStart) this.onStart(_e)
     }
 }
-*/
+
+
+class sk_ui_resizableizer {
+    constructor(opt){
+        this.opt = opt
+        this.parent = opt.parent
+        
+        this.border = 6
+        this.sides = {}
+
+
+
+        this.mouseMoveHandler = _e => {
+            _e.preventDefault()
+            _e.stopPropagation()
+
+            var diff = {
+                x: (_e.clientX || _e.touches[0].clientX) - this.mdPos.x,
+                y: (_e.clientY || _e.touches[0].clientY) - this.mdPos.y
+            }
+
+            if (this.sides.left){
+                this.parent.style.left = this.originalPos.x + diff.x + 'px'
+                diff.x = 0-diff.x
+            }
+            
+            if (this.sides.top){
+                this.parent.style.top = this.originalPos.y + diff.y
+                diff.y = 0-diff.y
+            }
+
+
+            var newSize = {
+                w: this.originalSize.w + diff.x,
+                h: this.originalSize.h + diff.y
+            }
+
+
+            if (this.axis.indexOf('x') > -1) this.parent.style.minWidth = newSize.w + 'px'
+            if (this.axis.indexOf('y') > -1) this.parent.style.maxWidth = newSize.w + 'px'
+            
+
+            if (this.onResizing) this.onResizing({size: newSize})
+        }
+    
+    
+        this.mouseUpHandler = _e => {
+            console.log('document mouse up')
+
+            this.mdPos = undefined
+
+            this.parent.animate = this.animateTmp
+
+            document.body.style.cursor = ''
+
+            document.removeEventListener('mousemove', this.mouseMoveHandler)
+            document.removeEventListener('touchmove', this.mouseMoveHandler)
+            
+            document.removeEventListener('mouseup', this.mouseUpHandler)
+            document.removeEventListener('touchend', this.mouseUpHandler)
+
+            if (this.onEnd) this.onEnd()
+        }
+    }
+
+    testPoint(_e){
+        var pos = {
+            x: (_e.clientX || _e.touches[0].clientX) - this.parent.rect.left,
+            y: (_e.clientY || _e.touches[0].clientY) - this.parent.rect.top
+        }
+
+        this.sides = {}
+
+        if (pos.x < this.border) this.sides.left = true
+        if (pos.x > this.parent.rect.width - this.border) this.sides.right = true
+
+        if (pos.y < this.border) this.sides.top = true
+        if (pos.y > this.parent.rect.height - this.border) this.sides.bottom = true
+
+        this.cursor = ''
+
+        if (this.sides.left){
+            this.cursor = 'ew-resize'
+            if (this.sides.top) this.cursor = 'nwse-resize'
+            if (this.sides.bottom) this.cursor = 'nesw-resize'
+        } else if (this.sides.right){
+            this.cursor = 'ew-resize'
+            if (this.sides.top) this.cursor = 'nesw-resize'
+            if (this.sides.bottom) this.cursor = 'nwse-resize'
+        } else if (this.sides.top || this.sides.bottom){
+            this.cursor = 'ns-resize'
+        }
+
+        document.body.style.cursor = this.cursor
+
+        return this.cursor !== ''
+    }
+
+    
+
+
+    
+
+
+
+    mouseDownHandler(_e){
+        this.mdPos = {
+            x: (_e.clientX || _e.touches[0].clientX),
+            y: (_e.clientY || _e.touches[0].clientY)
+        }
+
+
+        this.originalPos = {
+            x: this.parent.rect.left - this.parent.parent.rect.left,
+            y: this.parent.rect.top - this.parent.parent.rect.top
+        }
+
+
+        this.originalSize = {
+            w: this.parent.rect.width,
+            h: this.parent.rect.height
+        }
+
+        this.animateTmp = this.parent.animate
+        this.parent.animate = false
+        
+        
+
+        document.addEventListener('mousemove', this.mouseMoveHandler)
+        document.addEventListener('touchmove', this.mouseMoveHandler)
+        
+        document.addEventListener('mouseup', this.mouseUpHandler)
+        document.addEventListener('touchend', this.mouseUpHandler)
+    }
+}
+
+

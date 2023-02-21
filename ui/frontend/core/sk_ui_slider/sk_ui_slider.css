@@ -1,5 +1,34 @@
 .sk_ui_slider {
     width: 100%;
+    position: relative;
+}
+
+.sk_ui_slider_line {
+    width: 100%;
+    background-color: black;
+    min-height: 3px;
+    border-radius: 3px;
+    position: relative;
+    overflow: hidden;
+}
+
+.sk_ui_slider_line_colorBar {
+    position: absolute;
+    background-color: var(--sk_ui_color_grey_2);
+    left: 0px;
+    /* top: 0px; */
+    /* bottom: 0px; */
+    /* right: 0px; */
+    width: 100%;
+    height: 100%;
+}
+
+.sk_ui_slider_thumb {
+    position: absolute;
+    background-color: var(--sk_ui_button_toggled_text_color_hover);
+    width: 12px;
+    height: 12px;
+    border-radius: 12px;
 }
 
 .sk_ui_slider > #sliderEl {
