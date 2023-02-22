@@ -917,6 +917,8 @@ class sk_ui_movableizer_resizableizer {
         this.resizer.onStart = ()=>{ if (this.onStartResizing) this.onStartResizing() }
         this.resizer.onEnd = ()=>{ if (this.onEndResizing) this.onEndResizing() }
         this.resizer.onResizing = res => { if (this.onResizing) this.onResizing(res) }
+        this.resizer.onResizingSnappingBegin = ()=>{ if (this.onResizingSnappingBegin) this.onResizingSnappingBegin() }
+        this.resizer.onResizingSnappingEnd = ()=>{ if (this.onResizingSnappingEnd) this.onResizingSnappingEnd() }
     }
 
     set moveAxis(val){
@@ -936,6 +938,10 @@ class sk_ui_movableizer_resizableizer {
         this.resizer.__snapToGrid = val
     }
 
+    set gridSnapWidth(val){
+        this.mover.__gridSnapWidth = val
+        this.resizer.__gridSnapWidth = val
+    }
 
     tryOn(){
         if (this.active) return
@@ -1036,6 +1042,7 @@ class sk_ui_movableizer {
         this.opt = opt
         this.parent = opt.parent
 
+        this.__gridSnapWidth = 10
 
         this.mouseUpHandler = _e => {
             _e.preventDefault()
@@ -1082,10 +1089,19 @@ class sk_ui_movableizer {
                 y: this.originalPos.y + mousePosInSelf.y 
             }
             
+            var diff = {
+                x: mousePosInSelf.x
+            }
 
-            if (this.__snapToGrid){
-                this.parent.animate = true
-                newPos.x = (this.__snapToGrid === 'relative' ? this.originalPos.x : sk.utils.calcSnap({val: this.originalPos.x, func: 'ceil'})) + sk.utils.calcSnap({val: newPos.x - this.originalPos.x})
+            var halfGrid = (this.__snapToGrid / 2)
+            var wrapX = sk.utils.wrapNum(this.__snapToGrid, diff.x)
+            if (wrapX > halfGrid) wrapX = 0 - (halfGrid - (wrapX - halfGrid))
+            var smoothMove = (wrapX < 0-this.__gridSnapWidth || wrapX > this.__gridSnapWidth)
+
+
+            if (this.__snapToGrid && !smoothMove){
+                //this.parent.animate = true
+                newPos.x = (this.__snapToGrid === 'relative' ? this.originalPos.x : sk.utils.calcSnap({val: this.originalPos.x, func: 'ceil', gridSize: this.__snapToGrid})) + sk.utils.calcSnap({val: newPos.x - this.originalPos.x, gridSize: this.__snapToGrid})
             }
             
             
@@ -1147,6 +1163,8 @@ class sk_ui_resizableizer {
         this.opt = opt
         this.parent = opt.parent
         
+        this.__gridSnapWidth = 10
+
         this.border = 6
         this.sides = {}
 
@@ -1170,23 +1188,37 @@ class sk_ui_resizableizer {
                 w: this.originalSize.w - diff.x,
                 h: this.originalSize.h - diff.y
             }
-            console.log('1st    newSize.w: ' + newSize.w)
 
-            if (!this.__snapToGrid){
-                if (this.sides.left){
-                    this.parent.style.left = newPos.x + 'px'
-                    diff.x = 0-diff.x
-                }
-                
-                if (this.sides.top){
-                    this.parent.style.top = newPos.y + 'px'
-                    diff.y = 0-diff.y
+            
+            var halfGrid = (this.__snapToGrid / 2)
+            var wrapW = sk.utils.wrapNum(this.__snapToGrid, diff.x)
+            if (wrapW > halfGrid) wrapW = 0 - (halfGrid - (wrapW - halfGrid))
+            var smoothResize = (wrapW < 0-this.__gridSnapWidth || wrapW > this.__gridSnapWidth)
+            
+            
+            if (smoothResize){
+                if (!this.__snapping){
+                    if (this.onResizingSnappingBegin){
+                        this.__snapping = true
+                        this.onResizingSnappingBegin()
+                    }
                 }
             } else {
-                newSize.w = (this.__snapToGrid === 'relative' ? this.originalSize.w : sk.utils.calcSnap({val: this.originalSize.w, func: 'round'})) - sk.utils.calcSnap({val: newSize.w - this.originalSize.w})
+                if (this.__snapping){
+                    if (this.onResizingSnappingEnd){
+                        this.__snapping = false
+                        this.onResizingSnappingEnd()
+                    }
+                }
+            }
+
+            if (!this.__snapToGrid || smoothResize){
+                if (this.sides.right) newSize.w = this.originalSize.w + diff.x
+            } else {
+                newSize.w = (this.__snapToGrid === 'relative' ? this.originalSize.w : sk.utils.calcSnap({val: this.originalSize.w, func: 'round', gridSize: this.__snapToGrid})) - sk.utils.calcSnap({val: newSize.w - this.originalSize.w, gridSize: this.__snapToGrid})
                 
                 if (this.sides.left){
-                    newPos.x = (this.__snapToGrid === 'relative' ? this.originalPos.x : sk.utils.calcSnap({val: this.originalPos.x, func: 'round'})) + sk.utils.calcSnap({val: newPos.x - this.originalPos.x})
+                    newPos.x = (this.__snapToGrid === 'relative' ? this.originalPos.x : sk.utils.calcSnap({val: this.originalPos.x, func: 'round', gridSize: this.__snapToGrid})) + sk.utils.calcSnap({val: newPos.x - this.originalPos.x, gridSize: this.__snapToGrid})
                     var deltaPos = newPos.x - this.originalPos.x
                     newSize.w = this.originalSize.w - deltaPos
                     
@@ -1194,12 +1226,16 @@ class sk_ui_resizableizer {
                 }
             }
 
+            
+
             if (this.axis.indexOf('x') > -1){
+                if (this.sides.left) this.parent.style.left = newPos.x + 'px'
                 this.parent.style.minWidth = newSize.w + 'px'
                 this.parent.style.maxWidth = newSize.w + 'px'
             }
 
             if (this.axis.indexOf('y') > -1){
+                if (this.sides.top) this.parent.style.top = newPos.y + 'px'
                 this.parent.style.minHeight = newSize.h + 'px'
                 this.parent.style.maxHeight = newSize.h + 'px'
             }
