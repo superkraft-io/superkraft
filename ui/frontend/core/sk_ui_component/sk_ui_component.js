@@ -525,10 +525,9 @@ class sk_ui_component {
 
         observer.observe(this.element)
 
-        var inViewport = ()=>{
+        var inViewport = (rect)=>{
             var html = document.documentElement;
             //var rect = this.__bounds
-            var rect = this.element.getBoundingClientRect();
           
             return !!rect &&
               rect.bottom >= 0 &&
@@ -539,7 +538,15 @@ class sk_ui_component {
           
         //var res = this.__bounds
         var res = this.element.getBoundingClientRect()
-        res.inView = inViewport()
+        res.inView = inViewport(res)
+
+
+
+        var parentRect = this.parent.element.getBoundingClientRect()
+        res.localPos = {
+            x: res.left - parentRect.left,
+            y: res.top - parentRect.top
+        }
 
         return res
     }
@@ -902,11 +909,13 @@ class sk_ui_movableizer_resizableizer {
         this.parent = opt.parent
         
         this.mover = new sk_ui_movableizer(opt)
-        this.mover.onStart = ()=>{ if (this.onStart) this.onStart() }
-        this.mover.onEnd = ()=>{ if (this.onEnd) this.onEnd() }
+        this.mover.onStart = ()=>{ if (this.onStartMoving) this.onStartMoving() }
+        this.mover.onEnd = ()=>{ if (this.onEndMoving) this.onEndMoving() }
         this.mover.onMoving = res => { if (this.onMoving) this.onMoving(res) }
 
         this.resizer = new sk_ui_resizableizer(opt)
+        this.resizer.onStart = ()=>{ if (this.onStartResizing) this.onStartResizing() }
+        this.resizer.onEnd = ()=>{ if (this.onEndResizing) this.onEndResizing() }
         this.resizer.onResizing = res => { if (this.onResizing) this.onResizing(res) }
     }
 
@@ -922,6 +931,11 @@ class sk_ui_movableizer_resizableizer {
         this.tryOn()
     }
 
+    set snapToGrid(val){
+        this.mover.__snapToGrid = val
+        this.resizer.__snapToGrid = val
+    }
+
 
     tryOn(){
         if (this.active) return
@@ -934,7 +948,6 @@ class sk_ui_movableizer_resizableizer {
     }
 
     on(){
-        console.log('ACTIVATING')
         this.active = true
 
         this.parent.element.addEventListener('mousemove', _e => this.mouseMoveHandler(_e) )
@@ -969,18 +982,24 @@ class sk_ui_movableizer_resizableizer {
    
 
     mouseMoveHandler(_e){
-        if (this.resizing) return
+        if (this.resizer.resizing) return
 
         _e.preventDefault()
         _e.stopPropagation()
 
-        if (this.resizer.testPoint(_e)){
-            this.canMove = false
-            return this.canResize = true
+        if (!this.mover.moving && this.resizer.axis){
+            if (this.resizer.testPoint(_e)){
+                this.resizer.trackMouseLeave(true)
+                this.canMove = false
+                return this.canResize = true
+            }
         }
 
         
+        this.resizer.trackMouseLeave(false)
 
+    
+        
         this.canResize = false
 
         this.canMove = true
@@ -988,21 +1007,25 @@ class sk_ui_movableizer_resizableizer {
 
 
     mouseUpHandler(_e){        
-        this.resizing = false
-        this.moving = false
+        //this.resizing = false
+        //this.moving = false
+        document.removeEventListener('mouseup', this.mouseUpHandler)
     }
 
     handleMouseDown(_e){
         if (!this.canResize && !this.canMove) return
+        if (this.mover.moving || this.resizer.resizing) return
+        
+        document.addEventListener('mouseup',  this.mouseUpHandler )
         
         _e.preventDefault()
         _e.stopPropagation()
 
         if (this.canResize){
-            this.resizing = true
+            //this.resizing = true
             this.resizer.mouseDownHandler(_e)
         } else {
-            this.moving = true
+            //this.moving = true
             this.mover.mouseDownHandler(_e)
         }
     }
@@ -1036,69 +1059,86 @@ class sk_ui_movableizer {
             this.parent.animate = this.animateTmp
             
             this.moving = false
+            
+            this.parent.pointerEvents = 'true'
     
             if (this.onEnd) this.onEnd(_e)
         }
     
-        this.mouseMoveHandler = _e => {  
+
+        this.mouseMoveHandler = _e => {
             _e.preventDefault()
             _e.stopPropagation()
             
-            var diff = {
-                x: this.mdPos.x - ((_e.clientX || _e.touches[0].clientX) - this.parent.parent.rect.left) - this.origin.x,
-                y: this.mdPos.y - ((_e.clientY || _e.touches[0].clientY) - this.parent.parent.rect.top) - this.origin.y
-            }
-    
-            var newPos = {
-                x: this.mdPos.x - diff.x,
-                y: this.mdPos.y - diff.y
+
+
+            var mousePosInSelf = {
+                x: (_e.clientX || _e.touches[0].clientX) - this.mdPosGlobal.x,
+                y: (_e.clientY || _e.touches[0].clientY) - this.mdPosGlobal.y
             }
             
+            var newPos = {
+                x: this.originalPos.x + mousePosInSelf.x,
+                y: this.originalPos.y + mousePosInSelf.y 
+            }
+            
+
+            if (this.__snapToGrid){
+                this.parent.animate = true
+                newPos.x = (this.__snapToGrid === 'relative' ? this.originalPos.x : sk.utils.calcSnap({val: this.originalPos.x, func: 'ceil'})) + sk.utils.calcSnap({val: newPos.x - this.originalPos.x})
+            }
+            
+            
     
-            if (newPos.x < 0) newPos.x = 0
-            //if (newPos.x > this.parent.rect.width - this.parent.parent.rect.width) newPos = this.parent.parent.rect.width - this.parent.rect.width
+            if (this.axis.indexOf('x') > -1){
+                if (newPos.x < 0) newPos.x = 0
+                if (newPos.x > this.parent.parent.rect.width - this.parent.rect.width) newPos.x = this.parent.parent.rect.width - this.parent.rect.width
+                this.parent.style.left = newPos.x + 'px'
+            }
     
-            if (newPos.y < 0) newPos.y = 0
-            //if (newPos.y > this.parent.rect.height - this.parent.parent.rect.height) newPos = this.parent.parent.rect.height - this.parent.rect.height
-    
-            if (this.axis.indexOf('x') > -1) this.parent.style.left = newPos.x + 'px'
-            if (this.axis.indexOf('y') > -1) this.parent.style.top = newPos.y + 'px'
+            if (this.axis.indexOf('y') > -1){
+                if (newPos.y < 0) newPos.y = 0
+                if (newPos.y > this.parent.parent.rect.height - this.parent.rect.height) newPos.y = this.parent.parent.rect.height - this.parent.rect.height
+                this.parent.style.top = newPos.y + 'px'
+            }
+ 
 
             if (this.onMoving) this.onMoving({event: _e, position: newPos})
         }
+        
+
+
+        this.mouseDownHandler = (_e)=>{
+            this.mdPosGlobal = {
+                x: (_e.clientX || _e.touches[0].clientX),
+                y: (_e.clientY || _e.touches[0].clientY)
+            }
+
+            this.mdPos = {
+                x: this.mdPosGlobal.x - this.parent.rect.x,
+                y: this.mdPosGlobal.y - this.parent.rect.y
+            }
+    
+            this.originalPos = this.parent.rect.localPos
+    
+            this.animateTmp = this.parent.animate
+            //this.parent.animate = false
+            
+    
+            this.parent.pointerEvents = 'none'
+    
+            document.addEventListener('mousemove', this.mouseMoveHandler)
+            document.addEventListener('touchmove', this.mouseMoveHandler)
+            
+            document.addEventListener('mouseup', this.mouseUpHandler)
+            document.addEventListener('touchend', this.mouseUpHandler)
+    
+    
+            if (this.onStart) this.onStart(_e)
+        }
     }
 
-    mouseDownHandler(_e){
-        this.mdPos = {
-            x: (_e.clientX || _e.touches[0].clientX) - this.parent.parent.rect.left,
-            y: (_e.clientY || _e.touches[0].clientY) - this.parent.parent.rect.top
-        }
-
-        this.origin = {
-            x: this.parent.rect.left - this.parent.parent.rect.left - this.mdPos.x,
-            y: this.parent.rect.top - this.parent.parent.rect.top - this.mdPos.y,
-        }
-
-        this.animateTmp = this.parent.animate
-        this.parent.animate = false
-        
-
-        this.parent.element.addEventListener('mousemove', this.mouseMoveHandler)
-        this.parent.element.addEventListener('touchmove', this.mouseMoveHandler)
-        
-        this.parent.element.addEventListener('mouseup', this.mouseUpHandler)
-        this.parent.element.addEventListener('touchend', this.mouseUpHandler)
-
-
-        document.addEventListener('mousemove', this.mouseMoveHandler)
-        document.addEventListener('touchmove', this.mouseMoveHandler)
-        
-        document.addEventListener('mouseup', this.mouseUpHandler)
-        document.addEventListener('touchend', this.mouseUpHandler)
-
-
-        if (this.onStart) this.onStart(_e)
-    }
+   
 }
 
 
@@ -1121,25 +1161,48 @@ class sk_ui_resizableizer {
                 y: (_e.clientY || _e.touches[0].clientY) - this.mdPos.y
             }
 
-            if (this.sides.left){
-                this.parent.style.left = this.originalPos.x + diff.x + 'px'
-                diff.x = 0-diff.x
+            var newPos = {
+                x: (this.originalPos.x + diff.x).toFixed(0),
+                y: (this.originalPos.y + diff.y).toFixed(0)
             }
-            
-            if (this.sides.top){
-                this.parent.style.top = this.originalPos.y + diff.y
-                diff.y = 0-diff.y
-            }
-
 
             var newSize = {
-                w: this.originalSize.w + diff.x,
-                h: this.originalSize.h + diff.y
+                w: this.originalSize.w - diff.x,
+                h: this.originalSize.h - diff.y
+            }
+            console.log('1st    newSize.w: ' + newSize.w)
+
+            if (!this.__snapToGrid){
+                if (this.sides.left){
+                    this.parent.style.left = newPos.x + 'px'
+                    diff.x = 0-diff.x
+                }
+                
+                if (this.sides.top){
+                    this.parent.style.top = newPos.y + 'px'
+                    diff.y = 0-diff.y
+                }
+            } else {
+                newSize.w = (this.__snapToGrid === 'relative' ? this.originalSize.w : sk.utils.calcSnap({val: this.originalSize.w, func: 'round'})) - sk.utils.calcSnap({val: newSize.w - this.originalSize.w})
+                
+                if (this.sides.left){
+                    newPos.x = (this.__snapToGrid === 'relative' ? this.originalPos.x : sk.utils.calcSnap({val: this.originalPos.x, func: 'round'})) + sk.utils.calcSnap({val: newPos.x - this.originalPos.x})
+                    var deltaPos = newPos.x - this.originalPos.x
+                    newSize.w = this.originalSize.w - deltaPos
+                    
+                    this.parent.style.left = newPos.x + 'px' 
+                }
             }
 
+            if (this.axis.indexOf('x') > -1){
+                this.parent.style.minWidth = newSize.w + 'px'
+                this.parent.style.maxWidth = newSize.w + 'px'
+            }
 
-            if (this.axis.indexOf('x') > -1) this.parent.style.minWidth = newSize.w + 'px'
-            if (this.axis.indexOf('y') > -1) this.parent.style.maxWidth = newSize.w + 'px'
+            if (this.axis.indexOf('y') > -1){
+                this.parent.style.minHeight = newSize.h + 'px'
+                this.parent.style.maxHeight = newSize.h + 'px'
+            }
             
 
             if (this.onResizing) this.onResizing({size: newSize})
@@ -1147,8 +1210,7 @@ class sk_ui_resizableizer {
     
     
         this.mouseUpHandler = _e => {
-            console.log('document mouse up')
-
+            this.resizing = false
             this.mdPos = undefined
 
             this.parent.animate = this.animateTmp
@@ -1173,11 +1235,15 @@ class sk_ui_resizableizer {
 
         this.sides = {}
 
-        if (pos.x < this.border) this.sides.left = true
-        if (pos.x > this.parent.rect.width - this.border) this.sides.right = true
+        if (this.axis.indexOf('x') > -1){
+            if (pos.x < this.border) this.sides.left = true
+            if (pos.x > this.parent.rect.width - this.border) this.sides.right = true
+        }
 
-        if (pos.y < this.border) this.sides.top = true
-        if (pos.y > this.parent.rect.height - this.border) this.sides.bottom = true
+        if (this.axis.indexOf('y') > -1){
+            if (pos.y < this.border) this.sides.top = true
+            if (pos.y > this.parent.rect.height - this.border) this.sides.bottom = true
+        }
 
         this.cursor = ''
 
@@ -1192,7 +1258,7 @@ class sk_ui_resizableizer {
         } else if (this.sides.top || this.sides.bottom){
             this.cursor = 'ns-resize'
         }
-
+        
         document.body.style.cursor = this.cursor
 
         return this.cursor !== ''
@@ -1206,16 +1272,15 @@ class sk_ui_resizableizer {
 
 
     mouseDownHandler(_e){
+        this.resizing = true
+
         this.mdPos = {
             x: (_e.clientX || _e.touches[0].clientX),
             y: (_e.clientY || _e.touches[0].clientY)
         }
 
 
-        this.originalPos = {
-            x: this.parent.rect.left - this.parent.parent.rect.left,
-            y: this.parent.rect.top - this.parent.parent.rect.top
-        }
+        this.originalPos = this.parent.rect.localPos
 
 
         this.originalSize = {
@@ -1227,12 +1292,29 @@ class sk_ui_resizableizer {
         this.parent.animate = false
         
         
-
+        
         document.addEventListener('mousemove', this.mouseMoveHandler)
         document.addEventListener('touchmove', this.mouseMoveHandler)
         
         document.addEventListener('mouseup', this.mouseUpHandler)
         document.addEventListener('touchend', this.mouseUpHandler)
+    
+        if (this.onStart) this.onStart()
+    }
+
+    trackMouseLeave(enabled){
+        if (!enabled){
+            this.parent.element.removeEventListener('mouseleave', this.mouseLeaveHandler)
+            return
+        }
+
+        this.mouseLeaveHandler = _e => {
+            if (this.mdPos) return
+            document.body.style.cursor = ''
+            this.cursor = ''
+        }
+
+        this.parent.element.addEventListener('mouseleave', this.mouseLeaveHandler)
     }
 }
 
