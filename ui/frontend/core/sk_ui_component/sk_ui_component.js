@@ -903,6 +903,121 @@ class sk_ui_contextMenuMngr {
 
 //Movableizer
 
+
+class tmp_sk_ui_movableizer_resizableizer {
+    constructor(opt){
+        this.opt = opt
+        this.parent = opt.parent
+
+        this.interactjs = interact(this.parent.element)
+
+        
+    }
+
+    set moveAxis(val){
+        const pos = { x: 0, y: 0 }
+
+
+
+
+
+        function dragMoveListener (event) {
+            var target = event.target,
+                // keep the dragged position in the data-x/data-y attributes
+                x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+                y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+        
+            // translate the element
+            target.style.webkitTransform =
+            target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+        
+            // update the posiion attributes
+            target.setAttribute('data-x', x);
+            target.setAttribute('data-y', y);
+        }
+
+
+        var gridTarget = interact.snappers.grid({
+            // can be a pair of x and y, left and top,
+            // right and bottom, or width, and height
+            x: 60,
+            y: 60,
+          
+            // optional
+            range: 15,
+        })
+        
+        this.interactjs.resizable({
+            origin: 'parent',
+            edges: {left: true, right: true},
+
+            modifiers: [
+                /*interact.modifiers.restrict({
+                    restriction: this.parent.parent.element           // keep the drag coords within the element
+                }),*/
+
+                interact.modifiers.snap({
+                    targets: [ gridTarget ],
+                    /*relativePoints: [
+                        { x: 0, y: 0 }
+                    ]*/
+                })
+            ],
+
+            listeners: {
+                move: event => {
+                    let { x, y } = event.target.dataset
+            
+                    x = (parseFloat(x) || 0) + event.deltaRect.left
+                    y = (parseFloat(y) || 0) + event.deltaRect.top
+
+                    console.log(event.rect.width)
+            
+                    Object.assign(event.target.style, {
+                            minWidth: `${event.rect.width}px`,
+                            maxWidth: `${event.rect.width}px`,
+                            transform: `translate(${x}px, ${y}px)`
+                    })
+            
+                    Object.assign(event.target.dataset, { x, y })
+                }
+              }
+        }).draggable({                        // make the element fire drag events
+            origin: 'parent',                   // (0, 0) will be the element's top-left
+
+            lockAxis: 'x',
+
+            inertia: true,                    // start inertial movement if thrown
+            modifiers: [
+                interact.modifiers.restrict({
+                    restriction: this.parent.parent.element           // keep the drag coords within the element
+                }),
+
+                interact.modifiers.snap({
+                    targets: [ gridTarget ],
+                    relativePoints: [
+                        { x: 0, y: 0 }
+                    ]
+                })
+            ],
+
+            listeners: { move: dragMoveListener },
+
+            // Step 3
+            /*listeners: {
+                move: event => {                  // call this listener on every dragmove
+                    pos.x += event.dx
+                    pos.y += event.dy
+
+                    //this.parent.style.left = pos.x + 'px'
+                    //this.parent.style.top = pos.y + 'px'
+                    this.parent.style.transform = `translate(${pos.x}px, ${pos.y}px)`
+                }
+            }*/
+        })
+    }
+}
+
 class sk_ui_movableizer_resizableizer {
     constructor(opt){
         this.opt = opt
@@ -1087,23 +1202,15 @@ class sk_ui_movableizer {
             var newPos = {
                 x: this.originalPos.x + mousePosInSelf.x,
                 y: this.originalPos.y + mousePosInSelf.y 
-            }
-            
-            var diff = {
-                x: mousePosInSelf.x
-            }
+            }            
 
             var halfGrid = (this.__snapToGrid / 2)
-            var wrapX = sk.utils.wrapNum(this.__snapToGrid, diff.x)
+            var wrapX = sk.utils.wrapNum(this.__snapToGrid, newPos.x)
             if (wrapX > halfGrid) wrapX = 0 - (halfGrid - (wrapX - halfGrid))
             var smoothMove = (wrapX < 0-this.__gridSnapWidth || wrapX > this.__gridSnapWidth)
 
 
-            if (this.__snapToGrid && !smoothMove){
-                //this.parent.animate = true
-                newPos.x = (this.__snapToGrid === 'relative' ? this.originalPos.x : sk.utils.calcSnap({val: this.originalPos.x, func: 'ceil', gridSize: this.__snapToGrid})) + sk.utils.calcSnap({val: newPos.x - this.originalPos.x, gridSize: this.__snapToGrid})
-            }
-            
+            if (this.__snapToGrid && !smoothMove) newPos.x = sk.utils.calcSnap({val: newPos.x, gridSize: this.__snapToGrid})
             
     
             if (this.axis.indexOf('x') > -1){
@@ -1165,7 +1272,7 @@ class sk_ui_resizableizer {
         
         this.__gridSnapWidth = 10
 
-        this.border = 6
+        this.__border = 6
         this.sides = {}
 
 
@@ -1179,6 +1286,7 @@ class sk_ui_resizableizer {
                 y: (_e.clientY || _e.touches[0].clientY) - this.mdPos.y
             }
 
+
             var newPos = {
                 x: (this.originalPos.x + diff.x).toFixed(0),
                 y: (this.originalPos.y + diff.y).toFixed(0)
@@ -1189,14 +1297,22 @@ class sk_ui_resizableizer {
                 h: this.originalSize.h - diff.y
             }
 
-            
+
+
             var halfGrid = (this.__snapToGrid / 2)
-            var wrapW = sk.utils.wrapNum(this.__snapToGrid, diff.x)
+
+            if (this.sides.left) var wrapVal = newPos.x
+            if (this.sides.right) var wrapVal = this.originalPos.x + this.originalSize.w + diff.x
+            var wrapW = sk.utils.wrapNum(this.__snapToGrid, wrapVal) //change newPos.x to diff.x to use relative snapping
             if (wrapW > halfGrid) wrapW = 0 - (halfGrid - (wrapW - halfGrid))
-            var smoothResize = (wrapW < 0-this.__gridSnapWidth || wrapW > this.__gridSnapWidth)
+            var doSnap = false
+            if (wrapW > 0-this.__gridSnapWidth && wrapW < 0) doSnap = 'left'
+            if (wrapW >= 0 && wrapW < this.__gridSnapWidth) doSnap = 'right'
+     
+
+
             
-            
-            if (smoothResize){
+            if (!doSnap){
                 if (!this.__snapping){
                     if (this.onResizingSnappingBegin){
                         this.__snapping = true
@@ -1212,17 +1328,35 @@ class sk_ui_resizableizer {
                 }
             }
 
-            if (!this.__snapToGrid || smoothResize){
+            if (!this.__snapToGrid || !doSnap){
                 if (this.sides.right) newSize.w = this.originalSize.w + diff.x
             } else {
-                newSize.w = (this.__snapToGrid === 'relative' ? this.originalSize.w : sk.utils.calcSnap({val: this.originalSize.w, func: 'round', gridSize: this.__snapToGrid})) - sk.utils.calcSnap({val: newSize.w - this.originalSize.w, gridSize: this.__snapToGrid})
-                
+
+                var originalPosX_snapped = sk.utils.calcSnap({val: this.originalPos.x, gridSize: this.__snapToGrid})
+                var diffPosX = originalPosX_snapped - this.originalPos.x
+
                 if (this.sides.left){
-                    newPos.x = (this.__snapToGrid === 'relative' ? this.originalPos.x : sk.utils.calcSnap({val: this.originalPos.x, func: 'round', gridSize: this.__snapToGrid})) + sk.utils.calcSnap({val: newPos.x - this.originalPos.x, gridSize: this.__snapToGrid})
+                    var posSnapX = sk.utils.calcSnap({
+                        val: newPos.x - originalPosX_snapped,
+                        gridSize: this.__snapToGrid
+                    })
+                    newPos.x = this.originalPos.x + posSnapX + diffPosX
+
                     var deltaPos = newPos.x - this.originalPos.x
                     newSize.w = this.originalSize.w - deltaPos
                     
                     this.parent.style.left = newPos.x + 'px' 
+                } else {
+                    //newSize.w = sk.utils.calcSnap({val: newSize.w - this.originalSize.w, gridSize: this.__snapToGrid})
+                    var deltaPos = newPos.x - this.originalPos.x
+                    newSize.w = sk.utils.calcSnap({
+                        //val: this.originalSize.w + diff.x - originalPosX_snapped, //working somewhat. bugs our when left side is close to left snap zone
+                        val: this.originalPos.x + this.originalSize.w + diff.x,
+                        gridSize: this.__snapToGrid
+                    }) - this.originalPos.x
+                
+                    console.log('B    newSize.w: ' + newSize.w)
+                
                 }
             }
 
@@ -1272,13 +1406,13 @@ class sk_ui_resizableizer {
         this.sides = {}
 
         if (this.axis.indexOf('x') > -1){
-            if (pos.x < this.border) this.sides.left = true
-            if (pos.x > this.parent.rect.width - this.border) this.sides.right = true
+            if (pos.x < this.__border) this.sides.left = true
+            if (pos.x > this.parent.rect.width - this.__border) this.sides.right = true
         }
 
         if (this.axis.indexOf('y') > -1){
-            if (pos.y < this.border) this.sides.top = true
-            if (pos.y > this.parent.rect.height - this.border) this.sides.bottom = true
+            if (pos.y < this.__border) this.sides.top = true
+            if (pos.y > this.parent.rect.height - this.__border) this.sides.bottom = true
         }
 
         this.cursor = ''
