@@ -902,122 +902,6 @@ class sk_ui_contextMenuMngr {
 
 
 //Movableizer
-
-
-class tmp_sk_ui_movableizer_resizableizer {
-    constructor(opt){
-        this.opt = opt
-        this.parent = opt.parent
-
-        this.interactjs = interact(this.parent.element)
-
-        
-    }
-
-    set moveAxis(val){
-        const pos = { x: 0, y: 0 }
-
-
-
-
-
-        function dragMoveListener (event) {
-            var target = event.target,
-                // keep the dragged position in the data-x/data-y attributes
-                x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
-                y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-        
-            // translate the element
-            target.style.webkitTransform =
-            target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
-        
-            // update the posiion attributes
-            target.setAttribute('data-x', x);
-            target.setAttribute('data-y', y);
-        }
-
-
-        var gridTarget = interact.snappers.grid({
-            // can be a pair of x and y, left and top,
-            // right and bottom, or width, and height
-            x: 60,
-            y: 60,
-          
-            // optional
-            range: 15,
-        })
-        
-        this.interactjs.resizable({
-            origin: 'parent',
-            edges: {left: true, right: true},
-
-            modifiers: [
-                /*interact.modifiers.restrict({
-                    restriction: this.parent.parent.element           // keep the drag coords within the element
-                }),*/
-
-                interact.modifiers.snap({
-                    targets: [ gridTarget ],
-                    /*relativePoints: [
-                        { x: 0, y: 0 }
-                    ]*/
-                })
-            ],
-
-            listeners: {
-                move: event => {
-                    let { x, y } = event.target.dataset
-            
-                    x = (parseFloat(x) || 0) + event.deltaRect.left
-                    y = (parseFloat(y) || 0) + event.deltaRect.top
-
-                    console.log(event.rect.width)
-            
-                    Object.assign(event.target.style, {
-                            minWidth: `${event.rect.width}px`,
-                            maxWidth: `${event.rect.width}px`,
-                            transform: `translate(${x}px, ${y}px)`
-                    })
-            
-                    Object.assign(event.target.dataset, { x, y })
-                }
-              }
-        }).draggable({                        // make the element fire drag events
-            origin: 'parent',                   // (0, 0) will be the element's top-left
-
-            lockAxis: 'x',
-
-            inertia: true,                    // start inertial movement if thrown
-            modifiers: [
-                interact.modifiers.restrict({
-                    restriction: this.parent.parent.element           // keep the drag coords within the element
-                }),
-
-                interact.modifiers.snap({
-                    targets: [ gridTarget ],
-                    relativePoints: [
-                        { x: 0, y: 0 }
-                    ]
-                })
-            ],
-
-            listeners: { move: dragMoveListener },
-
-            // Step 3
-            /*listeners: {
-                move: event => {                  // call this listener on every dragmove
-                    pos.x += event.dx
-                    pos.y += event.dy
-
-                    //this.parent.style.left = pos.x + 'px'
-                    //this.parent.style.top = pos.y + 'px'
-                    this.parent.style.transform = `translate(${pos.x}px, ${pos.y}px)`
-                }
-            }*/
-        })
-    }
-}
-
 class sk_ui_movableizer_resizableizer {
     constructor(opt){
         this.opt = opt
@@ -1354,9 +1238,6 @@ class sk_ui_resizableizer {
                         val: this.originalPos.x + this.originalSize.w + diff.x,
                         gridSize: this.__snapToGrid
                     }) - this.originalPos.x
-                
-                    console.log('B    newSize.w: ' + newSize.w)
-                
                 }
             }
 
