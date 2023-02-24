@@ -159,34 +159,6 @@ i.icon, i.icons, i.flag {
     height: 100%;
 }
 
-.sk_fileDrop_active {
-    border: dashed 1px rgba(255,255,255,1)
-}
-
-
-.sk_ui_fileDrop_Area {
-    position: absolute;
-    left: 4px;
-    top: 4px;
-    right: 4px;
-    bottom: 4px;
-    margin: 0px !important;
-    /*backdrop-filter: blur(10px);
-    background-color: rgba(255,255,255,0.2);
-    */
-}
-
-.sk_ui_fileDrop_Area_outline {
-    width: 100%;
-    height: 100%;
-    border: dashed 2px rgba(255,255,255,0.2);
-    transition: none;
-}
-
-/*.sk_ui_fileDrop_Area_outline:hover {
-    background-color: rgba(255,255,255,0.8);
-}*/
-
 
 .sk_ui_fade_indicate {
     animation: sk_ui_fade_indicate_animation 1s infinite;

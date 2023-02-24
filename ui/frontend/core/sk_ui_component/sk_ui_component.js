@@ -604,8 +604,8 @@ class sk_ui_component {
 
     }
 
-    setOnFileDrop(cb){
-        this.onFileDrop = cb
+    setOnFileDrop(opt){
+        this.onFileDrop = opt
         sk.fileDrop.subscribe(this)
     }
 
@@ -972,6 +972,7 @@ class sk_ui_movableizer_resizableizer {
         this.parent.element.removeEventListener('touchend', this.mouseUpHandler)
         
         document.removeEventListener('mouseup', this.mouseUpHandler)
+        document.removeEventListener('touchend', this.mouseUpHandler)
 
         
         this.parent.element.removeEventListener('mousemove', this.mouseMoveHandler)
@@ -983,56 +984,62 @@ class sk_ui_movableizer_resizableizer {
 
     /************/
 
-
-   
-
     mouseMoveHandler(_e){
-        if (this.resizer.resizing) return
-
-        _e.preventDefault()
-        _e.stopPropagation()
+        if (this.resizer.resizing || this.mover.moving) return
 
         if (!this.mover.moving && this.resizer.axis){
             if (this.resizer.testPoint(_e)){
                 this.resizer.trackMouseLeave(true)
                 this.canMove = false
-                return this.canResize = true
+                this.canResize = true
+                return true
             }
         }
-
         
         this.resizer.trackMouseLeave(false)
 
     
         
         this.canResize = false
-
         this.canMove = true
+
+        _e.preventDefault()
+        _e.stopPropagation()
     }
 
 
-    mouseUpHandler(_e){        
-        //this.resizing = false
-        //this.moving = false
+    mouseUpHandler(_e){
         document.removeEventListener('mouseup', this.mouseUpHandler)
+        document.removeEventListener('touchend',  this.mouseUpHandler )
     }
 
     handleMouseDown(_e){
-        if (!this.canResize && !this.canMove) return
+        /*if (!this.canResize && !this.canMove){
+            console.log('a 0')
+            return
+        }*/
         if (this.mover.moving || this.resizer.resizing) return
-        
-        document.addEventListener('mouseup',  this.mouseUpHandler )
-        
+
         _e.preventDefault()
         _e.stopPropagation()
 
-        if (this.canResize){
-            //this.resizing = true
+        
+        document.addEventListener('mouseup',  this.mouseUpHandler )
+        document.addEventListener('touchend',  this.mouseUpHandler )
+        
+
+        if (this.resizer.testPoint(_e)){
+            this.canMove = false
+            this.canResize = true
             this.resizer.mouseDownHandler(_e)
         } else {
-            //this.moving = true
+            this.canResize = false
+            this.canMove = true
             this.mover.mouseDownHandler(_e)
         }
+
+        
+        
     }
 }
 
@@ -1073,10 +1080,12 @@ class sk_ui_movableizer {
     
 
         this.mouseMoveHandler = _e => {
+            if (!this.mdPos) return
+
             _e.preventDefault()
             _e.stopPropagation()
-            
 
+            this.moving = true
 
             var mousePosInSelf = {
                 x: (_e.clientX || _e.touches[0].clientX) - this.mdPosGlobal.x,
@@ -1135,7 +1144,7 @@ class sk_ui_movableizer {
             this.parent.pointerEvents = 'none'
     
             document.addEventListener('mousemove', this.mouseMoveHandler)
-            document.addEventListener('touchmove', this.mouseMoveHandler)
+            document.addEventListener('touchmove', _e => this.mouseMoveHandler(_e) ) //works but may/will cause issues, since this event handler never gets removed
             
             document.addEventListener('mouseup', this.mouseUpHandler)
             document.addEventListener('touchend', this.mouseUpHandler)
@@ -1143,6 +1152,9 @@ class sk_ui_movableizer {
     
             if (this.onStart) this.onStart(_e)
         }
+
+        
+        
     }
 
    
@@ -1169,7 +1181,6 @@ class sk_ui_resizableizer {
                 x: (_e.clientX || _e.touches[0].clientX) - this.mdPos.x,
                 y: (_e.clientY || _e.touches[0].clientY) - this.mdPos.y
             }
-
 
             var newPos = {
                 x: (this.originalPos.x + diff.x).toFixed(0),
@@ -1261,6 +1272,9 @@ class sk_ui_resizableizer {
     
     
         this.mouseUpHandler = _e => {
+            _e.preventDefault()
+            _e.stopPropagation()
+
             this.resizing = false
             this.mdPos = undefined
 
@@ -1354,6 +1368,8 @@ class sk_ui_resizableizer {
     }
 
     trackMouseLeave(enabled){
+        if (sk.isOnMobile) return
+
         if (!enabled){
             this.parent.element.removeEventListener('mouseleave', this.mouseLeaveHandler)
             return
