@@ -901,7 +901,7 @@ class sk_ui_contextMenuMngr {
 
 
 
-//Movableizer
+//movres_izer
 class sk_ui_movableizer_resizableizer {
     constructor(opt){
         this.opt = opt

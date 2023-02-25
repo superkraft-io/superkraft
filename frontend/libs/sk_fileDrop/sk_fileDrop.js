@@ -43,7 +43,6 @@ class sk_fileDrop {
             var dt = _e.dataTransfer
             this.files = dt.files
             _e.files = this.files
-            console.log(this.files)
             endDragDropEvent(_e, 'drop')
         }, false)
     }
@@ -65,7 +64,7 @@ class sk_fileDrop {
             if (!component.onFileDrop) return
 
             if (action === 'start') this.addFileDropArea(component)
-            if (action === 'end' || action === 'drop') this.removeFileDropArea(component)
+            if (action === 'end' || action === 'drop') this.removeFileDropArea(component, _e)
             if (action === 'drop') {   
                 var path = _e.target.sk_ui_obj.getPath({elements: true})
                 var target = this.findFirstSubscriberOccurance(path, component.uuid)             
@@ -139,9 +138,15 @@ class sk_fileDrop {
         })
     }
 
-    removeFileDropArea(component){
+    removeFileDropArea(component, _e){
         component.element.removeEventListener('dragover', this.overFunc)
         component.fileDropArea.remove()
+
+        if (_e.type === 'drop'){
+            var path = _e.target.sk_ui_obj.getPath({elements: true})
+            var target = this.findFirstSubscriberOccurance(path, component.uuid)
+            if (target && target.onMouseUp) target.onMouseUp(_e)
+        }
     }
 
     startOutlineAnimation(){
