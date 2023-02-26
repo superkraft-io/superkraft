@@ -34,6 +34,18 @@
 
         actions: {},
 
+        interactions: {
+            block: ()=>{ sk.ums.broadcast('sk_ui_block_userInteractons', undefined, {block: true}) },
+            unblock: ()=>{ sk.ums.broadcast('sk_ui_block_userInteractons', undefined, {block: false}) },
+            getPos: _e => { return {x: (_e.clientX || _e.touches[0].clientX), y: (_e.clientY || _e.touches[0].clientY)} },
+            getPosDiff: (_e, substractWith)=>{
+                var diff = sk.interactions.getPos(_e)
+                diff.x -= substractWith.x
+                diff.y -= substractWith.y
+                return diff
+            }
+        },
+
         comm: new SK_Comm(),
         dialog: new SK_Dialog(),
 

@@ -187,7 +187,7 @@ class sk_ui_iceRink extends sk_ui_component {
                 if (delta < 3) return 
 
 
-                if (delta > 10) sk.ums.broadcast('sk_ui_block_userInteractons', undefined, {block: true})
+                if (delta > 10) sk.interactions.block()
 
                 if (dy >= 0) direction = 'down'
                 else direction = 'up'
@@ -212,7 +212,7 @@ class sk_ui_iceRink extends sk_ui_component {
             const mouseUpHandler = _e => {
                 pos = undefined
 
-                sk.ums.broadcast('sk_ui_block_userInteractons', undefined, {block: false})
+                sk.interactions.unblock()
 
                 //this.content.style.pointerEvents = ''
 

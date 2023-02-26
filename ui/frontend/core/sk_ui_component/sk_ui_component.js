@@ -988,10 +988,17 @@ class sk_ui_movableizer_resizableizer {
         if (this.resizer.resizing || this.mover.moving) return
 
         if (!this.mover.moving && this.resizer.axis){
-            if (this.resizer.testPoint(_e)){
+            var test = this.resizer.testPoint(_e)
+            if (this.onCanResize) this.onCanResize()
+            if (test){
                 this.resizer.trackMouseLeave(true)
                 this.canMove = false
                 this.canResize = true
+
+                
+                _e.preventDefault()
+                _e.stopPropagation()
+                
                 return true
             }
         }
@@ -1003,14 +1010,16 @@ class sk_ui_movableizer_resizableizer {
         this.canResize = false
         this.canMove = true
 
-        _e.preventDefault()
-        _e.stopPropagation()
+        //_e.preventDefault()
+        //_e.stopPropagation()
+        
     }
 
 
     mouseUpHandler(_e){
         document.removeEventListener('mouseup', this.mouseUpHandler)
-        document.removeEventListener('touchend',  this.mouseUpHandler )
+        document.removeEventListener('touchend',  this.mouseUpHandler)
+        sk.interactions.unblock()
     }
 
     handleMouseDown(_e){
@@ -1020,6 +1029,7 @@ class sk_ui_movableizer_resizableizer {
         }*/
         if (this.mover.moving || this.resizer.resizing) return
 
+        
         _e.preventDefault()
         _e.stopPropagation()
 
@@ -1032,10 +1042,13 @@ class sk_ui_movableizer_resizableizer {
             this.canMove = false
             this.canResize = true
             this.resizer.mouseDownHandler(_e)
+            sk.interactions.block()
         } else {
-            this.canResize = false
-            this.canMove = true
-            this.mover.mouseDownHandler(_e)
+            if (this.mover.axis){
+                this.canResize = false
+                this.canMove = true
+                this.mover.mouseDownHandler(_e)
+            }
         }
 
         
@@ -1171,7 +1184,12 @@ class sk_ui_resizableizer {
         this.__border = 6
         this.sides = {}
 
-
+        this.allowedSides = {
+            left: true,
+            top: true,
+            right: true,
+            bottom: true
+        }
 
         this.mouseMoveHandler = _e => {
             _e.preventDefault()
@@ -1189,7 +1207,7 @@ class sk_ui_resizableizer {
 
             var newSize = {
                 w: this.originalSize.w - diff.x,
-                h: this.originalSize.h - diff.y
+                h: this.originalSize.h + diff.y
             }
 
 
@@ -1225,6 +1243,7 @@ class sk_ui_resizableizer {
 
             if (!this.__snapToGrid || !doSnap){
                 if (this.sides.right) newSize.w = this.originalSize.w + diff.x
+                if (this.sides.top) newSize.h = this.originalSize.h + diff.y
             } else {
 
                 var originalPosX_snapped = sk.utils.calcSnap({val: this.originalPos.x, gridSize: this.__snapToGrid})
@@ -1252,7 +1271,14 @@ class sk_ui_resizableizer {
                 }
             }
 
-            
+            if (this.constraints){
+                if (this.constraints.height){
+                    if (newSize.h < this.constraints.height){
+                        newSize.h = this.constraints.height
+                        console.log(newSize.y)
+                    }
+                }
+            }
 
             if (this.axis.indexOf('x') > -1){
                 if (this.sides.left) this.parent.style.left = newPos.x + 'px'
@@ -1293,6 +1319,8 @@ class sk_ui_resizableizer {
     }
 
     testPoint(_e){
+        if (!this.axis) return
+
         var pos = {
             x: (_e.clientX || _e.touches[0].clientX) - this.parent.rect.left,
             y: (_e.clientY || _e.touches[0].clientY) - this.parent.rect.top
@@ -1301,13 +1329,13 @@ class sk_ui_resizableizer {
         this.sides = {}
 
         if (this.axis.indexOf('x') > -1){
-            if (pos.x < this.__border) this.sides.left = true
-            if (pos.x > this.parent.rect.width - this.__border) this.sides.right = true
+            if (pos.x < this.__border && this.allowedSides.left) this.sides.left = true
+            if (pos.x > this.parent.rect.width - this.__border && this.allowedSides.right) this.sides.right = true
         }
 
         if (this.axis.indexOf('y') > -1){
-            if (pos.y < this.__border) this.sides.top = true
-            if (pos.y > this.parent.rect.height - this.__border) this.sides.bottom = true
+            if (pos.y < this.__border && this.allowedSides.top) this.sides.top = true
+            if (pos.y > this.parent.rect.height - this.__border && this.allowedSides.bottom) this.sides.bottom = true
         }
 
         this.cursor = ''
