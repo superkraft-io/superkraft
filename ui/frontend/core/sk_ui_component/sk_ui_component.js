@@ -966,6 +966,9 @@ class sk_ui_movableizer_resizableizer {
         this.handleMouseDown = _e => {
             if (this.mover.moving || this.resizer.resizing) return
     
+            _e.sk_origin = 'movres_izer'
+            
+            if (this.parent && this.parent.onMouseDown) this.parent.onMouseDown(_e)
             
             _e.preventDefault()
             _e.stopPropagation()
