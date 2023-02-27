@@ -1304,7 +1304,11 @@ class sk_ui_resizableizer {
             }
             
 
-            if (this.onResizing) this.onResizing({size: newSize})
+            var diffSize = {
+                x: newSize.w - this.originalSize.w,
+                y: newSize.h - this.originalSize.h,
+            }
+            if (this.onResizing) this.onResizing({event: _e, size: newSize, diffSize: diffSize})
         }
     
     
