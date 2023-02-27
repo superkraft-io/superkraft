@@ -918,6 +918,76 @@ class sk_ui_movableizer_resizableizer {
         this.resizer.onResizing = res => { if (this.onResizing) this.onResizing(res) }
         this.resizer.onResizingSnappingBegin = ()=>{ if (this.onResizingSnappingBegin) this.onResizingSnappingBegin() }
         this.resizer.onResizingSnappingEnd = ()=>{ if (this.onResizingSnappingEnd) this.onResizingSnappingEnd() }
+
+
+
+        this.mouseMoveHandler = _e => {
+            if (this.resizer.resizing || this.mover.moving) return
+    
+            if (!this.mover.moving && this.resizer.axis){
+                var test = this.resizer.testPoint(_e)
+                if (this.onCanResize) this.onCanResize()
+                if (test){
+                    this.resizer.trackMouseLeave(true)
+                    this.canMove = false
+                    this.canResize = true
+    
+                    
+                    _e.preventDefault()
+                    _e.stopPropagation()
+                    
+                    return true
+                }
+            }
+            
+            this.resizer.trackMouseLeave(false)
+    
+        
+            
+            this.canResize = false
+            this.canMove = true
+    
+            //_e.preventDefault()
+            //_e.stopPropagation()
+            
+        }
+    
+    
+        this.mouseUpHandler = _e => {
+            _e.sk_origin = 'movres_izer'
+            
+            if (this.parent && this.parent.onMouseUp) this.parent.onMouseUp(_e)
+            
+            document.removeEventListener('mouseup', this.mouseUpHandler)
+            document.removeEventListener('touchend',  this.mouseUpHandler)
+            sk.interactions.unblock()
+        }
+    
+        this.handleMouseDown = _e => {
+            if (this.mover.moving || this.resizer.resizing) return
+    
+            
+            _e.preventDefault()
+            _e.stopPropagation()
+    
+            
+            document.addEventListener('mouseup',  this.mouseUpHandler )
+            document.addEventListener('touchend',  this.mouseUpHandler )
+            
+    
+            if (this.resizer.testPoint(_e)){
+                this.canMove = false
+                this.canResize = true
+                this.resizer.mouseDownHandler(_e)
+                sk.interactions.block()
+            } else {
+                if (this.mover.axis){
+                    this.canResize = false
+                    this.canMove = true
+                    this.mover.mouseDownHandler(_e)
+                }
+            }
+        }
     }
 
     set moveAxis(val){
@@ -953,16 +1023,18 @@ class sk_ui_movableizer_resizableizer {
     }
 
     on(){
+        if (this.active) return
+
         this.active = true
 
-        this.parent.element.addEventListener('mousemove', _e => this.mouseMoveHandler(_e) )
-        this.parent.element.addEventListener('touchmove', _e => this.mouseMoveHandler(_e) )
+        this.parent.element.addEventListener('mousemove', this.mouseMoveHandler )
+        this.parent.element.addEventListener('touchmove', this.mouseMoveHandler )
 
-        this.parent.element.addEventListener('mousedown', _e => this.handleMouseDown(_e) )
-        this.parent.element.addEventListener('touchstart', _e => this.handleMouseDown(_e) )
+        this.parent.element.addEventListener('mousedown', this.handleMouseDown )
+        this.parent.element.addEventListener('touchstart', this.handleMouseDown )
         
-        this.parent.element.addEventListener('mouseup',  _e => this.mouseUpHandler(_e) )
-        this.parent.element.addEventListener('touchend',  _e => this.mouseUpHandler(_e) )
+        this.parent.element.addEventListener('mouseup',  this.mouseUpHandler )
+        this.parent.element.addEventListener('touchend',  this.mouseUpHandler )
     }
 
     off(){
@@ -980,79 +1052,6 @@ class sk_ui_movableizer_resizableizer {
         
         document.removeEventListener('mousemove', this.mouseMoveHandler)
         document.removeEventListener('touchmove', this.mouseMoveHandler)
-    }
-
-    /************/
-
-    mouseMoveHandler(_e){
-        if (this.resizer.resizing || this.mover.moving) return
-
-        if (!this.mover.moving && this.resizer.axis){
-            var test = this.resizer.testPoint(_e)
-            if (this.onCanResize) this.onCanResize()
-            if (test){
-                this.resizer.trackMouseLeave(true)
-                this.canMove = false
-                this.canResize = true
-
-                
-                _e.preventDefault()
-                _e.stopPropagation()
-                
-                return true
-            }
-        }
-        
-        this.resizer.trackMouseLeave(false)
-
-    
-        
-        this.canResize = false
-        this.canMove = true
-
-        //_e.preventDefault()
-        //_e.stopPropagation()
-        
-    }
-
-
-    mouseUpHandler(_e){
-        document.removeEventListener('mouseup', this.mouseUpHandler)
-        document.removeEventListener('touchend',  this.mouseUpHandler)
-        sk.interactions.unblock()
-    }
-
-    handleMouseDown(_e){
-        /*if (!this.canResize && !this.canMove){
-            console.log('a 0')
-            return
-        }*/
-        if (this.mover.moving || this.resizer.resizing) return
-
-        
-        _e.preventDefault()
-        _e.stopPropagation()
-
-        
-        document.addEventListener('mouseup',  this.mouseUpHandler )
-        document.addEventListener('touchend',  this.mouseUpHandler )
-        
-
-        if (this.resizer.testPoint(_e)){
-            this.canMove = false
-            this.canResize = true
-            this.resizer.mouseDownHandler(_e)
-            sk.interactions.block()
-        } else {
-            if (this.mover.axis){
-                this.canResize = false
-                this.canMove = true
-                this.mover.mouseDownHandler(_e)
-            }
-        }
-
-        
-        
     }
 }
 
@@ -1095,6 +1094,12 @@ class sk_ui_movableizer {
         this.mouseMoveHandler = _e => {
             if (!this.mdPos) return
 
+            
+            if (!this.onStartNotified && this.onStart){
+                this.onStartNotified = true
+                this.onStart(_e)
+            }
+
             _e.preventDefault()
             _e.stopPropagation()
 
@@ -1132,12 +1137,18 @@ class sk_ui_movableizer {
             }
  
 
-            if (this.onMoving) this.onMoving({event: _e, position: newPos})
+            var diff = {
+                x: newPos.x - this.originalPos.x,
+                y: newPos.y - this.originalPos.y
+            }
+
+            if (this.onMoving) this.onMoving({event: _e, position: newPos, diffPos: diff})
         }
         
 
 
         this.mouseDownHandler = (_e)=>{
+            this.onStartNotified = false
             this.mdPosGlobal = {
                 x: (_e.clientX || _e.touches[0].clientX),
                 y: (_e.clientY || _e.touches[0].clientY)
@@ -1161,9 +1172,6 @@ class sk_ui_movableizer {
             
             document.addEventListener('mouseup', this.mouseUpHandler)
             document.addEventListener('touchend', this.mouseUpHandler)
-    
-    
-            if (this.onStart) this.onStart(_e)
         }
 
         

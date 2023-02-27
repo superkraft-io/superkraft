@@ -139,6 +139,8 @@ class sk_fileDrop {
     }
 
     removeFileDropArea(component, _e){
+        _e.sk_origin = 'sk_fileDrop'
+
         component.element.removeEventListener('dragover', this.overFunc)
         component.fileDropArea.remove()
 
