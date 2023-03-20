@@ -1145,7 +1145,14 @@ class sk_ui_movableizer {
                 y: newPos.y - this.originalPos.y
             }
 
-            if (this.onMoving) this.onMoving({event: _e, position: newPos, diffPos: diff})
+            if (this.onMoving) this.onMoving({
+                event: _e,
+                position: newPos,
+                diffPos: diff,
+                cancel: ()=>{
+                    this.mouseUpHandler(_e)
+                }
+            })
         }
         
 
@@ -1308,7 +1315,7 @@ class sk_ui_resizableizer {
                 x: newSize.w - this.originalSize.w,
                 y: newSize.h - this.originalSize.h,
             }
-            if (this.onResizing) this.onResizing({event: _e, size: newSize, diffSize: diffSize})
+            if (this.onResizing) this.onResizing({event: _e, size: newSize, diffSize: diffSize, sides: this.sides})
         }
     
     
