@@ -177,6 +177,9 @@ class sk_ui_iceRink extends sk_ui_component {
 
 
             const mouseMoveHandler = _e => {
+                _e.preventDefault()
+                _e.stopPropagation()
+
                 var x = (_e.clientX || _e.touches[0].clientX)
                 var y = (_e.clientY || _e.touches[0].clientY)
                 const dx = x - pos.x
@@ -210,6 +213,9 @@ class sk_ui_iceRink extends sk_ui_component {
             }
 
             const mouseUpHandler = _e => {
+                _e.preventDefault()
+                _e.stopPropagation()
+                
                 pos = undefined
 
                 sk.interactions.unblock()
@@ -250,6 +256,9 @@ class sk_ui_iceRink extends sk_ui_component {
 
 
             this.mouseDownHandler = _e => {
+                _e.preventDefault()
+                _e.stopPropagation()
+
                 this.scroller.dictator = 'mouse_or_finger'
 
                 pos = {
@@ -318,13 +327,13 @@ class sk_ui_iceRink extends sk_ui_component {
                 if (this.hideHandle) return
 
                 this.scrollbarWrapper.style.width = (sk.isOnMobile ? '4px' : 'var(--sk_ui_scrollbar_width)')
-                this.scrollbarWrapper.opacity = 1
+                this.scrollbarWrapper.style.opacity = 1
                 this.canScroll = true
             }
 
             _c.onHide = (canScroll = false)=>{
                 this.scrollbarWrapper.style.width = '0px'
-                this.scrollbarWrapper.opacity = 0.01
+                this.scrollbarWrapper.style.opacity = 0
                 this.canScroll = canScroll
             }
 
@@ -378,6 +387,9 @@ class sk_ui_iceRink extends sk_ui_component {
             },
 
             onChanged: res => {
+                if (this.lastScrollValue === res) return
+                this.lastScrollValue = res
+
                 this.setContentPos(res)
                 updateHandleTopPos(0-res)
                 
@@ -395,6 +407,9 @@ class sk_ui_iceRink extends sk_ui_component {
                     if (overscroll !== lastOverscrollVal) this.onOverscroll(overscroll)
                     lastOverscrollVal = overscroll
                 }
+
+                
+                if (this.onScroll) this.onScroll(res)
             }
         })
 
@@ -405,7 +420,7 @@ class sk_ui_iceRink extends sk_ui_component {
         this.attributes.add({friendlyName: 'Hide handle', name: 'hideHandle', type: 'bool', onSet: val => {
             if (!val) return
             this.scrollbarWrapper.style.width = '0px'
-            this.scrollbarWrapper.opacity = 0.01
+            this.scrollbarWrapper.style.opacity = 0
         }})
 
         this.attributes.add({friendlyName: 'Auto Height', name: 'autoHeight', type: 'bool', onSet: val => {

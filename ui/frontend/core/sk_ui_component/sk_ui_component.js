@@ -670,17 +670,11 @@ class sk_ui_attributes {
         category.add(info)
     }
 
-    find(){
-        var x = 0
-    }
-
-    findByFriendlyName(friendlyName){
-        for (var cat in this.categories){
-            var category = this.categories[cat]
-            for (var i = 0; i < category.length; i++){
-                var attribute = this.list[i]
-            if (attribute.friendlyName === friendlyName) return attribute
-            }
+    findByID(id, val){
+        for (var cat in this.categories.list){
+            var category = this.categories.list[cat]
+            var res = category.findByID(id, val)
+            if (res) return res
         }
     }
 
@@ -748,15 +742,16 @@ class sk_ui_attributes_category {
         this.attributes = []
     }
 
-    findByName(name){
+    findByID(id, val){
         for(var i in this.attributes){
             var attr = this.attributes[i]
-            if (attr.info.name === name) return attr
+            var info = attr.info
+            if (info[id] === val) return attr
         }
     }
 
     add(info){
-        var existing = this.findByName(info.name)
+        var existing = this.findByID('name', info.name)
         
         if (existing){
             if (info.onSet) existing.callbacks.set.push(info.onSet)
@@ -774,33 +769,37 @@ class sk_ui_attribute {
             get: []
         }
 
-        var attribute = Object.defineProperty(
-            parent,
-            info.name,
-            {
-                get: ()=>{
-                    if (info.css) var val = parent.style[info.css.split('?')[0]]
-                    else var val = parent['__' + info.name]
-                    
-                    var _val = this.iterateCallbacks('get', val)
-                    
-                    return _val || val
-                },
+        try {
+            var attribute = Object.defineProperty(
+                parent,
+                info.name,
+                {
+                    get: ()=>{
+                        if (info.css) var val = parent.style[info.css.split('?')[0]]
+                        else var val = parent['__' + info.name]
+                        
+                        var _val = this.iterateCallbacks('get', val)
+                        
+                        return _val || val
+                    },
 
-                set: val => {
-                    if (info.css){
-                        var newVal = val + info.css.split('?')[1]
-                        if (val === 0) newVal = ''
-                        parent.style[info.css.split('?')[0]] = newVal
-                    } else {
-                        if (parent['__' + info.name] === val) return
-                        parent['__' + info.name] = val
+                    set: val => {
+                        if (info.css){
+                            var newVal = val + info.css.split('?')[1]
+                            if (val === 0) newVal = ''
+                            parent.style[info.css.split('?')[0]] = newVal
+                        } else {
+                            if (parent['__' + info.name] === val) return
+                            parent['__' + info.name] = val
+                        }
+
+                        this.iterateCallbacks('set', val)
                     }
-
-                    this.iterateCallbacks('set', val)
                 }
-            }
-        )
+            )
+        } catch(err) {
+            var x = 0
+        }
 
         this.info = info
 
@@ -970,21 +969,25 @@ class sk_ui_movableizer_resizableizer {
             
             if (this.parent && this.parent.onMouseDown) this.parent.onMouseDown(_e)
             
-            _e.preventDefault()
-            _e.stopPropagation()
-    
-            
-            document.addEventListener('mouseup',  this.mouseUpHandler )
-            document.addEventListener('touchend',  this.mouseUpHandler )
+            var hookEvents = ()=>{
+                _e.preventDefault()
+                _e.stopPropagation()
+        
+                
+                document.addEventListener('mouseup',  this.mouseUpHandler )
+                document.addEventListener('touchend',  this.mouseUpHandler )
+            }
             
     
             if (this.resizer.testPoint(_e)){
+                hookEvents()
                 this.canMove = false
                 this.canResize = true
                 this.resizer.mouseDownHandler(_e)
                 sk.interactions.block()
             } else {
                 if (this.mover.axis){
+                    hookEvents()
                     this.canResize = false
                     this.canMove = true
                     this.mover.mouseDownHandler(_e)
@@ -1065,6 +1068,8 @@ class sk_ui_movableizer {
 
         this.__gridSnapWidth = 10
 
+        this.offset = {x: 0, y: 0}
+
         this.mouseUpHandler = _e => {
             _e.preventDefault()
             _e.stopPropagation()
@@ -1112,10 +1117,11 @@ class sk_ui_movableizer {
                 x: (_e.clientX || _e.touches[0].clientX) - this.mdPosGlobal.x,
                 y: (_e.clientY || _e.touches[0].clientY) - this.mdPosGlobal.y
             }
+
             
             var newPos = {
-                x: this.originalPos.x + mousePosInSelf.x,
-                y: this.originalPos.y + mousePosInSelf.y 
+                x: this.originalPos.x + mousePosInSelf.x + this.offset.x,
+                y: this.originalPos.y + mousePosInSelf.y
             }            
 
             var halfGrid = (this.__snapToGrid / 2)
@@ -1123,14 +1129,13 @@ class sk_ui_movableizer {
             if (wrapX > halfGrid) wrapX = 0 - (halfGrid - (wrapX - halfGrid))
             var smoothMove = (wrapX < 0-this.__gridSnapWidth || wrapX > this.__gridSnapWidth)
 
-
             if (this.__snapToGrid && !smoothMove) newPos.x = sk.utils.calcSnap({val: newPos.x, gridSize: this.__snapToGrid})
             
     
             if (this.axis.indexOf('x') > -1){
-                if (newPos.x < 0) newPos.x = 0
-                if (newPos.x > this.parent.parent.rect.width - this.parent.rect.width) newPos.x = this.parent.parent.rect.width - this.parent.rect.width
-                this.parent.style.left = newPos.x + 'px'
+                if (newPos.x < 0 - this.offset.x) newPos.x = 0
+                if (newPos.x > this.parent.parent.rect.width - this.parent.rect.width + this.offset.x) newPos.x = this.parent.parent.rect.width - this.parent.rect.width + this.offset.x
+                this.parent.style.left = newPos.x - this.offset.x + 'px'
             }
     
             if (this.axis.indexOf('y') > -1){
@@ -1168,8 +1173,9 @@ class sk_ui_movableizer {
                 x: this.mdPosGlobal.x - this.parent.rect.x,
                 y: this.mdPosGlobal.y - this.parent.rect.y
             }
-    
+           
             this.originalPos = this.parent.rect.localPos
+            
     
             this.animateTmp = this.parent.animate
             //this.parent.animate = false
@@ -1240,7 +1246,6 @@ class sk_ui_resizableizer {
             if (wrapW > 0-this.__gridSnapWidth && wrapW < 0) doSnap = 'left'
             if (wrapW >= 0 && wrapW < this.__gridSnapWidth) doSnap = 'right'
      
-
 
             
             if (!doSnap){
