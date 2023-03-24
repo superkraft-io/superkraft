@@ -780,7 +780,7 @@ class sk_ui_attribute {
                         
                         var _val = this.iterateCallbacks('get', val)
                         
-                        return _val || val
+                        return (_val === undefined ? val : _val)
                     },
 
                     set: val => {
@@ -1298,7 +1298,6 @@ class sk_ui_resizableizer {
                 if (this.constraints.height){
                     if (newSize.h < this.constraints.height){
                         newSize.h = this.constraints.height
-                        console.log(newSize.y)
                     }
                 }
             }
