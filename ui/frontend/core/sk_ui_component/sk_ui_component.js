@@ -1295,10 +1295,14 @@ class sk_ui_resizableizer {
             }
 
             if (this.constraints){
+                if (this.constraints.width){
+                    if (this.constraints.width.min && newSize.w < this.constraints.width.min) newSize.w = this.constraints.width.min
+                    if (this.constraints.width.max && newSize.w > this.constraints.width.max) newSize.w = this.constraints.width.max
+                }
+
                 if (this.constraints.height){
-                    if (newSize.h < this.constraints.height){
-                        newSize.h = this.constraints.height
-                    }
+                    if (this.constraints.height.min && newSize.h < this.constraints.height.min) newSize.h = this.constraints.height.min
+                    if (this.constraints.height.max && newSize.h > this.constraints.height.max) newSize.h = this.constraints.height.max
                 }
             }
 

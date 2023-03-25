@@ -8,27 +8,32 @@ class sk_ui_iceRink extends sk_ui_component {
 
         
         var wheelMS = Date.now()
-        var wheelInertia = 0
+        var wheelInertia = {x: 0, y: 0}
         this.onWheel = _e => {
             //if (this.scrollbarY_native.element.scrollTop + _e.deltaY < this.content.storedHeight && this.content.storedHeight === 0) return
 
             _e.preventDefault()
             _e.stopPropagation()
 
+            this.scrollerX.dictator = 'wheel_or_touchpad'
             this.scrollerY.dictator = 'wheel_or_touchpad'
 
             var factor = 0.3
 
-            wheelInertia += _e.deltaY * factor
+            wheelInertia.x += _e.deltaX * factor
+            wheelInertia.y += _e.deltaY * factor
             
             var msDiff = Date.now() - wheelMS
             if (msDiff > 50){
-                this.scrollerY.setInertia(wheelInertia, true)
+                this.scrollerX.setInertia(wheelInertia.x, true)
+                this.scrollerY.setInertia(wheelInertia.y, true)
                 wheelMS = Date.now()
-                wheelInertia = 0
+                wheelInertia.x = 0
+                wheelInertia.y = 0
             }
 
             
+            this.tweenX.stop()
             this.tweenY.stop()
         }
         
@@ -208,7 +213,7 @@ class sk_ui_iceRink extends sk_ui_component {
                         this.scrollbarY_native.element.scrollTop = 0-val.y
                     }
 
-                    _c.style.transform = `translate(${_c.posX}px, ${_c.posY}px)`
+                    _c.style.transform = `translate(${Math.floor(_c.posX)}px, ${Math.floor(_c.posY)}px)`
                 }
             })
             
@@ -538,8 +543,16 @@ class sk_ui_iceRink extends sk_ui_component {
             },
 
             onChanged: res => {
+                if (this.maxOverscrollX !== undefined){
+                    if (res > 0) res = 0
+                    if (res < 0-this.content.rect.width + this.rect.width) res = 0-this.content.rect.width + this.rect.width
+                }
+               
+                if (this.content.rect.width <  this.contentWrapper.rect.width) res = 0
+                
                 if (this.lastScrollValue.x === res) return
                 this.lastScrollValue.x = res
+
 
                 this.setContentPos({x: res})
                 updateHandleLeftPos(0-res)
@@ -554,7 +567,7 @@ class sk_ui_iceRink extends sk_ui_component {
 
                     var overscroll = 0
                     if (overscrolls.left > 0) overscroll = overscrolls.left
-                    //if (overscrolls.top < 0 && overscrolls.bottom < 0) overscroll = overscrolls.bottom
+                    
                     if (overscroll !== lastOverscrollVal.x) this.onOverscroll(overscroll)
                     lastOverscrollVal.x = overscroll
                 }
@@ -575,8 +588,16 @@ class sk_ui_iceRink extends sk_ui_component {
             },
 
             onChanged: res => {
+                if (this.maxOverscrollY !== undefined){
+                    if (res > 0) res = 0
+                    if (res < 0-this.content.rect.height + this.rect.height) res = 0-this.content.rect.height + this.rect.height
+                }
+
+                if (this.content.rect.height < this.contentWrapper.rect.height) res = 0
+
                 if (this.lastScrollValue.y === res) return
                 this.lastScrollValue.y = res
+
 
                 this.setContentPos({y: res})
                 updateHandleTopPos(0-res)
@@ -601,15 +622,37 @@ class sk_ui_iceRink extends sk_ui_component {
             }
         })
 
+
+        this.attributes.add({friendlyName: 'Instant', name: 'instant', type: 'bool', onSet: val => {
+            this.setContentPos({x: this.tweenX.current})
+            updateHandleLeftPos(0-this.tweenX.current)
+        }})
+
         this.attributes.add({friendlyName: 'Hide Overflow', name: 'hideOverflow', type: 'bool', onSet: val => {
             this.contentWrapper.style.overflow = (val ? 'hidden' : '')
         }})
 
+
+
+
+
+        this.attributes.add({friendlyName: 'Max Overscroll X', name: 'maxOverscrollX', type: 'number'})
+        
         this.attributes.add({friendlyName: 'Hide handle X', name: 'hideHandleX', type: 'bool', onSet: val => {
             if (!val) return
             this.scrollbarX_wrapper.style.height = '0px'
             this.scrollbarX_wrapper.style.opacity = 0
         }})
+
+        this.attributes.add({friendlyName: 'Auto Width', name: 'autoHeight', type: 'bool', onSet: val => {
+            this.contentWrapper.styling = `top center ${(!val ? 'fullheight' : '')} ${(!this.autoHeight ? 'fullheight' : '')}`
+        }})
+
+
+
+        
+      
+        this.attributes.add({friendlyName: 'Max Overscroll Y', name: 'maxOverscrollY', type: 'number'})
 
         this.attributes.add({friendlyName: 'Hide handle Y', name: 'hideHandleY', type: 'bool', onSet: val => {
             if (!val) return
@@ -617,34 +660,63 @@ class sk_ui_iceRink extends sk_ui_component {
             this.scrollbarY_wrapper.style.opacity = 0
         }})
 
-        this.attributes.add({friendlyName: 'Auto Width', name: 'autoHeight', type: 'bool', onSet: val => {
-            this.contentWrapper.styling = `top center ${(!val ? 'fullheight' : '')} ${(!this.autoHeight ? 'fullheight' : '')}`
-        }})
-
+     
         this.attributes.add({friendlyName: 'Auto Height', name: 'autoHeight', type: 'bool', onSet: val => {
             this.contentWrapper.styling = `top center ${(!this.autoWidth ? 'fullheight' : '')} ${(!val ? 'fullheight' : '')}`
         }})
 
 
+
+
         this.attributes.add({friendlyName: 'Scroll X', name: 'scrollX', type: 'number',
             onSet: val => {
-                this.tweenX.current = this.preRubberbandPos.x
+                this.content.last_pos.x = val
+                this.tweenX.last = val
+                this.tweenX.current = val
+                this.scrollerX.value = val
+                this.lastScrollValue.x = val
+                this.preRubberbandPos.x = val
+
+                if (this.instant){
+                    
+                    if (this.maxOverscrollX !== undefined){
+                        if (val > 0) val = 0
+                        if (val < 0-this.content.rect.width + this.rect.width) val = 0-this.content.rect.width + this.rect.width
+                    }
+                    
+                    this.setContentPos({x: val})
+                    updateHandleLeftPos(0-val)
+                    return 
+                }
+                
                 this.tweenX.to(val)
             },
 
             onGet: ()=>{
-                return this.tweenX.current
+                return this.content.posX
             }
         })
 
         this.attributes.add({friendlyName: 'Scroll Y', name: 'scrollY', type: 'number',
             onSet: val => {
-                //this.tweenY.current = val
+                if (this.instant){
+                    
+                    if (this.maxOverscrollY !== undefined){
+                        if (val > 0) val = 0
+                        if (val < 0-this.content.rect.height + this.rect.height) val = 0-this.content.rect.height + this.rect.height
+                    }
+                
+                    this.tweenY.current = val
+                    this.setContentPos({y: val})
+                    updateHandleLeftPos(0-val)
+                    return 
+                }
+                this.tweenY.current = this.preRubberbandPos.y
                 this.tweenY.to(val)
             },
 
             onGet: ()=>{
-                return this.tweenY.current
+                return this.content.posY
             }
         })
 
@@ -973,7 +1045,6 @@ class sk_scroller {
         
 
         if (val > 0){
-            
             this.isRubberbanding = true
             this.rubberbandingDirection = (this.orientation === 'vertical' ? 'down' : 'right')
 
