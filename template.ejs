@@ -246,6 +246,18 @@
             
 
             document.addEventListener('click', _e => {
+                var open_contextMenus = document.querySelectorAll('.sk_ui_contextMenu')
+
+                if (open_contextMenus.length === 0) return
+
+                var menuIDs = {}
+                open_contextMenus.forEach(_c => { if (_c.sk_ui_obj) menuIDs[_c.id] = _c })
+                
+                var elPath = sk.utils.getDomPath(_e.srcElement)
+                for (var i in elPath) if (menuIDs[elPath[i].id]) return
+                
+                
+                
                 sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true})
             })
 

@@ -1121,7 +1121,7 @@ class sk_ui_movableizer {
             
             var newPos = {
                 x: this.originalPos.x + mousePosInSelf.x + this.offset.x,
-                y: this.originalPos.y + mousePosInSelf.y
+                y: this.originalPos.y + mousePosInSelf.y + this.offset.y
             }            
 
             var halfGrid = (this.__snapToGrid / 2)

@@ -320,6 +320,19 @@
 
                 return res
             },
+
+            getDomPath(_el) {
+                var path = []
+                var getNext = el => {
+                    path.push(el)
+                    if (el === document.body) return
+                    return getNext(el.parentNode)
+                }
+
+                getNext(_el)
+
+                return path
+            }
         },
 
         
