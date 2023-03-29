@@ -214,6 +214,9 @@ class sk_ui_iceRink extends sk_ui_component {
                     }
 
                     _c.style.transform = `translate(${Math.floor(_c.posX)}px, ${Math.floor(_c.posY)}px)`
+
+                    
+                    if (this.onScroll) this.onScroll({x: _c.posX, y: _c.posY})
                 }
             })
             
@@ -554,8 +557,7 @@ class sk_ui_iceRink extends sk_ui_component {
                 this.lastScrollValue.x = res
 
 
-                this.setContentPos({x: res})
-                updateHandleLeftPos(0-res)
+                
                 
                 if (this.onOverscroll){
                     var diff = this.content.storedWidth - this.storedWidth
@@ -572,8 +574,8 @@ class sk_ui_iceRink extends sk_ui_component {
                     lastOverscrollVal.x = overscroll
                 }
 
-                
-                if (this.onScroll) this.onScroll({x: res, y: this.lastScrollValue.y})
+                this.setContentPos({x: res})
+                updateHandleLeftPos(0-res)
             }
         })
 
@@ -599,8 +601,7 @@ class sk_ui_iceRink extends sk_ui_component {
                 this.lastScrollValue.y = res
 
 
-                this.setContentPos({y: res})
-                updateHandleTopPos(0-res)
+                
                 
                 if (this.onOverscroll){
                     var diff = this.content.storedHeight - this.storedHeight
@@ -616,9 +617,9 @@ class sk_ui_iceRink extends sk_ui_component {
                     if (overscroll !== lastOverscrollVal.y) this.onOverscroll(overscroll)
                     lastOverscrollVal.y = overscroll
                 }
-
                 
-                if (this.onScroll) this.onScroll({x: this.lastScrollValue.x, y: res})
+                this.setContentPos({y: res})
+                updateHandleTopPos(0-res)
             }
         })
 

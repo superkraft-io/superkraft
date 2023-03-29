@@ -1117,12 +1117,10 @@ class sk_ui_movableizer {
                 x: (_e.clientX || _e.touches[0].clientX) - this.mdPosGlobal.x,
                 y: (_e.clientY || _e.touches[0].clientY) - this.mdPosGlobal.y
             }
-
-            
             var newPos = {
-                x: this.originalPos.x + mousePosInSelf.x + this.offset.x,
-                y: this.originalPos.y + mousePosInSelf.y + this.offset.y
-            }            
+                x: mousePosInSelf.x + this.offset.x + this.originalPos.x,
+                y: mousePosInSelf.y + this.offset.y + this.originalPos.y
+            }
 
             var halfGrid = (this.__snapToGrid / 2)
             var wrapX = sk.utils.wrapNum(this.__snapToGrid, newPos.x)
@@ -1139,8 +1137,17 @@ class sk_ui_movableizer {
             }
     
             if (this.axis.indexOf('y') > -1){
-                if (newPos.y < 0) newPos.y = 0
-                if (newPos.y > this.parent.parent.rect.height - this.parent.rect.height) newPos.y = this.parent.parent.rect.height - this.parent.rect.height
+                var minY = 0
+                var maxY = this.parent.parent.rect.height - this.parent.rect.height + this.offset.y
+                if (this.constraints){
+                    if (this.constraints.y){
+                        if (this.constraints.y.min) minY = this.constraints.y.min
+                        if (this.constraints.y.max) maxY = this.constraints.y.max
+                    }
+                }
+
+                if (newPos.y < minY) newPos.y = 0
+                if (newPos.y > maxY) newPos.y = this.parent.parent.rect.height - this.parent.rect.height
                 this.parent.style.top = newPos.y + 'px'
             }
  
@@ -1175,10 +1182,8 @@ class sk_ui_movableizer {
             }
            
             this.originalPos = this.parent.rect.localPos
-            
     
             this.animateTmp = this.parent.animate
-            //this.parent.animate = false
             
     
             this.parent.pointerEvents = 'none'
