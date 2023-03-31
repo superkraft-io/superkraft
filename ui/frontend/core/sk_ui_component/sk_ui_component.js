@@ -907,7 +907,7 @@ class sk_ui_movableizer_resizableizer {
         this.parent = opt.parent
         
         this.mover = new sk_ui_movableizer(opt)
-        this.mover.onStart = ()=>{ if (this.onStartMoving) this.onStartMoving() }
+        this.mover.onStart = res => { if (this.onStartMoving) this.onStartMoving(res) }
         this.mover.onEnd = ()=>{ if (this.onEndMoving) this.onEndMoving() }
         this.mover.onMoving = res => { if (this.onMoving) this.onMoving(res) }
 
@@ -1068,6 +1068,10 @@ class sk_ui_movableizer {
 
         this.__gridSnapWidth = 10
 
+        this.constraints = {
+            x: {},
+            y: {}
+        }
         this.offset = {x: 0, y: 0}
 
         this.mouseUpHandler = _e => {
@@ -1095,7 +1099,7 @@ class sk_ui_movableizer {
             
             this.parent.pointerEvents = 'true'
     
-            if (this.onEnd) this.onEnd(_e)
+            if (this.onStartNotified && this.onEnd) this.onEnd(_e)
         }
     
 
@@ -1103,10 +1107,7 @@ class sk_ui_movableizer {
             if (!this.mdPos) return
 
             
-            if (!this.onStartNotified && this.onStart){
-                this.onStartNotified = true
-                this.onStart(_e)
-            }
+            
 
             _e.preventDefault()
             _e.stopPropagation()
@@ -1117,6 +1118,15 @@ class sk_ui_movableizer {
                 x: (_e.clientX || _e.touches[0].clientX) - this.mdPosGlobal.x,
                 y: (_e.clientY || _e.touches[0].clientY) - this.mdPosGlobal.y
             }
+
+            if (!this.onStartNotified && this.onStart){
+                this.onStartNotified = true
+                this.onStart({
+                    event: _e,
+                    position: this.mdPos,
+                })
+            }
+
             var newPos = {
                 x: mousePosInSelf.x + this.offset.x + this.originalPos.x,
                 y: mousePosInSelf.y + this.offset.y + this.originalPos.y
