@@ -1152,12 +1152,14 @@ class sk_ui_movableizer {
                 if (this.constraints){
                     if (this.constraints.y){
                         if (this.constraints.y.min) minY = this.constraints.y.min
-                        if (this.constraints.y.max) maxY = this.constraints.y.max
+                        
+                        if (this.constraints.y.max === Infinity) maxY = Infinity
+                        else if (this.constraints.y.max) maxY = this.constraints.y.max
                     }
                 }
 
                 if (newPos.y < minY) newPos.y = 0
-                if (newPos.y > maxY) newPos.y = this.parent.parent.rect.height - this.parent.rect.height
+                if (maxY !== Infinity && newPos.y > maxY) newPos.y = this.parent.parent.rect.height - this.parent.rect.height
                 this.parent.style.top = newPos.y + 'px'
             }
  
