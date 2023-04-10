@@ -907,11 +907,13 @@ class sk_ui_movableizer_resizableizer {
         this.parent = opt.parent
         
         this.mover = new sk_ui_movableizer(opt)
+        this.mover.coreParent = this
         this.mover.onStart = res => { if (this.onStartMoving) this.onStartMoving(res) }
         this.mover.onEnd = ()=>{ if (this.onEndMoving) this.onEndMoving() }
         this.mover.onMoving = res => { if (this.onMoving) this.onMoving(res) }
 
         this.resizer = new sk_ui_resizableizer(opt)
+        this.resizer.coreParent = this
         this.resizer.onStart = ()=>{ if (this.onStartResizing) this.onStartResizing() }
         this.resizer.onEnd = ()=>{ if (this.onEndResizing) this.onEndResizing() }
         this.resizer.onResizing = res => { if (this.onResizing) this.onResizing(res) }
@@ -1059,6 +1061,16 @@ class sk_ui_movableizer_resizableizer {
         document.removeEventListener('mousemove', this.mouseMoveHandler)
         document.removeEventListener('touchmove', this.mouseMoveHandler)
     }
+
+    calcSnap(opt){
+        var halfGrid = (opt.gridSize / 2)
+        var wrapX = sk.utils.wrapNum(opt.gridSize, opt.pos)
+        if (wrapX > halfGrid) wrapX = 0 - (halfGrid - (wrapX - halfGrid))
+        var smoothMove = (wrapX < 0-opt.gridSnapWidth || wrapX > opt.gridSnapWidth)
+
+        if (opt.gridSize && !smoothMove) return sk.utils.calcSnap({val: opt.pos, gridSize: opt.gridSize})
+        return opt.pos
+    }
 }
 
 class sk_ui_movableizer {
@@ -1132,14 +1144,16 @@ class sk_ui_movableizer {
                 y: mousePosInSelf.y + this.offset.y + this.originalPos.y
             }
 
-            var halfGrid = (this.__snapToGrid / 2)
-            var wrapX = sk.utils.wrapNum(this.__snapToGrid, newPos.x)
-            if (wrapX > halfGrid) wrapX = 0 - (halfGrid - (wrapX - halfGrid))
-            var smoothMove = (wrapX < 0-this.__gridSnapWidth || wrapX > this.__gridSnapWidth)
-
-            if (this.__snapToGrid && !smoothMove) newPos.x = sk.utils.calcSnap({val: newPos.x, gridSize: this.__snapToGrid})
             
-    
+
+            if (!_e.shiftKey){
+                newPos.x = this.coreParent.calcSnap({
+                    gridSize: this.__snapToGrid,
+                    gridSnapWidth: this.__gridSnapWidth,
+                    pos: newPos.x
+                })
+            }
+
             if (this.axis.indexOf('x') > -1){
                 if (newPos.x < 0 - this.offset.x) newPos.x = 0
                 if (newPos.x > this.parent.parent.rect.width - this.parent.rect.width + this.offset.x) newPos.x = this.parent.parent.rect.width - this.parent.rect.width + this.offset.x
