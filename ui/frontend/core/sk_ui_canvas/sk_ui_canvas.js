@@ -42,7 +42,8 @@ class sk_ui_canvas extends sk_ui_component {
             ...{
                 size: 14,
                 name: 'verdana',
-                family: 'sans-serif'
+                family: 'sans-serif',
+                color: 'white',
             },
 
             ...opt.font
@@ -51,10 +52,11 @@ class sk_ui_canvas extends sk_ui_component {
         var fontStr = `${defFont.size * this.ratio}px ${defFont.name}, ${defFont.family}`
 
 
-        this.tmpClr = this.color
+        this.tmpClr = this.ctx.fillStyle
         this.ctx.font = fontStr
-        this.ctx.textBaseline = opt.baseline ||'hanging'
+        this.ctx.textBaseline = opt.baseline || 'hanging'
         this.ctx.textAlign = opt.alignment || 'start'
+        this.ctx.fillStyle = defFont.color
         this.ctx.fillText(opt.text || 'Text', opt.left * this.ratio || 0, opt.top * this.ratio || 0)
         this.ctx.fillStyle = this.tmpClr
     }

@@ -5,8 +5,7 @@
 
 .sk_ui_slider_line {
     width: 100%;
-    /*background-color: black;*/
-    background-color: red;
+    background-color: black;
     min-height: 3px;
     border-radius: 3px;
     position: relative;

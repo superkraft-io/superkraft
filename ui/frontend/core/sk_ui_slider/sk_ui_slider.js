@@ -31,6 +31,7 @@ class sk_ui_slider extends sk_ui_component {
 
 
         var mouseUpHandler = _e => {
+            sk.interactions.unblock()
             _e.preventDefault()
             _e.stopPropagation()
             this.mdPos = undefined
@@ -74,6 +75,7 @@ class sk_ui_slider extends sk_ui_component {
 
 
         var handleMouseDown = _e => {
+            sk.interactions.block()
             _e.preventDefault()
             _e.stopPropagation()
             

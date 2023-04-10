@@ -31,7 +31,42 @@ module.exports = class sk_ui {
         
     }
 
-    getDirectories(source){
+    getDirectories(source, parent, depth = 0){
+        if (!parent){
+            parent = {
+                name: '',
+                children: []
+            }
+        }
+
+        if (depth > 1){
+            var x = 0
+        }
+
+        try {
+            var dirs = fs.readdirSync(source)
+        } catch(err) {
+            return parent
+        }
+
+        for (var i = 0; i < dirs.length; i++){
+            var dir = dirs[i]
+            var dirPath = source + dir + '/'
+
+            if (fs.lstatSync(dirPath).isDirectory()){
+                var child = {
+                    name: dir,
+                    children: []
+                }
+
+                if (dir.indexOf('sk_ui_') > -1) parent.children.push(child)
+                this.getDirectories(dirPath, child, depth+1)
+                
+            }
+        }
+
+        return parent
+
         try {
             return fs.readdirSync(source, { withFileTypes: true })
             .filter(dirent => (dirent.isDirectory() && dirent.name.indexOf('sk_ui_') > -1))
@@ -46,10 +81,51 @@ module.exports = class sk_ui {
         var ui_files = this.getDirectories(path)
         var ui_components = []
         
+        var first = undefined
+
+        for (var i = 0; i < ui_files.children.length; i++){
+            var component = ui_files.children[i]
+            var name = ui_files.children[i].name.split('.')[0].replace('sk_ui_', '')
+            if (addFirstAndIgnore && name === addFirstAndIgnore){
+                first = component
+                continue
+            }
+            ui_components.push(component)
+        }
+
+        var concat = undefined
+        if (first) concat = [...[first], ...ui_components]
+        else concat = ui_components
+
+
+
+        var simplified = []
+
+        var iterateChildren = (children, parentPath = '')=>{
+            for (var i = 0; i < children.length; i++){
+                var child = children[i]
+                if (!child){
+                    var x = 0
+                    continue
+                }
+                var _path = parentPath + child.name + '/'
+                if (child.children) iterateChildren(child.children, _path)
+                simplified.push({name: child.name.replace('sk_ui_', ''), path: _path})
+            }
+        }
+        iterateChildren(concat)
+
+        
+
+        return simplified
+
+        var ui_files = this.getDirectories(path)
+        var ui_components = []
+        
         if (addFirstAndIgnore) ui_components.push(addFirstAndIgnore)
 
-        for (var i = 0; i < ui_files.length; i++){
-            var component = ui_files[i].split('.')[0].replace('sk_ui_', '')
+        for (var i = 0; i < ui_files.children.length; i++){
+            var component = ui_files.children[i].name.split('.')[0].replace('sk_ui_', '')
             if (addFirstAndIgnore && component === addFirstAndIgnore) continue
             ui_components.push(component)
         }

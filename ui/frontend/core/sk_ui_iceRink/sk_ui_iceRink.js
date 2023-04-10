@@ -174,24 +174,26 @@ class sk_ui_iceRink extends sk_ui_component {
                     }
 
 
-                    
-                    cRect.width += getCSSVal('padding-left') + getCSSVal('padding-right')
-                    this.scrollbarX_native.fakeContent.style.minWidth = cRect.width + 'px'
-                    this.content.storedWidth = cRect.width
-                    this.scrollerX.contentSize = cRect.width
-                    this.scrollbarX.updateDimensions()
-                    this.scrollbarX_wrapper.updatePosition(this.contentWrapper.rect)
-                    if (this.autoWidth) this.contentWrapper.style.width = cRect.width + 'px'
+                    if (this.axis.indexOf('x') > -1){
+                        cRect.width += getCSSVal('padding-left') + getCSSVal('padding-right')
+                        this.scrollbarX_native.fakeContent.style.minWidth = cRect.width + 'px'
+                        this.content.storedWidth = cRect.width
+                        this.scrollerX.contentSize = cRect.width
+                        this.scrollbarX.updateDimensions()
+                        this.scrollbarX_wrapper.updatePosition(this.contentWrapper.rect)
+                        if (this.autoWidth) this.contentWrapper.style.width = cRect.width + 'px'
+                    }
 
 
-
-                    cRect.height += getCSSVal('padding-top') + getCSSVal('padding-bottom')
-                    this.scrollbarY_native.fakeContent.style.minHeight = cRect.height + 'px'
-                    this.content.storedHeight = cRect.height
-                    this.scrollerY.contentSize = cRect.height
-                    this.scrollbarY.updateDimensions()
-                    this.scrollbarY_wrapper.updatePosition(this.contentWrapper.rect)
-                    if (this.autoHeight) this.contentWrapper.style.height = cRect.height + 'px'
+                    if (this.axis.indexOf('y') > -1){
+                        cRect.height += getCSSVal('padding-top') + getCSSVal('padding-bottom')
+                        this.scrollbarY_native.fakeContent.style.minHeight = cRect.height + 'px'
+                        this.content.storedHeight = cRect.height
+                        this.scrollerY.contentSize = cRect.height
+                        this.scrollbarY.updateDimensions()
+                        this.scrollbarY_wrapper.updatePosition(this.contentWrapper.rect)
+                        if (this.autoHeight) this.contentWrapper.style.height = cRect.height + 'px'
+                    }
                     
                 }).observe(_c.element)
 
@@ -306,8 +308,8 @@ class sk_ui_iceRink extends sk_ui_component {
                 
                 
 
-                this.scrollerX.value = this.content.last_pos.x + dx
-                this.scrollerY.value = this.content.last_pos.y + dy
+                if (this.axis.indexOf('x') > -1) this.scrollerX.value = this.content.last_pos.x + dx
+                if (this.axis.indexOf('y') > -1) this.scrollerY.value = this.content.last_pos.y + dy
             }
 
             const mouseUpHandler = _e => {
@@ -344,21 +346,24 @@ class sk_ui_iceRink extends sk_ui_component {
                 _c.element.style.cursor = ''
                 _c.element.style.removeProperty('user-select')
 
-                if (velocity.x !== 0) this.scrollerX.inertia = velocity.x
-                this.scrollerX.value = this.preRubberbandPos.x
-                this.scrollerX.start()
+                if (this.axis.indexOf('x') > -1){
+                    if (velocity.x !== 0) this.scrollerX.inertia = velocity.x
+                    this.scrollerX.value = this.preRubberbandPos.x
+                    this.scrollerX.start()
+                }
 
-
-                if (velocity.y !== 0) this.scrollerY.inertia = velocity.y
-                this.scrollerY.value = this.preRubberbandPos.y
-                this.scrollerY.start()
+                if (this.axis.indexOf('y') > -1){
+                    if (velocity.y !== 0) this.scrollerY.inertia = velocity.y
+                    this.scrollerY.value = this.preRubberbandPos.y
+                    this.scrollerY.start()
+                }
             }
 
 
 
             this.mouseDownHandler = _e => {
-                _e.preventDefault()
-                _e.stopPropagation()
+                //_e.preventDefault()
+                //_e.stopPropagation()
 
                 this.scrollerX.dictator = 'mouse_or_finger'
                 this.scrollerY.dictator = 'mouse_or_finger'
@@ -393,11 +398,15 @@ class sk_ui_iceRink extends sk_ui_component {
                 })
 
 
-                this.scrollerX.stop()
-                this.scrollerY.stop()
-            
-                this.content.last_pos.x = this.scrollerX.__value
-                this.content.last_pos.y = this.scrollerY.__value
+                if (this.axis.indexOf('x') > -1){
+                    this.scrollerX.stop()
+                    this.content.last_pos.x = this.scrollerX.__value
+                }
+                
+                if (this.axis.indexOf('y') > -1){
+                    this.scrollerY.stop()
+                    this.content.last_pos.y = this.scrollerY.__value
+                }
 
                 if (!this.canScroll) return
                 _c.element.style.cursor = 'grabbing'
@@ -411,15 +420,20 @@ class sk_ui_iceRink extends sk_ui_component {
         var observer = new ResizeObserver(()=>{
             var cRect = this.content.rect
             
-            this.scrollbarX_native.fakeContent.style.minWidth = cRect.width + 'px'
             this.content.storedWidth = this.rect.width
-            this.scrollerX.containerSize = this.rect.width
-            this.scrollbarX_wrapper.updatePosition(this.contentWrapper.rect)
-
-            this.scrollbarY_native.fakeContent.style.minHeight = cRect.height + 'px'
             this.content.storedHeight = this.rect.height
-            this.scrollerY.containerSize = this.rect.height
-            this.scrollbarY_wrapper.updatePosition(this.contentWrapper.rect)
+
+            if (this.axis.indexOf('x') > -1){
+                this.scrollbarX_native.fakeContent.style.minWidth = cRect.width + 'px'
+                this.scrollerX.containerSize = this.rect.width
+                this.scrollbarX_wrapper.updatePosition(this.contentWrapper.rect)
+            }
+
+            if (this.axis.indexOf('y') > -1){
+                this.scrollbarY_native.fakeContent.style.minHeight = cRect.height + 'px'
+                this.scrollerY.containerSize = this.rect.height
+                this.scrollbarY_wrapper.updatePosition(this.contentWrapper.rect)
+            }
 
         }).observe(this.element)
 
@@ -635,6 +649,9 @@ class sk_ui_iceRink extends sk_ui_component {
 
 
 
+
+
+        this.axis = 'xy'
 
 
         this.attributes.add({friendlyName: 'Max Overscroll X', name: 'maxOverscrollX', type: 'number'})

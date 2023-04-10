@@ -1340,7 +1340,15 @@ class sk_ui_resizableizer {
                 x: newSize.w - this.originalSize.w,
                 y: newSize.h - this.originalSize.h,
             }
-            if (this.onResizing) this.onResizing({event: _e, size: newSize, diffSize: diffSize, sides: this.sides})
+            if (this.onResizing) this.onResizing({
+                event: _e,
+                size: newSize,
+                diffSize: diffSize,
+                sides: this.sides,
+                cancel: ()=>{
+                    this.mouseUpHandler(_e)
+                }
+            })
         }
     
     

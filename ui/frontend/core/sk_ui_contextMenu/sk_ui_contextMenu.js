@@ -65,14 +65,25 @@ class SK_ContextMenu {
         }
 
         this.parent.element.addEventListener('contextmenu', _e => {
+            _e.stopPropagation()
             _e.preventDefault()
             if (shouldIgnore(getElPath(_e.currentTarget))) return
             if (this.__button === 'right') this.handleMouseEvent(_e)
         })
+
         this.parent.onClick = _e => {
+            _e.stopPropagation()
             _e.preventDefault()
             if (this.__button === 'left') this.handleMouseEvent(_e)
         }
+
+        this.parent.element.addEventListener('mousedown', _e => {
+            if (this.stopPropagation) _e.stopPropagation()
+        })
+
+        this.parent.element.addEventListener('mouseup', _e => {
+            if (this.stopPropagation) _e.stopPropagation()
+        })
     }
 
     handleMouseEvent(_e){
@@ -421,6 +432,22 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
     config(opt){
         this.opt = opt
         this.opt._item = this
+
+        if (this.opt.icon){
+            if (/\p{Emoji}/u.test(this.opt.icon)){
+                this.leftSide.icon = this.leftSide.iconContainer.add.label(_c => {
+                    _c.text = this.opt.icon
+                })
+                this.hasIcon = true
+            } else {
+                this.leftSide.icon = this.leftSide.iconContainer.add.icon(_c => {
+                    _c.icon = this.opt.icon
+                })
+                this.hasIcon = true
+            }
+        }
+
+        
         if (opt.separator) this.as_separator()
         else if (opt.header) this.as_header()
         else if (opt.input) this.as_input()
@@ -446,19 +473,7 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
             })
         }
 
-        if (this.opt.icon){
-            if (/\p{Emoji}/u.test(this.opt.icon)){
-                this.leftSide.icon = this.leftSide.iconContainer.add.label(_c => {
-                    _c.text = this.opt.icon
-                })
-                this.hasIcon = true
-            } else {
-                this.leftSide.icon = this.leftSide.iconContainer.add.icon(_c => {
-                    _c.icon = this.opt.icon
-                })
-                this.hasIcon = true
-            }
-        }
+        
 
         /*if (this.opt.shortcut && !this.opt.items){
             this.rightSide.add.fromNew(sk_ui_contextMenu_shortcut, _c => {

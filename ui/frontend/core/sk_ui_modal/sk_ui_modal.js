@@ -58,14 +58,17 @@ class sk_ui_modal extends sk_ui_component {
             _c.animate = false
 
             _c.add.iceRink(_c => {
-                _c.styling += ' fullheight'
+                _c.styling += ' middle fullheight'
 
                 _c.vertical = true
-                _c.scroller.scrollbar = true
+                _c.axis = 'y'
+                _c.scrollerY.scrollbar = true
                 _c.autoHeight = true
                 _c.compact = true
-                _c.scrollbar.offset.right = 16
+                _c.scrollbarY.offset.right = 16
                 if (sk.isOnMobile) _c.scrollbar.offset.bottom = 16
+
+                _c.contentWrapper.styling += ' middle'
 
                 _c.content.setup(_c => {
                     _c.styling += ' ttb'

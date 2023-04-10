@@ -37,7 +37,20 @@
         interactions: {
             block: ()=>{ sk.ums.broadcast('sk_ui_block_userInteractons', undefined, {block: true}) },
             unblock: ()=>{ sk.ums.broadcast('sk_ui_block_userInteractons', undefined, {block: false}) },
-            getPos: _e => { return {x: (_e.clientX || _e.touches[0].clientX), y: (_e.clientY || _e.touches[0].clientY)} },
+            getPos: (_e, local, parentRect)=>{
+                var pos = {
+                    x: (_e.clientX || _e.touches[0].clientX),
+                    y: (_e.clientY || _e.touches[0].clientY)
+                }
+
+                if (local){
+                    var pRect = (!parentRect ? _e.target.sk_ui_obj.rect : parentRect)
+                    pos.x -= pRect.x
+                    pos.y -= pRect.y
+                }
+
+                return pos
+            },
             getPosDiff: (_e, substractWith)=>{
                 var diff = sk.interactions.getPos(_e)
                 diff.x -= substractWith.x
@@ -332,6 +345,34 @@
                 getNext(_el)
 
                 return path
+            },
+
+            colorBrightness(color, amount) {
+                const calc = (sub1,sub2)=> Math.min(255,Math.floor(parseInt(color.substr(sub1,sub2),16)*amount)).toString(16).padStart(2,"0")
+                return `#${calc(1,2)}${calc(3,2)}${calc(5,2)}`
+            },
+
+            colorContrast: hexcolor => {
+                // If a leading # is provided, remove it
+                if (hexcolor.slice(0, 1) === '#') hexcolor = hexcolor.slice(1)
+
+                // If a three-character hexcode, make six-character
+                if (hexcolor.length === 3){
+                    hexcolor = hexcolor.split('').map(function (hex) {
+                        return hex + hex
+                    }).join('')
+                }
+
+                // Convert to RGB value
+                var r = parseInt(hexcolor.substr(0,2),16)
+                var g = parseInt(hexcolor.substr(2,2),16)
+                var b = parseInt(hexcolor.substr(4,2),16)
+
+                // Get YIQ ratio
+                var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000
+
+                // Check contrast
+                return (yiq >= 128) ? 'black' : 'white'
             }
         },
 
@@ -369,25 +410,25 @@
             lists: {
                 core: {
                     <% for (var i = 0; i < sk.ui.components.core.length; i++){ %>
-                        <%= sk.ui.components.core[i] %>: sk_ui_<%= sk.ui.components.core[i] %>,
+                        <%= sk.ui.components.core[i].name %>: sk_ui_<%= sk.ui.components.core[i].name %>,
                     <% } %>
                 },
 
                 shared: {
                     <% for (var i = 0; i < sk.ui.components.shared.length; i++){ %>
-                        <%= sk.ui.components.shared[i] %>: sk_ui_<%= sk.ui.components.shared[i] %>,
+                        <%= sk.ui.components.shared[i].name %>: sk_ui_<%= sk.ui.components.shared[i].name %>,
                     <% } %>
                 },
 
                 view: {
                     <% for (var i = 0; i < sk.ui.components.view.length; i++){ %>
-                        <%= sk.ui.components.view[i] %>: sk_ui_<%= sk.ui.components.view[i] %>,
+                        <%= sk.ui.components.view[i].name %>: sk_ui_<%= sk.ui.components.view[i].name %>,
                     <% } %>
                 },
 
                 global: {
                     <% for (var i = 0; i < sk.ui.components.global.length; i++){ %>
-                        <%= sk.ui.components.global[i] %>: sk_ui_<%= sk.ui.components.global[i] %>,
+                        <%= sk.ui.components.global[i].name %>: sk_ui_<%= sk.ui.components.global[i].name %>,
                     <% } %>
                 }
             }
