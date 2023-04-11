@@ -1157,7 +1157,7 @@ class sk_ui_movableizer {
             if (this.axis.indexOf('x') > -1){
                 if (newPos.x < 0 - this.offset.x) newPos.x = 0
                 if (newPos.x > this.parent.parent.rect.width - this.parent.rect.width + this.offset.x) newPos.x = this.parent.parent.rect.width - this.parent.rect.width + this.offset.x
-                this.parent.style.left = newPos.x - this.offset.x + 'px'
+                this.parent.style.left = Math.round(newPos.x - this.offset.x) + 'px'
             }
     
             if (this.axis.indexOf('y') > -1){
@@ -1173,8 +1173,8 @@ class sk_ui_movableizer {
                 }
 
                 if (newPos.y < minY) newPos.y = 0
-                if (maxY !== Infinity && newPos.y > maxY) newPos.y = this.parent.parent.rect.height - this.parent.rect.height
-                this.parent.style.top = newPos.y + 'px'
+                if (maxY !== Infinity && newPos.y > maxY) newPos.y = Math.round(this.parent.parent.rect.height - this.parent.rect.height)
+                this.parent.style.top = Math.round(newPos.y) + 'px'
             }
  
 
