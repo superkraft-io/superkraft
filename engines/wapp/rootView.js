@@ -7,7 +7,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                 frontend: {
                     view: this.info.route + 'vfe_frontend/',
 
-                    sk: (global.sk.cdn ? global.sk.cdn.route + '/sk_frontend' : '/sk'),
+                    sk: (global.sk.cdn ? global.sk.cdn.route + 'sk_cdn/sk_frontend' : '/sk'),
 
                     ui: global.sk.ui.routes.core,
                     ui_shared: 'sk_ui_shared/',
@@ -15,9 +15,9 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
                     
 
-                    app_root: (global.sk.cdn ? global.sk.cdn.route + '/app_frontend/' : '/'),
-                    app: (global.sk.cdn ? global.sk.cdn.route + '/app_frontend/' : '/'),
-                    global: (global.sk.cdn ? global.sk.cdn.route + '/app_global/' : '/global'),
+                    app_root: (global.sk.cdn ? global.sk.cdn.route + 'sk_cdn/app_frontend/' : '/'),
+                    app: (global.sk.cdn ? global.sk.cdn.route + 'sk_cdn/app_frontend/' : '/'),
+                    global: (global.sk.cdn ? global.sk.cdn.route + 'sk_cdn/app_global/' : '/global'),
 
                     complexity: '/complexity/',
 
@@ -37,11 +37,11 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             await this._init(opt)
 
 
-            if (global.sk.cdn) this.routes.frontend.ui_cdn = global.sk.cdn.route
+            if (global.sk.cdn) this.routes.frontend.ui_cdn = global.sk.cdn.route + 'sk_cdn'
 
             
             var render = async (res, page, userData, country) => {
-                if (global.sk.cdn) this.routes.frontend.view = global.sk.cdn.route + '/views/' + this.id + '/'
+                if (global.sk.cdn) this.routes.frontend.view = global.sk.cdn.route + 'sk_cdn/views/' + this.id + '/'
                 
 
                 var globalData = sk.globalData
@@ -115,6 +115,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                             if (this.info.onAuthOk) return res.redirect(this.info.onAuthOk)
                             
                             //check if activated
+                            /*
                             try {
                                 var isAccActivated = (
                                     this.onCheckAccActivation ?
@@ -131,6 +132,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                             } catch(err) {
                                 return res.redirect(this.info.onAccNotActivated)
                             }
+                            */
                             
                         } else {
                             if (this.info.onAuthFail){

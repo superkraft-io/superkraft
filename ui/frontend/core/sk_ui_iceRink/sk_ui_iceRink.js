@@ -285,7 +285,9 @@ class sk_ui_iceRink extends sk_ui_component {
                 if (delta.x < 3 && delta.y < 3) return 
 
 
-                if (delta.x > 10 || delta.y > 10 ) sk.interactions.block()
+                if (delta.x > 10 || delta.y > 10 ){
+                    sk.interactions.block()
+                }
 
 
                 if (dx >= 0) direction.x = 'right'
@@ -313,8 +315,9 @@ class sk_ui_iceRink extends sk_ui_component {
             }
 
             const mouseUpHandler = _e => {
-                _e.preventDefault()
-                _e.stopPropagation()
+                console.log('icerink MOUSE UP')
+                //_e.preventDefault()
+                //_e.stopPropagation()
                 
                 pos = undefined
 

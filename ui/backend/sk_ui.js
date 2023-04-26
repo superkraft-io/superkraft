@@ -39,10 +39,6 @@ module.exports = class sk_ui {
             }
         }
 
-        if (depth > 1){
-            var x = 0
-        }
-
         try {
             var dirs = fs.readdirSync(source)
         } catch(err) {
@@ -66,15 +62,6 @@ module.exports = class sk_ui {
         }
 
         return parent
-
-        try {
-            return fs.readdirSync(source, { withFileTypes: true })
-            .filter(dirent => (dirent.isDirectory() && dirent.name.indexOf('sk_ui_') > -1))
-            .map(dirent => dirent.name)
-        } catch(err) {
-            //console.error(err)
-        }
-        return []
     }
 
     getComponentsFromPath(path, addFirstAndIgnore){

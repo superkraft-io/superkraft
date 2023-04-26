@@ -59,10 +59,15 @@ module.exports = class SK_CDN_Exporter {
 
                 if (addFirstAndIgnore && dir === addFirstAndIgnore) continue
 
-                try { data.css += await this.tryMinify(dirPath) } catch(err) {}
-                
-                try { data.css += await this.tryMinify(dirPath + '/' + dir + '.css') } catch(err) {}
-                try { data.js += await this.tryMinify(dirPath + '/' + dir + '.js') } catch(err) {}
+                if (fs.lstatSync(dirPath).isDirectory()){
+                    if (dir.indexOf('sk_ui_') === -1) continue
+                    var res = await this.consolidate(dirPath + '/')
+                    
+                    data.css += res.css || ''
+                    data.js += res.js || ''
+                } else {
+                    try { data[(dirPath.indexOf('.css') > -1 ? 'css' : 'js')] += await this.tryMinify(dirPath) } catch(err) { }
+                }
             }
 
             resolve(data)
