@@ -2,6 +2,7 @@ var fs = require('fs')
 
 module.exports = class SK_Window {
     constructor(opt){
+        this.sk = opt.sk
     }
 
     loadActions(srcPath){
@@ -11,28 +12,29 @@ module.exports = class SK_Window {
             var actions = {}
             for (var i = 0; i < actionsFiles.length; i++){
                 var actionName = actionsFiles[i].split('.')[0]
-                var action = new (require(actionsPath + actionName + '.js'))(this.window)
+                var action = new (require(actionsPath + actionName + '.js'))({sk: this.sk, window: this.window})
                 action.id = actionName
                 actions[actionName] = action
             }
 
             return actions
         } catch(err) {
-            console.error(err)
+            //console.error(err)
+            console.error('Could not load actions at ' + srcPath)
         }
 
         return {}
     }
 
     captureActions(route, actions, onValidate){
-        global.sk.engine.on(`action_${route}`, async (msg, rW, srcOpt) => {
+        this.sk.engine.on(`action_${route}`, async (msg, rW, srcOpt) => {
             var action = actions[msg.action]
             
-            var _sw = global.sk.stats.increment({type: 'action', route: msg.action})
+            var _sw = this.sk.stats.increment({type: 'action', route: msg.action})
 
-            var view = global.sk.views[msg.vid]
+            var view = this.sk.views[msg.vid]
 
-            if (route !== 'root' && global.sk.type === 'dapp') if (view.id !== msg.vid) return
+            if (route !== 'root' && this.sk.type === 'dapp') if (view.id !== msg.vid) return
 
             var res = {}
 

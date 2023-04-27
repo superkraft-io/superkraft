@@ -49,7 +49,9 @@ class SK_Hint {
         if (opt.autoHide   !== undefined) this.autoHide   = opt.autoHide
         if (opt.limitWidth !== undefined) this.limitWidth = opt.limitWidth
         if (opt.sticky     !== undefined) this.sticky     = opt.sticky
-         
+        
+        this.classes = opt.classes || ''
+
         this.hideOnMove = opt.hideOnMove
         
         if (opt.instaShow) this.instaShow = opt.instaShow //must always be last
@@ -94,6 +96,9 @@ class SK_Hint {
 
         
         if (this.__hint){
+            this.__hint.classRemove(this.classes)
+
+            this.__hint.classAdd(this.classes)
             this.__hint.content = this.__text
             this.__hint.updatePos()
             return
@@ -110,6 +115,8 @@ class SK_Hint {
 
             if (this.sticky) _c.animated = false
             if (!this.limitWidth) _c.style.maxWidth = '100%'
+
+            _c.classAdd(this.classes)
 
             this.currentHintUUID = _c.uuid
             _c.onHide = uuid =>{ if (uuid === this.currentHintUUID) this.onHide() }

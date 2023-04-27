@@ -4,6 +4,8 @@ module.exports = class sk_ui {
     constructor(opt){
         this.opt = opt
 
+        this.sk = opt.sk
+
         this.paths = opt.paths
 
         this.routes = {
@@ -24,7 +26,7 @@ module.exports = class sk_ui {
         this.endpoint = (opt.endpoint === 'wapp' ? new sk_ui_wapp(this) : new sk_ui_dapp(this))
 
 
-        this.fontMngr = new (require('./sk_ui_fontMngr.js'))({parent: this})
+        this.fontMngr = new (require('./sk_ui_fontMngr.js'))({sk: this.sk, parent: this})
         this.fontMngr.init()
 
 
@@ -135,7 +137,7 @@ module.exports = class sk_ui {
     renderInfo(viewUIComponentsPath){
         var results = {
             
-            useCDN: (global.sk.cdn ? true : false),
+            useCDN: (this.sk.cdn ? true : false),
 
             head: __dirname + '/head.ejs',
             script: __dirname + '/script.ejs',

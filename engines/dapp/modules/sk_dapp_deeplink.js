@@ -4,13 +4,14 @@ var fs = require('fs-extra')
 module.exports = class SK_DAPP_Deeplink {
     constructor(opt){
         this.opt = opt
-        
-        if (!global.sk.dapp.deeplink) return
+        this.sk = opt.sk
+
+        if (!this.sk.dapp.deeplink) return
 
         this.configSchemes()
 
-        if (global.sk.sysInfo.os === 'win') this.osModule = new SK_DAPP_Deeplink_win({parent: this})
-        else this.osModule = new SK_DAPP_Deeplink_macos({parent: this})
+        if (this.sk.sysInfo.os === 'win') this.osModule = new SK_DAPP_Deeplink_win({parent: this, sk: this.sk})
+        else this.osModule = new SK_DAPP_Deeplink_macos({parent: this, sk: this.sk})
 
         this.osModule.init()
 
@@ -21,14 +22,14 @@ module.exports = class SK_DAPP_Deeplink {
     }
 
     configSchemes(){
-        global.sk.app.setAsDefaultProtocolClient(global.sk.dapp.deeplink.scheme)
+        this.sk.app.setAsDefaultProtocolClient(this.sk.dapp.deeplink.scheme)
     }
 
     parseData(data){
         try {
             var results = {pairs: {}}
 
-            var str = data.replace(global.sk.dapp.deeplink.scheme + '://', '')
+            var str = data.replace(this.sk.dapp.deeplink.scheme + '://', '')
 
             var qSplit = str.split('?')
             results.start = qSplit[0]
@@ -52,14 +53,15 @@ module.exports = class SK_DAPP_Deeplink {
 class SK_DAPP_Deeplink_win {
     constructor(opt){
         this.opt = opt
+        this.sk = opt.sk
 
-        this.appName = global.sk.app.name.split(' ').join('-').toLowerCase()
+        this.appName = this.sk.app.name.split(' ').join('-').toLowerCase()
 
         this.paths = {
-            tmp: global.sk.app.getPath('temp') + '\\' + this.appName + '\\'
+            tmp: this.sk.app.getPath('temp') + '\\' + this.appName + '\\'
         }
         
-        if (global.sk.sysInfo.os === 'macos') this.paths.tmp = this.paths.tmp.split('\\').join('//')
+        if (this.sk.sysInfo.os === 'macos') this.paths.tmp = this.paths.tmp.split('\\').join('//')
 
         if (!fs.existsSync(this.paths.tmp)) fs.mkdirSync(this.paths.tmp)
 
@@ -73,7 +75,7 @@ class SK_DAPP_Deeplink_win {
 
         for (var i = 0; i < process.argv.length; i++){
             var entry = process.argv[i]
-            if (entry.indexOf(global.sk.dapp.deeplink.scheme + '://') > -1){
+            if (entry.indexOf(this.sk.dapp.deeplink.scheme + '://') > -1){
                 deeplinkData = this.opt.parent.parseData(entry)
                 break
             }
@@ -109,7 +111,7 @@ class SK_DAPP_Deeplink_win {
 
             try { 
                 var data = fs.readJSONSync(this.paths.deeplink)
-                global.sk.ums.broadcast('sk_deeplink', data)
+                this.sk.ums.broadcast('sk_deeplink', data)
             } catch(err) {
                 console.error('===== deeplink error: could not read deeplink file')
             }
@@ -122,14 +124,15 @@ class SK_DAPP_Deeplink_win {
 class SK_DAPP_Deeplink_macos {
     constructor(opt){
         this.opt = opt
+        this.sk = opt.sk
     }
 
     init(){
-        global.sk.app.on('open-url', (event, url)=>{
+        this.sk.app.on('open-url', (event, url)=>{
             event.preventDefault()
 
             var data =  this.opt.parent.parseData(url)
-            global.sk.ums.broadcast('sk_deeplink', data)
+            this.sk.ums.broadcast('sk_deeplink', data)
         })
     }
 

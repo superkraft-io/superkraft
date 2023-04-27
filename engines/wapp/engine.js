@@ -14,14 +14,14 @@ const helmet      = require('helmet')
 
 module.exports = class SK_WebEngine extends SK_RootEngine {
     constructor(opt){
-        super()
+        super(opt)
     }
 
     init(){
         return new Promise(async resolve => {
             this.express = express
-            global.sk.app = this.express()
-            var app = global.sk.app
+            this.sk.app = this.express()
+            var app = this.sk.app
             this.app = app
             
             app.get(this.express.json())
@@ -54,7 +54,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
               
             var csp = {defaultSrc: ["'self'"]}
-            for (var _i in global.sk.csp) csp[_i] = ["'self'", ...global.sk.csp[_i]]
+            for (var _i in this.sk.csp) csp[_i] = ["'self'", ...this.sk.csp[_i]]
 
             //The following two policies will mess up social sign ins like Google and Facebook
             //app.use(helmet.crossOriginEmbedderPolicy())
@@ -70,15 +70,15 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
             this.paths = {
                 frontend: {
-                    sk: global.sk.paths.sk_frontend,
+                    sk: this.sk.paths.sk_frontend,
                     ui: {
-                        core   : global.sk.ui.paths.frontend.core,
-                        shared : global.sk.ui.paths.frontend.shared,
-                        view   : global.sk.ui.paths.frontend.view,
-                        global : global.sk.ui.paths.frontend.global,
-                        font   : global.sk.ui.paths.frontend.font
+                        core   : this.sk.ui.paths.frontend.core,
+                        shared : this.sk.ui.paths.frontend.shared,
+                        view   : this.sk.ui.paths.frontend.view,
+                        global : this.sk.ui.paths.frontend.global,
+                        font   : this.sk.ui.paths.frontend.font
                     },
-                    app: global.sk.paths.app_frontend,
+                    app: this.sk.paths.app_frontend,
                 }
             }
 
@@ -89,20 +89,20 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
             app.use('/', this.express.static(this.paths.frontend.app.split('\\').join('/')))
        
             
-            if (global.sk.cdn && global.sk.cdn.servePath) global.sk.app.use(global.sk.cdn.route, this.express.static(global.sk.cdn.servePath))
+            if (this.sk.cdn && this.sk.cdn.servePath) this.sk.app.use(this.sk.cdn.route, this.express.static(this.sk.cdn.servePath))
 
-            global.sk.app.use(global.sk.ui.routes.core, this.express.static(this.paths.frontend.ui.core))
-            global.sk.app.use(global.sk.ui.routes.shared, this.express.static(this.paths.frontend.ui.shared))
+            this.sk.app.use(this.sk.ui.routes.core, this.express.static(this.paths.frontend.ui.core))
+            this.sk.app.use(this.sk.ui.routes.shared, this.express.static(this.paths.frontend.ui.shared))
 
-            if (global.sk.ui.routes.font) global.sk.app.use(global.sk.ui.routes.font, this.express.static(this.paths.frontend.ui.font))
+            if (this.sk.ui.routes.font) this.sk.app.use(this.sk.ui.routes.font, this.express.static(this.paths.frontend.ui.font))
 
 
-            if (global.sk.complexity) app.use('/complexity', this.express.static(global.sk.complexity.paths.frontend))
+            if (this.sk.complexity) app.use('/complexity', this.express.static(this.sk.complexity.paths.frontend))
 
             
             /*********************/
 
-            var postsFolder = global.sk.skModule.opt.postsRoot
+            var postsFolder = this.sk.skModule.opt.postsRoot
             
             this.posts = {}
 
@@ -116,12 +116,12 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
                 var postName = _filename.split('.')[0]
                 try {
-                    var postModule = new (require(postsFolder + _filename))()
+                    var postModule = new (require(postsFolder + _filename))({sk: this.sk})
 
                     this.posts[postName] = postModule
                     
-                    global.sk.app.post('/' + postModule.info.route, async (req, res)=>{
-                        var _sw = global.sk.stats.increment({type: 'post', route: postModule.info.route})
+                    this.sk.app.post('/' + postModule.info.route, async (req, res)=>{
+                        var _sw = this.sk.stats.increment({type: 'post', route: postModule.info.route})
                 
                         var _res = {}
                         var reject = msg => {
@@ -134,7 +134,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
                         if (postModule.info.protected){
                             var auth_token = req.cookies.auth_token
                             if (!auth_token) return reject('access_denied')
-                            var isAuthTokenValid = await global.sk.engine.isAuthTokenValid(auth_token)
+                            var isAuthTokenValid = await this.sk.engine.isAuthTokenValid(auth_token)
                             if (isAuthTokenValid === 'invalid_token') return reject('invalid_token')
                             if (!isAuthTokenValid) return reject('access_denied')
                         }
@@ -158,9 +158,10 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
 
             this.mobile = new (require('./modules/sk_wapp_mobile.js'))({
+                sk: this.sk,
                 express: this.express,
                 xapp: app,
-                mopts: global.sk.mobile
+                mopts: this.sk.mobile
             })
             await this.mobile.init()
 
@@ -173,8 +174,8 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
     on(cmd, cb){
         var actionRoute = '/' + cmd
-        global.sk.app.post(actionRoute, (req, res) => {
-            var _sw = global.sk.stats.increment({type: 'post', route: actionRoute})
+        this.sk.app.post(actionRoute, (req, res) => {
+            var _sw = this.sk.stats.increment({type: 'post', route: actionRoute})
                 
             cb(
                 req.body,
@@ -192,9 +193,19 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
     start(){
         return new Promise((resolve, reject)=>{
-            var config = global.sk.config
+            var config = this.sk.config
+
+            var ports = {
+                http: this.sk.ports.http || config.webserver.ports.http,
+                https: this.sk.ports.https || config.webserver.ports.https
+            }
+
             if (config.isWhat.env === 'dev'){
-                http.createServer(this.app).listen(config.webserver.ports.http)
+                this.servers = {http: http.createServer(this.app).listen(ports.http)}
+                this.servers.http.on('error', err => {
+                    console.log('Failed listening to port ' + ports.http)
+                    reject()
+                })
                 resolve()
             } else {
 
@@ -247,25 +258,35 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
                 this.servers = {}
                 
-                this.servers.https = https.createServer(certOpt, this.app)
                 
-                this.servers.https.listen(config.webserver.ports.https, function() {
-                    console.log("[WAPP ENGINE] Listening on " + config.webserver.ports.https)
+
+                this.servers.https = https.createServer(certOpt, this.app)
+                this.servers.https.on('error', err => {
+                    console.log('Failed listening to port ' + ports.http)
+                    reject()
+                })
+
+                this.servers.https.listen(ports.http, function() {
+                    console.log("[WAPP ENGINE] Listening on " + ports.http)
                     resolve()
                 })
     
                 this.servers.http = http.createServer(
                     function (req, res) {
                         try {
-                            res.writeHead(301, { "Location": "https://" + req.headers['host'].replace(config.webserver.ports.http, config.webserver.ports.https) + req.url })
+                            res.writeHead(301, { "Location": "https://" + req.headers['host'].replace(ports.http, ports.https) + req.url })
                             res.end()
                         } catch(e) {
                             console.error('Invalid request: ' + req.url + '      ' + JSON.stringify(req.headers))
                         }
                     }
                 )
+                this.servers.http.on('error', err => {
+                    console.log('Failed listening to port ' + ports.http)
+                    reject()
+                })
                 
-                this.servers.http.listen(config.webserver.ports.http)
+                this.servers.http.listen(ports.http)
             }
         })
     }
@@ -276,7 +297,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
         return new Promise(async resolve => {
             var validationRes = false
             try {
-                var authRes = await global.sk.database.do.authenticate(authToken)
+                var authRes = await this.sk.database.do.authenticate(authToken)
                 if (!authRes.error) validationRes = true
                 if (authRes.error === 'invalid_token') validationRes = 'invalid_token'
             } catch(err) {
@@ -295,7 +316,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
             if (view.info.checkAuth){
                 if (!auth_token) return resolve(false)
 
-                var validationRes = await global.sk.engine.isAuthTokenValid(auth_token, true)
+                var validationRes = await this.sk.engine.isAuthTokenValid(auth_token, true)
                 if (!validationRes) return resolve(false)
 
                 resolve(validationRes)

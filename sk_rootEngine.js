@@ -2,16 +2,17 @@ var fs = require('fs')
 
 module.exports = class sk_RootEngine {
     constructor(opt){
+        this.sk = opt.sk
         this.paths = {
             frontend: {
-                sk: global.sk.paths.sk_frontend,
+                sk: this.sk.paths.sk_frontend,
                 ui: {
-                    core   : global.sk.ui.paths.frontend.core,
-                    shared : global.sk.ui.paths.frontend.shared,
-                    view   : global.sk.ui.paths.frontend.view,
-                    global : global.sk.ui.paths.frontend.global
+                    core   : this.sk.ui.paths.frontend.core,
+                    shared : this.sk.ui.paths.frontend.shared,
+                    view   : this.sk.ui.paths.frontend.view,
+                    global : this.sk.ui.paths.frontend.global
                 },
-                app: global.sk.paths.app_frontend,
+                app: this.sk.paths.app_frontend,
             }
         }
     }
@@ -22,22 +23,22 @@ module.exports = class sk_RootEngine {
             var priorities = {}
 
             console.log('Loading views...')
-            var viewsToLoad = fs.readdirSync(global.sk.paths.views)
+            var viewsToLoad = fs.readdirSync(this.sk.paths.views)
             
-            global.sk.viewList = []
+            this.sk.viewList = []
 
             for (var i = 0; i < viewsToLoad.length; i++){
                 var viewName = viewsToLoad[i]
                 
                 if (viewName.toLocaleLowerCase().indexOf('.ds_store') > -1) continue
 
-                var viewRoot = global.sk.paths.views + viewName + '/'
+                var viewRoot = this.sk.paths.views + viewName + '/'
                 var viewPath = viewRoot + 'main.js'
                 try {
-                    var view = new (require(viewPath))()
+                    var view = new (require(viewPath))({sk: this.sk})
                     view.root = viewRoot
                     if (view.info.mainRedirect){
-                        view = new (require(view.info.mainRedirect))
+                        view = new (require(view.info.mainRedirect))({sk: this.sk})
                     }
                     
                     var priority = view.info.priority || 0
@@ -45,7 +46,7 @@ module.exports = class sk_RootEngine {
                     if (!priorities[priority]) priorities[priority] = []
                     priorities[priority].push({name: viewName, view: view})
                    
-                    global.sk.viewList.push(viewName)
+                    this.sk.viewList.push(viewName)
 
                     console.log('[SUCCESS] View loaded: ' + viewName)
                 } catch(err) {
@@ -65,10 +66,10 @@ module.exports = class sk_RootEngine {
                     try {
                         await info.view.init({
                             id: info.name,
-                            root: global.sk.paths.views + info.name + '/'
+                            root: this.sk.paths.views + info.name + '/'
                         })
 
-                        global.sk.views[info.name] = info.view
+                        this.sk.views[info.name] = info.view
                         console.log('[SUCCESS] View initialized: ' + info.name)
                     } catch(err) {
                         console.error('[ERROR] Could not initialize view %s', info.name)

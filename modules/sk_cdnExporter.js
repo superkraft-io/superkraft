@@ -2,6 +2,7 @@ const fs = require('fs-extra')
 
 module.exports = class SK_CDN_Exporter {
     constructor(opt){
+        this.sk = opt.sk
         this.opt = opt
     }
 
@@ -81,8 +82,8 @@ module.exports = class SK_CDN_Exporter {
                 js: ''
             }
 
-            for (var _p in global.sk.paths.sk_ui.frontend){
-                var path = global.sk.paths.sk_ui.frontend[_p]
+            for (var _p in this.sk.paths.sk_ui.frontend){
+                var path = this.sk.paths.sk_ui.frontend[_p]
     
                 var cRes = await this.consolidate(path, (_p === 'core' ? 'sk_ui_component' : undefined))
 
@@ -107,12 +108,12 @@ module.exports = class SK_CDN_Exporter {
 
     consolidateViews(){
         return new Promise(async resolve => {
-            for (var _v in global.sk.views){
-                var view = global.sk.views[_v]
-                var cRes = await this.consolidateView(global.sk.paths.views + view.id + '/')
+            for (var _v in this.sk.views){
+                var view = this.sk.views[_v]
+                var cRes = await this.consolidateView(this.sk.paths.views + view.id + '/')
 
-                var viewPath = global.sk.cdn.servePath + '/views/' + view.id + '/'
-                fs.copySync(global.sk.paths.views + view.id + '/frontend', viewPath)
+                var viewPath = this.sk.cdn.servePath + '/views/' + view.id + '/'
+                fs.copySync(this.sk.paths.views + view.id + '/frontend', viewPath)
                 fs.removeSync(viewPath + 'sk_ui')
                 
 
@@ -148,19 +149,19 @@ module.exports = class SK_CDN_Exporter {
 
     export(){
         return new Promise(async resolve => {
-            fs.removeSync(global.sk.cdn.servePath)
-            fs.mkdirSync(global.sk.cdn.servePath)
-            fs.mkdirSync(global.sk.cdn.servePath + '/views/')
+            fs.removeSync(this.sk.cdn.servePath)
+            fs.mkdirSync(this.sk.cdn.servePath)
+            fs.mkdirSync(this.sk.cdn.servePath + '/views/')
 
             var data = await this.consolidateUI()
 
-            fs.writeFileSync(global.sk.cdn.servePath + '/sk_ui.css', data.css)
-            fs.writeFileSync(global.sk.cdn.servePath + '/sk_ui.js', data.js)
+            fs.writeFileSync(this.sk.cdn.servePath + '/sk_ui.css', data.css)
+            fs.writeFileSync(this.sk.cdn.servePath + '/sk_ui.js', data.js)
 
-            fs.copySync(global.sk.paths.superkraft + '/frontend/', global.sk.cdn.servePath + '/sk_frontend/')
+            fs.copySync(this.sk.paths.superkraft + '/frontend/', this.sk.cdn.servePath + '/sk_frontend/')
 
-            fs.copySync(global.sk.paths.app_frontend, global.sk.cdn.servePath + '/app_frontend/')
-            fs.removeSync(global.sk.cdn.servePath + '/app_frontend/sk_ui/')
+            fs.copySync(this.sk.paths.app_frontend, this.sk.cdn.servePath + '/app_frontend/')
+            fs.removeSync(this.sk.cdn.servePath + '/app_frontend/sk_ui/')
             
             resolve()
         })

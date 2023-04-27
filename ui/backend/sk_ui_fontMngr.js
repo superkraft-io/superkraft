@@ -3,16 +3,16 @@ var fs = require('fs')
 module.exports = class SK_UI_FontManager {
     constructor(opt){
         this.opt = opt
+        this.sk = opt.sk
     }
 
     init(){
-       
-        var fontInfo = global.sk.ui.font
+        var fontInfo = this.sk.ui.font
         if (!fontInfo) return
 
         console.error(`WARNING! Some fonts cause INCREDIBLY SIGNIFICANT slowdown of repaint inside Safari browser, which results in extremely slow and choppy scrolling in page and elements. Default fonts seem to work fine.`)
 
-        var fontRoot = (global.sk.paths.root + 'sk_font/').split('\\').join('/')
+        var fontRoot = (this.sk.paths.root + 'sk_font/').split('\\').join('/')
         var frontendPath = fontRoot + 'frontend/'
         try { fs.mkdirSync(fontRoot) } catch(err) { }
         try { fs.mkdirSync(frontendPath) } catch(err) { }

@@ -1,11 +1,13 @@
 module.exports = class SK_UMS {
     constructor(opt){
+        this.sk = opt.sk
+        
         this.events = {}
         this.clientIDCounter = -1
 
 
         opt.app.whenReady().then(() => {
-            global.sk.wscb.on('sk_ums', (msg, rW)=>{
+            this.sk.wscb.on('sk_ums', (msg, rW)=>{
                 if (msg.action === 'newID'){
                     rW({id: this.newID()})
                 }
@@ -32,7 +34,7 @@ module.exports = class SK_UMS {
 
     toFE(action, eventID, data){
         return new Promise(resolve => {
-            sk.wscb.send({cmd: 'sk_ums', action: action, eventID: eventID, data: data}, res => {
+            this.sk.wscb.send({cmd: 'sk_ums', action: action, eventID: eventID, data: data}, res => {
                 resolve(res)
             })
         })
@@ -65,7 +67,7 @@ module.exports = class SK_UMS {
     }
 
     addOrGet(eventID){
-        if (!this.events[eventID]) this.events[eventID] = new SK_UMS_Event({id: eventID})
+        if (!this.events[eventID]) this.events[eventID] = new SK_UMS_Event({sk: this.sk, id: eventID})
         return this.events[eventID]
     }
     on(eventID, cb){
@@ -83,6 +85,7 @@ module.exports = class SK_UMS {
 
 class SK_UMS_Event {
     constructor(opt){
+        this.sk = opt.sk
         this.id = opt.id
         this.hooks = []
         this.lastSender = undefined
@@ -91,7 +94,7 @@ class SK_UMS_Event {
 
     getDataFromFrontend(){
         return new Promise(async resolve => {
-            var res = await sk.ums.toFE('getDataOfEvent', this.id)
+            var res = await this.sk.ums.toFE('getDataOfEvent', this.id)
             resolve(res.data)
         })
     }

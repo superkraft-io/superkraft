@@ -2,12 +2,12 @@ module.exports = class SK_Action extends SK_RootAction {
     exec(opt, res, view, _v){
 
         var info = {
-            os: global.sk.sysInfo.os,
-            arch: global.sk.sysInfo.arch,
+            os: this.sk.sysInfo.os,
+            arch: this.sk.sysInfo.arch,
             
             actions: Object.keys(view.actions),
             main: view.info.main,
-            version: global.sk.app.getVersion(),
+            version: this.sk.app.getVersion(),
 
             view: {
                 minimizable : _v.minimizable,

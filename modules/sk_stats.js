@@ -1,5 +1,7 @@
 module.exports = class SK_Stats {
-    constructor(){
+    constructor(opt){
+        this.sk = opt.sk
+
         this.stats = {}
 
         this.oldStats = JSON.stringify(this.stats)
@@ -11,7 +13,7 @@ module.exports = class SK_Stats {
     }
 
     increment(opt){
-        if (!global.sk.stats){
+        if (!this.sk.stats){
             return {
                 end: ()=>{
                     //do nothing

@@ -30,3 +30,7 @@
 .sk_ui_hint > .sk_ui_label {
     color: var(--sk_ui_text_color_full);
 }
+
+.sk_ui_hint_green {
+    background-color: rgba(0, 156, 0, 0.418);
+}

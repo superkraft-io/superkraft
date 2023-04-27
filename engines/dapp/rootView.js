@@ -4,6 +4,9 @@ const ejse = require('ejs-electron')
 
 
 module.exports = class SK_RootView extends SK_RootViewCore {
+    constructor(opt){
+        super(opt)
+    }
     init(opt){
         return new Promise(async resolve => {
             
@@ -12,18 +15,18 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                 frontend: {
                     view: opt.root + 'frontend/',
 
-                    sk: global.sk.paths.sk_frontend,
+                    sk: this.sk.paths.sk_frontend,
 
-                    ui: global.sk.ui.routes.core,
-                    ui_shared: global.sk.ui.routes.shared,
-                    ui_global: global.sk.ui.routes.global,
+                    ui: this.sk.ui.routes.core,
+                    ui_shared: this.sk.ui.routes.shared,
+                    ui_global: this.sk.ui.routes.global,
 
-                    app_root: global.sk.paths.root,
-                    app: global.sk.paths.app_frontend,
-                    global: global.sk.paths.globalFrontend
+                    app_root: this.sk.paths.root,
+                    app: this.sk.paths.app_frontend,
+                    global: this.sk.paths.globalFrontend
                 },
 
-                icon: this.info.icon || global.sk.paths.icons.view,
+                icon: this.info.icon || this.sk.paths.icons.view,
             }
 
             function fixPaths(list){
@@ -38,7 +41,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             this.routes = fixPaths(this.routes)
 
             
-            if (global.sk.complexity) this.routes.frontend.complexity = global.sk.paths.complexity.frontend
+            if (this.sk.complexity) this.routes.frontend.complexity = this.sk.paths.complexity.frontend
 
             this.viewInfo = await this._init(opt)
             
@@ -64,14 +67,14 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             resolve()
 
             if (doShow){
-                if (!global.sk.showWindowWWaitTime) global.sk.showWindowWWaitTime = 1
+                if (!this.sk.showWindowWWaitTime) this.sk.showWindowWWaitTime = 1
                 
-                global.sk.showWindowWWaitTime += 500
+                this.sk.showWindowWWaitTime += 500
 
                 setTimeout(()=>{
                     this.create()
                     this.show()
-                }, global.sk.showWindowWWaitTime)
+                }, this.sk.showWindowWWaitTime)
             }
         })
     }
@@ -110,30 +113,30 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         ejse.data({
             ...{
                 l10n: {
-                    countries: sk.l10n.listCountries(),
-                    phrases: sk.l10n.getForCountry(global.sk.country)
+                    countries: this.sk.l10n.listCountries(),
+                    phrases: this.sk.l10n.getForCountry(this.sk.country)
                 }
             },
 
             ...this.viewInfo,
             ...{
                 userData: {},
-                globalData: sk.globalData
+                globalData: this.sk.globalData
             }
         })
 
-        this._view.loadURL('file://' + global.sk.paths.superkraft + '/template.ejs')
+        this._view.loadURL('file://' + this.sk.paths.superkraft + '/template.ejs')
     }
 
     show(){
         if (!this._view) this.create()
         this._view.show()
         this.closed = false
-        sk.ums.broadcast('sk_view_cmd-' + this.id, {viewID: this.id, action: 'show'})
+        this.sk.ums.broadcast('sk_view_cmd-' + this.id, {viewID: this.id, action: 'show'})
     }
 
     hide(){
-        sk.ums.broadcast('sk_view_cmd-' + this.id, {viewID: this.id, action: 'hide'})
+        this.sk.ums.broadcast('sk_view_cmd-' + this.id, {viewID: this.id, action: 'hide'})
         setTimeout(()=>{
             this._view.hide()
             this.setClosed()

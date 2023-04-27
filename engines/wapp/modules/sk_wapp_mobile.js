@@ -4,7 +4,7 @@ var fs = require('fs')
 module.exports = class SK_WAPP_Mobile {
     constructor(opt){
         this.opt = opt
-        
+        this.sk = opt.sk
         
         var viewInfo = {}
 
@@ -28,7 +28,7 @@ module.exports = class SK_WAPP_Mobile {
     }
 
     initPathsAndRoutes(){
-        this.paths = {root: global.sk.paths.root}
+        this.paths = {root: this.sk.paths.root}
         var pCopyAdd = (from, key, path) => { this.paths[key] = this.paths[from] + path + '/' }
 
         pCopyAdd('root', 'container', 'sk_wapp_mobile')
@@ -87,27 +87,27 @@ module.exports = class SK_WAPP_Mobile {
             }
 
             var props = ['width=device-width', 'initial-scale=1.0']
-            if (!global.sk.mobile.allowScaling) props.push('user-scalable=no')
+            if (!this.sk.mobile.allowScaling) props.push('user-scalable=no')
             this.templateAdd(`<meta name="viewport" content="${props.join(', ')}">`)
             
-            if (global.sk.paths.icons.app) this.templateAdd('<link rel="apple-touch-icon" href="<%>">', global.sk.paths.icons.app)
-            if (global.sk.mobile.name){
-                manifest.name = global.sk.mobile.name
-                this.templateAdd('<meta name="apple-mobile-web-app-title" content="<%>">', global.sk.mobile.name)
+            if (this.sk.paths.icons.app) this.templateAdd('<link rel="apple-touch-icon" href="<%>">', this.sk.paths.icons.app)
+            if (this.sk.mobile.name){
+                manifest.name = this.sk.mobile.name
+                this.templateAdd('<meta name="apple-mobile-web-app-title" content="<%>">', this.sk.mobile.name)
             }
 
-            if (global.sk.mobile.name) manifest.short_name = global.sk.mobile.short_name
-            if (global.sk.mobile.start_url) manifest.start_url = global.sk.mobile.start_url
-            if (global.sk.mobile.categories) manifest.categories = global.sk.mobile.categories
+            if (this.sk.mobile.name) manifest.short_name = this.sk.mobile.short_name
+            if (this.sk.mobile.start_url) manifest.start_url = this.sk.mobile.start_url
+            if (this.sk.mobile.categories) manifest.categories = this.sk.mobile.categories
 
-            if (global.sk.mobile.nativeStyle){
-                var nS = global.sk.mobile.nativeStyle
+            if (this.sk.mobile.nativeStyle){
+                var nS = this.sk.mobile.nativeStyle
                 if (nS === true) nS = 'fullscreen'
                 if (nS !== undefined && nS !== false && nS !== true) manifest.display = nS
                 this.templateAdd('<meta name="apple-mobile-web-app-capable" content="yes"></meta>')
                 this.templateAdd('<meta name="mobile-web-app-capable" content="yes">')
             }
-            if (global.sk.mobile.statusBarStyle) this.templateAdd('<meta name="apple-mobile-web-app-status-bar-style" content="<%>">', global.sk.mobile.statusBarStyle)
+            if (this.sk.mobile.statusBarStyle) this.templateAdd('<meta name="apple-mobile-web-app-status-bar-style" content="<%>">', this.sk.mobile.statusBarStyle)
             
             fs.writeFileSync(this.paths.manifest, JSON.stringify(manifest))
             this.templateAdd('\n<link rel="manifest" href="<%>" />', this.routes.manifest)
@@ -137,7 +137,7 @@ module.exports = class SK_WAPP_Mobile {
             this.log('Creating splash images')
             var defOpt = {
                 ...{splashOnly: true, log: false, path: mopts.splash.route},
-                ...global.sk.mobile.splash.options
+                ...this.sk.mobile.splash.options
             }
             await this.pwaAssetGenerator.generateImages(mopts.splash.input, this.paths.splash, defOpt)
   

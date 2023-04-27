@@ -2,7 +2,7 @@ module.exports = class SK_Action extends SK_RootAction {
     exec(opt, res, window, wnd){
         switch (opt.action) {
             case 'close':
-                if (window.info.main || opt.terminate) global.sk.engine.terminate()
+                if (window.info.main || opt.terminate) this.sk.engine.terminate()
                 else window.hide()
                 break;
 
@@ -31,7 +31,7 @@ module.exports = class SK_Action extends SK_RootAction {
         
             default:
                 try {
-                    global.sk.views[opt.view][opt.action]()
+                    this.sk.views[opt.view][opt.action]()
                 } catch(err) {
                     console.error(err)
                 }

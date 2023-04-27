@@ -9,7 +9,7 @@ var _os = require('os')
 
 module.exports = class SK_LocalEngine extends SK_RootEngine {
     constructor(opt){
-        super()
+        super(opt)
         this.getSysInfo()
     }
 
@@ -20,9 +20,9 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
 
 
         var arch = 'x64'
-       if (global.sai.os.cpus()[0].model.includes('Apple')) arch = 'arm'
+       if (_os.cpus()[0].model.includes('Apple')) arch = 'arm'
 
-        global.sk.sysInfo = {
+        this.sk.sysInfo = {
             os: os,
             arch: arch
         }
@@ -31,8 +31,8 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
 
     init(){
         return new Promise(resolve => {
-            global.sk._os = _os
-            global.sk.app = app
+            this.sk._os = _os
+            this.sk.app = app
             this.app = app
 
             
@@ -42,11 +42,11 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
                     if (msg.cmd === 'terminate') app.quit()
                 }
             })
-            global.sk.wscb = wscb
+            this.sk.wscb = wscb
 
 
 
-            var postsFolder = global.sk.skModule.opt.postsRoot
+            var postsFolder = this.sk.skModule.opt.postsRoot
             
             this.posts = {}
 
@@ -54,7 +54,7 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
             posts.forEach(_filename => {
                 var postName = _filename.split('.')[0]
                     try {
-                    var postModule = new (require(postsFolder + _filename))()
+                    var postModule = new (require(postsFolder + _filename))({sk: this.sk})
 
                     this.posts[postName] = postModule
                     
@@ -70,7 +70,7 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
             app.on('window-all-closed', () => {
                 // On macOS it is common for applications and their menu bar
                 // to stay active until the user quits explicitly with Cmd + Q
-                /*if (global.sk.sysInfo.os !== 'macos'){
+                /*if (this.sk.sysInfo.os !== 'macos'){
                     app.exit()
                 }
                 */
@@ -89,11 +89,11 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
             })*/
 
 
-            global.sk.ums = new (require('../../modules/sk_ums.js'))({app: app})
+            this.sk.ums = new (require('../../modules/sk_ums.js'))({sk: this.sk, app: app})
             
-            sk.online = false
-            global.sk.ums.on('isOnline', res => {
-                sk.online = res.data
+            this.sk.online = false
+            this.sk.ums.on('isOnline', res => {
+                this.sk.online = res.data
             })
 
             resolve()
@@ -103,10 +103,10 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
     waitForReady(){
         return new Promise(resolve => {
             app.on('ready', ()=>{
-                this.deeplink = new (require('./modules/sk_dapp_deeplink.js'))()
-                global.sk.country = app.getLocale().split('-')[0]
+                this.deeplink = new (require('./modules/sk_dapp_deeplink.js'))({sk: this.sk})
+                this.sk.country = app.getLocale().split('-')[0]
 
-                if (global.sk.onAppReady) global.sk.onAppReady()
+                if (this.sk.onAppReady) this.sk.onAppReady()
 
                 resolve()
             })
@@ -114,35 +114,35 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
     }
 
     on(cmd, cb){
-        global.sk.wscb.on(cmd, async (msg, rW) => {
+        this.sk.wscb.on(cmd, async (msg, rW) => {
             cb(msg, rW)
         })
     }
 
     async terminate(){
         this.closeAllViews()
-        global.sk.timers.destroyAll()
+        this.sk.timers.destroyAll()
 
-        if (global.sk.onBeforeTerminate) await global.sk.onBeforeTerminate()
+        if (this.sk.onBeforeTerminate) await this.sk.onBeforeTerminate()
 
         process.exit()
     }
 
     closeAllViews(){
-        for (var i in global.sk.views){
-            var view = global.sk.views[i]
+        for (var i in this.sk.views){
+            var view = this.sk.views[i]
             if (view.closed === false) view.close()
         }
     }
 
     flog(data){
-        global.sk.ums.broadcast('sk_flog', data)
+        this.sk.ums.broadcast('sk_flog', data)
     }
 
 
     onViewsInitialized(){
-        for (var i in global.sk.views){
-            var view = global.sk.views[i]
+        for (var i in this.sk.views){
+            var view = this.sk.views[i]
             view.onClosed = ()=>{ this.onViewClosed() }
         }
     }
@@ -150,8 +150,8 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
     checkIfAllViewsClosed(){
         var created = []
 
-        for (var i in global.sk.views){
-            var view = global.sk.views[i]
+        for (var i in this.sk.views){
+            var view = this.sk.views[i]
             var _view = view._view
             if (_view) created.push(view)
         }

@@ -1,4 +1,8 @@
 module.exports = class SK_RootView extends SK_RootViewCore {
+    constructor(opt){
+        super(opt)
+    }
+    
     init(opt){
         return new Promise(async resolve => {
             this.route = opt.route
@@ -7,29 +11,29 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                 frontend: {
                     view: this.info.route + 'vfe_frontend/',
 
-                    sk: (global.sk.cdn ? global.sk.cdn.route + 'sk_cdn/sk_frontend' : '/sk'),
+                    sk: (this.sk.cdn ? this.sk.cdn.route + 'sk_cdn/sk_frontend' : '/sk'),
 
-                    ui: global.sk.ui.routes.core,
+                    ui: this.sk.ui.routes.core,
                     ui_shared: 'sk_ui_shared/',
                     ui_global: 'sk_ui_global/',
 
                     
 
-                    app_root: (global.sk.cdn ? global.sk.cdn.route + 'sk_cdn/app_frontend/' : '/'),
-                    app: (global.sk.cdn ? global.sk.cdn.route + 'sk_cdn/app_frontend/' : '/'),
-                    global: (global.sk.cdn ? global.sk.cdn.route + 'sk_cdn/app_global/' : '/global'),
+                    app_root: (this.sk.cdn ? this.sk.cdn.route + 'sk_cdn/app_frontend/' : '/'),
+                    app: (this.sk.cdn ? this.sk.cdn.route + 'sk_cdn/app_frontend/' : '/'),
+                    global: (this.sk.cdn ? this.sk.cdn.route + 'sk_cdn/app_global/' : '/global'),
 
                     complexity: '/complexity/',
 
-                    favIcon: global.sk.paths.icons.favIcon
+                    favIcon: this.sk.paths.icons.favIcon
                 }
             }
 
 
            
-            if (global.sk.mobile) this.routes.frontend.mobile = global.sk.engine.mobile.viewInfo
+            if (this.sk.mobile) this.routes.frontend.mobile = this.sk.engine.mobile.viewInfo
             
-            if (global.sk.complexity) this.routes.frontend.complexity = '/complexity/'
+            if (this.sk.complexity) this.routes.frontend.complexity = '/complexity/'
 
 
            
@@ -37,23 +41,23 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             await this._init(opt)
 
 
-            if (global.sk.cdn) this.routes.frontend.ui_cdn = global.sk.cdn.route + 'sk_cdn'
+            if (this.sk.cdn) this.routes.frontend.ui_cdn = this.sk.cdn.route + 'sk_cdn'
 
             
             var render = async (res, page, userData, country) => {
-                if (global.sk.cdn) this.routes.frontend.view = global.sk.cdn.route + 'sk_cdn/views/' + this.id + '/'
+                if (this.sk.cdn) this.routes.frontend.view = this.sk.cdn.route + 'sk_cdn/views/' + this.id + '/'
                 
 
-                var globalData = sk.globalData
-                if (sk.dynamicGlobalData) globalData = {...globalData, ...sk.dynamicGlobalData()}
+                var globalData = this.sk.globalData
+                if (this.sk.dynamicGlobalData) globalData = {...globalData, ...this.sk.dynamicGlobalData()}
 
                 res.render(
                     page,
                     {
                         ...{
                             l10n: {
-                                countries: await sk.l10n.listCountries(),
-                                phrases: await sk.l10n.getForCountry(country)
+                                countries: await this.sk.l10n.listCountries(),
+                                phrases: await this.sk.l10n.getForCountry(country)
                             }
                         },
 
@@ -66,18 +70,17 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                 )
             }
            
-            global.sk.app.use(this.routes.frontend.view, global.sk.engine.express.static(opt.root + 'frontend/'))
-            global.sk.app.use(this.routes.frontend.global, global.sk.engine.express.static(global.sk.paths.globalFrontend))
+            this.sk.app.use(this.routes.frontend.view, this.sk.engine.express.static(opt.root + 'frontend/'))
+            this.sk.app.use(this.routes.frontend.global, this.sk.engine.express.static(this.sk.paths.globalFrontend))
         
 
             if (this.info.vanilla){
-                global.sk.app.use('/vanillaFE', global.sk.engine.express.static(global.sk.paths.vanillaFrontend))
+                this.sk.app.use('/vanillaFE', this.sk.engine.express.static(this.sk.paths.vanillaFrontend))
                 this.routes.frontend.view = {}
-                //if () 
             }
 
-            global.sk.app.get(this.info.route, async (req, res)=>{
-                global.sk.stats.increment({type: 'get', route: this.info.route})
+            this.sk.app.get(this.info.route, async (req, res)=>{
+                this.sk.stats.increment({type: 'get', route: this.info.route})
                 
                 var auth_token = req.cookies.auth_token
 
@@ -95,7 +98,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                         if (this.info.onAuthFail) return res.redirect(this.info.onAuthFail)
                         if (!this.info.bypassOnAuthFail) return res.redirect('/404')
                     } else {
-                        var auth_res = await global.sk.engine.isAuthTokenValid(auth_token, true)
+                        var auth_res = await this.sk.engine.isAuthTokenValid(auth_token, true)
                     
                         if (auth_res){
                             if (auth_res.error === 'invalid_token'){
@@ -104,7 +107,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
 
                             //check ban
-                            var latestRestrictionRes = await global.sk.database.do.getLatestRestriction({user_id: auth_res.userID})
+                            var latestRestrictionRes = await this.sk.database.do.getLatestRestriction({user_id: auth_res.userID})
                             if (latestRestrictionRes.latestRestriction){
                                 if (this.info.route !== '/restricted') return res.redirect('/restricted')
                             } else {
@@ -121,7 +124,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                                     this.onCheckAccActivation ?
                                     await this.onCheckAccActivation(auth_token)
                                     :
-                                    (await global.sk.database.do.isAccActivated(auth_token)).accActivated
+                                    (await this.sk.database.do.isAccActivated(auth_token)).accActivated
                                 )
                                 
                                 if (isAccActivated){
@@ -165,7 +168,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                     lang = 'en'
                 }
 
-                var ejsPath = global.sk.paths.superkraft + '/template.ejs'
+                var ejsPath = this.sk.paths.superkraft + '/template.ejs'
                 if (this.info.vanilla){
                     ejsPath = this.root + 'frontend/view.ejs'
                 }
