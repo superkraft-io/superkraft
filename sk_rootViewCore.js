@@ -31,7 +31,7 @@ module.exports = class sk_RootViewCore {
             if (this.sk.type === 'dapp') this.viewInfo.views = this.sk.viewList
 
 
-
+            if (!fs.existsSync(this.viewInfo.globalHead             )) this.viewInfo.globalHead            = this.sk.paths.superkraft + 'sk_emptyEJS.ejs'
             if (!fs.existsSync(this.viewInfo.viewHead               )) this.viewInfo.viewHead              = this.sk.paths.superkraft + 'sk_emptyEJS.ejs'
             if (!fs.existsSync(this.viewInfo.viewBodyScripts.start  )) this.viewInfo.viewBodyScripts.start = this.sk.paths.superkraft + 'sk_emptyEJS.ejs'
             if (!fs.existsSync(this.viewInfo.viewBodyScripts.end    )) this.viewInfo.viewBodyScripts.end   = this.sk.paths.superkraft + 'sk_emptyEJS.ejs'
