@@ -262,12 +262,12 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
                 this.servers.https = https.createServer(certOpt, this.app)
                 this.servers.https.on('error', err => {
-                    console.log('Failed listening to port ' + ports.http)
+                    console.log('Failed listening to port ' + ports.https)
                     reject()
                 })
 
-                this.servers.https.listen(ports.http, function() {
-                    console.log("[WAPP ENGINE] Listening on " + ports.http)
+                this.servers.https.listen(ports.https, function() {
+                    console.log("[WAPP ENGINE] Listening on " + ports.https)
                     resolve()
                 })
     
@@ -283,7 +283,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
                 )
                 this.servers.http.on('error', err => {
                     console.log('Failed listening to port ' + ports.http)
-                    reject()
+                    
                 })
                 
                 this.servers.http.listen(ports.http)

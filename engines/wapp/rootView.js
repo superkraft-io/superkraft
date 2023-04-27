@@ -51,13 +51,16 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                 var globalData = this.sk.globalData
                 if (this.sk.dynamicGlobalData) globalData = {...globalData, ...this.sk.dynamicGlobalData()}
 
+                var countries = await this.sk.l10n.listCountries()
+                var phrases = await this.sk.l10n.getForCountry(country)
+
                 res.render(
                     page,
                     {
                         ...{
                             l10n: {
-                                countries: await this.sk.l10n.listCountries(),
-                                phrases: await this.sk.l10n.getForCountry(country)
+                                countries: countries,
+                                phrases: phrases
                             }
                         },
 
