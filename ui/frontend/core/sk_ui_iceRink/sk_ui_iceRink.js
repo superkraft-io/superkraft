@@ -12,8 +12,8 @@ class sk_ui_iceRink extends sk_ui_component {
         this.onWheel = _e => {
             //if (this.scrollbarY_native.element.scrollTop + _e.deltaY < this.content.storedHeight && this.content.storedHeight === 0) return
 
-            _e.preventDefault()
-            _e.stopPropagation()
+            //_e.preventDefault()
+            //_e.stopPropagation()
 
             this.scrollerX.dictator = 'wheel_or_touchpad'
             this.scrollerY.dictator = 'wheel_or_touchpad'

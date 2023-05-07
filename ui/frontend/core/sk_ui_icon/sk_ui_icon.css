@@ -1,3 +1,7 @@
 .sk_ui_icon {
     color: var(--sk_ui_text_color);
+    min-width: 14px;
+    min-height: 14px;
+    width: fit-content !important;
+    height: fit-content !important;
 }

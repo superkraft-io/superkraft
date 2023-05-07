@@ -67,7 +67,9 @@ class sk_ui_icon extends sk_ui_component {
         this.attributes.add({friendlyName: 'Fade On Change', name: 'fadeOnChange', type: 'bool'})
 
         this.attributes.add({friendlyName: 'Size', name: 'size', type: 'number', units: {min: 10, max: 50}, onSet: val => {
-            this.iconElement.style.fontSize = val + 'px'
+            this.iconElement.style.fontSize  = val + 'px'
+            this.iconElement.style.minWidth  = val + 'px'
+            this.iconElement.style.minHeight = val + 'px'
         }})
         this.attributes.add({friendlyName: 'Color', name: 'color', type: 'color', css: 'color?'})
 

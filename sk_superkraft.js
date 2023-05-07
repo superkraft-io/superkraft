@@ -88,7 +88,7 @@ module.exports = class Superkraft {
         if (opt.config) sk.config = JSON.parse(fs.readFileSync(opt.config))
 
         /****************/
-
+        global.SK_Root_POST = require(sk.paths.sk_modules + 'sk_root_POST.js')
         global.SK_RootAction = require(sk.paths.sk_modules + 'sk_rootAction.js')
         
 

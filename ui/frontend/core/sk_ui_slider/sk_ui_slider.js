@@ -6,10 +6,6 @@ class sk_ui_slider extends sk_ui_component {
         this.compact = true
 
         
-
-        var valToPercent = val => {
-            return sk.utils.map(val, this.min, this.max, 0, 100)
-        }
         
         var height = 12
         this.style.height = height*2
@@ -37,10 +33,12 @@ class sk_ui_slider extends sk_ui_component {
             this.mdPos = undefined
             this.thumb.animate = true
             this.lineColorBar.animate = true
+            this.hasMoved = false
         }
 
         var mouseMoveHandler = _e => {
             if (!this.mdPos) return
+
 
             _e.preventDefault()
             _e.stopPropagation()
@@ -50,20 +48,33 @@ class sk_ui_slider extends sk_ui_component {
             this.lineColorBar.animate = false
 
 
-            var diff = {
-                x: this.mdPos.x - ((_e.clientX || _e.touches[0].clientX) - this.rect.left) - this.mdThumbPos.x,
-                y: this.mdPos.y - ((_e.clientY || _e.touches[0].clientY) - this.rect.top) - this.mdThumbPos.y
+            var mousePos = sk.interactions.getPos(_e)
+            var mouseDiff = {
+                x: this.mdPos.x - mousePos.x,
+                y: this.mdPos.y - mousePos.y
             }
+
+            if (mouseDiff.x > 0 || mouseDiff.y > 0) sk.interactions.block()
 
             
             var newPos = {
-                x: this.mdPos.x - diff.x,
-                y: this.mdPos.y - diff.y
+                x: this.originalPos.x - mouseDiff.x,
+                y: this.originalPos.y - mouseDiff.y,
             }
+
+            
+            if (newPos.x < 0) newPos.x = 0
+            if (newPos.y < 0) newPos.y = 0
+
+            
+            if (newPos.x > this.rect.width) newPos.x = this.rect.width
+            if (newPos.y > this.rect.height) newPos.y = this.rect.height
+
 
             
             if (!this.vertical) var value = sk.utils.map(newPos.x, 0, this.rect.width, this.min, this.max)
             else var value = sk.utils.map(newPos.y, 0, this.rect.height, this.min, this.max)
+
 
             this.setValue(value)
 
@@ -75,18 +86,18 @@ class sk_ui_slider extends sk_ui_component {
 
 
         var handleMouseDown = _e => {
-            sk.interactions.block()
+            this.hasMoved = false
+
+            
             _e.preventDefault()
             _e.stopPropagation()
             
 
-            this.mdPos = {
-                x: (_e.clientX || _e.touches[0].clientX) - this.rect.left,
-                y: (_e.clientY || _e.touches[0].clientY) - this.rect.top,
-            }
-            this.mdThumbPos = {
-                x: this.thumb.rect.left - this.rect.left - this.mdPos.x,
-                y: this.thumb.rect.top - this.rect.top - this.mdPos.y
+            this.mdPos = sk.interactions.getPos(_e)
+
+            this.originalPos = {
+                x: this.lineColorBar.rect.width,
+                y: this.lineColorBar.rect.height
             }
 
 
@@ -108,7 +119,10 @@ class sk_ui_slider extends sk_ui_component {
         this.element.addEventListener('mousedown', handleMouseDown)
         this.element.addEventListener('touchstart', handleMouseDown)
 
-        this.element.addEventListener('dblclick', ()=>{
+        this.element.addEventListener('dblclick', _e => {
+            _e.preventDefault()
+            _e.stopPropagation()
+
             this.__value = this.defaultValue
             this.setValue(this.defaultValue)
         })

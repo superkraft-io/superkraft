@@ -505,10 +505,10 @@ class sk_ui_component {
         return (this.parent.classHas('sk_ui_iceRink') ? this.parent : this.parent.getParentIceRink())
     }
 
-    scrollTo(){
+    scrollTo(non_sk){
         var parentIceRink = this.getParentIceRink()
 
-        if (!parentIceRink) return this.element.scrollIntoView({behavior: "smooth"})
+        if (!parentIceRink || non_sk) return this.element.scrollIntoView({behavior: "smooth"})
 
         parentIceRink.scrollToChild(this)
     }
