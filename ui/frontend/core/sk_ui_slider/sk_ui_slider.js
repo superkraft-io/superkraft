@@ -34,6 +34,20 @@ class sk_ui_slider extends sk_ui_component {
             this.thumb.animate = true
             this.lineColorBar.animate = true
             this.hasMoved = false
+
+            if (this.onChangedEnd) this.onChangedEnd(this.value)
+            this.__onChangeStart_notified = false
+
+            this.element.removeEventListener('mouseup', mouseUpHandler)
+            this.element.removeEventListener('touchend', mouseUpHandler)
+            
+            this.element.removeEventListener('mousemove', mouseMoveHandler)
+            this.element.removeEventListener('touchmove', mouseMoveHandler)
+            
+            document.removeEventListener('mousemove', mouseMoveHandler)
+            document.removeEventListener('touchmove', mouseMoveHandler)
+
+            document.removeEventListener('mouseup', mouseUpHandler)
         }
 
         var mouseMoveHandler = _e => {
@@ -54,7 +68,6 @@ class sk_ui_slider extends sk_ui_component {
                 y: this.mdPos.y - mousePos.y
             }
 
-            if (mouseDiff.x > 0 || mouseDiff.y > 0) sk.interactions.block()
 
             
             var newPos = {
@@ -78,6 +91,12 @@ class sk_ui_slider extends sk_ui_component {
 
             this.setValue(value)
 
+            
+            if (mouseDiff.x > 0 || mouseDiff.y > 0){
+                if (!this.__onChangeStart_notified && this.onChangedStart) this.onChangedStart(value)
+                this.__onChangeStart_notified = true
+                sk.interactions.block()
+            }
             
             if (this.onChanged) this.onChanged(this.__value)
         }
@@ -114,6 +133,7 @@ class sk_ui_slider extends sk_ui_component {
             
             document.addEventListener('mousemove', mouseMoveHandler)
             document.addEventListener('touchmove', mouseMoveHandler)
+
         }
 
         this.element.addEventListener('mousedown', handleMouseDown)
@@ -125,6 +145,8 @@ class sk_ui_slider extends sk_ui_component {
 
             this.__value = this.defaultValue
             this.setValue(this.defaultValue)
+
+            if (this.onChangedEnd) this.onChangedEnd(this.value)
         })
         
         this.attributes.add({friendlyName: 'Value', name: 'value', type: 'number', onSet: val => {

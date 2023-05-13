@@ -124,6 +124,10 @@ class sk_ui_dappTitlebar_actions_button extends sk_ui_button {
         this.classAdd('sk_ui_dappTitlebar_actions_button_' + os)
         this.classAdd('sk_ui_dappTitlebar_actions_button_' + os + '_' + action)
         this['configureFor_' + os](os, action)
+
+        if (os === 'win'){
+            this._icon.size = 12
+        }
     }
 
     configureFor_win(os, action){

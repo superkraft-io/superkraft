@@ -186,7 +186,7 @@
         utils: {
             sleep: (delay = 1000)=>{ return new Promise(resolve => { setTimeout(()=>{ resolve() }, delay)})},
             map: (value, aMin, aMax, bMin, bMax)=>{ return (value - aMin) * (bMax - bMin) / (aMax - aMin) + bMin },
-            wrapNum: (val, max)=>{ return max >= 0 ? max % val : (max % val + val) % val},
+            wrapNum: (max, val)=>{ return val >= 0 ? val % max : (val % max + max) % max},
             calcSnap: opt => {
                 var defOpt = {...{gridSize: 32, func: 'round'}, ...opt}
                 var step = defOpt.val / defOpt.gridSize
