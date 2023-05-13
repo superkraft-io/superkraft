@@ -316,7 +316,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
             if (view.info.checkAuth){
                 if (!auth_token) return resolve(false)
 
-                var validationRes = await this.sk.engine.isAuthTokenValid(auth_token, true)
+                var validationRes = await view.sk.engine.isAuthTokenValid(auth_token, true)
                 if (!validationRes) return resolve(false)
 
                 resolve(validationRes)
