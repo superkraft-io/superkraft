@@ -10,5 +10,8 @@ class sk_ui_image extends sk_ui_component {
             this.style.minWidth = val + 'px'
             this.style.minHeight = val + 'px'
         }})
+
+
+        
     }
 }

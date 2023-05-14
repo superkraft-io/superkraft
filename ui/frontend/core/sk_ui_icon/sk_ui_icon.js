@@ -4,6 +4,7 @@ class sk_ui_icon extends sk_ui_component {
 
         this.invisible = true
         
+        this.__size = 16
 
         this.styling = 'center middle'
         this.classAdd('icon')
@@ -25,7 +26,34 @@ class sk_ui_icon extends sk_ui_component {
         
         var lastIcon = ''
         this.attributes.add({hide: true, friendlyName: 'Icon', name: 'icon', type: 'icon', onSet: async val => {
+            if (val.indexOf('.svg') > -1){
+                this.classRemove('icon')
+                this.classRemove(lastIcon)
+                this.type = 'svg'
+            }
+
             if (this.onChanged) this.onChanged()
+
+            if (this.type === 'svg'){
+                //this.element.setAttribute('src', val)
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", val, false);
+                xhr.overrideMimeType("image/svg+xml");
+                xhr.addEventListener("load", res => {
+                    this.element.appendChild(xhr.responseXML.documentElement)
+                    
+                    this.svgEl = this.element.childNodes[0]
+                    this.svgEl.setAttribute('width', this.size)
+                    this.svgEl.setAttribute('height', this.size)
+
+                    this.svgEl.setAttribute('fill', this.color)
+                })
+                
+                xhr.send()
+
+                return
+            }
+
             //for (var i = this.iconElement.classList.length; i > -1; i--) if (this.iconElement.classList[i] !== 'transition') this.iconElement.classList.remove(this.iconElement.classList[i])
             
             var resetIcon = ()=>{
@@ -70,8 +98,16 @@ class sk_ui_icon extends sk_ui_component {
             this.iconElement.style.fontSize  = val + 'px'
             this.iconElement.style.minWidth  = val + 'px'
             this.iconElement.style.minHeight = val + 'px'
+
+            if (this.type === 'svg'){
+                this.element.setAttribute('width', val)
+                this.element.setAttribute('height', val)
+            }
         }})
-        this.attributes.add({friendlyName: 'Color', name: 'color', type: 'color', css: 'color?'})
+        this.attributes.add({friendlyName: 'Color', name: 'color', type: 'color', onSet: val => {
+            if (this.type === 'svg') this.svgEl.style.fill = val
+            else this.style.color = val
+        }})
 
         this.attributes.add({friendlyName: 'Spinning', name: 'spinning', type: 'text', onSet: val => {
             this.classRemove('sk_ui_spin sk_ui_spin_slow')
