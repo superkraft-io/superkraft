@@ -6,7 +6,10 @@ class sk_ui_canvas extends sk_ui_component {
 
         this.ratio = Math.ceil(window.devicePixelRatio)
 
-        const resizeObserver = new ResizeObserver(()=> this.update() )
+        const resizeObserver = new ResizeObserver(()=>{
+            if (!this.manualUpdate) this.update()
+            if (this.onResize) this.onResize()
+        })
         resizeObserver.observe(this.element)
 
         this.color = 'white'
@@ -20,10 +23,6 @@ class sk_ui_canvas extends sk_ui_component {
         
         this.element.width = w
         this.element.height = h
-
-        //this.ctx.scale(this.ratio, this.ratio) //no need to set scale apparently
-
-        if (this.onResize) this.onResize()
     }
     
     clear(opt){
@@ -59,5 +58,17 @@ class sk_ui_canvas extends sk_ui_component {
         this.ctx.fillStyle = defFont.color
         this.ctx.fillText(opt.text || 'Text', opt.left * this.ratio || 0, opt.top * this.ratio || 0)
         this.ctx.fillStyle = this.tmpClr
+    }
+
+    line(opt){
+        this.tmpClr = this.color
+        this.ctx.strokeStyle = opt.color || this.tmpClr
+
+        this.ctx.beginPath()
+        this.ctx.moveTo(opt.from.x * this.ratio, opt.from.y * this.ratio)
+        this.ctx.lineTo(opt.to.x * this.ratio, opt.to.y * this.ratio)
+        this.ctx.stroke()
+
+        this.ctx.strokeStyle = this.tmpClr
     }
 }

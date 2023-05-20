@@ -163,6 +163,11 @@ class sk_ui_slider extends sk_ui_component {
         this.attributes.add({friendlyName: 'Smooth', name: 'smooth', type: 'bool', onSet: val => { /*this.sliderBucket.sliderEl.classList.remove('smooth'); if (val) this.sliderBucket.sliderEl.classList.add('smooth');*/ }})
 
 
+        this.attributes.add({friendlyName: 'Thumbless', name: 'thumbless', type: 'bool', onSet: val => {
+            this.thumb.style.display = (val ? 'none' : '')
+        }})
+
+
         
         
         this.attributes.add({friendlyName: 'Labels', name: 'labels', type: 'text', onSet: val => {  }})
