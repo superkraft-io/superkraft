@@ -2,7 +2,7 @@ class sk_ui_linkButton extends sk_ui_button {
     constructor(opt){
         super({...opt, ...{htmlTag: 'a', }})
 
-        this.styling = 'left middle fullwidth'
+        this.styling = 'left middle'
         
         this._icon.iconElement.classList.add('transition')
 

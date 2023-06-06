@@ -347,15 +347,20 @@ class sk_ui_component {
         return _classHierarchy
     }
 
-    getPath(opt){
+    getPath(opt = {}){
         var path = []
 
         var getParentOf = _c => {
-            path.push((opt && opt.elements ? _c.element : _c))
+            if (opt.target){
+                path.push(_c)
+            } else {
+                path.push((opt && opt.elements ? _c.element : _c))
+            }
+
             if (_c.parent) getParentOf(_c.parent)
         }
 
-        getParentOf(this)
+        getParentOf((opt.target ? opt.target : this))
 
         return path
     }
@@ -505,15 +510,16 @@ class sk_ui_component {
 
 
     getParentIceRink(){
+        if (!this.parent.classHas) return
         return (this.parent.classHas('sk_ui_iceRink') ? this.parent : this.parent.getParentIceRink())
     }
 
-    scrollTo(non_sk){
+    scrollTo(non_sk, center){
         var parentIceRink = this.getParentIceRink()
 
         if (!parentIceRink || non_sk) return this.element.scrollIntoView({behavior: "smooth"})
 
-        parentIceRink.scrollToChild(this)
+        parentIceRink.scrollToChild(this, center)
     }
 
     get rect(){

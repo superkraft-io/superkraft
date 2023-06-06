@@ -10,6 +10,11 @@ class sk_ui_iceRink extends sk_ui_component {
         var wheelMS = Date.now()
         var wheelInertia = {x: 0, y: 0}
         this.onWheel = _e => {
+            if (this.getParentIceRink()){
+                _e.preventDefault()
+                _e.stopPropagation()
+            }
+
             //if (this.scrollbarY_native.element.scrollTop + _e.deltaY < this.content.storedHeight && this.content.storedHeight === 0) return
 
             //_e.preventDefault()
@@ -315,7 +320,7 @@ class sk_ui_iceRink extends sk_ui_component {
             }
 
             const mouseUpHandler = _e => {
-                console.log('icerink MOUSE UP')
+                //console.log('icerink MOUSE UP')
                 //_e.preventDefault()
                 //_e.stopPropagation()
                 
@@ -365,8 +370,12 @@ class sk_ui_iceRink extends sk_ui_component {
 
 
             this.mouseDownHandler = _e => {
-                //_e.preventDefault()
-                //_e.stopPropagation()
+                if (this.getPath({target: _e.target})[0].tagName.toLowerCase() === 'input') return
+
+                if (this.getParentIceRink()){
+                    _e.preventDefault()
+                    _e.stopPropagation()
+                }
 
                 this.scrollerX.dictator = 'mouse_or_finger'
                 this.scrollerY.dictator = 'mouse_or_finger'
@@ -665,8 +674,8 @@ class sk_ui_iceRink extends sk_ui_component {
             this.scrollbarX_wrapper.style.opacity = 0
         }})
 
-        this.attributes.add({friendlyName: 'Auto Width', name: 'autoHeight', type: 'bool', onSet: val => {
-            this.contentWrapper.styling = `top center ${(!val ? 'fullheight' : '')} ${(!this.autoHeight ? 'fullheight' : '')}`
+        this.attributes.add({friendlyName: 'Auto Width', name: 'autoWidth', type: 'bool', onSet: val => {
+            this.contentWrapper.styling = `top center ${(!val ? 'fullwidth' : '')} ${(!this.autoHeight ? 'fullheight' : '')}`
         }})
 
 
@@ -683,7 +692,7 @@ class sk_ui_iceRink extends sk_ui_component {
 
      
         this.attributes.add({friendlyName: 'Auto Height', name: 'autoHeight', type: 'bool', onSet: val => {
-            this.contentWrapper.styling = `top center ${(!this.autoWidth ? 'fullheight' : '')} ${(!val ? 'fullheight' : '')}`
+            this.contentWrapper.styling = `top center ${(!this.autoWidth ? 'center' : '')} ${(!val ? 'fullheight' : '')}`
         }})
 
 
@@ -744,12 +753,26 @@ class sk_ui_iceRink extends sk_ui_component {
         this.__includedComponents = []
     }
 
-    scrollToChild(component){
-        this.lastYPos = this.scrollerY.value
-        this.tweenY.current = this.lastYPos
-        var cRect = component.rect
-        var newY = 0-((0-this.lastYPos) + cRect.top)
-        this.tweenY.to(newY)
+    scrollToChild(component, center){
+        var offset = {x: 0, y: 0}
+
+        if (center) offset = {
+            x: this.contentWrapper.rect.width / 2 - component.rect.width / 2,
+            y: this.contentWrapper.rect.height / 2 - component.rect.height / 2
+        }
+
+        var doAxis = axis => {
+            var axisUC = axis.toUpperCase()
+            
+            this['last' + axisUC + 'Pos'] = this['scroller' + axisUC].value
+            this['tween' + axisUC].current = this['last' + axisUC + 'Pos']
+            var cRect = component.rect
+            var newVal = 0-((0-this['last' + axisUC + 'Pos']) + cRect.localPos[axis]) + offset[axis]
+            this['tween' + axisUC].to(newVal)
+        }
+        
+        doAxis('x')
+        doAxis('y')
     }
 
     scrollTo(val){
@@ -821,6 +844,8 @@ class sk_ui_iceRink_scrollbar extends sk_ui_component {
         this.attributes.add({friendlyName: 'Decoupled', name: 'decoupled', type: 'bool', onSet: val => {
             if (this.onDecoupled) this.onDecoupled(val)
         }})
+
+        this.attributes.add({friendlyName: 'Hidden', name: 'hidden', type: 'bool', onSet: val => { }})
 
         this.orientation = 'vertical'
     }
@@ -907,8 +932,10 @@ class sk_ui_iceRink_scrollbar extends sk_ui_component {
 
         this.handle.style.width = handleSize + overscroll + '%'
 
-        if (handleSize === 100) this.onHide()
-        else this.onShow()  
+        if (!this.hidden){
+            if (handleSize === 100) this.onHide()
+            else this.onShow()
+        }
     }
 
     updateDimensionsFor_vertical(){
