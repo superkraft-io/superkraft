@@ -1,4 +1,4 @@
-class ss_ui_complexity_icons {
+class sk_ui_complexity_icons {
     get icons(){
         return [
             {ep: '', label: 'accessability', items: [

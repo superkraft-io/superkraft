@@ -1,7 +1,7 @@
-class ss_ui_complexity_iconList extends ss_ui_component {
+class sk_ui_complexity_iconList extends sk_ui_component {
     constructor(opt){
         super(opt)
-            this.classAdd('ss_ui_complexity_iconList')
+            this.classAdd('sk_ui_complexity_iconList')
             this.styling = 'ttb flex'
 
             this.style.height = '100%'
@@ -54,10 +54,10 @@ class ss_ui_complexity_iconList extends ss_ui_component {
                                 _c.text = iconItem.label
                                 _c.label.style.display = 'none'
 
-                                _c.hint(iconItem.label, 'bottom left')
+                                _c.hint({text: iconItem.label, position: 'bottom left'})
 
                                 _c.onClick = ()=>{
-                                    this.selectedObject.classAdd('ss_ui_complexity_object_edited')
+                                    this.selectedObject.classAdd('sk_ui_complexity_object_edited')
                                     this.selectedObject.icon = _c.icon
                                 }
                             })

@@ -599,8 +599,8 @@ class sk_ui_component {
 
         //serialize children
         if (!ignoreChildren){
-            for (var i = 0; i < this.children.length; i++){
-                var child = this.children[i]
+            for (var i = 0; i < this.children.children.length; i++){
+                var child = this.children.children[i]
                 json.children.push(child.serialize(child.multiComponent, includeThis))
             }
         }

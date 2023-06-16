@@ -1,4 +1,4 @@
-class ss_ui_complexity_stylingEditor extends ss_ui_groupCollapsable {
+class sk_ui_complexity_stylingEditor extends sk_ui_groupCollapsable {
     constructor(opt){
         super(opt)
         this.collapsable = true
@@ -11,7 +11,7 @@ class ss_ui_complexity_stylingEditor extends ss_ui_groupCollapsable {
                 _c.icon = icon
                 _c.type = 'icon'
                 _c.toggle = true
-                _c.hint(hint, 'bottom center')
+                _c.hint({text: hint})
                 _c.onClick = ()=>{ this.apply() }
                 if (cb) cb(_c)
             })
@@ -24,7 +24,12 @@ class ss_ui_complexity_stylingEditor extends ss_ui_groupCollapsable {
 
         this.alignments = {}
 
+        
+        
         this.container.add.component(_c => {
+            _c.styling = 'left top fullwidth'
+            _c.vertical = false
+
             this.map = _c.add.component(_c => {
                 _c.styling = 'ttb'
                 _c.style.border = 'solid 1px grey'
@@ -32,8 +37,8 @@ class ss_ui_complexity_stylingEditor extends ss_ui_groupCollapsable {
                 _c.style.overflow = 'hidden'
 
                 _c.deselectAll = ()=>{
-                    _c.children.forEach(row => {
-                        row.children.forEach(slot => {
+                    _c.children.children.forEach(row => {
+                        row.children.children.forEach(slot => {
                             slot.toggled = false
                         })
                     })
@@ -41,6 +46,8 @@ class ss_ui_complexity_stylingEditor extends ss_ui_groupCollapsable {
 
                 function createRow(parent, rowName){
                     parent.add.component(row => {
+                        row.vertical = false
+
                         row.pos = rowName
                         
                         row.left = row.add.button(_c => {
@@ -50,7 +57,7 @@ class ss_ui_complexity_stylingEditor extends ss_ui_groupCollapsable {
                             if (row.pos === 'top')_c._icon.style.transform = 'rotate(45deg)'
                             else if (row.pos === 'bottom') _c._icon.style.transform = 'rotate(-45deg)'
 
-                            _c.hint(row.pos + ' ' + _c.pos, 'bottom center')
+                            _c.hint({text: row.pos + ' ' + _c.pos})
                         })
 
                         row.center = row.add.button(_c => {
@@ -60,7 +67,7 @@ class ss_ui_complexity_stylingEditor extends ss_ui_groupCollapsable {
                             else if (row.pos === 'middle') _c.icon = 'dot circle outline'
                             else if (row.pos === 'bottom') _c.icon = 'angle down'
 
-                            _c.hint(row.pos + ' ' + _c.pos, 'bottom center')
+                            _c.hint({text: row.pos + ' ' + _c.pos})
                         })
 
                         row.right  = row.add.button(_c => {
@@ -70,7 +77,7 @@ class ss_ui_complexity_stylingEditor extends ss_ui_groupCollapsable {
                             if (row.pos === 'top') _c._icon.style.transform = 'rotate(-45deg)'
                             else if (row.pos === 'bottom') _c._icon.style.transform = 'rotate(45deg)'
 
-                            _c.hint(row.pos + ' ' + _c.pos, 'bottom center')
+                            _c.hint({text: row.pos + ' ' + _c.pos})
                         })
                         
                     })
@@ -81,8 +88,8 @@ class ss_ui_complexity_stylingEditor extends ss_ui_groupCollapsable {
                 _c.bottom = createRow(_c, 'bottom')
 
 
-                _c.children.forEach(row => {
-                    row.children.forEach(slot => {
+                _c.children.children.forEach(row => {
+                    row.children.children.forEach(slot => {
                         slot.type = 'icon'
                         slot.toggle = true
                         slot.onClick = ()=>{
@@ -103,13 +110,14 @@ class ss_ui_complexity_stylingEditor extends ss_ui_groupCollapsable {
         })
 
         this.container.add.component(_c => {
-            _c.styling = 'ttb'
+            _c.styling = 'top right ttb fullwidth'
 
             _c.add.component(_c => {
                 _c.styling = 'ttb'
 
                 _c.add.component(_c => {
-                        _c.styling += ' fullwidth'
+                    _c.vertical = false
+                    _c.styling += ' fullwidth'
 
                     this.alignments.sb = newToggleButton(_c, 'th large', 'Space Between', _c => { _c._icon.size = 9.5})
                     this.alignments.sa = newToggleButton(_c, 'expand', 'Space Around')
@@ -117,11 +125,12 @@ class ss_ui_complexity_stylingEditor extends ss_ui_groupCollapsable {
                 })
 
                 _c.add.component(_c => {
+                    _c.vertical = false
                     _c.styling += ' fullwidth'
                     
                     this.alignments.fullwidth = newToggleButton(_c, 'arrows alternate horizontal', 'Full Width')
                     this.alignments.fullheight = newToggleButton(_c, 'arrows alternate vertical', 'Full Height')
-                    this.alignments.scrollable = newToggleButton(_c, 'mouse', 'Scrollable')
+                    this.alignments.scrollable = newToggleButton(_c, 'scroll', 'Scrollable')
                 })
             })
         })
@@ -171,7 +180,7 @@ class ss_ui_complexity_stylingEditor extends ss_ui_groupCollapsable {
 
     apply(){
         this.objects.forEach(object => {
-            object.classAdd('ss_ui_complexity_object_edited')
+            object.classAdd('sk_ui_complexity_object_edited')
 
             var alignments = this.alignments
 
@@ -192,6 +201,7 @@ class ss_ui_complexity_stylingEditor extends ss_ui_groupCollapsable {
             if (alignments.fullheight.toggled) stylingArr.push('fullheight')
             if (alignments.scrollable.toggled) stylingArr.push('scrollable')*/
 
+            console.log(stylingArr)
             object.styling = stylingArr.join(' ')
         })
     }

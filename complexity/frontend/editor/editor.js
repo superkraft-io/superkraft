@@ -1,19 +1,21 @@
 
-class ss_ui_complexity_editor {
+class sk_ui_complexity_editor {
     constructor(opt){
-        opt.app.body.classAdd('ss_ui_complexity_appBody')
+        opt.app.body.classAdd('sk_ui_complexity_appBody')
 
         opt.app.disableComplexity()
         opt.app.body.disableComplexity()
         
 
         opt.app.add.component(_c => {
-            _c.classAdd('ss_ui_complexity_editor vertical_margin normal')
+            _c.classAdd('sk_ui_complexity_editor vertical_margin normal')
 
             _c.style.overflowY = 'scroll'
             _c.styling = 'ttb'
 
             _c.add.component(_c => {
+                _c.vertical = false
+
                 _c.add.component(_c => {
                     _c.add.dropdown(_c => {
                         _c.style.width = '100%'
@@ -43,11 +45,12 @@ class ss_ui_complexity_editor {
                 })
             
                 _c.add.component(_c => {
+                    _c.vertical = false
                     this.showEditsToggleBtn = _c.add.button(_c => {
                         _c.type = 'icon'
                         _c.icon = 'edit'
                         _c.toggle = true
-                        _c.hint('Show edits  (CTRL + <)', 'bottom center')
+                        _c.hint({text: 'Show edits  (CTRL + <)'})
 
                         _c.onClick = ()=>{
                             sk.complexity.core.showEdits = _c.toggled
@@ -58,7 +61,7 @@ class ss_ui_complexity_editor {
                         _c.type = 'icon'
                         _c.icon = 'expand alternate'
                         _c.toggle = true
-                        _c.hint('Inflate  (<)', 'bottom center')
+                        _c.hint({text: 'Inflate  (<)'})
 
                         _c.onClick = ()=>{
                             sk.complexity.core.inflated = _c.toggled
@@ -69,7 +72,7 @@ class ss_ui_complexity_editor {
                         _c.type = 'icon'
                         _c.icon = 'lightbulb outline'
                         _c.toggle = true
-                        _c.hint('Wireframe (SHIFT + <)', 'bottom center')
+                        _c.hint({text: 'Wireframe (SHIFT + <)'})
 
                         _c.onClick = ()=>{
                             sk.complexity.core.wireframe = _c.toggled
@@ -82,7 +85,7 @@ class ss_ui_complexity_editor {
                         _c.icon = 'code'
                         _c.toggle = true
                         _c.toggled = true
-                        _c.hint('Code', 'bottom center')
+                        _c.hint({text: 'Code'})
 
                         _c.onClick = ()=>{
                             sk.complexity.core.codeEditorVisible = _c.toggled
@@ -95,11 +98,11 @@ class ss_ui_complexity_editor {
                 })
             })
             
-            this.objectTree = _c.add.fromNew(ss_ui_complexity_objectTree)
+            this.objectTree = _c.add.fromNew(sk_ui_complexity_objectTree)
 
-            this.stylingEditor = _c.add.fromNew(ss_ui_complexity_stylingEditor)
+            this.stylingEditor = _c.add.fromNew(sk_ui_complexity_stylingEditor)
 
-            this.attributeEditor = _c.add.fromNew(ss_ui_complexity_attributeEditor,
+            this.attributeEditor = _c.add.fromNew(sk_ui_complexity_attributeEditor,
                 _c => {
                     _c.onShowIcons = object => {
                         this.iconList.style.display = ''
@@ -108,7 +111,7 @@ class ss_ui_complexity_editor {
                 }
             )
 
-            this.iconList = _c.add.fromNew(ss_ui_complexity_iconList, _c => { _c.style.display = 'none' })
+            this.iconList = _c.add.fromNew(sk_ui_complexity_iconList, _c => { _c.style.display = 'none' })
 
             _c.disableComplexity(true, true)
 

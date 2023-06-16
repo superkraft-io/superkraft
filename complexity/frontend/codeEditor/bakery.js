@@ -1,4 +1,4 @@
-class SS_UI_Component_Bakery {
+class SK_UI_Component_Bakery {
     constructor(opt){
         this.opt = opt
     }
@@ -35,7 +35,7 @@ ${gen.js}
         
         return {
             css: cssCode + '\n' + gen.css,
-            js: `_c.add.${this.opt.class.replace('ss_ui_', '')}(_c => {
+            js: `_c.add.${this.opt.class.replace('sk_ui_', '')}(_c => {
 ${jsAttributes}
 ${gen.js}
 })`
@@ -111,7 +111,7 @@ ${res.join('\n')}
         var childCode = this.genChildren(child.children, level+1)
 
         var jsCode = `
-${indentationsForThis}${(parentIsThis ? 'this' : '_c')}.add.${child.class.replace('ss_ui_', '')}(_c => {
+${indentationsForThis}${(parentIsThis ? 'this' : '_c')}.add.${child.class.replace('sk_ui_', '')}(_c => {
 ${jsAttributes}
     ${indentationsForThis}${childCode.js}
     ${indentationsForThis}
@@ -188,5 +188,5 @@ ${indentationsForThis}})`
 
 //for nodejs support
 if ( (typeof process !== 'undefined') && (process.release.name === 'node') ){
-    module.exports = SS_UI_Component_Bakery;
+    module.exports = SK_UI_Component_Bakery;
 }

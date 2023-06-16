@@ -1,18 +1,18 @@
 
-class ss_ui_complexity {
+class sk_ui_complexity {
     constructor(){
 
 
         this.selectedObjects = []
         this.allowDelete = true
 
-        this.selectionManager = new ss_ui_complexity_selectionManager()
+        this.selectionManager = new sk_ui_complexity_selectionManager()
 
 
         /***********/
 
         this.lists = {
-            icons: new ss_ui_complexity_icons().icons
+            icons: new sk_ui_complexity_icons().icons
         }
         for (var _c in this.lists.icons){
             var _cat = this.lists.icons[_c]
@@ -132,20 +132,20 @@ class ss_ui_complexity {
 
 
 
-        ss_ui_component.prototype.__ss_ui_continue_constructor__ = function(parent){
+        sk_ui_component.prototype.__sk_ui_continue_constructor__ = function(parent){
             this.events = {}
 
-            this.classAdd('ss_ui_complexity_object')
+            this.classAdd('sk_ui_complexity_object')
 
             this.events.mouseenter = _e => {
                 //_e.currentTarget.style.border = 'dashed 1px white'
-                _e.currentTarget.sk_ui_obj.classAdd('ss_ui_complexity_object_highlighted')
-                try { _e.currentTarget.sk_ui_obj.objectListItem.top.classAdd('ss_ui_complexity_objectTree_item_highlighted') } catch(err) {}
+                _e.currentTarget.sk_ui_obj.classAdd('sk_ui_complexity_object_highlighted')
+                try { _e.currentTarget.sk_ui_obj.objectListItem.top.classAdd('sk_ui_complexity_objectTree_item_highlighted') } catch(err) {}
 
-                
-                for (var i = 1; i < _e.path.length; i++){
-                    try { _e.path[i].sk_ui_obj.classRemove('ss_ui_complexity_object_highlighted') } catch(err) {}
-                    try { _e.path[i].sk_ui_obj.objectListItem.top.classRemove('ss_ui_complexity_objectTree_item_highlighted') } catch(err) {}
+                var path = _e.target.sk_ui_obj.getPath()
+                for (var i = 1; i < path.length; i++){
+                    try { path[i].sk_ui_obj.classRemove('sk_ui_complexity_object_highlighted') } catch(err) {}
+                    try { path[i].sk_ui_obj.objectListItem.top.classRemove('sk_ui_complexity_objectTree_item_highlighted') } catch(err) {}
                 }
 
                
@@ -155,14 +155,18 @@ class ss_ui_complexity {
 
 
             this.events.mouseleave = _e => {
-                _e.currentTarget.sk_ui_obj.classRemove('ss_ui_complexity_object_highlighted')
+                _e.currentTarget.sk_ui_obj.classRemove('sk_ui_complexity_object_highlighted')
                 
+                var path = _e.target.sk_ui_obj.getPath({elements: true})
+                for (var i = 0; i < path.length; i++) try { path[i].sk_ui_obj.objectListItem.top.classRemove('sk_ui_complexity_objectTree_item_highlighted') } catch(err) {}
 
-                for (var i = 0; i < _e.path.length; i++) try { _e.path[i].sk_ui_obj.objectListItem.top.classRemove('ss_ui_complexity_objectTree_item_highlighted') } catch(err) {}
-
-                if (_e.path[3].sk_ui_obj){
-                    _e.path[1].sk_ui_obj.classAdd('ss_ui_complexity_object_highlighted')
-                    _e.path[1].sk_ui_obj.objectListItem.top.classAdd('ss_ui_complexity_objectTree_item_highlighted')
+                try {
+                    if (path[3].sk_ui_obj){
+                        path[1].sk_ui_obj.classAdd('sk_ui_complexity_object_highlighted')
+                        path[1].sk_ui_obj.objectListItem.top.classAdd('sk_ui_complexity_objectTree_item_highlighted')
+                    }
+                } catch(err) {
+                    var x = 0
                 }
                
             }
@@ -180,7 +184,7 @@ class ss_ui_complexity {
 
     
             this.events.mousedown = _e => {
-                if (_e.target.classList.contains('ss_ui_complexity_object')){
+                if (_e.target.classList.contains('sk_ui_complexity_object')){
                     if (_e.target !== this.element) return
                     if (_e.which === 1){
                         this.mouseDown = true
@@ -191,7 +195,7 @@ class ss_ui_complexity {
 
             this.events.mouseup = _e => {
                 this.mouseDown = false
-                if (_e.target.classList.contains('ss_ui_complexity_object')){
+                if (_e.target.classList.contains('sk_ui_complexity_object')){
                     if (_e.target !== this.element) return
                     if (_e.which === 1){
                         sk.complexity.core.selectionManager.deselectAll()
@@ -233,11 +237,11 @@ class ss_ui_complexity {
 
             this.onPseudoClassSet = isSet => {
                 this.objectListItem._header.color = ''
-                this.classRemove('ss_ui_complexity_object_classified')
-                this.objectListItem.classRemove('ss_ui_complexity_objectTree_item_classified')
+                this.classRemove('sk_ui_complexity_object_classified')
+                this.objectListItem.classRemove('sk_ui_complexity_objectTree_item_classified')
                 if (isSet){
-                    this.objectListItem.classAdd('ss_ui_complexity_objectTree_item_classified')
-                    this.classAdd('ss_ui_complexity_object_classified')
+                    this.objectListItem.classAdd('sk_ui_complexity_objectTree_item_classified')
+                    this.classAdd('sk_ui_complexity_object_classified')
                 }
             }
 
@@ -246,37 +250,34 @@ class ss_ui_complexity {
             }
         }
 
-        ss_ui_component.prototype.disableComplexity = function(recursive, andFuture){
-            this.classRemove('ss_ui_complexity_object')
-            this.element.removeEventListener('mouseenter', this.events.mouseenter, false)
-            this.element.removeEventListener('mouseleave', this.events.mouseleave, false)
-            this.element.removeEventListener('mousedown', this.events.mousedown, false)
-            this.element.removeEventListener('mouseup', this.events.mouseup, false)
-            this.element.removeEventListener('dblclick', this.events.dblclick, false)
-            this.element.removeEventListener('contextmenu', this.events.contextmenu, false)
+        sk_ui_component.prototype.disableComplexity = function(recursive, andFuture){
+            this.classRemove('sk_ui_complexity_object')
+
+            if (this.events){
+                this.element.removeEventListener('mouseenter', this.events.mouseenter, false)
+                this.element.removeEventListener('mouseleave', this.events.mouseleave, false)
+                this.element.removeEventListener('mousedown', this.events.mousedown, false)
+                this.element.removeEventListener('mouseup', this.events.mouseup, false)
+                this.element.removeEventListener('dblclick', this.events.dblclick, false)
+                this.element.removeEventListener('contextmenu', this.events.contextmenu, false)
+            }
 
             if (recursive){
-                this.children.forEach(_c => {
+                this.children.children.forEach(_c => {
                     _c.disableComplexity(true)
                 })
             }
 
             if (andFuture){
                 this.children.add = function(obj){
-                    this.push(obj)
+                    this.children.push(obj)
                     this.recalculateIndices()
                     obj.disableComplexity(true, true)
                 }
             }
         }
             
-        ss_ui_component.prototype.generateContextMenu = function(){
-    
-            
-    
-    
-            
-    
+        sk_ui_component.prototype.generateContextMenu = function(){
             var onChildEnter = res => {
                 $(res.ui_object.parent.element).css('border', 'dashed 1px grey')
                 $(res.ui_object.element).css('border', 'dashed 1px #af10ff')
@@ -382,8 +383,8 @@ class ss_ui_complexity {
         this._showEdits = val
         var allObjects = document.querySelectorAll('.sk_ui_complexity_object_edited')
         allObjects.forEach(_el => {
-            if (val) _el.classList.add('ss_ui_complexity_object_edited_show')
-            else  _el.classList.remove('ss_ui_complexity_object_edited_show')
+            if (val) _el.classList.add('sk_ui_complexity_object_edited_show')
+            else  _el.classList.remove('sk_ui_complexity_object_edited_show')
         })
 
         sk.complexity.editor.showEditsToggleBtn.toggled = val
@@ -394,8 +395,8 @@ class ss_ui_complexity {
         this._wireframe = val
         var allObjects = document.querySelectorAll('.sk_ui_complexity_object')
         allObjects.forEach(_el => {
-            if (val) _el.classList.add('ss_ui_complexity_object_wireframeOff')
-            else  _el.classList.remove('ss_ui_complexity_object_wireframeOff')
+            if (val) _el.classList.add('sk_ui_complexity_object_wireframeOff')
+            else  _el.classList.remove('sk_ui_complexity_object_wireframeOff')
         })
 
         sk.complexity.editor.wireframeToggleBtn.toggled = val
@@ -408,8 +409,8 @@ class ss_ui_complexity {
         this._inflated = val
         var allObjects = document.querySelectorAll('.sk_ui_complexity_object')
         allObjects.forEach(_el => {
-            if (val) _el.classList.add('ss_ui_complexity_object_inflate')
-            else  _el.classList.remove('ss_ui_complexity_object_inflate')
+            if (val) _el.classList.add('sk_ui_complexity_object_inflate')
+            else  _el.classList.remove('sk_ui_complexity_object_inflate')
         })
 
         sk.complexity.editor.inflateToggleBtn.toggled = val

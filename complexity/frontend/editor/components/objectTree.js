@@ -1,4 +1,4 @@
-class ss_ui_complexity_objectTree extends ss_ui_groupCollapsable {
+class sk_ui_complexity_objectTree extends sk_ui_groupCollapsable {
     constructor(opt){
         super(opt)
 
@@ -14,21 +14,21 @@ class ss_ui_complexity_objectTree extends ss_ui_groupCollapsable {
 
         setTimeout(()=>{
             this.update()
-        }, 3000)
+        }, 5000)
     }
 
     applyStyle(group, serializedObject){
         group.collapsable = true
         group.collapseOnIcon = true
 
-        group.top.classAdd('ss_ui_complexity_objectTree_item')
+        group.top.classAdd('sk_ui_complexity_objectTree_item')
         
         
         if (serializedObject.pseudoClassName) group._header.color = '#ffcc00'
 
         group._header.add.spacer()
         group._header.add.label(_c => {
-            _c.text = serializedObject.class.split('ss_ui_')[1]
+            _c.text = serializedObject.class.split('sk_ui_')[1]
             _c.color = '#5f5f5f'
             _c.weight = 600
             _c.style.marginRight = '4px'
@@ -76,12 +76,12 @@ class ss_ui_complexity_objectTree extends ss_ui_groupCollapsable {
         var addAndTraverse = (parentGroup, component)=>{
             var group = parentGroup.add.groupCollapsable(_c => {
                 _c.styling += ' fullwidth'
-                _c.classAdd('ss_ui_complexity_objectTree_item_group')
+                _c.classAdd('sk_ui_complexity_objectTree_item_group')
                 component.component.objectListItem = _c
 
 
-                _c.header = component.id.replace('ss_ui_', '')
-                _c.targetObject = component.component
+                _c.header = component.id.replace('sk_ui_', '')
+                _c.targetObject = component
 
                 _c.top.element.addEventListener('mouseup', _e => {
                     sk.complexity.core.selectionManager.deselectAll()
@@ -91,19 +91,19 @@ class ss_ui_complexity_objectTree extends ss_ui_groupCollapsable {
 
 
                 _c.element.addEventListener('mouseenter', _e => {
-                    component.component.classAdd('ss_ui_complexity_object_highlighted')
+                    component.component.classAdd('sk_ui_complexity_object_highlighted')
                     
-
-                    for (var i = 1; i < _e.path.length; i++){
+                    var path = _e.target.sk_ui_obj.getPath()
+                    for (var i = 1; i < path.length; i++){
                         try {
                         
-                            var el = _e.path[i]
-                            var ss_ui_obj = el.sk_ui_obj
-                            var targetObj = ss_ui_obj.targetObject
+                            var el = path[i]
+                            var sk_ui_obj = el.sk_ui_obj
+                            var targetObj = sk_ui_obj.targetObject
                             if (targetObj){
                                 var x = 0
                             }
-                            targetObj.classRemove('ss_ui_complexity_object_highlighted')
+                            targetObj.classRemove('sk_ui_complexity_object_highlighted')
                         } catch(err) {
                             var x = 0
                         }
@@ -111,7 +111,7 @@ class ss_ui_complexity_objectTree extends ss_ui_groupCollapsable {
                     
                 })
                 _c.element.addEventListener('mouseleave', _e => {
-                    component.component.classRemove('ss_ui_complexity_object_highlighted')
+                    component.component.classRemove('sk_ui_complexity_object_highlighted')
                 })
 
                 this.applyStyle(_c, component)

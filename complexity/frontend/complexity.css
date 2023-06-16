@@ -1,17 +1,17 @@
 .sk_ui_complexity_object {
-    border: dashed 1px rgb(63, 63, 63);
+    outline: dashed 1px rgb(63, 63, 63);
 }
 .sk_ui_complexity_object_highlighted {
-    border: dashed 1px #c9c9c9;
+    outline: dashed 1px #c9c9c9;
 }
 
 
 .sk_ui_complexity_object_wireframeOff {
-    border: unset !important;
+    outline: unset !important;
 }
 
 .sk_ui_complexity_object_selected {
-    border: dashed 1px #00c3ff !important;
+    outline: dashed 1px #00c3ff !important;
 }
 /*.sk_ui_complexity_object_wireframeOff.sk_ui_complexity_object_selected {
     border: dashed !important;
@@ -22,11 +22,11 @@
 }
 
 .sk_ui_complexity_object_edited_show {
-    border: dashed 1px #af10ff;
+    outline: dashed 1px #af10ff;
 }
 
 .sk_ui_complexity_object_classified {
-    border: dashed 1px #ffcc00;
+    outline: dashed 1px #ffcc00;
 }
 
 
@@ -35,16 +35,20 @@
 /* object tree */
 
 .sk_ui_complexity_objectTree_item_group {
-
+  height: fit-content;
 }
 
 
 
+.sk_ui_complexity_objectTree_item_group > .sk_ui_group_top {
 
+}
 
 .sk_ui_complexity_objectTree_item_group > .sk_ui_group_container {
     padding: 1px;
     padding-left: 8px;
+    height: fit-content !important;
+    min-height: fit-content !important;
 }
 
 .sk_ui_complexity_objectTree_item > .sk_ui_label {

@@ -1,8 +1,8 @@
-class ss_ui_complexity_codeEditor extends ss_ui_component {
+class sk_ui_complexity_codeEditor extends sk_ui_component {
     constructor(opt){
         super(opt)
 
-        this.classAdd('ss_ui_complexity_codeEditor')
+        this.classAdd('sk_ui_complexity_codeEditor')
 
         this.disableComplexity(true, true)
         
@@ -152,7 +152,7 @@ class ss_ui_complexity_codeEditor extends ss_ui_component {
         clearTimeout(this.bakeTimer)
 
         this.bakeTimer = setTimeout(()=>{
-            var source_code = new SS_UI_Component_Bakery(object.serialize()).asComponent()
+            var source_code = new SK_UI_Component_Bakery(object.serialize()).asComponent()
             this.cssEditor.setValue(source_code.css)
             this.jsEditor.setValue(source_code.js)
         }, 10)
@@ -162,7 +162,7 @@ class ss_ui_complexity_codeEditor extends ss_ui_component {
         var view = sk.app.body.view
         var serialization = view.serialize(false, true)
 
-        var bakery = new SS_UI_Component_Bakery()
+        var bakery = new SK_UI_Component_Bakery()
         var bakeRes = bakery.mapClassified(serialization)
 
         if (bakeRes.length === 0) return sk.toast.warning('No objects have been classified yet. Please flag at least one object for classification.')

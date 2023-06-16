@@ -1,5 +1,5 @@
 
-class ss_ui_complexity_comm {
+class sk_ui_complexity_comm {
     constructor(){
         sk.complexity.actions = {}
 

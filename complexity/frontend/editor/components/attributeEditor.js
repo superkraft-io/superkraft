@@ -1,4 +1,4 @@
-class ss_ui_complexity_attributeEditor extends ss_ui_group {
+class sk_ui_complexity_attributeEditor extends sk_ui_group {
     constructor(opt){
         super(opt)
         this.header = 'Attributes'
@@ -26,7 +26,9 @@ class ss_ui_complexity_attributeEditor extends ss_ui_group {
         })
 
         objects.forEach(object => {
-            object.attributes.categories.forEach(category => {
+            for (var catName in object.attributes.categories.list){
+                var category = object.attributes.categories.list[catName]
+                
                 var existingCategory = addedCategories[category.name]
                 if (!existingCategory){
                     addedCategories[category.name] = this._container.add.groupCollapsable(group => {
@@ -45,18 +47,18 @@ class ss_ui_complexity_attributeEditor extends ss_ui_group {
                 category.attributes.forEach(attribute => {
                     if (attribute.notEditable) return
 
-                    if (addedAttributes[attribute.name]) return
-                    else addedAttributes[attribute.name] = true
+                    if (addedAttributes[attribute.info.name]) return
+                    else addedAttributes[attribute.info.name] = true
 
-                    if (attribute.type === 'icon'){
+                    if (attribute.info.type === 'icon'){
                         this.onShowIcons(object)
                     } else {
                         
-                        var tableAttributeRow = new ss_ui_attributeItem(existingCategory, category.horizontal, category.attributes.length, this.objects)//, table)
+                        var tableAttributeRow = new sk_ui_attributeItem(existingCategory, category.horizontal, category.attributes.length, this.objects)//, table)
                         tableAttributeRow.from(object, attribute)
                     }
                 })
-            })
+            }
         })
         
 
@@ -64,12 +66,13 @@ class ss_ui_complexity_attributeEditor extends ss_ui_group {
     }
 }
 
-class ss_ui_attributeItem {
+class sk_ui_attributeItem {
     constructor(parent, horizontal, count, objects, table){
         this.objects = objects
 
         parent.container.add.component(_c => {
             _c.styling += ' center fullwidth'
+            _c.vertical = false
             _c.padding = 4
 
             var maxWidth = '50%'
@@ -109,8 +112,8 @@ class ss_ui_attributeItem {
 
     apply(val){
         this.objects.forEach(object => {
-            object.classAdd('ss_ui_complexity_object_edited')
-            if (sk.complexity.core.showEdits) object.classAdd('ss_ui_complexity_object_edited_show')
+            object.classAdd('sk_ui_complexity_object_edited')
+            if (sk.complexity.core.showEdits) object.classAdd('sk_ui_complexity_object_edited_show')
             try { object[this.attr.name] = val } catch(err) { }
         })
 
@@ -121,12 +124,12 @@ class ss_ui_attributeItem {
         this.object = obj
         this.attr = attr
 
-        this.label.text = attr.friendlyName
+        this.label.text = attr.info.friendlyName
 
         try {
-            this.currValue = this.object[this.attr.name]
-            if (attr.css) this.currValue = this.currValue.replace(attr.css.split('?')[1], '')
-            this[attr.type + 'Type']()
+            this.currValue = this.object[this.attr.info.name]
+            if (attr.info.css) this.currValue = this.currValue.replace(attr.info.css.split('?')[1], '')
+            this[attr.info.type + 'Type']()
         } catch(err) {
 
         }
@@ -162,9 +165,9 @@ class ss_ui_attributeItem {
             _c.style.margin = '0px 12px'
             _c.style.width = 'unset'
 
-            var units = this.attr.units
+            var units = this.attr.info.units
             if (units){
-                if (units.step) _c.step = this.attr.units.step
+                if (units.step) _c.step = this.attr.info.units.step
                 if (units.min) _c.min = units.min
                 if (units.max) _c.max = units.max
             }
@@ -193,7 +196,7 @@ class ss_ui_attributeItem {
 
 
             var itemName = undefined
-            this.attr.items.forEach(item => {
+            this.attr.info.items.forEach(item => {
                 if (item.value === this.currValue) itemName = item.name
             })
 
@@ -201,7 +204,7 @@ class ss_ui_attributeItem {
 
             var items = []
             
-            this.attr.items.forEach(item => {
+            this.attr.info.items.forEach(item => {
                 items.push({label: item.name || item.value, info: item})
             })
 

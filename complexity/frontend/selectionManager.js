@@ -1,5 +1,5 @@
 
-class ss_ui_complexity_selectionManager {
+class sk_ui_complexity_selectionManager {
     constructor(){
         this.list = []
     }
@@ -11,8 +11,8 @@ class ss_ui_complexity_selectionManager {
 
     deselectAll(){
         document.querySelectorAll('.sk_ui_complexity_object_selected').forEach(e =>{
-            e.classList.remove('ss_ui_complexity_object_selected')
-            try { e.sk_ui_obj.objectListItem.classRemove('ss_ui_complexity_objectTree_item_selected') } catch(err) {}
+            e.classList.remove('sk_ui_complexity_object_selected')
+            try { e.sk_ui_obj.objectListItem.classRemove('sk_ui_complexity_objectTree_item_selected') } catch(err) {}
         })
     }
 
@@ -20,8 +20,8 @@ class ss_ui_complexity_selectionManager {
         var add = true
         for (var i in this.list){
             if (this.list[i].uuid === component.uuid){
-                this.list[i].classRemove('ss_ui_complexity_object_selected')
-                this.list[i].objectListItem.classRemove('ss_ui_complexity_objectTree_item_selected')
+                this.list[i].classRemove('sk_ui_complexity_object_selected')
+                this.list[i].objectListItem.classRemove('sk_ui_complexity_objectTree_item_selected')
                 this.list.splice(i,1)
                 add = false
                 break
@@ -33,8 +33,10 @@ class ss_ui_complexity_selectionManager {
         if (add) this.list.push(component)
         
         this.list.forEach(_c =>{
-            _c.classAdd('ss_ui_complexity_object_selected')
-            try { _c.objectListItem.classAdd('ss_ui_complexity_objectTree_item_selected') } catch(err) {}
+            try { _c.classAdd('sk_ui_complexity_object_selected') } catch(err) {
+                _c.component.classAdd('sk_ui_complexity_object_selected')
+            }
+            try { _c.objectListItem.classAdd('sk_ui_complexity_objectTree_item_selected') } catch(err) {}
         })
         
 
@@ -129,7 +131,7 @@ class ss_ui_complexity_selectionManager {
     duplicateFromList(target, list){
 
         var traverseAdd = (parent, serialization) => {
-            return parent.add[serialization.class.replace('ss_ui_', '')](_c => {
+            return parent.add[serialization.class.replace('sk_ui_', '')](_c => {
                 for(var attrName in serialization.attributes){
                     if (attrName === 'pseudoClassName' || attrName === 'uuid') continue
                     

@@ -1,4 +1,4 @@
-module.exports = class SS_Action extends SS_RootAction {
+module.exports = class SK_Action extends SK_RootAction {
     exec(opt, res, view, _v){
         var views = {}
         for (var _v in global.sk.views){
