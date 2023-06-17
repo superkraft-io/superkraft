@@ -51,7 +51,13 @@ module.exports = class sk_ui {
             var dir = dirs[i]
             var dirPath = source + dir + '/'
 
-            if (fs.lstatSync(dirPath).isDirectory()){
+            try {
+                var lstat = fs.lstatSync(dirPath)
+            } catch (err) {
+                continue
+            }
+           
+            if (lstat.isDirectory()){
                 var child = {
                     name: dir,
                     children: []
