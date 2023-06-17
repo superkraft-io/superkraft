@@ -105,7 +105,11 @@
     
     <body>
         <script>
-            if (window.location.href[window.location.href.length - 1] === '/') window.location.href = window.location.href.substring(0, window.location.href.length - 1)
+            if (window.location.href[window.location.href.length - 1] === '/'){
+                var sk_1639264_url = window.location.href.replace('http://', '').replace('https://', '')
+                var sk_1639264_url_split = sk_1639264_url.split('/')
+                if (sk_1639264_url_split.length > 1 && sk_1639264_url_split[1].length > 0) window.location.href = window.location.href.substring(0, window.location.href.length - 1)
+            }
         </script>
 
         <%- include(viewBodyScripts.start) %>
