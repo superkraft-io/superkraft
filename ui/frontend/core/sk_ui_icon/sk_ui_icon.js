@@ -105,8 +105,31 @@ class sk_ui_icon extends sk_ui_component {
             }
         }})
         this.attributes.add({friendlyName: 'Color', name: 'color', type: 'color', onSet: val => {
-            if (this.type === 'svg') this.svgEl.style.fill = val
-            else this.style.color = val
+            if (this.type === 'svg'){
+                var allSubEls = this.svgEl
+                
+                var applyToChildren = el => {
+                    el.style.fill = val
+
+                    var children = el.children
+                    for (var i in children){
+                        var child = children[i]
+                        try { applyToChildren(child) } catch(err) {
+                            var x = 0
+                        }
+
+                        try { child.style.fill = val } catch(err) {
+                            var y = 0
+                        }
+                    }
+                }
+
+                applyToChildren(allSubEls)
+
+                this.svgEl.style.fill = val
+            } else {
+                this.style.color = val
+            }
         }})
 
         this.attributes.add({friendlyName: 'Spinning', name: 'spinning', type: 'text', onSet: val => {
