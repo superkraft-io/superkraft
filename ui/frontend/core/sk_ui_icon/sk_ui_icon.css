@@ -9,3 +9,7 @@
 .sk_ui_icon > svg {
     fill: var(--sk_ui_text_color);
 }
+
+.sk_ui_icon > svg * {
+    fill: var(--sk_ui_text_color);
+}
