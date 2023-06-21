@@ -256,6 +256,88 @@ class sk_ui_component {
         this.attributes.add({friendlyName: 'Sortable', name: 'sortable', type: 'bool', onSet: val => {
             if (!val) return
             
+            //resource: https://github.com/SortableJS/Sortable#cdn
+
+            this.__sortableObj = new Sortable(this.element, {
+                group: val.groupID,  // or { name: "...", pull: [true, false, 'clone', array], put: [true, false, array] }
+                sort: true,  // sorting inside list,
+                animation: 150,
+                easing: "cubic-bezier(1, 0, 0, 1)",
+
+                setData: function (/** DataTransfer */dataTransfer, /** HTMLElement*/dragEl) {
+                    //dataTransfer.setData('Text', dragEl.textContent); // `dataTransfer` object of HTML5 DragEvent
+                },
+            
+                onChoose: _e => {
+                    this.__sort_oldIdx = _e.oldIndex
+                },
+            
+                onUnchoose: _e => {
+                    // same properties as onEnd
+                },
+            
+                onStart: _e => {
+                    this.__sort_oldIdx = _e.oldIndex
+                    _e.item.sk_ui_obj.animate = false
+                    if (this.onSortStart) this.onSortStart(_e)
+                },
+            
+                onEnd: _e => {
+                    _e.item.sk_ui_obj.animate = true
+                    if (this.onSortEnd) this.onSortEnd(_e)
+                },
+            
+                onAdd: _e => {
+                    // same properties as onEnd
+                },
+            
+                onUpdate: _e => {
+                    // same properties as onEnd
+                },
+            
+                onSort: _e => {
+                    // same properties as onEnd
+                },
+            
+                onRemove: _e => {
+                    // same properties as onEnd
+                },
+            
+                onFilter: _e => {
+                    //var itemEl = evt.item;  // HTMLElement receiving the `mousedown|tapstart` event.
+                },
+            
+                onMove: (_e, _oE)=>{ //_oE = original event
+                    // Example: https://jsbin.com/nawahef/edit?js,output
+                    _e.dragged; // dragged HTMLElement
+                    _e.draggedRect; // DOMRect {left, top, right, bottom}
+                    _e.related; // HTMLElement on which have guided
+                    _e.relatedRect; // DOMRect
+                    _e.willInsertAfter; // Boolean that is true if Sortable will insert drag element after target by default
+                    _oE.clientY; // mouse position
+                    // return false; — for cancel
+                    // return -1; — insert before target
+                    // return 1; — insert after target
+                    // return true; — keep default insertion point based on the direction
+                    // return void; — keep default insertion point based on the direction
+                },
+            
+                // Called when creating a clone of element
+                onClone: _e => {
+                    //var origEl = _e.item;
+                   // var cloneEl = _e.clone;
+                },
+            
+                // Called when dragging element changes position
+                onChange: _e => {
+                    _e.newIndex // most likely why this event is used is to get the dragging element's current index
+                    // same properties as onEnd
+                }
+            })
+
+            return
+
+            
             $('#' + this.element.id).sortable({
                 placeholder: 'sk_ui_component_sortable_placeholder sk_ui_pulsate sk_ui_glow_pulse',
                 connectWith: val,
