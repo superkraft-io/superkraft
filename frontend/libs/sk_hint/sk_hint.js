@@ -16,11 +16,11 @@ class SK_Hint {
             root: opt.parent.element,
             rootMargin: '0px',
             threshold: 1.0
-          }
+        }
           
-          let observer = new IntersectionObserver(()=>{
+        let observer = new IntersectionObserver(()=>{
             console.log('moved')
-          }, options);
+        }, options);
     }
 
     set text(val){

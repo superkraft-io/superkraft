@@ -34,3 +34,12 @@
 .sk_ui_hint_green {
     background-color: rgba(0, 156, 0, 0.418);
 }
+
+.sk_ui_hint_red {
+    background-color: rgba(156, 0, 0, 0.418);
+}
+
+.sk_ui_hint_error {
+    background-color: rgba(156, 0, 0, 0.418);
+    outline: solid 1px rgba(156, 0, 0, 1);
+}
