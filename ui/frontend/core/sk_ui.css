@@ -57,7 +57,7 @@ button:focus-visible {
 
 .sk_app {
     width: 100%;
-    /* height: 100%; */
+    height: 100%;
     border-radius: var(--view-radius);
     overflow: hidden !important;
     touch-action: none;

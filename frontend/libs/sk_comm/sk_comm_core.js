@@ -149,7 +149,8 @@ class SK_Comm {
         
                             if (!progressAvailable) {
                                 // not able to check download progress so skip it
-                                return response;
+                                
+                                return resolve(response)
                             } // fire progress event when during load
         
         
@@ -164,6 +165,18 @@ class SK_Comm {
                 }
                 
                 var response = await doFetch()
+
+                if (response.status === 404) return reject({error: 404, res: response})
+
+                var contentLength = response.headers.get('content-length');
+                if (!contentLength){
+                    var percent = 0
+                    var timer = setInterval(()=>{
+                        percent++
+                        if (opt.onProgress) opt.onProgress({percent: percent})
+                        if (percent >= 100) clearInterval(timer)
+                    }, 30)
+                }
 
                 var errMsg;
 
