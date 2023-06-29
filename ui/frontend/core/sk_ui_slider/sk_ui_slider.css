@@ -1,6 +1,8 @@
 .sk_ui_slider {
     width: 100%;
     position: relative;
+    height: fit-content;
+    height: 14px;
 }
 
 .sk_ui_slider_line {
@@ -34,10 +36,20 @@
     pointer-events: none;
 }
 
+
+
 .sk_ui_slider > #sliderEl {
     padding: 0px;
 }
 
 .sk_ui_slider > #sliderEl > div {
     width: 100%;
+}
+
+.sk_ui_slider_thumb_smooth {
+    transition: 100ms;
+}
+
+.sk_ui_slider_line_colorBar_smooth {
+    transition: 100ms;
 }

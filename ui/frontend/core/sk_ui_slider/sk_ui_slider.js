@@ -16,13 +16,14 @@ class sk_ui_slider extends sk_ui_component {
             
             this.lineColorBar = _c.add.component(_c => {
                 _c.classAdd('sk_ui_slider_line_colorBar')
+                _c.animate = false
             })
         })
 
         this.thumb = this.add.component(_c => {
             _c.classAdd('sk_ui_slider_thumb')
             _c.style.left = '0px'
-            _c.animate = true
+            _c.animate = false
         })
 
 
@@ -56,10 +57,6 @@ class sk_ui_slider extends sk_ui_component {
 
             _e.preventDefault()
             _e.stopPropagation()
-
-            
-            this.thumb.animate = false
-            this.lineColorBar.animate = false
 
 
             var mousePos = sk.interactions.getPos(_e)
@@ -160,7 +157,11 @@ class sk_ui_slider extends sk_ui_component {
 
         this.attributes.add({friendlyName: 'Labeled', name: 'labeled', type: 'bool', onSet: val => { /*this.sliderBucket.sliderEl.classList.remove('labeled'); if (val) this.sliderBucket.sliderEl.classList.add('labeled');*/ }})
         this.attributes.add({friendlyName: 'Ticked', name: 'ticked', type: 'bool', onSet: val => { /*this.sliderBucket.sliderEl.classList.remove('ticked'); if (val) this.sliderBucket.sliderEl.classList.add('ticked');*/ }})
-        this.attributes.add({friendlyName: 'Smooth', name: 'smooth', type: 'bool', onSet: val => { /*this.sliderBucket.sliderEl.classList.remove('smooth'); if (val) this.sliderBucket.sliderEl.classList.add('smooth');*/ }})
+        this.attributes.add({friendlyName: 'Smooth', name: 'smooth', type: 'bool', onSet: val => {
+            this.thumb.classAdd('sk_ui_slider_thumb_smooth')
+            this.lineColorBar.classAdd('sk_ui_slider_line_colorBar_smooth')
+        }})
+        this.__smooth = true
 
 
         this.attributes.add({friendlyName: 'Thumbless', name: 'thumbless', type: 'bool', onSet: val => {
@@ -209,6 +210,21 @@ class sk_ui_slider extends sk_ui_component {
         var maxPos = maxSize - (this.centerOrigin ? 0 : halfThumbSize)
         var mappedPos = sk.utils.map(newVal, this.min, this.max, minPos, maxPos)
 
+        
+
+
+        if (!this.smooth){
+            var snapSize = (!this.vertical ? this.rect.width : this.rect.height) / (this.max - this.min)
+            mappedPos = this.thumb.movres_izer.calcSnap({
+                gridSize      : snapSize,
+                gridSnapWidth : snapSize/2,
+                pos: mappedPos
+            })
+
+            if (this.__lastPos === mappedPos) return
+        }
+
+
         if (mappedPos < minPos) mappedPos = minPos
         if (mappedPos > maxPos) mappedPos = maxPos
 
@@ -217,5 +233,7 @@ class sk_ui_slider extends sk_ui_component {
         this.lineColorBar.style[(!this.vertical ? 'width' : 'height')] = mappedPos + 'px'
 
         if (this.onChanged) this.onChanged(newVal)
+
+        this.__lastPos = mappedPos
     }
 }
