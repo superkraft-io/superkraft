@@ -940,6 +940,7 @@ class sk_ui_iceRink_scrollbar extends sk_ui_component {
 
     updateDimensionsFor_vertical(){
         var heightRatio = this.getSizeDiff(this.wrapper, this.content)
+        if (heightRatio === 0) return
 
         var handleSize = 100 * heightRatio
 
