@@ -50,6 +50,17 @@ class sk_ui_modal extends sk_ui_component {
             })
         })*/
 
+        this.closeBtn = this.add.button(_c => {
+            _c.classAdd('sk_ui_modal_closeBtn')
+            _c.icon = 'close'
+            _c.type = 'clear icon'
+            _c._icon.color = 'white'
+            _c.onClick = ()=>{
+                if (this.reject) this.reject()
+                this.hide()
+            }
+        })
+
         this.contentContainer = this.add.component(_c => {
             _c.styling = 'center middle ttb'
             _c.classAdd('sk_ui_modal_contentWrapper')
@@ -68,27 +79,19 @@ class sk_ui_modal extends sk_ui_component {
                 _c.scrollbarY.offset.right = 16
                 if (sk.isOnMobile) _c.scrollbar.offset.bottom = 16
 
-                _c.contentWrapper.styling += ' middle'
+                //_c.contentWrapper.styling = ' middle'
 
                 _c.content.setup(_c => {
                     _c.styling += ' ttb'
                     _c.vertical = true
-                    _c.paddingTop = 16
                     if (sk.isOnMobile && !sk.mobile.homeButton) _c.paddingBottom = 32
 
                     _c.style.width = 'fit-content'
 
-                    this.closeBtn = _c.add.button(_c => {
-                        _c.classAdd('sk_ui_modal_closeBtn')
-                        _c.icon = 'close'
-                        _c.type = 'clear icon'
-                        _c.onClick = ()=>{
-                            if (this.reject) this.reject()
-                            this.hide()
-                        }
-                    })
+                    
                 })
 
+                this.wrapper = _c.contentWrapper
                 this.content = _c.content
 
             })

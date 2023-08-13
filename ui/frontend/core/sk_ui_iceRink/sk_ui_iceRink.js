@@ -438,13 +438,17 @@ class sk_ui_iceRink extends sk_ui_component {
             if (this.axis.indexOf('x') > -1){
                 this.scrollbarX_native.fakeContent.style.minWidth = cRect.width + 'px'
                 this.scrollerX.containerSize = this.rect.width
+                this.scrollbarX.updateDimensions()
                 this.scrollbarX_wrapper.updatePosition(this.contentWrapper.rect)
+                try { if (this.element.rect.width >= cRect.width) this.scrollX = 0 } catch(err) {}
             }
 
             if (this.axis.indexOf('y') > -1){
                 this.scrollbarY_native.fakeContent.style.minHeight = cRect.height + 'px'
                 this.scrollerY.containerSize = this.rect.height
+                this.scrollbarY.updateDimensions()
                 this.scrollbarY_wrapper.updatePosition(this.contentWrapper.rect)
+                try { if (this.element.rect.height >= cRect.height) this.scrollY = 0 } catch(err) {}
             }
 
         }).observe(this.element)
@@ -961,6 +965,8 @@ class sk_ui_iceRink_scrollbar extends sk_ui_component {
         if (distanceFromBottom > 0) overscroll = overscrolls.bottom
 
         this.handle.style.height = handleSize + overscroll + '%'
+
+        console.log(handleSize)
 
         if (handleSize === 100) this.onHide()
         else this.onShow()  
