@@ -966,10 +966,8 @@ class sk_ui_iceRink_scrollbar extends sk_ui_component {
 
         this.handle.style.height = handleSize + overscroll + '%'
 
-        console.log(handleSize)
-
         if (handleSize === 100) this.onHide()
-        else this.onShow()  
+        else this.onShow()
     }
 }
 

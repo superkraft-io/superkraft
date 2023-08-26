@@ -65,7 +65,10 @@ class SK_Hint {
         })
 
         this.opt.parent.element.addEventListener('mouseleave', _e => {
-            if (this.__hint && !this.__hint.animationDone) return
+            
+            /*if (this.__hint && !this.__hint.animationDone){
+                return
+            }*/
 
             var path = _e.target.sk_ui_obj.getPath({elements: true})
 
