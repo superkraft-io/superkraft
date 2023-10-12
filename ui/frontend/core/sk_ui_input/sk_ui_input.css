@@ -15,7 +15,7 @@
     background-color: #202020;
     color: white !important;
     padding: 4px 8px;
-    border: solid 1px #414141;;
+    border: solid 1px #414141;
     border-radius: 8px;
 }
 
@@ -26,13 +26,13 @@
 
 
 
-.sk_ui_input_color_green > #inputEl > input{
+.sk_ui_input_color_green > #inputEl > input {
     background-color: #1f321f;
     border: solid 1px #3da33d;
 }
 
 
-.sk_ui_input_color_red > #inputEl > input{
+.sk_ui_input_color_red > #inputEl > input {
     background-color: #1e0000;
     border: solid 1px #9d0000;
 }

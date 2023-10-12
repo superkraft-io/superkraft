@@ -89,7 +89,7 @@ class SK_ContextMenu {
     handleMouseEvent(_e){
         _e.stopPropagation()
 
-        sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true, sender: this.menu})
+        //sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true, sender: this.menu})
         
         if (this.parent.disabled && !this.activeWhenParentDisabled) return
         if (this.toggle){
@@ -104,6 +104,8 @@ class SK_ContextMenu {
 
     show(opt){
         var items = undefined
+
+        
         
         if (this.__items instanceof Function){
             items = this.__items()
@@ -127,12 +129,22 @@ class SK_ContextMenu {
             _c.cmParent = this
             _c.items = items
             _c.position = this.__position || {x: opt._e.clientX, y: opt._e.clientY}
-            _c.show()
+            
         })
 
+        sk.menus.push(this.menu)
+        console.log(sk.menus)
+
+        
+        this.menu.show()
+
+        //sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true, sender: this.menu, excludeSender: true})
+        
 
 
         if (this.highlightParent) this.parent.classAdd('sk_ui_contextMenu_Item_highlightParent')
+
+        if (this.onShow) this.onShow(this.menu)
     }
 
     onMenuHide(opt){
@@ -145,7 +157,11 @@ class SK_ContextMenu {
             }
         }
         
+        
+        if (this.onHide) this.onHide(opt, this.menu)
+
         this.menu = undefined
+
     }
 
     _onItemClicked(item){
@@ -163,24 +179,34 @@ class sk_ui_contextMenu_shortcut extends sk_ui_component {
     }
 
     setCombination(val){
-        var split = val.toLowerCase().split('+')
+        var shortcutStr = val
+        if (typeof val === 'object') shortcutStr = (sk.os === 'macos' ? val.macos : val.win)
+        var split = shortcutStr.toLowerCase().split('+')
 
-        var specialCharacters = '^fn⇧⌥alt⌘'
+        var specialCharacters = '^fn⇧⌥ctrlalt⌘'
+
+        var plusChar = undefined
 
         var addSpecial = val => {
             this.add.label(_c => {
                 _c.classAdd('sk_ui_contextMenu_shortcut_specialChar')
                 _c.text = val
             })
+
+            plusChar = this.add.label(_c => {
+                _c.classAdd('sk_ui_contextMenu_shortcut_specialChar')
+                _c.text = '+'
+            })
         }
         if (split.includes('^'))     addSpecial('^')
-        if (split.includes('fn'))    addSpecial('fn')
-        if (split.includes('shift')) addSpecial('⇧')
+        if (split.includes('ctrl')) addSpecial('Ctrl')
+        if (split.includes('shift')) addSpecial((sk.os === 'macos' ? '⇧' : 'Shift'))
         if (split.includes('alt') || split.includes('option')) addSpecial((sk.os === 'macos' ? '⌥' : 'Alt'))
         if (split.includes('cmd') || split.includes('command')) addSpecial('⌘')
 
         var last = split[split.length - 1]
         
+        //plusChar.remove()
         if (specialCharacters.indexOf(last) > -1) return
 
         this.add.label(_c => {
@@ -220,8 +246,19 @@ class sk_ui_contextMenu extends sk_ui_component {
 
         
         this.ums.on('sk_ui_contextMenu-hide', val => {
+            if (val.data.sender && val.data.sender.uuid && val.data.excludeSender) return
             if (val.first) return
             this.close(val.data)
+
+            for (var i in sk.menus){
+                var menu = sk.menus[i]
+                menu.remove()
+            }
+
+            var open_contextMenus = document.querySelectorAll('.sk_ui_contextMenu')
+            for (var i = 0; i < open_contextMenus.length; i++) open_contextMenus[i].sk_ui_obj.remove()
+
+            sk.menus = []
         })
     }
 
@@ -406,6 +443,16 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
             
         })
 
+
+        this.attributes.add({friendlyName: 'Disabled', name: 'disabled', type: 'bool', onSet: val => {
+            if (val){
+                this.pointerEvents = 'none'
+                this.opacity = 0.5
+            } else {
+                this.pointerEvents = ''
+                this.opacity = 1
+            }
+        }})
     }
 
     get submenu(){
@@ -452,6 +499,8 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
         else if (opt.header) this.as_header()
         else if (opt.input) this.as_input()
         else this.as_item()
+
+        this.disabled = opt.disabled
     }
 
     as_item(){
@@ -475,11 +524,12 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
 
         
 
-        /*if (this.opt.shortcut && !this.opt.items){
+        if (this.opt.shortcut && !this.opt.items){
             this.rightSide.add.fromNew(sk_ui_contextMenu_shortcut, _c => {
                 _c.setCombination(this.opt.shortcut)
+                //if (this.parent.widestItem < _c.rect.width) this.parent.widestItem = _c.rect.width
             })
-        }*/
+        }
 
         
 

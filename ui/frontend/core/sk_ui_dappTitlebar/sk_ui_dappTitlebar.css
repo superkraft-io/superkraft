@@ -42,6 +42,11 @@
 
 /****  win  ****/
 
+.sk_ui_dappTitlebar_title.sk_ui_os_win {
+    position: absolute;
+    left: 6px;
+}
+
 .sk_ui_dappTitlebar_actions_button_win {
     width: 42px;
 }

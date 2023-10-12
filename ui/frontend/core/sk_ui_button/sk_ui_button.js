@@ -19,7 +19,7 @@ class sk_ui_button extends sk_ui_component {
 
         var handleOnClickEvent = async _e => {
             if (_e.stopPropagation){
-                sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true})
+                if (!this.contextMenu.menu) sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true})
                 _e.stopPropagation()
             }
 

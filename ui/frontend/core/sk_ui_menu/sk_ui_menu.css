@@ -1,0 +1,9 @@
+.sk_ui_menu {
+    padding: 1px;
+}
+
+.sk_ui_menuItem {
+    margin-right: 1px !important;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
