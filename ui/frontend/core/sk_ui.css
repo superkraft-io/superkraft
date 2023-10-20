@@ -75,6 +75,7 @@ button:focus-visible {
     bottom: 0px;
     background-color: var(--sk_ui_color_very_dark_grey);
     touch-action: none;
+    overflow: hidden;
 }
 
 .sk_ui_appBody_dapp {

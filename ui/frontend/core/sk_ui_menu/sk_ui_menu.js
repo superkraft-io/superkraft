@@ -41,10 +41,10 @@ class sk_ui_menuItems extends Array{
                 if (this.parent.currentVisibleMenu){
                     try { if (_e.target.sk_ui_obj.contextMenu.menu.uuid === this.parent.currentVisibleMenu.menu.uuid) return } catch(err) {}
                     
-                    sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true, sender: this.menu, excludeSender: true})
+                    sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true, sender: this.menu, excludeSender: true, instant: true})
         
 
-                    if (!_c.contextMenu.menu) _c.contextMenu.show()
+                    if (!_c.contextMenu.menu) _c.contextMenu.show({instant: true})
                 }
             })
         })

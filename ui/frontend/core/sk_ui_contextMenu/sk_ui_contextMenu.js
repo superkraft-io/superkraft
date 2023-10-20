@@ -136,7 +136,7 @@ class SK_ContextMenu {
         console.log(sk.menus)
 
         
-        this.menu.show()
+        this.menu.show(opt)
 
         //sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true, sender: this.menu, excludeSender: true})
         
@@ -207,7 +207,7 @@ class sk_ui_contextMenu_shortcut extends sk_ui_component {
         var last = split[split.length - 1]
         
         //plusChar.remove()
-        if (specialCharacters.indexOf(last) > -1) return
+        //if (specialCharacters.indexOf(last) > -1) return
 
         this.add.label(_c => {
             _c.text = last.toUpperCase()
@@ -248,6 +248,8 @@ class sk_ui_contextMenu extends sk_ui_component {
         this.ums.on('sk_ui_contextMenu-hide', val => {
             if (val.data.sender && val.data.sender.uuid && val.data.excludeSender) return
             if (val.first) return
+
+            if (val.data.instant) this.closeInstantly = true
             this.close(val.data)
 
             for (var i in sk.menus){
@@ -281,7 +283,8 @@ class sk_ui_contextMenu extends sk_ui_component {
     async onBeforeRemove(opt){
         return new Promise(async resolve => {
             if (this.cmParent && this.cmParent.onMenuHide) this.cmParent.onMenuHide(this.closeOpt)
-            await this.transition('fade out')
+            if (!this.closeInstantly){ await this.transition('fade out') }
+           
             resolve()
         })
     }
@@ -346,7 +349,7 @@ class sk_ui_contextMenu extends sk_ui_component {
         this.__adjustedPosition = position
     }
 
-    show(opt){
+    show(opt = {}){
         return new Promise(async resolve => {
 
             if (this.parentItem) this.parentItem.classAdd('sk_ui_contextMenu_Item_submenuExpanded')
@@ -361,11 +364,20 @@ class sk_ui_contextMenu extends sk_ui_component {
             
             this.style.left = this.__adjustedPosition.x + 'px'
             this.style.top = this.__adjustedPosition.y + 'px'
-            this.style.opacity = 0
             
-            setTimeout(()=>{ this.style.opacity = 1 }, 10)
+            
+            
 
-            await this.transition('fade in')
+            if (!opt.instant){
+                this.style.opacity = 0
+                setTimeout(()=>{ this.style.opacity = 1 }, 10)
+                await this.transition('fade in')
+            } else {
+                this.style.display = 'unset'
+                this.animate = false
+                this.style.opacity = 1
+                //this.animate = true
+            }
 
             this.canClose = true
 
@@ -565,7 +577,7 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
         this.element.addEventListener('mouseenter', _e => {
             this.parentMenu.closeSubmenus({ignore: this.submenuID})
             if (!this.opt.items) return
-            if (this.submenu) return
+            if (this.submenu || this.submenuID) return
 
             var rect = this.rect
 

@@ -111,8 +111,9 @@
 
 
 .sk_ui_contextMenu_shortcut > .sk_ui_label {
+    font-size: 12px;
     opacity: 0.5;
-    margin-right: 3px;
+    /*margin-right: 3px;*/
 }
 
 .sk_ui_contextMenu_shortcut > .sk_ui_label:last-child {

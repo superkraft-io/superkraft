@@ -48,6 +48,7 @@ class SK_Tween {
             1
         )
 
+
         this.onChanged(this)
     }
 

@@ -71,4 +71,14 @@ class sk_ui_canvas extends sk_ui_component {
 
         this.ctx.strokeStyle = this.tmpClr
     }
+
+    pixel(opt){
+        this.tmpClr = this.color
+        this.ctx.strokeStyle = opt.color || this.tmpClr
+
+        
+        this.fillRect({left: opt.left, top: opt.top, width: 1, height: 1, color: opt.color})
+
+        this.ctx.strokeStyle = this.tmpClr
+    }
 }
