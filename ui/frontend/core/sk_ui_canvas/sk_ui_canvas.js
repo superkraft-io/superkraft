@@ -25,7 +25,7 @@ class sk_ui_canvas extends sk_ui_component {
         this.element.height = h
     }
     
-    clear(opt){
+    clear(){
         this.ctx.clearRect(0, 0, this.element.width, this.element.height)
     }
 
