@@ -14,8 +14,7 @@ class sk_ui_input extends sk_ui_component {
                         },*/
 
                         input: _e => {
-                            this.value = this.input.value
-                            if (this.onChanged) this.onChanged(this.value)
+                            if (this.onChanged) this.onChanged(this.input.value)
                         }
                     }
                 }
@@ -33,7 +32,7 @@ class sk_ui_input extends sk_ui_component {
 
             this['configAs_' + val]()
         }})
-        this.attributes.add({friendlyName: 'Value', name: 'value', type: 'text', onSet: val => { this.inputBucket.input.value = val }})
+        this.attributes.add({friendlyName: 'Value', name: 'value', type: 'text', onSet: val => { this.inputBucket.input.value = val }, onGet: ()=>{ return this.input.value }})
         this.attributes.add({friendlyName: 'Read Only', name: 'readonly', type: 'bool', onSet: val => {
             this.input.removeAttribute('readonly')
             if (val) this.input.setAttribute('readonly', '')
