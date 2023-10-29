@@ -81,4 +81,23 @@ class sk_ui_canvas extends sk_ui_component {
 
         this.ctx.strokeStyle = this.tmpClr
     }
+
+    measureText(opt){
+        var defFont = {
+            ...{
+                size: 14,
+                name: 'verdana',
+                family: 'sans-serif',
+                color: 'white',
+            },
+
+            ...opt.font
+        }
+
+        var fontStr = `${defFont.size * this.ratio}px ${defFont.name}, ${defFont.family}`
+
+        this.tmpClr = this.ctx.fillStyle
+        this.ctx.font = fontStr
+        return this.ctx.measureText(opt.text)
+    }
 }
