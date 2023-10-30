@@ -24,8 +24,8 @@
 .sk_ui_contextMenu_Item {
     height: 24px;
     border-radius: 4px;
-    padding-left: 6px;
-    padding-right: 6px;
+    padding-left: 4px;
+    padding-right: 4px;
 }
 
 .sk_ui_contextMenu_Item_content > .sk_ui_label {

@@ -133,7 +133,6 @@ class SK_ContextMenu {
         })
 
         sk.menus.push(this.menu)
-        console.log(sk.menus)
 
         
         this.menu.show(opt)

@@ -13,6 +13,21 @@ class sk_ui_input extends sk_ui_component {
                             if (this.onChanged) this.onChanged(this.value)
                         },*/
 
+                        mousedown: _e => {
+                            //_e.preventDefault()
+                            _e.stopPropagation()
+                        },
+
+                        mouseup: _e => {
+                            //_e.preventDefault()
+                            _e.stopPropagation()
+                        },
+
+                        click: _e => {
+                            //_e.preventDefault()
+                            _e.stopPropagation()
+                        },
+
                         input: _e => {
                             if (this.onChanged) this.onChanged(this.input.value)
                         }

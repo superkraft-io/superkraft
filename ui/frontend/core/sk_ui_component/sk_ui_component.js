@@ -382,6 +382,60 @@ class sk_ui_component {
             this.movres_izer.resizeAxis = val
         }})
 
+
+        this.attributes.add({friendlyName: 'Cursor', name: 'cursor', type: 'text', onSet: val => {
+            
+            var onEnter = ()=>{
+                this.classAdd('sk_ui_component_hideCursor')
+
+                this.removeAllCursors()
+
+                sk.app.cursorEl = sk.app.add.icon(_c => {
+                    _c.classAdd('sk_ui_component_cursor')
+                    _c.animate = false
+                    _c.icon = sk.cursors[val].url
+                })
+
+            }
+            
+            var onLeave = ()=>{
+                this.classRemove('sk_ui_component_hideCursor')
+                if (sk.app.cursorEl) sk.app.cursorEl.remove()
+            }
+
+            var onMove = _e => {
+                var cursor = sk.cursors[val]
+
+                var offset = cursor.offset || {x: 0, y: 0}
+                if (!offset.x) offset.x = 0
+                if (!offset.y) offset.y = 0
+                
+                var pos = sk.interactions.getPos(_e)
+                sk.app.cursorEl.style.left = pos.x + offset.x + 'px'
+                sk.app.cursorEl.style.top = pos.y + offset.y + 'px'
+            }
+
+            if (val.length === 0){
+                this.style.cursor = ''
+                if (sk.app.cursorEl) sk.app.cursorEl.remove()
+                this.element.removeEventListener('mouseenter', onEnter, true)
+                this.element.removeEventListener('mouseleave', onLeave, true)
+                this.element.removeEventListener('mousemove', onMove, true)
+
+                return
+            }
+
+            var cssCursors = ['auto', 'crosshair', 'default', 'e-resize', 'grab', 'help', 'move', 'n-resize', 'ne-resize', 'nw-resize', 'pointer', 'progress', 's-resize', 'se-resize', 'sw-resize', 'text', 'w-resize', 'wait', 'not-allowed', 'no-drop']
+            
+            if (cssCursors.includes(val)) return this.style.cursor = val
+            
+            if (sk.cursors[val]){
+                this.element.addEventListener('mouseenter', onEnter)
+                this.element.addEventListener('mouseleave', onLeave)
+                this.element.addEventListener('mousemove', onMove)
+            }
+        }})
+
         /********/
 
         sk.ui.components.uuid_counter++
@@ -452,7 +506,21 @@ class sk_ui_component {
         target.element.before(this.element)
     }
 
+
+    removeAllCursors(showNativeCursor){
+        var allCursors = document.querySelectorAll('.sk_ui_component_cursor')
+        for (var i in allCursors){
+            var cursorEl = allCursors[i]
+            var suo = cursorEl.sk_ui_obj
+            if (suo) suo.remove()
+        }
+
+        if (showNativeCursor) this.classRemove('sk_ui_component_hideCursor')
+    }
+    
     async remove(opt){
+        if (this.cursor) this.removeAllCursors(true)
+
         if (opt) if (opt.animation) await this.hide(opt)
 
         if (this._hint) this._hint.hide()

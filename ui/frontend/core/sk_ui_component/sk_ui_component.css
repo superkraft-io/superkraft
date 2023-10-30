@@ -36,3 +36,13 @@
     margin: 6px 0px;
 }
 
+
+.sk_ui_component_hideCursor {
+    cursor: none !important;
+}
+
+.sk_ui_component_cursor {
+    position: absolute;
+    z-index: 999999999;
+    pointer-events: none;
+}

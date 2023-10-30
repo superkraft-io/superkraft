@@ -96,7 +96,6 @@ class sk_ui_canvas extends sk_ui_component {
 
         var fontStr = `${defFont.size * this.ratio}px ${defFont.name}, ${defFont.family}`
 
-        this.tmpClr = this.ctx.fillStyle
         this.ctx.font = fontStr
         return this.ctx.measureText(opt.text)
     }

@@ -22,6 +22,27 @@ class SK_Commands {
             var ignoreKeys = ['control', 'meta', 'alt', 'shift']
             if (!ignoreKeys.includes(key)) arr.push(key)
             
+            
+
+            
+            var fixLastChar = ()=>{
+                var replacements = {
+                    '_': '-',
+                    ';': ',',
+                    ':': '.'
+                }
+                
+                var lastChar = arr[arr.length - 1]
+                var replacement = replacements[lastChar]
+
+                if (replacement) arr[arr.length - 1] = replacement
+            }
+
+            fixLastChar()
+
+
+            console.log(arr)
+
             var shortcut =  arr.join('+')
             
             for (var cmdName in this.commands){
