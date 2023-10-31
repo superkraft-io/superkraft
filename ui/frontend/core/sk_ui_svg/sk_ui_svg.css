@@ -1,0 +1,12 @@
+.sk_ui_svg {
+    fill: black;
+    stroke: white;
+    stroke-width: 1;
+
+    transform-origin: left top;
+}
+
+.sk_ui_svg > * {
+    position: absolute;
+    fill: black;
+}

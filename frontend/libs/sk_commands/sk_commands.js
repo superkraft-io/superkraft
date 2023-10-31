@@ -41,7 +41,6 @@ class SK_Commands {
             fixLastChar()
 
 
-            console.log(arr)
 
             var shortcut =  arr.join('+')
             
