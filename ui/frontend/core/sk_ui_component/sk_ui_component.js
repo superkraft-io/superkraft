@@ -384,55 +384,77 @@ class sk_ui_component {
 
 
         this.attributes.add({friendlyName: 'Cursor', name: 'cursor', type: 'text', onSet: val => {
-            
-            var onEnter = ()=>{
-                this.classAdd('sk_ui_component_hideCursor')
 
-                this.removeAllCursors()
+            sk.app.eventBlocker.onCursorCreated = this.onCursorCreated
+            sk.app.eventBlocker.style.cursor = 'none'
 
-                sk.app.cursorEl = sk.app.add.icon(_c => {
-                    _c.classAdd('sk_ui_component_cursor')
-                    _c.animate = false
-                    _c.icon = sk.cursors[val].url
-                })
+            this.cursorEvents = {
+                onEnter: ()=>{
+                    this.classAdd('sk_ui_component_hideCursor')
 
-            }
-            
-            var onLeave = ()=>{
-                this.classRemove('sk_ui_component_hideCursor')
-                if (sk.app.cursorEl) sk.app.cursorEl.remove()
-            }
+                    this.removeAllCursors()
 
-            var onMove = _e => {
-                var cursor = sk.cursors[val]
+                    var cursor = sk.cursors[val]
+                    if (cursor){
+                        sk.app.cursorEl = sk.app.add.icon(_c => {
+                            _c.classAdd('sk_ui_component_cursor')
+                            _c.animate = false
+                            _c.icon = cursor.url
+                        })
+                    } else {
+                        sk.app.cursorEl = sk.app.add.component(_c => {
+                            _c.classAdd('sk_ui_component_cursor')
+                            _c.animate = false
+                            _c.offset = {x: 0, y: 0}
+                        })
+                    }
 
-                var offset = cursor.offset || {x: 0, y: 0}
-                if (!offset.x) offset.x = 0
-                if (!offset.y) offset.y = 0
+                    if (this.onCursorCreated) this.onCursorCreated(sk.app.cursorEl)
+                },
                 
-                var pos = sk.interactions.getPos(_e)
-                sk.app.cursorEl.style.left = pos.x + offset.x + 'px'
-                sk.app.cursorEl.style.top = pos.y + offset.y + 'px'
+                onLeave: _e => {
+                    if (_e.toElement && _e.toElement.classList.includes('sk_ui_eventBlocker')) return
+                    this.classRemove('sk_ui_component_hideCursor')
+                    if (sk.app.cursorEl) sk.app.cursorEl.remove()
+                    
+                },
+
+                onMove: _e => {
+                    var cursor = sk.cursors[val] || {offset: {x: 0, y: 0}}
+                    
+                    var offset = cursor.offset || {x: 0, y: 0}
+                    if (!offset.x) offset.x = 0
+                    if (!offset.y) offset.y = 0
+                    
+                    var pos = sk.interactions.getPos(_e)
+                    sk.app.cursorEl.style.left = pos.x + offset.x + 'px'
+                    sk.app.cursorEl.style.top = pos.y + offset.y + 'px'
+                }
             }
 
             if (val.length === 0){
                 this.style.cursor = ''
                 if (sk.app.cursorEl) sk.app.cursorEl.remove()
-                this.element.removeEventListener('mouseenter', onEnter, true)
-                this.element.removeEventListener('mouseleave', onLeave, true)
-                this.element.removeEventListener('mousemove', onMove, true)
+                this.element.removeEventListener('mouseenter', this.cursorEvents.onEnter, true)
+                this.element.removeEventListener('mouseleave', this.cursorEvents.onLeave, true)
+                document.removeEventListener('mousemove', this.cursorEvents.onMove, true)
 
+                delete this.cursorEvents
+                delete this.onCursorCreated
+                delete sk.app.eventBlocker.onCursorCreated
+
+                sk.app.eventBlocker.cursor = ''
                 return
             }
 
-            var cssCursors = ['auto', 'crosshair', 'default', 'e-resize', 'grab', 'help', 'move', 'n-resize', 'ne-resize', 'nw-resize', 'pointer', 'progress', 's-resize', 'se-resize', 'sw-resize', 'text', 'w-resize', 'wait', 'not-allowed', 'no-drop']
+            var cssCursors = ['none', 'auto', 'crosshair', 'default', 'e-resize', 'grab', 'help', 'move', 'n-resize', 'ne-resize', 'nw-resize', 'pointer', 'progress', 's-resize', 'se-resize', 'sw-resize', 'text', 'w-resize', 'wait', 'not-allowed', 'no-drop']
             
             if (cssCursors.includes(val)) return this.style.cursor = val
             
-            if (sk.cursors[val]){
-                this.element.addEventListener('mouseenter', onEnter)
-                this.element.addEventListener('mouseleave', onLeave)
-                this.element.addEventListener('mousemove', onMove)
+            if (sk.cursors[val] || val === '_'){
+                this.element.addEventListener('mouseenter', this.cursorEvents.onEnter)
+                this.element.addEventListener('mouseleave', this.cursorEvents.onLeave)
+                document.addEventListener('mousemove', this.cursorEvents.onMove)
             }
         }})
 

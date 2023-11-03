@@ -207,6 +207,15 @@
                 } catch(err) { return }
             },
 
+            hexToRgb(hex, alpha){
+                var int = parseInt(hex, 16);
+                var r = (int >> 16) & 255;
+                var g = (int >> 8) & 255;
+                var b = int & 255;
+            
+                return [r,g,b, Math.round(alpha * 255)];
+            },
+
             formatSeconds: seconds => {
                 var _s = seconds
                 var timeUnit = (_s > 1 ? sk.l10n.getPhrase('seconds') : sk.l10n.getPhrase('second') )
