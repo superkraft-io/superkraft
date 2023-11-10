@@ -186,7 +186,7 @@ class sk_ui_attributeItem {
             
             _c.onChanged = color =>{ this.apply(color) }
 
-            if (this.currValue) _c.color = sk.utils.rgb2hex(this.currValue) || this.currValue
+            if (this.currValue) _c.color = sk.utils.colors.rgb2hex(this.currValue) || this.currValue
         })
     }
 

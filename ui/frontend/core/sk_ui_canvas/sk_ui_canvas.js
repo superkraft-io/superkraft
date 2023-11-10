@@ -2,7 +2,7 @@ class sk_ui_canvas extends sk_ui_component {
     constructor(opt){
         super({...{htmlTag: 'canvas'}, ...opt})
 
-        this.ctx = this.element.getContext('2d')
+        this.ctx = this.element.getContext('2d', {willReadFrequently: true})
 
         this.ratio = Math.ceil(window.devicePixelRatio)
 
