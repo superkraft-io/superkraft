@@ -419,6 +419,7 @@ class sk_ui_component {
                 },
                 
                 onLeave: _e => {
+                    return
                     if (_e.toElement && _e.toElement.classList.value.includes('sk_ui_eventBlocker')) return
                     this.classRemove('sk_ui_component_hideCursor')
                     if (sk.app.cursorEl) sk.app.cursorEl.remove()
