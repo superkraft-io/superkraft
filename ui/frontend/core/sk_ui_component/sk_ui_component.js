@@ -383,71 +383,88 @@ class sk_ui_component {
         }})
 
 
+
+
+
+
+        /*******************/
+
+
+        var clearCursorEvents = ()=>{
+            this.element.removeEventListener('mouseenter', this.cursorEvents.onEnter)
+            this.element.removeEventListener('mouseleave', this.cursorEvents.onLeave)
+            document.removeEventListener('mousemove', this.cursorEvents.onMove)
+        }
+
+        this.cursorEvents = {
+            onEnter: _e => {
+                if (this.cursor.length === 0){
+                    clearCursorEvents()
+                    return
+                }
+
+                var cursor = sk.cursors[this.cursor]
+
+                if (this.cursor !== '_' && cursor == undefined) return
+
+                this.classAdd('sk_ui_component_hideCursor')
+
+                this.removeAllCursors()
+
+                if (cursor){
+                    sk.app.cursorEl = sk.app.add.icon(_c => {
+                        _c.classAdd('sk_ui_component_cursor')
+                        _c.animate = false
+                        _c.compact = true
+                        _c.icon = cursor.url
+                    })
+                } else {
+                    sk.app.cursorEl = sk.app.add.component(_c => {
+                        _c.classAdd('sk_ui_component_cursor')
+                        _c.animate = false
+                        _c.compact = true
+                        _c.offset = {x: 0, y: 0}
+                    })
+                }
+
+                if (this.onCursorCreated) this.onCursorCreated(sk.app.cursorEl)
+            },
+            
+            onLeave: _e => {
+                if (_e.toElement && _e.toElement.classList.value.includes('sk_ui_eventBlocker')) return
+                this.classRemove('sk_ui_component_hideCursor')
+                if (sk.app.cursorEl) sk.app.cursorEl.remove()
+            },
+
+            onMove: _e => {
+                var cursor = sk.cursors[this.cursor] || {offset: {x: 0, y: 0}}
+                
+                var offset = cursor.offset || {x: 0, y: 0}
+                if (!offset.x) offset.x = 0
+                if (!offset.y) offset.y = 0
+                
+                var pos = sk.interactions.getPos(_e)
+                sk.app.cursorEl.style.left = pos.x + offset.x + 'px'
+                sk.app.cursorEl.style.top = pos.y + offset.y + 'px'
+            }
+        }
+
+
         this.attributes.add({friendlyName: 'Cursor', name: 'cursor', type: 'text', onSet: val => {
 
+            
             
             delete sk.app.eventBlocker.onCursorCreated
             sk.app.eventBlocker.style.cursor = ''
 
-            this.cursorEvents = {
-                onEnter: ()=>{
-                    var cursor = sk.cursors[val]
-
-                    if (this.cursor !== '_' && cursor == undefined) return
-
-                    this.classAdd('sk_ui_component_hideCursor')
-
-                    this.removeAllCursors()
-
-                    if (cursor){
-                        sk.app.cursorEl = sk.app.add.icon(_c => {
-                            _c.classAdd('sk_ui_component_cursor')
-                            _c.animate = false
-                            _c.compact = true
-                            _c.icon = cursor.url
-                        })
-                    } else {
-                        sk.app.cursorEl = sk.app.add.component(_c => {
-                            _c.classAdd('sk_ui_component_cursor')
-                            _c.animate = false
-                            _c.compact = true
-                            _c.offset = {x: 0, y: 0}
-                        })
-                    }
-
-                    if (this.onCursorCreated) this.onCursorCreated(sk.app.cursorEl)
-                },
-                
-                onLeave: _e => {
-                    return
-                    if (_e.toElement && _e.toElement.classList.value.includes('sk_ui_eventBlocker')) return
-                    this.classRemove('sk_ui_component_hideCursor')
-                    if (sk.app.cursorEl) sk.app.cursorEl.remove()
-                },
-
-                onMove: _e => {
-                    var cursor = sk.cursors[val] || {offset: {x: 0, y: 0}}
-                    
-                    var offset = cursor.offset || {x: 0, y: 0}
-                    if (!offset.x) offset.x = 0
-                    if (!offset.y) offset.y = 0
-                    
-                    var pos = sk.interactions.getPos(_e)
-                    sk.app.cursorEl.style.left = pos.x + offset.x + 'px'
-                    sk.app.cursorEl.style.top = pos.y + offset.y + 'px'
-                }
-            }
+            
 
             if (val.length === 0){
                 this.style.cursor = ''
                 sk.app.eventBlocker.style.cursor = ''
 
                 if (sk.app.cursorEl) sk.app.cursorEl.remove()
-                this.element.removeEventListener('mouseenter', this.cursorEvents.onEnter, true)
-                this.element.removeEventListener('mouseleave', this.cursorEvents.onLeave, true)
-                document.removeEventListener('mousemove', this.cursorEvents.onMove, true)
-
-            var onlyRemove = false
+                clearCursorEvents()
 
                 return
             }
@@ -469,6 +486,14 @@ class sk_ui_component {
                 document.addEventListener('mousemove', this.cursorEvents.onMove)
             }
         }})
+
+
+
+
+
+
+
+
 
         /********/
 
