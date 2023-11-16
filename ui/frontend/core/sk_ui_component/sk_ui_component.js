@@ -1536,7 +1536,7 @@ class sk_ui_resizableizer {
 
             if (!this.__snapToGrid || !doSnap){
                 if (this.sides.right) newSize.w = this.originalSize.w + diff.x
-                if (this.sides.top) newSize.h = this.originalSize.h + diff.y
+                if (this.sides.top) newSize.h = this.originalSize.h - diff.y
             } else {
 
                 var originalPosX_snapped = sk.utils.calcSnap({val: this.originalPos.x, gridSize: this.__snapToGrid})
@@ -1553,7 +1553,8 @@ class sk_ui_resizableizer {
                     newSize.w = this.originalSize.w - deltaPos
                     
                     this.parent.style.left = newPos.x + 'px' 
-                } else {
+                }
+                else if (this.sides.right){
                     //newSize.w = sk.utils.calcSnap({val: newSize.w - this.originalSize.w, gridSize: this.__snapToGrid})
                     var deltaPos = newPos.x - this.originalPos.x
                     newSize.w = sk.utils.calcSnap({
@@ -1576,18 +1577,21 @@ class sk_ui_resizableizer {
                 }
             }
 
-            if (this.axis.indexOf('x') > -1){
-                if (this.sides.left) this.parent.style.left = newPos.x + 'px'
-                this.parent.style.minWidth = newSize.w + 'px'
-                this.parent.style.maxWidth = newSize.w + 'px'
+            if (this.sides.right || this.sides.left){
+                if (this.axis.indexOf('x') > -1){
+                    if (this.sides.left) this.parent.style.left = newPos.x + 'px'
+                    this.parent.style.minWidth = newSize.w + 'px'
+                    this.parent.style.maxWidth = newSize.w + 'px'
+                }
             }
 
-            if (this.axis.indexOf('y') > -1){
-                if (this.sides.top) this.parent.style.top = newPos.y + 'px'
-                this.parent.style.minHeight = newSize.h + 'px'
-                this.parent.style.maxHeight = newSize.h + 'px'
+            if (this.sides.top || this.sides.bottom){
+                if (this.axis.indexOf('y') > -1){
+                    if (this.sides.top) this.parent.style.top = newPos.y + 'px'
+                    this.parent.style.minHeight = newSize.h + 'px'
+                    this.parent.style.maxHeight = newSize.h + 'px'
+                }
             }
-            
 
             var diffSize = {
                 x: newSize.w - this.originalSize.w,
