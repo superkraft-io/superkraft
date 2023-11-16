@@ -1330,6 +1330,8 @@ class sk_ui_movableizer {
             this.parent.pointerEvents = 'true'
     
             if (this.onStartNotified && this.onEnd) this.onEnd(_e)
+
+            sk.interactions.unblock()
         }
     
 
@@ -1373,9 +1375,25 @@ class sk_ui_movableizer {
             }
 
             if (this.axis.indexOf('x') > -1){
-                if (newPos.x < 0 - this.offset.x) newPos.x = 0
-                if (newPos.x > this.parent.parent.rect.width - this.parent.rect.width + this.offset.x) newPos.x = this.parent.parent.rect.width - this.parent.rect.width + this.offset.x
-                this.parent.style.left = Math.round(newPos.x - this.offset.x) + 'px'
+                //if (newPos.x < 0 - this.offset.x) newPos.x = 0
+                //if (newPos.x > this.parent.parent.rect.width - this.parent.rect.width + this.offset.x) newPos.x = this.parent.parent.rect.width - this.parent.rect.width + this.offset.x
+                //this.parent.style.left = Math.round(newPos.x - this.offset.x) + 'px'
+
+                var minX = 0
+                var maxX = this.parent.parent.rect.width - this.parent.rect.width + this.offset.x
+                if (this.constraints){
+                    if (this.constraints.x){
+                        if (this.constraints.x.min === Infinity) minX = Infinity
+                        if (this.constraints.x.min) minX = this.constraints.x.min
+                        
+                        if (this.constraints.x.max === Infinity) maxX = Infinity
+                        else if (this.constraints.x.max) maxX = this.constraints.x.max
+                    }
+                }
+
+                if (minX !== Infinity && newPos.x < minX) newPos.x = 0
+                if (maxX !== Infinity && newPos.x > maxX) newPos.x = Math.round(this.parent.parent.rect.width - this.parent.rect.width)
+                this.parent.style.left = Math.round(newPos.x) + 'px'
             }
     
             if (this.axis.indexOf('y') > -1){
@@ -1383,6 +1401,7 @@ class sk_ui_movableizer {
                 var maxY = this.parent.parent.rect.height - this.parent.rect.height + this.offset.y
                 if (this.constraints){
                     if (this.constraints.y){
+                        if (this.constraints.y.min === Infinity) minY = Infinity
                         if (this.constraints.y.min) minY = this.constraints.y.min
                         
                         if (this.constraints.y.max === Infinity) maxY = Infinity
@@ -1390,7 +1409,7 @@ class sk_ui_movableizer {
                     }
                 }
 
-                if (newPos.y < minY) newPos.y = 0
+                if (minY !== Infinity && newPos.y < minY) newPos.y = 0
                 if (maxY !== Infinity && newPos.y > maxY) newPos.y = Math.round(this.parent.parent.rect.height - this.parent.rect.height)
                 this.parent.style.top = Math.round(newPos.y) + 'px'
             }
@@ -1414,6 +1433,8 @@ class sk_ui_movableizer {
 
 
         this.mouseDownHandler = (_e)=>{
+            sk.interactions.block()
+
             this.onStartNotified = false
             this.mdPosGlobal = {
                 x: (_e.clientX || _e.touches[0].clientX),
