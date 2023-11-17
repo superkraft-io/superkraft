@@ -1335,7 +1335,7 @@ class sk_ui_movableizer {
         }
     
 
-        this.mouseMoveHandler = _e => {
+        this.mouseMoveHandler = _e => {            
             if (!this.mdPos) return
 
             
@@ -1433,6 +1433,8 @@ class sk_ui_movableizer {
 
 
         this.mouseDownHandler = (_e)=>{
+            if (this.bypass) return
+
             sk.interactions.block()
 
             this.onStartNotified = false
