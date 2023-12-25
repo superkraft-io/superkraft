@@ -1496,10 +1496,16 @@ class sk_ui_resizableizer {
                 y: (_e.clientY || _e.touches[0].clientY) - this.mdPos.y
             }
 
+
             var newPos = {
-                x: (this.originalPos.x + diff.x).toFixed(0),
-                y: (this.originalPos.y + diff.y).toFixed(0)
+                x: parseFloat((this.originalPos.x + diff.x).toFixed(0)),
+                y: parseFloat((this.originalPos.y + diff.y).toFixed(0))
             }
+
+            
+            if (this.sides.right) newPos.x = this.originalPos.x
+            if (this.sides.bottom) newPos.y = this.originalPos.y
+
 
             var newSize = {
                 w: this.originalSize.w - diff.x,
@@ -1554,6 +1560,8 @@ class sk_ui_resizableizer {
                     var deltaPos = newPos.x - this.originalPos.x
                     newSize.w = this.originalSize.w - deltaPos
                     
+                    
+
                     this.parent.style.left = newPos.x + 'px' 
                 }
                 else if (this.sides.right){
@@ -1571,17 +1579,39 @@ class sk_ui_resizableizer {
                 if (this.constraints.width){
                     if (this.constraints.width.min && newSize.w < this.constraints.width.min) newSize.w = this.constraints.width.min
                     if (this.constraints.width.max && newSize.w > this.constraints.width.max) newSize.w = this.constraints.width.max
+
+                    
+                    if (this.constraints.width.max !== undefined && this.constraints.width.max !== Infinity && newSize.w >= this.parent.parent.rect.width - newPos.x) newSize.w = this.parent.parent.rect.width - newPos.x
                 }
 
                 if (this.constraints.height){
                     if (this.constraints.height.min && newSize.h < this.constraints.height.min) newSize.h = this.constraints.height.min
                     if (this.constraints.height.max && newSize.h > this.constraints.height.max) newSize.h = this.constraints.height.max
+
+                    if (this.constraints.heigh.max !== undefined && this.constraints.heigh.max !== Infinity && newSize.h >= this.parent.parent.rect.heigh - newPos.y) newSize.h = this.parent.parent.rect.heigh - newPos.y
                 }
             }
 
+
+            var mover = this.parent.movres_izer.mover
+            var moverConstraints = mover.constraints
+
             if (this.sides.right || this.sides.left){
                 if (this.axis.indexOf('x') > -1){
-                    if (this.sides.left) this.parent.style.left = newPos.x + 'px'
+                    if (this.sides.left){
+                        if (moverConstraints){
+                            if (moverConstraints.x){
+                                if (moverConstraints.x.min !== undefined && moverConstraints.x.min !== Infinity){
+                                    if (newPos.x <= moverConstraints.x.min) newPos.x = moverConstraints.x.min
+                                }
+                            }
+                        }
+
+                        this.parent.style.left = newPos.x + 'px'
+                    }
+
+
+                    
                     this.parent.style.minWidth = newSize.w + 'px'
                     this.parent.style.maxWidth = newSize.w + 'px'
                 }
@@ -1589,7 +1619,17 @@ class sk_ui_resizableizer {
 
             if (this.sides.top || this.sides.bottom){
                 if (this.axis.indexOf('y') > -1){
-                    if (this.sides.top) this.parent.style.top = newPos.y + 'px'
+                    if (this.sides.top){
+                        if (moverConstraints){
+                            if (moverConstraints.y){
+                                if (moverConstraints.y.min !== undefined && moverConstraints.y.min !== Infinity){
+                                    if (newPos.y <= moverConstraints.y.min) newPos.y = moverConstraints.y.min
+                                }
+                            }
+                        }
+
+                        this.parent.style.top = newPos.y + 'px'
+                    }
                     this.parent.style.minHeight = newSize.h + 'px'
                     this.parent.style.maxHeight = newSize.h + 'px'
                 }
