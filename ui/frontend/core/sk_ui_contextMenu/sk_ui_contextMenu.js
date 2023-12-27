@@ -276,6 +276,41 @@ class sk_ui_contextMenu extends sk_ui_component {
             return this.__position({menuRect: this.rect})
         } else {
             return this.__position
+            
+            /*if (this.__position === undefined) this.__position = 'bottom left'
+
+            var finalPos = this.__position
+
+            var x_positions = ['left', 'center', 'right']
+            var y_positions = ['top', 'middle', 'bottom']
+            
+            
+            if (x_positions.includes(this.__position) || y_positions.includes(this.__position)){
+                var positions = this.__position.split(' ')
+                
+                var x_pos = 'left'
+                var y_pos = 'bottom'
+
+                if (x_positions.includes(positions[0])) x_pos = positions[0]
+                if (x_positions.includes(positions[1])) x_pos = positions[1]
+
+                if (y_positions.includes(positions[0])) y_pos = positions[0]
+                if (y_positions.includes(positions[1])) y_pos = positions[1]
+
+                var mappedPosX = 0
+                var mappedPosY = 0
+
+                var parentRect = this.parent.rect
+
+                if (x_pos === 'center') mappedPosX = (rect.x + rect.width/2) - opt.menuRect.width/2
+
+                finalPos = {
+                    x: ,
+                    y: 
+                }
+            }
+
+            return finalPos*/
         }
     }
 
