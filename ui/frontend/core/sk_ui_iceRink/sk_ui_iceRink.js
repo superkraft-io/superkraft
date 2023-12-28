@@ -218,11 +218,11 @@ class sk_ui_iceRink extends sk_ui_component {
 
                     
 
-                    _c.style.transform = `translate(${Math.floor(val.x)}px, ${Math.floor(val.y)}px)`
+                    _c.style.transform = `translate(${Math.floor(val.x || 0)}px, ${Math.floor(val.y || 0)}px)` + (this.additionalTransformation || '')
 
 
                     
-                    if (this.onScroll) this.onScroll({x: val.x, y: val.y})
+                    if (this.onScroll) this.onScroll({x: val.x, y: val.y, fromInstant: val.fromInstant})
                 }
             })
             
@@ -659,8 +659,9 @@ class sk_ui_iceRink extends sk_ui_component {
 
 
         this.attributes.add({friendlyName: 'Instant', name: 'instant', type: 'bool', onSet: val => {
-            this.setContentPos({x: this.tweenX.current})
+            this.setContentPos({x: this.tweenX.current, y: this.tweenY.current, fromInstant: true})
             updateHandleLeftPos(0-this.tweenX.current)
+            updateHandleTopPos(0-this.tweenY.current)
         }})
 
         this.attributes.add({friendlyName: 'Hide Overflow', name: 'hideOverflow', type: 'bool', onSet: val => {
@@ -853,7 +854,9 @@ class sk_ui_iceRink_scrollbar extends sk_ui_component {
             if (this.onDecoupled) this.onDecoupled(val)
         }})
 
-        this.attributes.add({friendlyName: 'Hidden', name: 'hidden', type: 'bool', onSet: val => { }})
+        this.attributes.add({friendlyName: 'Hidden', name: 'hidden', type: 'bool', onSet: val => {
+            this.style.display = (val ? 'none' : '')
+        }})
 
         this.orientation = 'vertical'
     }
