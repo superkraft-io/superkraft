@@ -723,6 +723,7 @@ class sk_ui_iceRink extends sk_ui_component {
                         if (val < 0-this.content.rect.width + this.rect.width) val = 0-this.content.rect.width + this.rect.width
                     }
 
+                    this.scrollerX.value = val
                     this.setContentPos({x: val})
                     updateHandleLeftPos(0-val)
                     return 
@@ -733,6 +734,7 @@ class sk_ui_iceRink extends sk_ui_component {
 
             onGet: ()=>{
                 return this.scrollerX.value
+                //return this.tweenX.current
             }
         })
 
@@ -745,6 +747,7 @@ class sk_ui_iceRink extends sk_ui_component {
                         if (val < 0-this.content.rect.height + this.rect.height) val = 0-this.content.rect.height + this.rect.height
                     }
                 
+                    this.scrollerY.value = val
                     this.tweenY.current = val
                     this.setContentPos({y: val})
                     updateHandleLeftPos(0-val)
@@ -756,6 +759,7 @@ class sk_ui_iceRink extends sk_ui_component {
 
             onGet: ()=>{
                 return this.scrollerY.value
+                //return this.tweenY.current
             }
         })
 
