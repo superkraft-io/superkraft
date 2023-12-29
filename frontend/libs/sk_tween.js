@@ -19,6 +19,8 @@ class SK_Tween {
         this.steps   = 0
         this.speed   = opt.speed || 25
 
+        this.autoStep = opt.autoStep
+
         
 
         this.id = 0
@@ -28,6 +30,30 @@ class SK_Tween {
         }
 
         if (!opt.decoupled) window.tweens.list.push(this)
+
+        if (opt.autoStep) this.startAutoStepper()
+    }
+
+    startAutoStepper(){
+        var step = async _ts => {
+            if (this.__stopStepping) return this.__running = false
+            this.step()
+            window.requestAnimationFrame(step)
+        }
+        window.requestAnimationFrame(step)
+    }
+
+    stopStepping(){
+        return new Promise(resolve => {
+            this.__stopStepping = true
+
+            var timer = setInterval(()=>{
+                if (this.__running) return
+                this.__stopStepping = false
+                clearInterval(timer)
+                resolve()
+            }, 1)
+        })
     }
 
     easeOutQuint(t, b, c, d){ return c * ((t = t / d - 1) * t * t * t * t + 1) + b; }
@@ -50,18 +76,28 @@ class SK_Tween {
 
 
         this.onChanged(this)
+
+        if (this.current === this.target) this.stop()
     }
 
-    to(val){
+    async to(val){
         if (val === this.current) return
         this.last = this.current
         this.steps = 1000
         this.target = val
+
+        await this.stopStepping()
+
+        if (this.autoStep) this.startAutoStepper()
+
+        this.__running = true
     }
 
-    stop(){
+    async stop(){
         this.target  = this.current
         this.steps   = 0
         this.last    = this.current
+
+        await this.stopStepping()
     }
 }

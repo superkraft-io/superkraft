@@ -222,7 +222,7 @@ class sk_ui_iceRink extends sk_ui_component {
 
 
                     
-                    if (this.onScroll) this.onScroll({x: val.x, y: val.y, fromInstant: val.fromInstant})
+                    if (this.onScroll) this.onScroll({x: val.x, y: val.y, fromInstant: val.fromInstant || this.instant})
                 }
             })
             
