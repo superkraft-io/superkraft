@@ -369,7 +369,9 @@ class sk_ui_iceRink extends sk_ui_component {
 
 
             this.mouseDownHandler = _e => {
-                if (this.getPath({target: _e.target})[0].tagName.toLowerCase() === 'input') return
+                var firstInPath = this.getPath({target: _e.target})[0]
+                var firstInPat_suo = firstInPath.sk_ui_obj || {blockIceRink: false}
+                if (firstInPath.tagName.toLowerCase() === 'input' || firstInPat_suo.blockIceRink) return
 
                 if (this.getParentIceRink()){
                     _e.preventDefault()
@@ -681,6 +683,7 @@ class sk_ui_iceRink extends sk_ui_component {
             if (!val) return
             this.scrollbarX_wrapper.style.height = '0px'
             this.scrollbarX_wrapper.style.opacity = 0
+            this.scrollbarY_wrapper.style.display = 'none'
         }})
 
         this.attributes.add({friendlyName: 'Auto Width', name: 'autoWidth', type: 'bool', onSet: val => {
@@ -697,6 +700,7 @@ class sk_ui_iceRink extends sk_ui_component {
             if (!val) return
             this.scrollbarY_wrapper.style.width = '0px'
             this.scrollbarY_wrapper.style.opacity = 0
+            this.scrollbarY_wrapper.style.display = 'none'
         }})
 
      
