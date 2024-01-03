@@ -100,8 +100,8 @@ class sk_ui_icon extends sk_ui_component {
             this.iconElement.style.minHeight = val + 'px'
 
             if (this.type === 'svg'){
-                this.element.setAttribute('width', val)
-                this.element.setAttribute('height', val)
+                this.svgEl.setAttribute('width', val)
+                this.svgEl.setAttribute('height', val)
             }
         }})
         this.attributes.add({friendlyName: 'Color', name: 'color', type: 'color', onSet: val => {

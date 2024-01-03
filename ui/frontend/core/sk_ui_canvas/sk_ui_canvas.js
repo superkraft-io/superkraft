@@ -56,7 +56,7 @@ class sk_ui_canvas extends sk_ui_component {
         this.ctx.textBaseline = opt.baseline || 'hanging'
         this.ctx.textAlign = opt.alignment || 'start'
         this.ctx.fillStyle = defFont.color
-        this.ctx.fillText(opt.text || 'Text', opt.left * this.ratio || 0, opt.top * this.ratio || 0)
+        this.ctx.fillText((opt.text !== undefined ? opt.text : 'Text'), opt.left * this.ratio || 0, opt.top * this.ratio || 0)
         this.ctx.fillStyle = this.tmpClr
     }
 

@@ -63,6 +63,11 @@ class sk_ui_hint extends sk_ui_component {
         this.calcPos()
 
         
+        this.pointerEvents = 'none'
+        setTimeout(()=>{
+            this.pointerEvents = ''
+        }, 200)
+
 
         this.classAdd('sk_ui_hint_topMost')
         this.classRemove('sk_ui_hint_hidden')
