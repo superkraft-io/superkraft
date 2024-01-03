@@ -25,7 +25,7 @@ class sk_ui_menuItems extends Array{
             _c.classAdd('sk_ui_menuItem')
             _c.text = 'Menu item'
             _c.contextMenu.button = 'left'
-            _c.contextMenu.toggle = true
+            _c.contextMenu.togglable = true
             _c.contextMenu.position = () => { return {x: _c.rect.left, y: _c.rect.top + _c.rect.height} }
 
             _c.contextMenu.onShow = menu => {

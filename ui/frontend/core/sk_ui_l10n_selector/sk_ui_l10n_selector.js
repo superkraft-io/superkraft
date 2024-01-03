@@ -77,7 +77,7 @@ class sk_ui_l10n_selector extends sk_ui_button {
         this.contextMenu.setup(_c => {
             _c.button = 'left'
             _c.direction = 'up'
-            _c.toggle = true
+            _c.togglable = true
 
             _c.position = opt => {
                 return {x: this.rect.left, y: this.rect.y - opt.menuRect.height}

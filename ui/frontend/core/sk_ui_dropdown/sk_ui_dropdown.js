@@ -15,7 +15,7 @@ class sk_ui_dropdown extends sk_ui_button {
 
 
         this.contextMenu.button = 'left'
-        this.contextMenu.toggle = true
+        this.contextMenu.togglable = true
 
         this.contextMenu.position = opt => {
             var rect = this.rect

@@ -33,7 +33,7 @@ class sk_ui_button extends sk_ui_component {
                 if (this.goto_) window.open(this.goto_, '_blank')
             }
 
-            if (this.__toggle) this.toggled = !this.__toggled
+            if (this.__togglable) this.toggled = !this.__toggled
 
             if (this.onClick) this.onClick(_e)
 
@@ -129,11 +129,13 @@ class sk_ui_button extends sk_ui_component {
             if (val) this.classAdd('sk_ui_button_vertical')
         }})
 
-        this.attributes.add({friendlyName: 'Toggle', name: 'toggle', type: 'bool'})
+        this.attributes.add({friendlyName: 'Togglable', name: 'togglable', type: 'bool'})
 
         this.attributes.add({friendlyName: 'Toggle State', name: 'toggleState', type: 'bool', onSet: val => {
             this.classRemove(this.toggleClass || 'sk_ui_button_toggled')
             if (val) this.classAdd(this.toggleClass || 'sk_ui_button_toggled')
+
+            this.__toggled = val
         }})
         
         this.attributes.add({friendlyName: 'Toggled', name: 'toggled', type: 'bool', onSet: val => {

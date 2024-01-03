@@ -49,7 +49,7 @@ class sk_ui_complexity_editor {
                     this.showEditsToggleBtn = _c.add.button(_c => {
                         _c.type = 'icon'
                         _c.icon = 'edit'
-                        _c.toggle = true
+                        _c.togglable = true
                         _c.hint({text: 'Show edits  (CTRL + <)'})
 
                         _c.onClick = ()=>{
@@ -60,7 +60,7 @@ class sk_ui_complexity_editor {
                     this.inflateToggleBtn = _c.add.button(_c => {
                         _c.type = 'icon'
                         _c.icon = 'expand alternate'
-                        _c.toggle = true
+                        _c.togglable = true
                         _c.hint({text: 'Inflate  (<)'})
 
                         _c.onClick = ()=>{
@@ -71,7 +71,7 @@ class sk_ui_complexity_editor {
                     this.wireframeToggleBtn = _c.add.button(_c => {
                         _c.type = 'icon'
                         _c.icon = 'lightbulb outline'
-                        _c.toggle = true
+                        _c.togglable = true
                         _c.hint({text: 'Wireframe (SHIFT + <)'})
 
                         _c.onClick = ()=>{
@@ -83,7 +83,7 @@ class sk_ui_complexity_editor {
                     this.codeEditorToggleBtn = _c.add.button(_c => {
                         _c.type = 'icon'
                         _c.icon = 'code'
-                        _c.toggle = true
+                        _c.togglable = true
                         _c.toggled = true
                         _c.hint({text: 'Code'})
 

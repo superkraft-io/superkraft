@@ -10,7 +10,7 @@ class sk_ui_complexity_stylingEditor extends sk_ui_groupCollapsable {
             return parent.add.button(_c => {
                 _c.icon = icon
                 _c.type = 'icon'
-                _c.toggle = true
+                _c.togglable = true
                 _c.hint({text: hint})
                 _c.onClick = ()=>{ this.apply() }
                 if (cb) cb(_c)
@@ -91,7 +91,7 @@ class sk_ui_complexity_stylingEditor extends sk_ui_groupCollapsable {
                 _c.children.children.forEach(row => {
                     row.children.children.forEach(slot => {
                         slot.type = 'icon'
-                        slot.toggle = true
+                        slot.togglable = true
                         slot.onClick = ()=>{
                             this.map.deselectAll()
                             this.alignments.hor_ver = row.pos + ' ' + slot.pos

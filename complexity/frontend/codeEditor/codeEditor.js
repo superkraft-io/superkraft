@@ -15,7 +15,7 @@ class sk_ui_complexity_codeEditor extends sk_ui_component {
             this.bakeOutputBtn = _c.add.button(_c => {
                 _c.icon = 'bread slice'
                 _c.type = 'icon'
-                _c.toggle = true
+                _c.togglable = true
 
                 _c.hint('Show bake output (CTRL + SHIFT + B)')
 
@@ -31,7 +31,7 @@ class sk_ui_complexity_codeEditor extends sk_ui_component {
             this.bakeOutputBtn = _c.add.button(_c => {
                 _c.icon = 'css3'
                 _c.type = 'icon'
-                _c.toggle = true
+                _c.togglable = true
 
                 _c.hint('Separate CSS baking (CTRL + SHIFT + C)')
 
