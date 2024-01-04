@@ -454,14 +454,15 @@ class sk_ui_component {
 
             
             
-            delete sk.app.eventBlocker.onCursorCreated
-            sk.app.eventBlocker.style.cursor = ''
+            //delete sk.app.eventBlocker.onCursorCreated
+            //sk.app.eventBlocker.style.cursor = ''
 
             
 
             if (val.length === 0){
                 this.style.cursor = ''
-                sk.app.eventBlocker.style.cursor = ''
+                //sk.app.eventBlocker.style.cursor = ''
+                sk.app.eventBlocker.removeCursorFor(this)
 
                 if (sk.app.cursorEl) sk.app.cursorEl.remove()
                 clearCursorEvents()
@@ -472,14 +473,16 @@ class sk_ui_component {
             var cssCursors = ['', 'none', 'auto', 'crosshair', 'default', 'e-resize', 'grab', 'help', 'move', 'n-resize', 'ne-resize', 'nw-resize', 'pointer', 'progress', 's-resize', 'se-resize', 'sw-resize', 'text', 'w-resize', 'wait', 'not-allowed', 'no-drop']
             
             if (cssCursors.includes(val)){
-                sk.app.eventBlocker.style.cursor = val
+                //sk.app.eventBlocker.style.cursor = val
+                sk.app.eventBlocker.setCursorFor(this, val)
                 this.style.cursor = val
                 return
             }
             
             if (sk.cursors[val] || val === '_'){
-                sk.app.eventBlocker.onCursorCreated = this.onCursorCreated
-                sk.app.eventBlocker.style.cursor = 'none'
+                //sk.app.eventBlocker.onCursorCreated = this.onCursorCreated
+                //sk.app.eventBlocker.style.cursor = 'none'
+                sk.app.eventBlocker.setCursorFor(this)
 
                 this.element.addEventListener('mouseenter', this.cursorEvents.onEnter)
                 this.element.addEventListener('mouseleave', this.cursorEvents.onLeave)

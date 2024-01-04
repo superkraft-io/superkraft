@@ -149,10 +149,8 @@
                 sk.app = (new sk_ui_component({parent: {element: document.body}}))
                 sk.app.setup(_c => {
                     _c.styling += ' fullwidth fullheight'
-                    _c.eventBlocker = _c.add.component(_c => {
-                        _c.classAdd('sk_ui_eventBlocker')
-                        _c.style.display = 'none'
-                    })
+                    _c.eventBlocker = _c.add.eventBlocker()
+                    
                     _c.ums.on('sk_ui_block_userInteractons', res => {
                         _c.eventBlocker.style.display = (res.data.block ? '' : 'none')
                     })
