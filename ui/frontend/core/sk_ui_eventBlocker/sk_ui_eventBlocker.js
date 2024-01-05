@@ -9,25 +9,20 @@ class sk_ui_eventBlocker extends sk_ui_component {
         var _this = this
 
         this.onEnter = _e => {
-            console.log('eventBlocker onEnter')
     
             var sender = this.findSenderInPath(_e)
             if (!sender) return this.style.cursor = ''
             
-            console.log('should show cursor: ' + sender.cursor)
-    
             if (sk.cursors[sender.cursor] || sender.cursor === '_') return this.style.cursor = 'none'
 
             this.style.cursor = sender.cursor
         }
     
         this.onLeave = _e => {
-            console.log('eventBlocker onLeave')
             this.style.cursor = ''
         }
     
         this.onMove = _e => {
-            console.log('eventBlocker onMove')
         }
 
 
