@@ -3,6 +3,7 @@ class sk_ui_canvas extends sk_ui_component {
         super({...{htmlTag: 'canvas'}, ...opt})
 
         this.ctx = this.element.getContext('2d', {willReadFrequently: true})
+        this.ctx.lineWidth = 1
 
         this.ratio = Math.ceil(window.devicePixelRatio)
 
@@ -50,6 +51,8 @@ class sk_ui_canvas extends sk_ui_component {
 
         var fontStr = `${defFont.size * this.ratio}px ${defFont.name}, ${defFont.family}`
 
+        opt.left += 0.5
+        opt.top += 0.5
 
         this.tmpClr = this.ctx.fillStyle
         this.ctx.font = fontStr
@@ -65,8 +68,8 @@ class sk_ui_canvas extends sk_ui_component {
         this.ctx.strokeStyle = opt.color || this.tmpClr
 
         this.ctx.beginPath()
-        this.ctx.moveTo(opt.from.x * this.ratio, opt.from.y * this.ratio)
-        this.ctx.lineTo(opt.to.x * this.ratio, opt.to.y * this.ratio)
+        this.ctx.moveTo(opt.from.x * this.ratio + 0.5, opt.from.y * this.ratio + 0.5)
+        this.ctx.lineTo(opt.to.x * this.ratio + 0.5, opt.to.y * this.ratio + 0.5)
         this.ctx.stroke()
 
         this.ctx.strokeStyle = this.tmpClr
@@ -77,7 +80,7 @@ class sk_ui_canvas extends sk_ui_component {
         this.ctx.strokeStyle = opt.color || this.tmpClr
 
         
-        this.fillRect({left: opt.left, top: opt.top, width: 1, height: 1, color: opt.color})
+        this.fillRect({left: opt.left + 0.5, top: opt.top + 0.5, width: 1, height: 1, color: opt.color})
 
         this.ctx.strokeStyle = this.tmpClr
     }

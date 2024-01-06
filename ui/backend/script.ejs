@@ -192,6 +192,14 @@
                 var step = defOpt.val / defOpt.gridSize
                 return Math[defOpt.func](step) * defOpt.gridSize
             },
+
+
+            distance: (p1, p2, mapToPositive)=>{
+                var distance = Math.sqrt((p2.x - p1.x)*(p2.x - p1.x) + (p2.y - p1.y)*(p2.y - p1.y))
+                if (mapToPositive) if (distance < 0) distance = 0-distance
+                return distance
+            },
+
             
             colors: {
                 rgb2hex: rgb => {
