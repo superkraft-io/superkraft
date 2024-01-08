@@ -192,13 +192,33 @@
                     <% } %>
 
 
+
+
+                    /********/
+
+                    var resizeTimer = undefined
+                    _c.lastRect = _c.rect
                     const resObs = new ResizeObserver((entries) => {
+                        if (!resizeTimer){
+                            sk.ums.broadcast('app_resize_begin', undefined, _c.rect)
+                            sk.ums.broadcast('app_body_resize_begin', undefined, _c.body.rect)
+                        }
+
+                        clearTimeout(resizeTimer)
+                        resizeTimer = setTimeout(()=>{
+                            clearTimeout(resizeTimer)
+                            resizeTimer = undefined
+                            sk.ums.broadcast('app_resize_end', undefined, _c.rect)
+                            sk.ums.broadcast('app_body_resize_end', undefined, _c.body.rect)
+                        }, 1000)
+
+                        
                         sk.ums.broadcast('app_resize', undefined, _c.rect)
                         sk.ums.broadcast('app_body_resize', undefined, _c.body.rect)
                     })
                     resObs.observe(_c.element)
 
-
+                    /********/
 
 
                     _c.ums.on('sk_view_cmd-' + sk.id, async res => {
