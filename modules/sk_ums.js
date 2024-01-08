@@ -8,6 +8,8 @@ module.exports = class SK_UMS {
 
         opt.app.whenReady().then(() => {
             this.sk.wscb.on('sk_ums', (msg, rW)=>{
+                if (msg.sk_ums_empty) msg = undefined
+                
                 if (msg.action === 'newID'){
                     rW({id: this.newID()})
                 }

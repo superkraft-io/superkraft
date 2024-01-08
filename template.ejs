@@ -191,6 +191,16 @@
                         sk.complexity.codeEditor = new sk_ui_complexity_codeEditor(_c)
                     <% } %>
 
+
+                    const resObs = new ResizeObserver((entries) => {
+                        sk.ums.broadcast('app_resize', undefined, _c.rect)
+                        sk.ums.broadcast('app_body_resize', undefined, _c.body.rect)
+                    })
+                    resObs.observe(_c.element)
+
+
+
+
                     _c.ums.on('sk_view_cmd-' + sk.id, async res => {
                         if (res.data.viewID !== sk.id) return
 

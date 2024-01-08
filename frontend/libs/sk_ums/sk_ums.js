@@ -14,7 +14,9 @@ class SK_UMS {
 
     toBE(action, eventID, data){
         return new Promise(resolve => {
-            wscb.send({cmd: 'sk_ums', action: action, eventID: eventID, data: data}, res => {
+            var _data = data || {sk_ums_empty: true}
+            _data = JSON.parse(JSON.stringify(_data))
+            wscb.send({cmd: 'sk_ums', action: action, eventID: eventID, data: _data}, res => {
                 resolve(res)
             })
         })

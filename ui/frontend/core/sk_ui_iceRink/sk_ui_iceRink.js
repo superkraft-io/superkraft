@@ -313,9 +313,16 @@ class sk_ui_iceRink extends sk_ui_component {
                 calcVelocity()
                 
                 
-
-                if (this.axis.indexOf('x') > -1) this.scrollerX.value = this.content.last_pos.x + dx
-                if (this.axis.indexOf('y') > -1) this.scrollerY.value = this.content.last_pos.y + dy
+                if (this.axis.indexOf('x') > -1 && !this.disable_x){
+                    var x = this.content.last_pos.x + dx
+                    this.scrollerX.value = x
+                    this.tweenX.current = x
+                }
+                if (this.axis.indexOf('y') > -1 && !this.disable_y){
+                    var y = this.content.last_pos.y + dy
+                    this.scrollerY.value = y
+                    this.tweenY.current = y
+                }
             }
 
             const mouseUpHandler = _e => {
@@ -353,13 +360,13 @@ class sk_ui_iceRink extends sk_ui_component {
                 _c.element.style.cursor = ''
                 _c.element.style.removeProperty('user-select')
 
-                if (this.axis.indexOf('x') > -1){
+                if (this.axis.indexOf('x') > -1 && !this.disable_x){
                     if (velocity.x !== 0) this.scrollerX.inertia = velocity.x
                     this.scrollerX.value = this.preRubberbandPos.x
                     this.scrollerX.start()
                 }
 
-                if (this.axis.indexOf('y') > -1){
+                if (this.axis.indexOf('y') > -1 && !this.disable_y){
                     if (velocity.y !== 0) this.scrollerY.inertia = velocity.y
                     this.scrollerY.value = this.preRubberbandPos.y
                     this.scrollerY.start()
@@ -369,6 +376,11 @@ class sk_ui_iceRink extends sk_ui_component {
 
 
             this.mouseDownHandler = _e => {
+
+                if (this.disable_x && this.disable_y) return
+                if (this.disable_x && this.axis === 'x') return
+                if (this.disable_y && this.axis === 'y') return
+                
                 var firstInPath = this.getPath({target: _e.target})[0]
                 var firstInPat_suo = firstInPath.sk_ui_obj || {blockIceRink: false}
                 if (firstInPath.tagName.toLowerCase() === 'input' || firstInPat_suo.blockIceRink) return
@@ -660,6 +672,7 @@ class sk_ui_iceRink extends sk_ui_component {
         })
 
 
+        
         this.attributes.add({friendlyName: 'Instant', name: 'instant', type: 'bool', onSet: val => {
             this.setContentPos({x: this.tweenX.current, y: this.tweenY.current, fromInstant: true})
             updateHandleLeftPos(0-this.tweenX.current)
@@ -677,6 +690,9 @@ class sk_ui_iceRink extends sk_ui_component {
         this.axis = 'xy'
 
 
+        this.attributes.add({friendlyName: 'Disable X', name: 'disable_x', type: 'bool', onSet: val => {
+        
+        }})
         this.attributes.add({friendlyName: 'Max Overscroll X', name: 'maxOverscrollX', type: 'number'})
         
         this.attributes.add({friendlyName: 'Hide handle X', name: 'hideHandleX', type: 'bool', onSet: val => {
@@ -693,7 +709,11 @@ class sk_ui_iceRink extends sk_ui_component {
 
 
         
-      
+
+
+        this.attributes.add({friendlyName: 'Disable Y', name: 'disable_y', type: 'bool', onSet: val => {
+        
+        }})
         this.attributes.add({friendlyName: 'Max Overscroll Y', name: 'maxOverscrollY', type: 'number'})
 
         this.attributes.add({friendlyName: 'Hide handle Y', name: 'hideHandleY', type: 'bool', onSet: val => {
