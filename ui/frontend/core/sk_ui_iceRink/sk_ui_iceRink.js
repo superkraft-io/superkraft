@@ -1021,6 +1021,7 @@ class sk_scroller {
         this.__run = true
         this.springConstant = 0.5
 
+        /*
         var step = async _ts => {
             if (this.__run){
                 //await sk.utils.sleep(100)
@@ -1032,6 +1033,7 @@ class sk_scroller {
             window.requestAnimationFrame(step)
         }
         window.requestAnimationFrame(step)
+        */
     }
 
     calcRubberband(opt){
