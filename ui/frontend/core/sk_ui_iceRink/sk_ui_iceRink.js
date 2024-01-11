@@ -685,6 +685,11 @@ class sk_ui_iceRink extends sk_ui_component {
 
 
 
+        
+        this.ums.on('sk_ui_tween_step', res => {
+            this.scrollerX.step()
+            this.scrollerY.step()
+        })
 
 
         this.axis = 'xy'
@@ -1034,6 +1039,7 @@ class sk_scroller {
         }
         window.requestAnimationFrame(step)
         */
+
     }
 
     calcRubberband(opt){
