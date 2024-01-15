@@ -12,6 +12,12 @@ class SK_Commands {
 
     __captureKeyboardEvents(){
         document.addEventListener('keydown', _e => {
+
+            var target = _e.target
+            if (target.nodeName === 'INPUT') return
+            var suo = target.sk_ui_obj
+            if(suo && suo.interceptKeyboard) return
+
             var arr = []
             if (_e.ctrlKey) arr.push('ctrl')
             if (_e.metaKey === '') arr.push('cmd')

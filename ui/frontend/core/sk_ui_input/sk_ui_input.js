@@ -76,6 +76,8 @@ class sk_ui_input extends sk_ui_component {
         var accepted = '0123456789'
         var controlKeys = ['Delete', 'Backspace', 'Home', 'ArrowLeft', 'ArrowRight', 'Home', 'End']
         this.element.addEventListener('keydown', _e => {
+            if (_e.code === 'Tab') return
+            
             var controlKeysUsed = false
 
             if (_e.ctrlKey || _e.shiftKey || _e.altKey || controlKeys.includes(_e.key)) controlKeysUsed = true
@@ -99,6 +101,7 @@ class sk_ui_input extends sk_ui_component {
         var accepted = '+0123456789'
         var controlKeys = ['Backspace', 'ArrowLeft', 'ArrowRight', 'a', 'x', 'c', 'v', 'z']
         this.element.addEventListener('keydown', _e => {
+            if (_e.code === 'Tab') return
             if (_e.ctrlKey && controlKeys.includes(_e.key)) return
 
             if (accepted.indexOf(_e.key) === -1 && !controlKeys.includes(_e.key)) return _e.preventDefault()
