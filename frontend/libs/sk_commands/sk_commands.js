@@ -18,15 +18,15 @@ class SK_Commands {
             var suo = target.sk_ui_obj
             if(suo && suo.interceptKeyboard) return
 
-            var arr = []
-            if (_e.ctrlKey) arr.push('ctrl')
-            if (_e.metaKey === '') arr.push('cmd')
-            if (_e.altKey) arr.push('alt')
-            if (_e.shiftKey) arr.push('shift')
+            var capturedShortcut = []
+            if (_e.ctrlKey) capturedShortcut.push('ctrl')
+            if (_e.metaKey === '') capturedShortcut.push('cmd')
+            if (_e.altKey) capturedShortcut.push('alt')
+            if (_e.shiftKey) capturedShortcut.push('shift')
 
             var key = _e.key.toLowerCase()
             var ignoreKeys = ['control', 'meta', 'alt', 'shift']
-            if (!ignoreKeys.includes(key)) arr.push(key)
+            if (!ignoreKeys.includes(key)) capturedShortcut.push(key)
             
             
 
@@ -38,31 +38,41 @@ class SK_Commands {
                     ':': '.'
                 }
                 
-                var lastChar = arr[arr.length - 1]
+                var lastChar = capturedShortcut[capturedShortcut.length - 1]
                 var replacement = replacements[lastChar]
 
-                if (replacement) arr[arr.length - 1] = replacement
+                if (replacement) capturedShortcut[capturedShortcut.length - 1] = replacement
             }
 
             fixLastChar()
 
 
 
-            var shortcut =  arr.join('+')
+            //var shortcut =  arr.join('+')
             
             for (var cmdName in this.commands){
                 var cmd = this.commands[cmdName]
+                if (!cmd.shortcut) continue
                 
-                
-
                 var cmdShortcut = cmd.shortcut
                 if (typeof cmdShortcut === 'object') cmdShortcut = (sk.os === 'macos' ? cmd.shortcut.macos : cmd.shortcut.win)
-                if (cmdShortcut === shortcut){
+                
+                cmdShortcut = cmdShortcut.toLowerCase()
+
+                if (this.compareShortcuts(cmdShortcut.split('+'), capturedShortcut)){
                     _e.preventDefault()
                     _e.stopPropagation()
                     cmd.action()
                 }
             }
         })
+    }
+
+    compareShortcuts(a, b){
+        if (a.length !== b.length) return
+        
+        for (var _a in a) if (!b.includes(a[_a])) return
+
+        return true
     }
 }

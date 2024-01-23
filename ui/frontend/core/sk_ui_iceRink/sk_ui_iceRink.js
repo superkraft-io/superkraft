@@ -589,7 +589,7 @@ class sk_ui_iceRink extends sk_ui_component {
             },
 
             onChanged: res => {
-                if (this.ignoreScrollingChanges || this.instant) return
+                if (this.ignoreScrollingChanges) return
 
                 if (this.maxOverscrollX !== undefined){
                     if (res > 0) res = 0
@@ -640,7 +640,7 @@ class sk_ui_iceRink extends sk_ui_component {
             },
 
             onChanged: res => {
-                if (this.ignoreScrollingChanges || this.instant) return
+                if (this.ignoreScrollingChanges) return
                 
                 if (this.maxOverscrollY !== undefined){
                     if (res > 0) res = 0
