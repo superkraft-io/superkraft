@@ -103,6 +103,8 @@ class sk_ui_slider extends sk_ui_component {
 
         var handleMouseDown = _e => {
             this.hasMoved = false
+            this.thumb.animate = false
+            this.lineColorBar.animate = false
 
             
             _e.preventDefault()
