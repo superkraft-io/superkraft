@@ -2,7 +2,7 @@ class SK_UI_Tweens {
     constructor(){
         this.tween_id_counter = 0
         this.list = []
-        this.globalSpeed = 25
+        //this.globalSpeed = 25
     }
 
     step(){
