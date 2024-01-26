@@ -342,27 +342,51 @@
                 }
             },
 
-            secondsToTimestamp: (_ms, noMilliseconds)=>{
+            secondsToTimestamp: (_ms, noMilliseconds, getSubMilliseconds)=>{
                 // Pad to 2 or 3 digits, default is 2
                 function pad(n, z) {
                     z = z || 2;
                     return ('00' + n).slice(-z);
                 }
 
-                var ms = _ms * 1000
+                var ms = Math.floor(_ms * 1000)
 
-                var shours = Math.floor(ms / 1000 / 60 / 60)
-                var sminutes = Math.floor(ms / 1000 / 60)
-                var sseconds = Math.floor(ms / 1000)
+                var _hours = Math.floor(ms / 1000 / 60 / 60)
+                var _minutes = Math.floor(ms / 1000 / 60)
+                var _seconds = Math.floor(ms / 1000)
+                var _seconds = Math.floor(ms / 1000)
+                var _microsec = Math.floor(ms * 1000)
 
-                var rhours = shours;
-                var rminutes = sminutes - (shours * 60);
-                var rseconds = sseconds - (sminutes * 60 + shours * 60 * 60);
+                var _micro = Math.floor(ms     * 1000)
+                var _nano  = Math.floor(_micro * 1000)
+                var _pico  = Math.floor(_pico  * 1000)
+                var _femto = Math.floor(_femto * 1000)
+                var _atto  = Math.floor(_atto  * 1000)
+                var _zepto = Math.floor(_zepto * 1000)
+                var _yocto = Math.floor(_yocto * 1000)
+
+                var rhours = _hours;
+                var rminutes = _minutes - (_hours * 60);
+                var rseconds = _seconds - (_minutes * 60 + _hours * 60 * 60);
 
                 var hourStr = ''
                 if (rhours > 0) hourStr += pad(rhours) + ':'
 
-                return hourStr + pad(rminutes) + ':' + pad(rseconds) + (!noMilliseconds ? '.' + pad(ms, 3) : '');
+                var str = hourStr + pad(rminutes) + ':' + pad(rseconds) + (!noMilliseconds ? '.' + pad(ms, 3) : '')
+                if (!getSubMilliseconds) return str
+                else return {
+                    text: str,
+                    units: {
+                        micro : _micro,
+                        nano  : _nano,
+                        pico  : _pico,
+                        femto : _femto,
+                        atto  : _atto,
+                        zepto : _zepto,
+                        yocto : _yocto,
+                    },
+                    unitsOrder: ['micro', 'nano', 'pico', 'femto', 'atto', 'zepto', 'yocto']
+                }
             },
 
             humanReadableTime: opt => {
