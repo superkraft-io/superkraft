@@ -18,7 +18,7 @@ class sk_ui_ruler extends sk_ui_canvas {
     
             this.styling += ' fullwidth'
             //this.resizable = 'y'
-            this.height = 512
+            //this.height = 512
             this.width = 16
     
             this.constraints = {
@@ -37,7 +37,7 @@ class sk_ui_ruler extends sk_ui_canvas {
                 autoStep: true,
                 speed: 50,
                 onChanged: res => {
-                    this.updateRuler()
+                    this.setDirty()
                 }
             })
             this.tween_zoom.target = 1
@@ -48,7 +48,7 @@ class sk_ui_ruler extends sk_ui_canvas {
                 autoStep: true,
                 speed: 50,
                 onChanged: res => {
-                    this.updateRuler()
+                    this.setDirty()
                 }
             })
     
@@ -59,7 +59,7 @@ class sk_ui_ruler extends sk_ui_canvas {
     
     
             this.movres_izer.resizer.onResizing = ()=>{
-                //this.updateRuler()
+                //this.setDirty()
             }
     
     
@@ -79,7 +79,7 @@ class sk_ui_ruler extends sk_ui_canvas {
             var observer = new ResizeObserver(()=>{
                 this.getMinZoom()
                 this.getMaxZoom()
-                this.updateRuler()
+                this.setDirty()
             }).observe(this.element)
 
 
@@ -104,7 +104,7 @@ class sk_ui_ruler extends sk_ui_canvas {
                 this.originalScroll = this.scrollTarget
 
                 this.originalHeight = this.getVirtualSize()
-                console.log('this.originalHeight: ' + this.originalHeight)
+                //console.log('this.originalHeight: ' + this.originalHeight)
     
             })
 
@@ -230,7 +230,7 @@ class sk_ui_ruler extends sk_ui_canvas {
                     }
                 }
     
-                this.updateRuler()
+                this.setDirty()
             }
     
             //this.oppositeSide = true
@@ -238,8 +238,12 @@ class sk_ui_ruler extends sk_ui_canvas {
     
     
     
-    
+            this.ums.on('sk_ui_tween_step', ()=>{
+                this.updateRuler()
+            })
         }
+
+        setDirty(){ this.__dirty = true }
     
         init(opt = {}){
             this.initialValues = opt
@@ -298,7 +302,7 @@ class sk_ui_ruler extends sk_ui_canvas {
             if (this.instantZoom){
                 this.tween_zoom.target = val
                 this.tween_zoom.current = val
-                this.updateRuler()
+                this.setDirty()
                 return
             }
     
@@ -317,7 +321,7 @@ class sk_ui_ruler extends sk_ui_canvas {
     
             
             if (this.constraints.value.max !== undefined && this.constraints.value.max !== Infinity){
-                var maxPx = this.map.valToPx(this.constraints.value.max, true)
+                var maxPx = this.map.valToPx(this.constraints.value.max, true, false, true)
                 if (maxPx > this.rect.height){
                     var clampMaxPos = 0-(maxPx - this.rect.height)
                     //console.log('clampMaxPos: ' + clampMaxPos)
@@ -329,7 +333,7 @@ class sk_ui_ruler extends sk_ui_canvas {
             if (this.instantScroll){
                 this.tween_scroll.target = val
                 this.tween_scroll.current = val
-                this.updateRuler()
+                this.setDirty()
                 return
             }
     
@@ -341,13 +345,13 @@ class sk_ui_ruler extends sk_ui_canvas {
     
         set orientation(val){
             this.__orientation = val
-            this.updateRuler()
+            this.setDirty()
         }
         get orientation(){ return this.__orientation }
     
         set oppositeSide(val){
             this.__oppositeSide = val
-            this.updateRuler()
+            this.setDirty()
         }
         get oppositeSide(){ return this.__oppositeSide }
     
@@ -479,22 +483,20 @@ class sk_ui_ruler extends sk_ui_canvas {
     
     
         updateRuler(){
-            if (this.busy) return
-            this.busy = true
+            if (!this.__dirty) return
+            this.__dirty = false
     
-            this.updateTimer = setTimeout(()=>{
-                this.update()
-                this.clear()
-    
-                //this.line({color: 'green', from: {x: 0, y: this.dbgOffset}, to: {x: this.rect.width, y: this.dbgOffset}})
-                //this.line({color: 'red', from: {x: 0, y: this.dbgOffset + this.dbgViewSize}, to: {x: this.rect.width, y: this.dbgOffset + this.dbgViewSize}})
-    
-                this.plot()
-    
-                this.busy = false
+            this.update()
+            this.clear()
 
-                if (this.onChanged) this.onChanged(this.getRangeAsValue())
-            }, 0)
+            //this.line({color: 'green', from: {x: 0, y: this.dbgOffset}, to: {x: this.rect.width, y: this.dbgOffset}})
+            //this.line({color: 'red', from: {x: 0, y: this.dbgOffset + this.dbgViewSize}, to: {x: this.rect.width, y: this.dbgOffset + this.dbgViewSize}})
+
+            this.plot()
+
+            this.busy = false
+
+            if (this.onChanged) this.onChanged(this.getRangeAsValue())
         }
     
         plot(){
@@ -537,7 +539,7 @@ class sk_ui_ruler extends sk_ui_canvas {
                 max: this.map.pxToVal(rect.height)
             }
             
-            /*
+            
             if (boundMinMax.min < this.constraints.value.min){
                 this.instantZoom = true
                 this.instantScroll = true
@@ -553,7 +555,7 @@ class sk_ui_ruler extends sk_ui_canvas {
                 this.instantZoom = false
                 this.instantScroll = false
             }
-            */
+            
             
             this.tryPlotSubSegments_in_out()
         }

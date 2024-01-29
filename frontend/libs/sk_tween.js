@@ -3,6 +3,8 @@ class SK_UI_Tweens {
         this.tween_id_counter = 0
         this.list = []
         //this.globalSpeed = 25
+
+        this.start()
     }
 
     step(){
@@ -18,7 +20,7 @@ class SK_UI_Tweens {
         this.__running = true
         var step = async _ts => {
             if (this.__stopStepping) return this.__running = false
-            this.step()
+            try { this.step() } catch(err) {}
             window.requestAnimationFrame(step)
         }
         window.requestAnimationFrame(step)
