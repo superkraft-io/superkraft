@@ -1,3 +1,5 @@
+const { from } = require("form-data")
+
 class sk_ui_ruler extends sk_ui_canvas {
     //class sk_ui_ruler extends sk_ui_wE_pixi_canvas {
     constructor(opt){
@@ -13,7 +15,6 @@ class sk_ui_ruler extends sk_ui_canvas {
             _c.manualUpdate = true
             _c.animate = false
         })*/
-
 
 
         this.styling += ' fullwidth'
@@ -79,11 +80,23 @@ class sk_ui_ruler extends sk_ui_canvas {
         var observer = new ResizeObserver(()=>{
             this.getMinZoom()
             this.getMaxZoom()
+
+            if (this.stickyZoom && this.currentRange){
+                this.instantScroll = true
+                this.instantZoom = true
+                this.isResizing = true
+                this.zoomToRange(this.currentRange.start, this.currentRange.end)
+                this.isResizing = false
+                this.instantScroll = true
+                this.instantZoom = true
+                return
+            }
+            
             this.setDirty()
         }).observe(this.element)
 
 
-
+        this.stickyZoom = false
 
 
         var handleDblClick = _e => {
@@ -247,7 +260,9 @@ class sk_ui_ruler extends sk_ui_canvas {
         })
     }
 
-    setDirty(){ this.__dirty = true }
+    setDirty(){
+        this.__dirty = true
+    }
 
     init(opt = {}){
         this.initialValues = opt
@@ -565,6 +580,10 @@ class sk_ui_ruler extends sk_ui_canvas {
             this.instantScroll = false
         }
         
+        if (!this.isResizing) this.currentRange = {
+            start: this.map.pxToVal(0),
+            end: this.map.pxToVal(this.rect.height)
+        }
         
         this.tryPlotSubSegments_in_out()
     }
