@@ -1,6 +1,7 @@
 class sk_ui_eventBlocker extends sk_ui_component {
     constructor(opt){
         super(opt)
+
         this.style.display = 'none'
         
         this.senders = {}

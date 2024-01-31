@@ -196,27 +196,20 @@
 
                     /********/
 
-                    var resizeTimer = undefined
-                    _c.lastRect = _c.rect
-                    const resObs = new ResizeObserver((entries) => {
-                        if (!resizeTimer){
-                            sk.ums.broadcast('app_resize_begin', undefined, _c.rect)
-                            sk.ums.broadcast('app_body_resize_begin', undefined, _c.body.rect)
-                        }
-
-                        clearTimeout(resizeTimer)
-                        resizeTimer = setTimeout(()=>{
-                            clearTimeout(resizeTimer)
-                            resizeTimer = undefined
-                            sk.ums.broadcast('app_resize_end', undefined, _c.rect)
-                            sk.ums.broadcast('app_body_resize_end', undefined, _c.body.rect)
-                        }, 1000)
-
-                        
-                        sk.ums.broadcast('app_resize', undefined, _c.rect)
-                        sk.ums.broadcast('app_body_resize', undefined, _c.body.rect)
+                    sk.ums.on('sk_be_app_resize_begin-' + sk.id, async res => {
+                        sk.ums.broadcast('app_resize_begin', undefined, res.data)
+                        sk.ums.broadcast('app_body_resize_begin', undefined, res.data)
                     })
-                    resObs.observe(_c.element)
+
+                    sk.ums.on('sk_be_app_resize-' + sk.id, async res => {
+                        sk.ums.broadcast('app_resize', undefined, res.data)
+                        sk.ums.broadcast('app_body_resize', undefined, res.data)
+                    })
+
+                    sk.ums.on('sk_be_app_resize_end-' + sk.id, async res => {
+                        sk.ums.broadcast('app_resize_end', undefined, res.data)
+                        sk.ums.broadcast('app_body_resize_end', undefined, res.data)
+                    })
 
                     /********/
 

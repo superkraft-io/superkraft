@@ -18,7 +18,7 @@ class sk_ui_component {
         var tree = {}
         var htmlTag = opt.htmlTag  || 'div'
 
-        var _classes = ['sk_ui_component', 'sk_ui_transition', 'sk_ui_os_' + sk.os, 'sk_ui_' + sk.browser()]
+        var _classes = ['sk_ui_component', 'sk_ui_noSelect', 'sk_ui_transition', 'sk_ui_os_' + sk.os, 'sk_ui_' + sk.browser()]
 
         if (sk.isOnMobile){
             _classes.push('sk_ui_isOnMobile')

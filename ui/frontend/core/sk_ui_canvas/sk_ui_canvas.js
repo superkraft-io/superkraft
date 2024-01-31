@@ -16,6 +16,9 @@ class sk_ui_canvas extends sk_ui_component {
         this.color = 'white'
 
         this.update()
+
+
+        
     }
 
     update(){

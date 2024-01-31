@@ -769,6 +769,8 @@ class sk_ui_ruler_segment  {
     plot(){
         var interval = this.getInterval()
         
+        if (this.parent.dbg) var dbgClr = this.idxColors[sk.utils.wrapNum(this.idxColors.length, this.index)]
+
         for (var i = 0; i < this.pointsInSegment; i++){
             var wrap = sk.utils.wrapNum(interval, i)
 
@@ -791,11 +793,11 @@ class sk_ui_ruler_segment  {
                         y: (this.labelSize / 2)
                     },
                     size: this.labelSize,
-                    color: sk.utils.cssVar('--sk_ui_color_grey_4')
+                    color: dbgClr || sk.utils.cssVar('--sk_ui_color_grey_4')
                 },
 
                 line: {
-                    color: sk.utils.cssVar('--sk_ui_color_grey_4')
+                    color: dbgClr || sk.utils.cssVar('--sk_ui_color_grey_4')
                 }
             }
 
@@ -825,9 +827,10 @@ class sk_ui_ruler_segment  {
         }
 
 
-        return
+        //return
+        /*
         this.canvas.line({
-            color: this.idxColors[sk.utils.wrapNum(this.idxColors.length, this.index)],
+            color: dbgClr,
             from: {
                 x: 0,
                 y: this.dbgOffset + this.top
@@ -836,7 +839,7 @@ class sk_ui_ruler_segment  {
                 x: 0,
                 y: this.dbgOffset + this.top + this.realSize,
             }
-        })
+        })*/
     }
 
     plotPoint(opt){

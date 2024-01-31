@@ -2,7 +2,6 @@ class sk_ui_label extends sk_ui_component {
     constructor(opt){
         super(opt)
 
-        this.classAdd('sk_ui_noSelect')
         this.contextMenu.blockPropagation = false
 
         this.element.innerText = 'Label'

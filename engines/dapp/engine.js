@@ -1,7 +1,7 @@
 const fs = require('fs')
 
 var _electron =  require('electron')
-const { app, BrowserWindow, dialog, ipcMain } = _electron
+const { app } = _electron
 
 
 var _os = require('os')
@@ -88,6 +88,7 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
                 }
             })*/
 
+            
 
             this.sk.ums = new (require('../../modules/sk_ums.js'))({sk: this.sk, app: app})
             
