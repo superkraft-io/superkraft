@@ -444,12 +444,12 @@
                 return result
             },
 
-            bytesToFormat(size){
+            bytesToFormat(size, excludeByte){
                 var formatsList = []
-                var highest = {size: size, format: 'B'}
+                var highest = {size: size, format: (!excludeByte ? 'B' : '')}
 
                 var addFormat = (size, format)=>{
-                    highest = {size: size, format: format.toUpperCase() + 'B'}
+                    highest = {size: size, format: format.toUpperCase() + (!excludeByte ? 'B' : '')}
                     formatsList.push(highest)
                 }
 
@@ -467,7 +467,11 @@
                 var divisionSteps = Math.floor(sizeStr.length / 3)
                 for (var i = 0; i < divisionSteps; i++) divide()
 
-                var res = {size: highest.size, format: highest.format, formats: formatsList}
+                var res = {
+                    size: highest.size,
+                    format: highest.format,
+                    formats: formatsList
+                }
 
                 return res
             },

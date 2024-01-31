@@ -23,9 +23,9 @@ class sk_ui_ruler extends sk_ui_canvas {
         this.width = 16
 
         this.constraints = {
-            decimals: 2,
+            decimals: Infinity,
             tickDistance: {
-                max: 14
+                max: Infinity
             },
 
             value: {
@@ -77,7 +77,10 @@ class sk_ui_ruler extends sk_ui_canvas {
 
 
 
-        var observer = new ResizeObserver(()=>{
+        var observer = new ResizeObserver(res => {
+            this.sizeAcquired = true
+            
+
             this.getMinZoom()
             this.getMaxZoom()
 
@@ -87,8 +90,8 @@ class sk_ui_ruler extends sk_ui_canvas {
                 this.isResizing = true
                 this.zoomToRange(this.currentRange.start, this.currentRange.end)
                 this.isResizing = false
-                this.instantScroll = true
-                this.instantZoom = true
+                this.instantScroll = false
+                this.instantZoom = false
                 return
             }
             
@@ -213,9 +216,9 @@ class sk_ui_ruler extends sk_ui_canvas {
                 this.scroll = this.originalScroll + this.moDiffPos.y + this.autoScrollOffset
             }
 
-            var autoScroll = false
-            if (this.moPos.y < 0) autoScroll = '-'
-            if (this.moPos.y > this.rect.height) autoScroll = '+'
+            var autoScrollDirection = false
+            if (this.moPos.y < 0) autoScrollDirection = '-'
+            if (this.moPos.y > this.rect.height) autoScrollDirection = '+'
 
             if (this.moPos.y >= 0 && this.moPos.y <= this.rect.height){
                 clearInterval(this.autoScroll_timer)
@@ -226,17 +229,17 @@ class sk_ui_ruler extends sk_ui_canvas {
             
             
 
-            if (autoScroll){
+            if (this.autoScroll && autoScrollDirection){
                 this.autoScrollSpeed = 1
                 
-                if (autoScroll === '-') this.autoScrollSpeed = sk.utils.map(this.moPos.y, 0, -100, 1, 15) / 2
+                if (autoScrollDirection === '-') this.autoScrollSpeed = sk.utils.map(this.moPos.y, 0, -100, 1, 15) / 2
                 else this.autoScrollSpeed = sk.utils.map(this.moPos.y, this.rect.height, this.rect.height + 100, 1, 15) / 2
 
                 //console.log(this.autoScrollSpeed)
 
                 if (!this.autoScroll_timer){
                     this.autoScroll_timer = setInterval(()=>{
-                        if (autoScroll === '-') this.autoScrollOffset -= this.autoScrollSpeed
+                        if (autoScrollDirection === '-') this.autoScrollOffset -= this.autoScrollSpeed
                         else this.autoScrollOffset += this.autoScrollSpeed
                         
                         this.scroll = this.originalScroll + this.autoScrollOffset
@@ -264,10 +267,23 @@ class sk_ui_ruler extends sk_ui_canvas {
         this.__dirty = true
     }
 
-    init(opt = {}){
+    waitForSizeAcquisition(){
+        return new Promise(resolve => {
+            var timer = setInterval(()=>{
+                if (!this.sizeAcquired) return 
+                
+                clearInterval(timer)
+                resolve()
+            }, 1)
+        })
+    }
+
+    async init(opt = {}){
+        await this.waitForSizeAcquisition()
+
         this.initialValues = opt
 
-        //this.init() //use with sk_ui_wE_pixi_canvas
+        
         this.getMaxZoom()
         this.getMinZoom()
 
@@ -295,13 +311,28 @@ class sk_ui_ruler extends sk_ui_canvas {
     }
 
     getMaxZoom(){
+        if (this.constraints.tickDistance.max === Infinity){
+            this.maxZoom = Infinity
+            return Infinity
+        }
+
         var maxZoom = this.constraints.tickDistance.max / (this.placeHolderSegment.segmentArea / Math.pow(10, this.constraints.decimals))
         this.maxZoom = maxZoom
         return maxZoom
     }
 
     getMinZoom(){
+        if (this.constraints.value.max === Infinity || this.constraints.value.min === Infinity){
+            this.maxZminZoomoom = Infinity
+            return Infinity
+        }
+        
+
         var maxValPx = this.map.valToPx(this.constraints.value.max - this.constraints.value.min, true, true)
+        if (isNaN(maxValPx)){
+            this.minZoom = 0
+            return 0
+        }
         //console.log('maxValPx: ' + maxValPx)
         
         //console.log('this.rect.height: ' + this.rect.height)
@@ -310,6 +341,7 @@ class sk_ui_ruler extends sk_ui_canvas {
         //console.log('minZoom: ' + minZoom)
 
         this.minZoom = minZoom
+        
 
         return minZoom
     }
@@ -321,7 +353,7 @@ class sk_ui_ruler extends sk_ui_canvas {
         if (this.instantZoom){
             this.tween_zoom.target = val
             this.tween_zoom.current = val
-            this.setDirty()
+            if (!this.ignoreUpdate) this.updateRuler(true)
             return
         }
 
@@ -352,7 +384,8 @@ class sk_ui_ruler extends sk_ui_canvas {
         if (this.instantScroll){
             this.tween_scroll.target = val
             this.tween_scroll.current = val
-            this.setDirty()
+
+            if (!this.ignoreUpdate) this.updateRuler(true)
             return
         }
 
@@ -506,9 +539,11 @@ class sk_ui_ruler extends sk_ui_canvas {
     /**************/
 
 
-    updateRuler(){
-        if (!this.__dirty) return
-        this.__dirty = false
+    updateRuler(ignoreDirty){
+        if (!ignoreDirty) {
+            if (!this.__dirty) return
+            this.__dirty = false
+        }
 
         this.update()
         this.clear()
@@ -520,7 +555,7 @@ class sk_ui_ruler extends sk_ui_canvas {
 
         this.busy = false
 
-        if (this.onChanged) this.onChanged(this.getRangeAsValue())
+        try { if (this.onChanged) this.onChanged(this.getRangeAsValue()) } catch(err) { console.error(err) }
     }
 
     plot(){
@@ -564,22 +599,30 @@ class sk_ui_ruler extends sk_ui_canvas {
         }
         
         
-        if (boundMinMax.min < this.constraints.value.min){
-            this.instantZoom = true
-            this.instantScroll = true
-            this.zoomToRange(this.constraints.value.min, boundMinMax.max)
-            this.instantZoom = false
-            this.instantScroll = false
-        }
-            
-        if (boundMinMax.max > this.constraints.value.max){
-            this.instantZoom = true
-            this.instantScroll = true
-            this.zoomToRange(boundMinMax.min, this.constraints.value.max)
-            this.instantZoom = false
-            this.instantScroll = false
+        if (this.constraints.value.min !== Infinity && this.constraints.value.min !== undefined){
+            if (boundMinMax.min < this.constraints.value.min){
+                this.instantZoom = true
+                this.instantScroll = true
+                this.ignoreUpdate = true
+                this.zoomToRange(this.constraints.value.min, boundMinMax.max)
+                this.ignoreUpdate = false
+                this.instantZoom = false
+                this.instantScroll = false
+            }
         }
         
+        if (this.constraints.value.max !== Infinity && this.constraints.value.max !== undefined){
+            if (boundMinMax.max > this.constraints.value.max){
+                this.instantZoom = true
+                this.instantScroll = true
+                this.ignoreUpdate = true
+                this.zoomToRange(boundMinMax.min, this.constraints.value.max)
+                this.ignoreUpdate = false
+                this.instantZoom = false
+                this.instantScroll = false
+            }
+        }
+
         if (!this.isResizing) this.currentRange = {
             start: this.map.pxToVal(0),
             end: this.map.pxToVal(this.rect.height)
@@ -641,7 +684,7 @@ class sk_ui_ruler extends sk_ui_canvas {
         var vpa = this.getViewportAttributes()
 
         for (var i = vpa.segmentsBypassIdx; i <= vpa.segmentsFitInView; i++){
-
+            var _i = i - vpa.segmentsBypassIdx
             var subsegment = new sk_ui_ruler_segment({
                 parent: this,
                 canvas: this
@@ -650,7 +693,9 @@ class sk_ui_ruler extends sk_ui_canvas {
             subsegment.dbgOffset = this.dbgOffset
             if (this.onFormatTickLabel) subsegment.onFormatTickLabel = res => { if (this.onFormatTickLabel) this.onFormatTickLabel(res) }
             subsegment.realSize = vpa.realSegmentSize
-            subsegment.top = i * subsegment.realSize + this.scroll
+            
+            subsegment.top = i * subsegment.realSize + this.scroll //<-- Something wrong when zooming in a lot, e.g when min and max value is 0 - 22050
+
             subsegment.index = i
             subsegment.multiplier = vpa.segMultiplier
             if (subsegment.multiplier === 0) subsegment.multiplier = 1
@@ -758,8 +803,13 @@ class sk_ui_ruler_segment  {
 
             if (opt.pos.y < this.dbgOffset - this.labelArea || opt.pos.y > this.dbgOffset + this.parentRect.height + this.labelArea) continue
 
-            if (this.onFormatTickLabel){ this.onFormatTickLabel(opt) }
-            else {
+            if (this.onFormatTickLabel){
+                try { this.onFormatTickLabel(opt) } catch(err) {
+                    opt.label.text = 'ERROR'
+                    opt.label.color = 'red'
+                    opt.line.color = 'red'
+                }
+            } else {
                 if (wrap !== 0){
                     opt.label.text = ''
                     //continue
