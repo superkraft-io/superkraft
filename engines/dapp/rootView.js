@@ -2,8 +2,6 @@ const { BrowserWindow, screen } = require('electron')
 
 const ejse = require('ejs-electron')
 
-const ioHook = require('iohook')
-
 
 module.exports = class SK_RootView extends SK_RootViewCore {
     constructor(opt){
@@ -112,31 +110,21 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
 
         this._view.on('resize', _e => {
-            this.resizeRect = this._view.getSize()
+            var size = this._view.getSize()
+            this.resizeRect = {width: size[0], height: size[1]}
             //this.resizeRect.viewID = this.id
 
             if (!this.isResizing) this.sk.ums.broadcast('sk_be_app_resize_begin-' + this.id, this.resizeRect)
-            else this.sk.ums.broadcast('ask_be_pp_resize-' + this.id, this.resizeRect)
+            else this.sk.ums.broadcast('sk_be_app_resize-' + this.id, this.resizeRect)
             
             this.isResizing = true
         })
+    }
 
-        setInterval(() => {
-            if (!this.isResizing) return
-            let mousePosition = screen.getCursorScreenPoint();
-            this.isResizing = false
-            this.sk.ums.broadcast('sk_be_app_resize_end-' + this.id, this.resizeRect)
-
-            return
-            //let mousePosition = screen.getCursorScreenPoint();
-            console.log(`Mouse Position: x=${mousePosition.x}, y=${mousePosition.y}`);
-          }, 10); 
-        /*
-        this._view.hookWindowMessage(0x0202, () => {
-            if (!this.isResizing) return
-            this.isResizing = false
-            this.sk.ums.broadcast('sk_be_app_resize_end-' + this.id, this.resizeRect)
-        })*/
+    handleMouseUp(){
+        if (!this.isResizing) return
+        this.isResizing = false
+        this.sk.ums.broadcast('sk_be_app_resize_end-' + this.id, this.resizeRect)
     }
 
     reload(){

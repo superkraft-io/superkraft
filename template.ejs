@@ -196,17 +196,19 @@
 
                     /********/
 
-                    sk.ums.on('sk_be_app_resize_begin-' + sk.id, async res => {
+                    _c.ums.on('sk_be_app_resize_begin-' + sk.id, res => {
+                        sk.app.resizing = true
                         sk.ums.broadcast('app_resize_begin', undefined, res.data)
                         sk.ums.broadcast('app_body_resize_begin', undefined, res.data)
                     })
 
-                    sk.ums.on('sk_be_app_resize-' + sk.id, async res => {
+                    _c.ums.on('sk_be_app_resize-' + sk.id, res => {
                         sk.ums.broadcast('app_resize', undefined, res.data)
                         sk.ums.broadcast('app_body_resize', undefined, res.data)
                     })
 
-                    sk.ums.on('sk_be_app_resize_end-' + sk.id, async res => {
+                    _c.ums.on('sk_be_app_resize_end-' + sk.id, res => {
+                        sk.app.resizing = false
                         sk.ums.broadcast('app_resize_end', undefined, res.data)
                         sk.ums.broadcast('app_body_resize_end', undefined, res.data)
                     })

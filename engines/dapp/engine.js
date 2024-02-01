@@ -6,6 +6,7 @@ const { app } = _electron
 
 var _os = require('os')
 
+const {uIOhook, UiohookKey} = require('uiohook-napi')
 
 module.exports = class SK_LocalEngine extends SK_RootEngine {
     constructor(opt){
@@ -108,6 +109,11 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
                 this.sk.country = app.getLocale().split('-')[0]
 
                 if (this.sk.onAppReady) this.sk.onAppReady()
+
+                uIOhook.on('mouseup', _e => {
+                    for (var vid in this.sk.views) this.sk.views[vid].handleMouseUp()
+                })
+                uIOhook.start()
 
                 resolve()
             })
