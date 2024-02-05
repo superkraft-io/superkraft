@@ -26,15 +26,17 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                     global: this.sk.paths.globalFrontend
                 },
 
-                icon: this.info.icon || this.sk.paths.icons.view,
+                
             }
+
+            if (this.info.icon || this.sk.paths.icons.view) this.routes.icon = this.info.icon || this.sk.paths.icons.view
 
             function fixPaths(list){
                 for (var i in list){
                     if (list[i] instanceof Object) list[i] = fixPaths(list[i])
                     else list[i] = list[i].split('\\').join('/')
                 }
-
+                
                 return list
             }
 
@@ -67,20 +69,22 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             resolve()
 
             if (doShow){
-                if (!this.sk.showWindowWWaitTime) this.sk.showWindowWWaitTime = 1
+                if (!this.sk.showWindowWaitTime) this.sk.showWindowWaitTime = 1
                 
-                this.sk.showWindowWWaitTime += 500
+                this.sk.showWindowWaitTime += 500
 
                 setTimeout(()=>{
                     this.create()
                     this.show()
-                }, this.sk.showWindowWWaitTime)
+                }, this.sk.showWindowWaitTime)
             }
         })
     }
 
     create(){
         this._view = new BrowserWindow(this.defOpts)
+
+        if (this.defOpts.ignoreMouseEvents) this._view.setIgnoreMouseEvents(true)
 
         this._view.on('ready-to-show', ()=>{
             this.ipc =  this._view.webContents

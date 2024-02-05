@@ -46,9 +46,7 @@
         <script src="<%= sk.routes.frontend.sk%>/libs/sk_tween.js"></script>
         <script src="<%= sk.routes.frontend.sk%>/libs/sk_commands/sk_commands.js"></script>
 
-        <% if (app_type === 'dapp'){ %>
-            <script src="<%= sk.routes.frontend.sk%>/libs/sk_viewController/sk_viewController.js"></script>
-        <% } %>
+       
         <script src="<%= sk.routes.frontend.sk%>/libs/sk_ums/sk_ums.js"></script>
 
         <!--<script src="<%= sk.routes.frontend.sk%>/libs/sk_thread.js"></script>-->
@@ -183,9 +181,12 @@
                             if (!sk.noTitle) _c.classAdd('sk_ui_appBody_dapp_withTitle')
                         }
 
-                        _c.view = new sk._view({parent: _c})
-                        _c.children.add(_c.view)
+                        
                     })
+
+                    _c.body.view = new sk._view({parent: _c.body})
+                    _c.body.children.add(_c.body.view)
+
                     <% if (sk.useComplexity){ %>
                         sk.complexity.editor = new sk_ui_complexity_editor({app: _c})
                         sk.complexity.codeEditor = new sk_ui_complexity_codeEditor(_c)

@@ -548,8 +548,13 @@
             }
         }
     }
+</script>
 
+<script src="<%= sk.routes.frontend.sk%>/libs/sk_viewController/sk_viewController.js"></script>
+       
+<script>
     <% if (app_type === 'dapp'){ %>
+        
         sk.views = {
             <% for (var i = 0; i < views.length; i++){ %>
                 <%= views[i] %>: new SK_ViewController({view: '<%= views[i] %>'}),

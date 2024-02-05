@@ -24,19 +24,32 @@ module.exports = class sk_RootEngine {
 
             console.log('Loading views...')
             var viewsToLoad = fs.readdirSync(this.sk.paths.views)
-            
-            this.sk.viewList = []
-
+           
+            var viewInfoArray = []
             for (var i = 0; i < viewsToLoad.length; i++){
                 var viewName = viewsToLoad[i]
                 
                 if (viewName.toLocaleLowerCase().indexOf('.ds_store') > -1) continue
 
-                var viewRoot = this.sk.paths.views + viewName + '/'
-                var viewPath = viewRoot + 'main.js'
+                viewInfoArray.push({
+                    name: viewName,
+                    path: this.sk.paths.views + viewName + '/'
+                })
+            }
+
+            /*if (this.sk.type === 'dapp'){
+                var sk_dapp_cursor_path = __dirname + '/engines/dapp/modules/sk_dapp_cursor/'
+                if (fs.existsSync(sk_dapp_cursor_path)) viewInfoArray.push({name: 'sk_dapp_cursor', path: sk_dapp_cursor_path})
+            }*/
+
+            this.sk.viewList = []
+
+            for (var i = 0; i < viewInfoArray.length; i++){
+                var viewInfo = viewInfoArray[i]
+                var viewPath = viewInfo.path + 'main.js'
                 try {
                     var view = new (require(viewPath))({sk: this.sk})
-                    view.root = viewRoot
+                    view.root = viewInfo.path
                     if (view.info.mainRedirect){
                         view = new (require(view.info.mainRedirect))({sk: this.sk})
                     }
@@ -44,13 +57,17 @@ module.exports = class sk_RootEngine {
                     var priority = view.info.priority || 0
 
                     if (!priorities[priority]) priorities[priority] = []
-                    priorities[priority].push({name: viewName, view: view})
+                    priorities[priority].push({
+                        name: viewInfo.name,
+                        view: view,
+                        root: view.root
+                    })
                    
-                    this.sk.viewList.push(viewName)
+                    this.sk.viewList.push(viewInfo.name)
 
-                    console.log('[SUCCESS] View loaded: ' + viewName)
+                    console.log('[SUCCESS] View loaded: ' + viewInfo.name)
                 } catch(err) {
-                    console.error('[ERROR] Could not load view %s', viewName)
+                    console.error('[ERROR] Could not load view %s', viewInfo.name)
                     console.error(err)
                 }
             }
@@ -66,7 +83,7 @@ module.exports = class sk_RootEngine {
                     try {
                         await info.view.init({
                             id: info.name,
-                            root: this.sk.paths.views + info.name + '/'
+                            root: info.root
                         })
 
                         this.sk.views[info.name] = info.view
