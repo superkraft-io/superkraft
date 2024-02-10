@@ -1,5 +1,3 @@
-const { from } = require("form-data")
-
 class sk_ui_ruler extends sk_ui_canvas {
     //class sk_ui_ruler extends sk_ui_wE_pixi_canvas {
     constructor(opt){

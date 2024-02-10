@@ -6,6 +6,10 @@
     background-color: transparent;
 }
 
+.sk_ui_checkbox > .sk_ui_label {
+    text-align: left;
+}
+
 .sk_ui_checkbox:hover > .sk_ui_icon {
     border: solid 1px white;
 }
@@ -27,4 +31,9 @@
 .sk_ui_checkbox_on {
     transform: scale(1) !important;
     opacity: 1 !important;
+}
+
+
+.sk_ui_checkbox_shape_circle > .sk_ui_icon {
+    border-radius: 100%;
 }
