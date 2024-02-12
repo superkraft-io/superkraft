@@ -14,16 +14,19 @@ class sk_ui_input extends sk_ui_component {
                         },*/
 
                         mousedown: _e => {
+                            if (_e.button !== 0) return
                             //_e.preventDefault()
                             _e.stopPropagation()
                         },
 
                         mouseup: _e => {
+                            if (_e.button !== 0) return
                             //_e.preventDefault()
                             _e.stopPropagation()
                         },
 
                         click: _e => {
+                            if (_e.button !== 0) return
                             //_e.preventDefault()
                             _e.stopPropagation()
                         },
