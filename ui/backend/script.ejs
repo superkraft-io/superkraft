@@ -137,8 +137,30 @@
             return Object.fromEntries(urlSearchParams.entries())
         },
 
+        initEngine: ()=>{
+            return new Promise(resolve => {
+                if (!sk.needsEngineInit) return resolve()
+
+                var __timer = setInterval(async ()=>{
+                    if (!sk.engineInitFunc) return
+                    clearInterval(__timer)
+                    await sk.engineInitFunc()
+                    resolve()
+                }, 10)
+            })
+        },
+
+        awaitWSCB: ()=>{
+            return sk.utils.awaitSomething(()=>{
+                if (!window.wscb) return
+                return true
+            })
+        },
+
         init: ()=>{
             return new Promise(async (resolve, reject)=>{
+                await sk.awaitWSCB()
+
                 var res = await sk.comm.main('getInfo')
                 if (!sk.isOnMobile) sk.os = res.os
                 sk.arch    = res.arch
@@ -185,6 +207,17 @@
 
         utils: {
             sleep: (delay = 1000)=>{ return new Promise(resolve => { setTimeout(()=>{ resolve() }, delay)})},
+
+            awaitSomething: (checkCB, interval = 10)=>{
+                return new Promise(resolve => {
+                    var __timer = setInterval(()=>{
+                        if (!checkCB()) return
+                        clearInterval(__timer)
+                        resolve()
+                    }, interval)
+                })
+            },
+            
             map: (value, aMin, aMax, bMin, bMax)=>{ return (value - aMin) * (bMax - bMin) / (aMax - aMin) + bMin },
             wrapNum: (max, val, includeWrapCount)=>{
                 var wrapCount = Math.floor(val / max)
@@ -512,7 +545,7 @@
         },
         
         reload: async ()=>{
-            if (sk.app_type === 'dapp') await sk.comm.main('windowAction', {action: 'reload'})
+            if (sk.app_type !== 'wapp') await sk.comm.main('windowAction', {action: 'reload'})
             location.reload()
         }
     }

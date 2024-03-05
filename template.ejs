@@ -116,6 +116,14 @@
         <script src="<%= sk.routes.frontend.view %>view.js"></script>
 
         <%- include(sk.ui.script) %>
+        
+        <% if (sk.routes.frontend.engine){ %>
+            <script>sk.needsEngineInit = true</script>
+            <%- include(sk.routes.frontend.engine + "/frontend/body.ejs") %>
+            <script>
+                sk.initEngine().then(()=>{})
+            </script>
+        <% } %>
 
         <script>
             sk.l10n = <%- JSON.stringify(l10n) %>
@@ -123,6 +131,7 @@
         <script src="<%= sk.routes.frontend.sk%>/libs/sk_l10n/sk_l10n.js"></script>
 
         <script>
+
              <% if (sk.useComplexity){ %>
                 sk.complexity = {
                     core: new sk_ui_complexity()
@@ -137,180 +146,185 @@
             sk.globalData = <%- JSON.stringify(globalData) %>
 
 
+            var startSKFE = async ()=>{
+                await sk.awaitWSCB()
 
-            sk.ums = new SK_UMS()
-            sk.commands = new SK_Commands()
+                sk.ums = new SK_UMS()
+                sk.commands = new SK_Commands()
 
-            if (sk.app_type === 'wapp') document.body.classList.add('sk_ui_appType_wapp')
+                if (sk.app_type === 'wapp') document.body.classList.add('sk_ui_appType_wapp')
 
-            sk.init().then(()=>{
-                sk.app = (new sk_ui_component({parent: {element: document.body}}))
-                sk.app.setup(_c => {
-                    _c.styling += ' fullwidth fullheight'
-                    _c.eventBlocker = _c.add.eventBlocker()
-                    
-                    _c.ums.on('sk_ui_block_userInteractons', res => {
-                        _c.eventBlocker.style.display = (res.data.block ? '' : 'none')
-                    })
-                    
-                    _c.scrollable = true
-                    
-                    if (sk.app_type === 'dapp') _c.style.display = 'none'
-
-                    sk._cM = _c.contextMenu
-
-                    _c.classAdd('sk_app')
-
-                    _c.styling = 'ttb'
-
-                    if (sk.app_type === 'dapp' && !sk.noTitle){
-                        _c.titlebar = _c.add.dappTitlebar(_c => {
-                            _c.os    = sk.os
-                            _c.title = sk.title
-                            _c.icon  = sk.paths.icon
+                sk.init().then(()=>{
+                    sk.app = (new sk_ui_component({parent: {element: document.body}}))
+                    sk.app.setup(_c => {
+                        _c.styling += ' fullwidth fullheight'
+                        _c.eventBlocker = _c.add.eventBlocker()
+                        
+                        _c.ums.on('sk_ui_block_userInteractons', res => {
+                            _c.eventBlocker.style.display = (res.data.block ? '' : 'none')
                         })
-                    }
-                    
-                    
-                    _c.body = _c.add.component(_c => {
-                        _c.classAdd('sk_ui_appBody')
-                        if (sk.noTitle || sk.app_type === 'wapp') _c.classAdd('sk_ui_noTitlebar')
-                    
-                        if (sk.app_type === 'dapp'){
-                            _c.classAdd('sk_ui_appBody_dapp')
-                            if (!sk.noTitle) _c.classAdd('sk_ui_appBody_dapp_withTitle')
-                        }
-
                         
-                    })
+                        _c.scrollable = true
+                        
+                        if (sk.app_type !== 'wapp') _c.style.display = 'none'
 
-                    _c.body.view = new sk._view({parent: _c.body})
-                    _c.body.children.add(_c.body.view)
+                        sk._cM = _c.contextMenu
 
-                    <% if (sk.useComplexity){ %>
-                        sk.complexity.editor = new sk_ui_complexity_editor({app: _c})
-                        sk.complexity.codeEditor = new sk_ui_complexity_codeEditor(_c)
-                    <% } %>
+                        _c.classAdd('sk_app')
+
+                        _c.styling = 'ttb'
+
+                        if (sk.app_type !== 'wapp' && !sk.noTitle){
+                            _c.titlebar = _c.add.dappTitlebar(_c => {
+                                _c.os    = sk.os
+                                _c.title = sk.title
+                                _c.icon  = sk.paths.icon
+                            })
+                        }
+                        
+                        
+                        _c.body = _c.add.component(_c => {
+                            _c.classAdd('sk_ui_appBody')
+                            if (sk.noTitle || sk.app_type === 'wapp') _c.classAdd('sk_ui_noTitlebar')
+                        
+                            if (sk.app_type !== 'wapp'){
+                                _c.classAdd('sk_ui_appBody_dapp')
+                                if (!sk.noTitle) _c.classAdd('sk_ui_appBody_dapp_withTitle')
+                            }
+
+                            
+                        })
+
+                        _c.body.view = new sk._view({parent: _c.body})
+                        _c.body.children.add(_c.body.view)
+
+                        <% if (sk.useComplexity){ %>
+                            sk.complexity.editor = new sk_ui_complexity_editor({app: _c})
+                            sk.complexity.codeEditor = new sk_ui_complexity_codeEditor(_c)
+                        <% } %>
 
 
 
 
-                    /********/
+                        /********/
 
-                    _c.ums.on('sk_be_app_resize_begin-' + sk.id, res => {
-                        sk.app.resizing = true
-                        sk.ums.broadcast('app_resize_begin', undefined, res.data)
-                        sk.ums.broadcast('app_body_resize_begin', undefined, res.data)
-                    })
+                        _c.ums.on('sk_be_app_resize_begin-' + sk.id, res => {
+                            sk.app.resizing = true
+                            sk.ums.broadcast('app_resize_begin', undefined, res.data)
+                            sk.ums.broadcast('app_body_resize_begin', undefined, res.data)
+                        })
 
-                    _c.ums.on('sk_be_app_resize-' + sk.id, res => {
-                        sk.ums.broadcast('app_resize', undefined, res.data)
-                        sk.ums.broadcast('app_body_resize', undefined, res.data)
-                    })
+                        _c.ums.on('sk_be_app_resize-' + sk.id, res => {
+                            sk.ums.broadcast('app_resize', undefined, res.data)
+                            sk.ums.broadcast('app_body_resize', undefined, res.data)
+                        })
 
-                    _c.ums.on('sk_be_app_resize_end-' + sk.id, res => {
-                        sk.app.resizing = false
-                        sk.ums.broadcast('app_resize_end', undefined, res.data)
-                        sk.ums.broadcast('app_body_resize_end', undefined, res.data)
-                    })
+                        _c.ums.on('sk_be_app_resize_end-' + sk.id, res => {
+                            sk.app.resizing = false
+                            sk.ums.broadcast('app_resize_end', undefined, res.data)
+                            sk.ums.broadcast('app_body_resize_end', undefined, res.data)
+                        })
 
-                    /********/
+                        /********/
 
 
-                    _c.ums.on('sk_view_cmd-' + sk.id, async res => {
-                        if (res.data.viewID !== sk.id) return
+                        _c.ums.on('sk_view_cmd-' + sk.id, async res => {
+                            if (res.data.viewID !== sk.id) return
 
-                        switch (res.data.action) {
-                            case 'show':
-                                if (_c.visible){
-                                    _c.style.transition = '100ms'
-                                    var pulseOnce = async ()=>{
+                            switch (res.data.action) {
+                                case 'show':
+                                    if (_c.visible){
                                         _c.style.transition = '100ms'
-                                        _c.opacity = 0.8
-                                        _c.style.transform = 'scale(0.99)'
-                                        _c.style.filter = 'blur(5px)'
-                                        await sk.utils.sleep(100)
-                                        _c.opacity = 1
-                                        _c.style.transform = 'scale(1)'
-                                        _c.style.filter = ''
-                                        return sk.utils.sleep(100)
+                                        var pulseOnce = async ()=>{
+                                            _c.style.transition = '100ms'
+                                            _c.opacity = 0.8
+                                            _c.style.transform = 'scale(0.99)'
+                                            _c.style.filter = 'blur(5px)'
+                                            await sk.utils.sleep(100)
+                                            _c.opacity = 1
+                                            _c.style.transform = 'scale(1)'
+                                            _c.style.filter = ''
+                                            return sk.utils.sleep(100)
+                                        }
+                                        await pulseOnce()
+                                        await pulseOnce()
+                                        _c.style.transition = ''
+                                        return
                                     }
-                                    await pulseOnce()
-                                    await pulseOnce()
-                                    _c.style.transition = ''
-                                    return
-                                }
-                                _c.visible = true
-                                _c.transition('fade in')
-                                break;
+                                    _c.visible = true
+                                    _c.transition('fade in')
+                                    break;
 
-                            case 'hide':
-                                if (!_c.visible) return
-                                
-                                await _c.transition('fade out')
-                                _c.visible = false
-                                break;
-                        
-                            default:
-                                break;
-                        }
+                                case 'hide':
+                                    if (!_c.visible) return
+                                    
+                                    await _c.transition('fade out')
+                                    _c.visible = false
+                                    break;
+                            
+                                default:
+                                    break;
+                            }
+                        })
                     })
+
                 })
 
-            })
+                if (sk.app_type !== 'wapp'){
+                    document.body.onresize = event => {
+                        if (!sk.window.resizing) sk.window.maximize(true)
+                    }
 
-            if (sk.app_type === 'dapp'){
-                document.body.onresize = event => {
-                    if (!sk.window.resizing) sk.window.maximize(true)
+                    function updateOnlineStatus () {
+                        sk.online = navigator.onLine
+                        //sk.online = false
+                        sk.comm.main('setOnlineStatus', {online: sk.online})
+                        sk.ums.broadcast('isOnline', undefined, sk.online)
+                    }
+                
+                    window.addEventListener('online'  , ()=>{ updateOnlineStatus() })
+                    window.addEventListener('offline' , ()=>{ updateOnlineStatus() })
+                    updateOnlineStatus()
                 }
-
-                function updateOnlineStatus () {
-                    sk.online = navigator.onLine
-                    //sk.online = false
-                    sk.comm.main('setOnlineStatus', {online: sk.online})
-                    sk.ums.broadcast('isOnline', undefined, sk.online)
-                }
-            
-                window.addEventListener('online'  , ()=>{ updateOnlineStatus() })
-                window.addEventListener('offline' , ()=>{ updateOnlineStatus() })
-                updateOnlineStatus()
-            }
-            
-
-            document.addEventListener('click', _e => {
-                var open_contextMenus = document.querySelectorAll('.sk_ui_contextMenu')
-
-                if (open_contextMenus.length === 0) return
-
-                var menuIDs = {}
-                open_contextMenus.forEach(_c => { if (_c.sk_ui_obj) menuIDs[_c.id] = _c })
                 
-                var elPath = sk.utils.getDomPath(_e.srcElement)
-                for (var i in elPath) if (menuIDs[elPath[i].id]) return
-                
-                
-                
-                sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true})
 
-                //var open_contextMenus = document.querySelectorAll('.sk_ui_contextMenu')
-                for (var i = 0; i < open_contextMenus.length; i++) open_contextMenus[i].sk_ui_obj.remove()
+                document.addEventListener('click', _e => {
+                    var open_contextMenus = document.querySelectorAll('.sk_ui_contextMenu')
 
-            })
+                    if (open_contextMenus.length === 0) return
 
-            document.addEventListener('keydown', _e => {
-                if (_e.which === 27) return sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true})
-            })
+                    var menuIDs = {}
+                    open_contextMenus.forEach(_c => { if (_c.sk_ui_obj) menuIDs[_c.id] = _c })
+                    
+                    var elPath = sk.utils.getDomPath(_e.srcElement)
+                    for (var i in elPath) if (menuIDs[elPath[i].id]) return
+                    
+                    
+                    
+                    sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true})
 
-            if (sk.app_type === 'dapp'){
-                sk.ums.on('sk_flog', res => {
-                    if (res.first) return
-                    console.log(res.data)
+                    //var open_contextMenus = document.querySelectorAll('.sk_ui_contextMenu')
+                    for (var i = 0; i < open_contextMenus.length; i++) open_contextMenus[i].sk_ui_obj.remove()
+
                 })
+
+                document.addEventListener('keydown', _e => {
+                    if (_e.which === 27) return sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true})
+                })
+
+                if (sk.app_type !== 'wapp'){
+                    sk.ums.on('sk_flog', res => {
+                        if (res.first) return
+                        console.log(res.data)
+                    })
+                }
+
+
+                sk.tweens = new SK_UI_Tweens()
+                sk.tweens.start()
             }
 
-
-            sk.tweens = new SK_UI_Tweens()
-            sk.tweens.start()
+            startSKFE()
         </script>
 
 

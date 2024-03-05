@@ -1,5 +1,3 @@
-var fs = require('fs')
-
 module.exports = class sk_ui {
     constructor(opt){
         this.opt = opt
@@ -19,9 +17,7 @@ module.exports = class sk_ui {
             core: []
         }
 
-        
 
-        this.refresh()
 
         this.endpoint = (opt.endpoint === 'wapp' ? new sk_ui_wapp(this) : new sk_ui_dapp(this))
 
@@ -33,7 +29,7 @@ module.exports = class sk_ui {
         
     }
 
-    getDirectories(source, parent, depth = 0){
+    async getDirectories(source, parent, depth = 0){
         if (!parent){
             parent = {
                 name: '',
@@ -42,7 +38,7 @@ module.exports = class sk_ui {
         }
 
         try {
-            var dirs = fs.readdirSync(source)
+            var dirs = await sk_fs.promises.readdir(source)
         } catch(err) {
             return parent
         }
@@ -52,19 +48,28 @@ module.exports = class sk_ui {
             var dirPath = source + dir + '/'
 
             try {
-                var lstat = fs.lstatSync(dirPath)
+                var stat = undefined
+                try {
+                    stat = await sk_fs.promises.stat(dirPath)
+                } catch(err) {
+                    try {
+                        stat = await sk_fs.promises.stat(dirPath.substr(0, dirPath.length - 1))
+                    } catch(err) {
+                        continue
+                    }
+                }
             } catch (err) {
                 continue
             }
            
-            if (lstat.isDirectory()){
+            if (stat.isDirectory()){
                 var child = {
                     name: dir,
                     children: []
                 }
 
                 if (dir.indexOf('sk_ui_') > -1) parent.children.push(child)
-                this.getDirectories(dirPath, child, depth+1)
+                await this.getDirectories(dirPath, child, depth+1)
                 
             }
         }
@@ -72,8 +77,8 @@ module.exports = class sk_ui {
         return parent
     }
 
-    getComponentsFromPath(path, addFirstAndIgnore){
-        var ui_files = this.getDirectories(path)
+    async getComponentsFromPath(path, addFirstAndIgnore){
+        var ui_files = await this.getDirectories(path)
         var ui_components = []
         
         var first = undefined
@@ -128,10 +133,10 @@ module.exports = class sk_ui {
         return ui_components
     }
 
-    refresh(){
-        this.components.core   = this.getComponentsFromPath(this.paths.frontend.core, 'component')
-        this.components.shared = this.getComponentsFromPath(this.paths.frontend.shared)
-        this.components.global = this.getComponentsFromPath(this.paths.frontend.global)
+    async refresh(){
+        this.components.core   = await this.getComponentsFromPath(this.paths.frontend.core, 'component')
+        this.components.shared = await this.getComponentsFromPath(this.paths.frontend.shared)
+        this.components.global = await this.getComponentsFromPath(this.paths.frontend.global)
 
         //this.optimize()
     }
@@ -140,7 +145,7 @@ module.exports = class sk_ui {
         
     }
 
-    renderInfo(viewUIComponentsPath){
+    async renderInfo(viewUIComponentsPath){
         var results = {
             
             useCDN: (this.sk.cdn ? true : false),
@@ -150,7 +155,7 @@ module.exports = class sk_ui {
             components: {
                 core: this.components.core,
                 shared: this.components.shared,
-                view: this.getComponentsFromPath(viewUIComponentsPath),
+                view: await this.getComponentsFromPath(viewUIComponentsPath),
                 global: this.components.global,
             },
 

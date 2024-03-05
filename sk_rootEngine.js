@@ -1,5 +1,3 @@
-var fs = require('fs')
-
 module.exports = class sk_RootEngine {
     constructor(opt){
         this.sk = opt.sk
@@ -23,7 +21,7 @@ module.exports = class sk_RootEngine {
             var priorities = {}
 
             console.log('Loading views...')
-            var viewsToLoad = fs.readdirSync(this.sk.paths.views)
+            var viewsToLoad = await sk_fs.promises.readdir(this.sk.paths.views)
            
             var viewInfoArray = []
             for (var i = 0; i < viewsToLoad.length; i++){
@@ -39,7 +37,7 @@ module.exports = class sk_RootEngine {
 
             /*if (this.sk.type === 'dapp'){
                 var sk_dapp_cursor_path = __dirname + '/engines/dapp/modules/sk_dapp_cursor/'
-                if (fs.existsSync(sk_dapp_cursor_path)) viewInfoArray.push({name: 'sk_dapp_cursor', path: sk_dapp_cursor_path})
+                if (sk_fs.existsSync(sk_dapp_cursor_path)) viewInfoArray.push({name: 'sk_dapp_cursor', path: sk_dapp_cursor_path})
             }*/
 
             this.sk.viewList = []

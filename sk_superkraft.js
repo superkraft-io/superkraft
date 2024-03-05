@@ -1,5 +1,3 @@
-var fs = require('fs')
-
 module.exports = class Superkraft {
     constructor(opt){
         this.opt = opt
@@ -7,6 +5,8 @@ module.exports = class Superkraft {
     }
 
     async init(opt){
+        global.sk_fs = new (require(__dirname + '/modules/sk_fs.js'))({app_type: opt.type})
+
         var sk_id = opt.sk_id || 'sk'
         this.info = {
             skModule: this,
@@ -60,9 +60,9 @@ module.exports = class Superkraft {
         global[sk_id] = this.info
         var sk = this.info
 
-        this.info.utils = new (require('./modules/sk_utils.js'))({sk: sk})
-        this.info.timers = (opt.type === 'dapp' ? new (require('./modules/sk_timers.js'))({sk: sk}) : undefined)
-        this.info.stats = new (require('./modules/sk_stats.js'))({sk: sk})
+        this.info.utils = new (require(__dirname + '/modules/sk_utils.js'))({sk: sk})
+        this.info.timers = (opt.type === 'dapp' ? new (require(__dirname + '/modules/sk_timers.js'))({sk: sk}) : undefined)
+        this.info.stats = new (require(__dirname + '/modules/sk_stats.js'))({sk: sk})
 
         sk.paths.sk_frontend = sk.paths.superkraft + 'frontend/'
 
@@ -81,11 +81,12 @@ module.exports = class Superkraft {
             endpoint: opt.type,
             paths: sk.paths.sk_ui 
         })
+        await sk.ui.refresh()
 
         
         /****************/
         
-        if (opt.config) sk.config = JSON.parse(fs.readFileSync(opt.config))
+        if (opt.config) sk.config = JSON.parse(await sk_fs.promises.readFile(opt.config))
 
         /****************/
         global.SK_Root_POST = require(sk.paths.sk_modules + 'sk_root_POST.js')
@@ -94,16 +95,16 @@ module.exports = class Superkraft {
 
         if (opt.useComplexity) sk.complexity = new (require(__dirname + '/complexity/backend/sk_complexity.js'))
 
-        global.SK_RootEngine = require('./sk_rootEngine.js')
-        sk.engine = new (require('./engines/' + opt.type + '/engine.js'))({sk: sk})
+        global.SK_RootEngine = require(__dirname + '/sk_rootEngine.js')
+        sk.engine = new (require(__dirname + '/engines/' + opt.type + '/engine.js'))({sk: sk})
         
         try { await sk.engine.init() } catch(err) {
             console.error(err)
             if (opt.onFail) return opt.onFail()
         }
         
-        global.SK_RootViewCore = require('./sk_rootViewCore.js')
-        global.SK_RootView = require('./engines/' + opt.type + '/rootView.js')
+        global.SK_RootViewCore = require(__dirname + '/sk_rootViewCore.js')
+        global.SK_RootView = require(__dirname + '/engines/' + opt.type + '/rootView.js')
         
        
         
@@ -111,10 +112,10 @@ module.exports = class Superkraft {
         if (opt.useComplexity) sk.complexity.init()
 
         
-        sk.actions = sk.utils.loadActions(__dirname + '/engines/' + opt.type + '/global_actions/')
+        sk.actions = await sk.utils.loadActions([__dirname, 'engines', opt.type, 'global_actions'].join('/') + '/')
         sk.utils.captureActions('root', sk.actions)
 
-        sk.globalActions = sk.utils.loadActions(sk.paths.globalActions)
+        sk.globalActions = await sk.utils.loadActions(sk.paths.globalActions)
 
         if (opt.onPreStart) opt.onPreStart()
         
@@ -123,7 +124,7 @@ module.exports = class Superkraft {
 
         if (opt.type === 'wapp' && opt.cdn && opt.cdn.export){
             console.log('[SK] Exporting CDN content...')
-            var cdnExporter = new (require('./modules/sk_cdnExporter.js'))({sk: sk})
+            var cdnExporter = new (require(__dirname + '/modules/sk_cdnExporter.js'))({sk: sk})
             await cdnExporter.export()
             console.log('[SK] Done!')
             //process.exit()

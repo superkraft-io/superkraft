@@ -1,14 +1,12 @@
-var fs = require('fs')
-
 module.exports = class SK_Window {
     constructor(opt){
         this.sk = opt.sk
     }
 
-    loadActions(srcPath){
+    async loadActions(srcPath){
         try {
             var actionsPath = srcPath
-            var actionsFiles = fs.readdirSync(actionsPath)
+            var actionsFiles = await sk_fs.promises.readdir(actionsPath)
             var actions = {}
             for (var i = 0; i < actionsFiles.length; i++){
                 var actionName = actionsFiles[i].split('.')[0]

@@ -3,7 +3,7 @@ class SK_UMS {
         this.events = {}
         this.clientIDCounter = -1
 
-        if (sk.app_type === 'dapp'){
+        if (sk.app_type !== 'wapp'){
             wscb.on('sk_ums', (msg, rW)=>{
                 if (msg.action === 'broadcast'){
                     this.broadcastToFrontend(msg.eventID, undefined, msg.data, true)
@@ -52,7 +52,7 @@ class SK_UMS {
 
     broadcast(eventID, sender, data){
         this.broadcastToFrontend(eventID, sender, data)
-        if (sk.app_type === 'dapp') this.broadcastToBackend(eventID, data)
+        if (sk.app_type !== 'wapp') this.broadcastToBackend(eventID, data)
     }
 
     broadcastToFrontend(eventID, sender, data, fromBackend){
