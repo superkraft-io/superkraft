@@ -36,25 +36,22 @@ class sk_ui_icon extends sk_ui_component {
 
             if (this.type === 'svg'){
                 //this.element.setAttribute('src', val)
-                var xhr = new XMLHttpRequest();
-                xhr.open("GET", val, false);
-                xhr.overrideMimeType("image/svg+xml");
-                xhr.addEventListener("load", res => {
-                    try {
-                        this.element.appendChild(xhr.responseXML.documentElement)
-                    } catch(err) {
-                        this.element.appendChild(document.createElement('svg'))
-                    }
-                    this.svgEl = this.element.childNodes[0]
-                    this.svgEl.setAttribute('width', this.size)
-                    this.svgEl.setAttribute('height', this.size)
 
-                    this.svgEl.setAttribute('fill', this.color)
-                })
+                var response = await fetch(val)
+                let text = await response.text();
+                const parser = new DOMParser();
+                const htmlItem = parser.parseFromString(text, "image/svg+xml");
+                try {
+                    this.element.appendChild(htmlItem.documentElement)
+                } catch(err) {
+                    this.element.appendChild(document.createElement('svg'))
+                }
                 
-                xhr.send()
+                this.svgEl = this.element.childNodes[0]
+                this.svgEl.setAttribute('width', this.size)
+                this.svgEl.setAttribute('height', this.size)
 
-                return
+                this.svgEl.setAttribute('fill', this.color)
             }
 
             //for (var i = this.iconElement.classList.length; i > -1; i--) if (this.iconElement.classList[i] !== 'transition') this.iconElement.classList.remove(this.iconElement.classList[i])

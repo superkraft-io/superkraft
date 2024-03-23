@@ -245,13 +245,12 @@ class sk_ui_component {
         }})
 
         this.attributes.add({friendlyName: 'Pulsate', name: 'pulsate', type: 'bool', onSet: val => {
-            var speeds = ['slow', 'normal', 'fast']
             var speed =  (val === true ? 'normal' : val)
 
             var speedsNumbers = {
-                slow: 3000,
-                normal: 1500,
-                fast: 750
+                slow   : 3000,
+                normal : 1500,
+                fast   : 750
             }
             var speedsNumber = speedsNumbers[speed]
 
@@ -264,17 +263,12 @@ class sk_ui_component {
                 return
             }
 
-            this.style.transition = speedsNumber + 'ms'
+            //this.style.transition = speedsNumber + 'ms'
 
             this.__prePulsateOpacity = this.style.opacity
 
-            var setMin = ()=>{
-                this.style.opacity = 0.25
-            }
-
-            var setMax = ()=>{
-                this.style.opacity = 1
-            }
+            var setMin = ()=>{ this.style.opacity = 0.25 }
+            var setMax = ()=>{ this.style.opacity = 1 }
 
             var nextIsMin = true
 
@@ -289,15 +283,7 @@ class sk_ui_component {
                 }, speedsNumber)
             }
 
-
             doNext()
-            return
-
-            for (var i in speeds){
-                var speed = speeds[i]
-                this.classRemove('sk_ui_pulsate_' + speed)
-            }
-            if (val) this.classAdd('sk_ui_pulsate' + (val !== true ? '_' + val : '_normal'))
         }})
 
         this.attributes.add({friendlyName: 'Sortable', name: 'sortable', type: 'bool', onSet: val => {
