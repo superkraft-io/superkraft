@@ -94,4 +94,8 @@ class SK_FS_Promises_SAPP {
     async readJSON(path){
         return JSON.parse(await __fs.promises.readFile(new URL(path).pathname.slice(1)))
     }
+
+    async writeJSON(path, data){
+        return JSON.parse(await __fs.promises.writeFile(new URL(path).pathname.slice(1), JSON.stringify(data)))
+    }
 }

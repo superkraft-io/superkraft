@@ -13,17 +13,25 @@ class SK_UI_Tweens {
             tween.step({fromGlobalStepper: true})
         }
 
-        sk.ums.broadcast('sk_ui_tween_step', undefined, {})
+        //sk.ums.broadcast('sk_ui_tween_step', undefined, {toBE: false})
     }
 
     start(){
+        this.__again = true
         this.__running = true
         var step = async _ts => {
-            if (this.__stopStepping) return this.__running = false
-            try { this.step() } catch(err) {}
-            window.requestAnimationFrame(step)
+            if (this.__stopStepping){ this.__running = false }
+            else { try { this.step() } catch(err) {} }
+            this.__again
         }
-        window.requestAnimationFrame(step)
+
+        /*
+        setInterval(()=>{
+            if (!this.__again) return
+            this.__again = false
+            window.requestAnimationFrame(step)
+        })
+        */
     }
 
     stop(){

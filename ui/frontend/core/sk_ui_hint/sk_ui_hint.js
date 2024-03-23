@@ -23,6 +23,10 @@ class sk_ui_hint extends sk_ui_component {
         })
     }
 
+    onBeforeRemove(){
+        clearInterval(this.parentPosMonitor)
+    }
+
     monitorParentPosition(){
         this.parentPosMonitor = setInterval(()=>{
             var pRect = this.suoParent.rect

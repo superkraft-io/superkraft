@@ -16,12 +16,14 @@ module.exports = class SK_UMS {
                 
                 if (msg.action === 'broadcast'){
                     this.handleFromFrontend(msg.eventID, msg.data)
+                    rW({})
                 }
 
 
                 if (msg.action === 'setEventData'){
                     var event = this.addOrGet(msg.eventID)
                     event.data = msg.data
+                    rW({})
                 }
 
                 if (msg.action === 'getEventData'){
@@ -52,7 +54,6 @@ module.exports = class SK_UMS {
     }
 
     broadcast(eventID, data){
-        this.broadcastToBackend(eventID, data)
         this.broadcastToFrontend(eventID, data)
     }
 

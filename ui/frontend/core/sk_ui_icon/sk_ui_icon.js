@@ -40,8 +40,11 @@ class sk_ui_icon extends sk_ui_component {
                 xhr.open("GET", val, false);
                 xhr.overrideMimeType("image/svg+xml");
                 xhr.addEventListener("load", res => {
-                    this.element.appendChild(xhr.responseXML.documentElement)
-                    
+                    try {
+                        this.element.appendChild(xhr.responseXML.documentElement)
+                    } catch(err) {
+                        this.element.appendChild(document.createElement('svg'))
+                    }
                     this.svgEl = this.element.childNodes[0]
                     this.svgEl.setAttribute('width', this.size)
                     this.svgEl.setAttribute('height', this.size)

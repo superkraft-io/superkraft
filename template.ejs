@@ -192,7 +192,7 @@
                                 if (!sk.noTitle) _c.classAdd('sk_ui_appBody_dapp_withTitle')
                             }
 
-                            
+                            sk.ums.broadcast('sk_view_cmd-' + sk.id + '_initialized', undefined, {})
                         })
 
                         _c.body.view = new sk._view({parent: _c.body})

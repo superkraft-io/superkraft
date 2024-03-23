@@ -63,7 +63,8 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                     enableRemoteModule: true,
                 },
                 //transparent: true,
-                frameless: true
+                frameless: true,
+                headless: false
             }
             defOpts = {...defOpts, ...this.info}
             delete defOpts.show

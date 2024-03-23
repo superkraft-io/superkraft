@@ -246,6 +246,53 @@ class sk_ui_component {
 
         this.attributes.add({friendlyName: 'Pulsate', name: 'pulsate', type: 'bool', onSet: val => {
             var speeds = ['slow', 'normal', 'fast']
+            var speed =  (val === true ? 'normal' : val)
+
+            var speedsNumbers = {
+                slow: 3000,
+                normal: 1500,
+                fast: 750
+            }
+            var speedsNumber = speedsNumbers[speed]
+
+
+            clearTimeout(this.__pulsateTimer)
+
+            if (!val){
+                this.opacity = this.__prePulsateOpacity
+                this.transition = ''
+                return
+            }
+
+            this.style.transition = speedsNumber + 'ms'
+
+            this.__prePulsateOpacity = this.style.opacity
+
+            var setMin = ()=>{
+                this.style.opacity = 0.25
+            }
+
+            var setMax = ()=>{
+                this.style.opacity = 1
+            }
+
+            var nextIsMin = true
+
+            var doNext = ()=>{
+                this.__pulsateTimer = setTimeout(()=>{
+                    if (nextIsMin) setMin()
+                    else setMax()
+
+                    nextIsMin = !nextIsMin
+
+                    if (this.pulsate) doNext()
+                }, speedsNumber)
+            }
+
+
+            doNext()
+            return
+
             for (var i in speeds){
                 var speed = speeds[i]
                 this.classRemove('sk_ui_pulsate_' + speed)
@@ -442,8 +489,9 @@ class sk_ui_component {
                 var offset = cursor.offset || {x: 0, y: 0}
                 if (!offset.x) offset.x = 0
                 if (!offset.y) offset.y = 0
-                
+                 return
                 var pos = sk.interactions.getPos(_e)
+               
                 sk.app.cursorEl.style.left = pos.x + offset.x + 'px'
                 sk.app.cursorEl.style.top = pos.y + offset.y + 'px'
             }
@@ -523,6 +571,16 @@ class sk_ui_component {
 
         //continue construction. used by plugins to extend capabilities
         if (this.__sk_ui_continue_constructor__) this.__sk_ui_continue_constructor__(opt)
+
+
+
+        /*
+        const resizeObserver = new ResizeObserver((entries) => {
+            this.__rect = this.getRect()
+        })
+
+        resizeObserver.observe(this.element)
+        */
     }
 
     get classHierarchy(){
@@ -734,21 +792,14 @@ class sk_ui_component {
         parentIceRink.scrollToChild(this, center)
     }
 
+    get __rect(){
+        if (!this.__rect) this.__rect = this.getRect()
+        return this.__rect
+    }
+
     get rect(){
-        // new `IntersectionObserver` constructor
-        const observer = new IntersectionObserver((entries) => {
-            for (const entry of entries){
-                this.__bounds = entry.boundingClientRect
-            }
-
-            observer.disconnect();
-        })
-
-        observer.observe(this.element)
-
         var inViewport = (rect)=>{
             var html = document.documentElement;
-            //var rect = this.__bounds
           
             return !!rect &&
               rect.bottom >= 0 &&
@@ -756,8 +807,7 @@ class sk_ui_component {
               rect.left <= html.clientWidth &&
               rect.top <= html.clientHeight;
         }
-          
-        //var res = this.__bounds
+
         var res = this.element.getBoundingClientRect()
         res.inView = inViewport(res)
 

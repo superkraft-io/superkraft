@@ -52,7 +52,10 @@ class SK_UMS {
 
     broadcast(eventID, sender, data){
         this.broadcastToFrontend(eventID, sender, data)
-        if (sk.app_type !== 'wapp') this.broadcastToBackend(eventID, data)
+
+        if (data.toBE !== false){
+            if (sk.app_type !== 'wapp') this.broadcastToBackend(eventID, data)
+        }
     }
 
     broadcastToFrontend(eventID, sender, data, fromBackend){
@@ -134,7 +137,7 @@ class SK_UMS_Event {
     }
 
     broadcast(sender, data, fromBackend){
-        if (!fromBackend) this.setData(data)
+        if (!fromBackend && data.toBE !== false) this.setData(data)
         this.lastSender = sender
         for (var i in this.clients){
             this.clients[i].callback({sender: sender, data: data})
