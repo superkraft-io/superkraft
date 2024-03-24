@@ -78,12 +78,12 @@ class SK_FS_Promises_SAPP {
         })
     }
 
-    readdir(path){
+    readdir(path, asObj){
         return new Promise(async (resolve, reject)=>{
             try {
                 var res = await __fs.promises.readdir(new URL(path).pathname.slice(1))
                 var list = []
-                for (var i in res) list.push(res[i].name)
+                for (var i in res) list.push((!asObj ? res[i].name : res[i]))
                 resolve(list)
             } catch(err) {
                 reject(err)

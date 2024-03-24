@@ -23,7 +23,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                     app_root: this.sk.paths.root,
                     app: this.sk.paths.app_frontend,
                     global: this.sk.paths.globalFrontend,
-                    engine: __dirname
+                    engine: __dirname,
                 },
 
                 icon: this.info.icon || this.sk.paths.icons.view,
@@ -46,7 +46,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             
 
             this.viewInfo = await this._init(opt)
-            
+            this.viewInfo.sk.extensions = await this.sk.engine.extensionLoader.listExtensions()
 
             this.index = 5 + this.sk.viewList.indexOf(opt.id)
             var defOpts = {

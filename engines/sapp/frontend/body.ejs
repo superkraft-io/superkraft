@@ -3,12 +3,12 @@
 <script type="module">
     class SK_SAPP_FE_Initializer {
         constructor(){
-
         }
 
         async init(){
             await this.configRequire()
             await this.configDirname()
+            await this.configExtensions()
             await this.configApp()
             await this.configWSCB()
         }
@@ -62,6 +62,17 @@
             })
 
             window.wscb = new WebSockets_Callback({asSSC: true, asClient: true})
+        }
+
+        async configExtensions(){
+            window.extensions = await import('socket:extension')
+            console.log(extensions)
+
+
+            window.sk_ssc_extensions = []
+            <% for (var i = 0; i < sk.extensions.length; i++) { %>
+            window.sk_ssc_extensions.push(await window.extensions.load('<%- sk.extensions[i] %>'))
+            <% } %>
         }
     }
 

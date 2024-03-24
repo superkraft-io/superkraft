@@ -263,7 +263,8 @@ class sk_ui_component {
                 return
             }
 
-            //this.style.transition = speedsNumber + 'ms'
+            this.style.transition = (speedsNumber - 1) + 'ms'
+            
 
             this.__prePulsateOpacity = this.style.opacity
 

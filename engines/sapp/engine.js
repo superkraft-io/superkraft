@@ -40,7 +40,9 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
             await app.__init__()
 
 
-          
+            this.extensionLoader = new (require(__dirname + '/modules/sk_sapp_extensionLoader'))()
+            this.extensionLoader.sk = this.sk
+
             
             
             //var wscb = new (require(__dirname + '/modules/sk_sapp_wscb_wrapper'))({
