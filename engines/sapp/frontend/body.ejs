@@ -69,10 +69,24 @@
             console.log(extensions)
 
 
-            window.sk_ssc_extensions = []
+            sk.extensions = {}
             <% for (var i = 0; i < sk.extensions.length; i++) { %>
-            window.sk_ssc_extensions.push(await window.extensions.load('<%- sk.extensions[i] %>'))
+                sk.extensions.<%- sk.extensions[i] %> = await window.extensions.load('<%- sk.extensions[i] %>')
             <% } %>
+
+
+
+
+            var configExtension = extension => {
+                extension.call = async (cmd, data)=>{
+                    return (await extension.binding[cmd](data)).data
+                }
+            }
+
+            for (var i in sk.extensions){
+                var extension = sk.extensions[i]
+                configExtension(extension)
+            }
         }
     }
 
