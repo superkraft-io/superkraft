@@ -78,8 +78,10 @@
 
 
             var configExtension = extension => {
-                extension.call = async (cmd, data)=>{
-                    return (await extension.binding[cmd](data)).data
+                extension.call = async (cmd, data, responseType)=>{
+                    var _data = data
+                    var res = await extension.binding[cmd](_data, (!responseType ? undefined : {responseType: responseType}))
+                    return res.data
                 }
             }
 
