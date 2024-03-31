@@ -259,7 +259,7 @@ class sk_ui_component {
 
             if (!val){
                 this.opacity = this.__prePulsateOpacity
-                this.transition = ''
+                this.style.transition = ''
                 return
             }
 

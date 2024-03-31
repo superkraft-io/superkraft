@@ -66,15 +66,11 @@
 
         async configExtensions(){
             window.extensions = await import('socket:extension')
-            console.log(extensions)
-
 
             sk.extensions = {}
             <% for (var i = 0; i < sk.extensions.length; i++) { %>
                 sk.extensions.<%- sk.extensions[i] %> = await window.extensions.load('<%- sk.extensions[i] %>')
             <% } %>
-
-
 
 
             var configExtension = extension => {
