@@ -152,6 +152,7 @@
 
         awaitWSCB: ()=>{
             return sk.utils.awaitSomething(()=>{
+                if (sk.app_type === 'wapp') return true
                 if (!window.wscb) return
                 return true
             })

@@ -1,7 +1,7 @@
 var __fs = undefined
 
 
-module.exports = class SK_FS {
+module.exports = class SK_FS_SSC {
     constructor(opt){
         var fsTypes = {
             wapp: this.SK_FS_Promises_Standard(),

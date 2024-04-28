@@ -29,10 +29,10 @@ module.exports = class sk_RootViewCore {
             if (this.sk.type === 'dapp') this.viewInfo.views = this.sk.viewList
 
 
-            if (!(await fs.promises.access(this.viewInfo.globalHead             ))) this.viewInfo.globalHead            = this.sk.paths.superkraft + 'sk_emptyEJS.ejs'
-            if (!(await fs.promises.access(this.viewInfo.viewHead               ))) this.viewInfo.viewHead              = this.sk.paths.superkraft + 'sk_emptyEJS.ejs'
-            if (!(await fs.promises.access(this.viewInfo.viewBodyScripts.start  ))) this.viewInfo.viewBodyScripts.start = this.sk.paths.superkraft + 'sk_emptyEJS.ejs'
-            if (!(await fs.promises.access(this.viewInfo.viewBodyScripts.end    ))) this.viewInfo.viewBodyScripts.end   = this.sk.paths.superkraft + 'sk_emptyEJS.ejs'
+            try { if (!(await sk_fs.promises.access(this.viewInfo.globalHead             ))) this.viewInfo.globalHead            = this.sk.paths.superkraft + 'sk_emptyEJS.ejs' } catch(err) { this.viewInfo.globalHead            = this.sk.paths.superkraft + 'sk_emptyEJS.ejs' }
+            try { if (!(await sk_fs.promises.access(this.viewInfo.viewHead               ))) this.viewInfo.viewHead              = this.sk.paths.superkraft + 'sk_emptyEJS.ejs' } catch(err) { this.viewInfo.viewHead              = this.sk.paths.superkraft + 'sk_emptyEJS.ejs' }
+            try { if (!(await sk_fs.promises.access(this.viewInfo.viewBodyScripts.start  ))) this.viewInfo.viewBodyScripts.start = this.sk.paths.superkraft + 'sk_emptyEJS.ejs' } catch(err) { this.viewInfo.viewBodyScripts.start = this.sk.paths.superkraft + 'sk_emptyEJS.ejs' }
+            try { if (!(await sk_fs.promises.access(this.viewInfo.viewBodyScripts.end    ))) this.viewInfo.viewBodyScripts.end   = this.sk.paths.superkraft + 'sk_emptyEJS.ejs' } catch(err) { this.viewInfo.viewBodyScripts.end   = this.sk.paths.superkraft + 'sk_emptyEJS.ejs' }
 
             if (this.sk.complexity) this.viewInfo.sk.useComplexity = this.sk.useComplexity
             

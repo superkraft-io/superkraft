@@ -1,3 +1,9 @@
+if (global){
+    global.window = {_sk_app_type_is_ssc: false}
+} else {
+    window = {_sk_app_type_is_ssc: true}
+}
+
 module.exports = class Superkraft {
     constructor(opt){
         this.opt = opt
@@ -5,7 +11,8 @@ module.exports = class Superkraft {
     }
 
     async init(opt){
-        global.sk_fs = new (require(__dirname + '/modules/sk_fs.js'))({app_type: opt.type})
+        global.sk_fs = new (require(__dirname + '/modules/sk_fs/sk_fs.js'))({app_type: opt.type})
+        
 
         var sk_id = opt.sk_id || 'sk'
         this.info = {
