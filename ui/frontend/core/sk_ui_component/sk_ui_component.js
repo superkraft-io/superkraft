@@ -49,6 +49,24 @@ class sk_ui_component {
             }})
         }
 
+
+        this.attributes.add({
+            friendlyName: 'Disabled',
+            name: 'disabled',
+            type: 'bool',
+
+            onSet: val => {
+                if (val){
+                    this.pointerEvents = 'none'
+                    this.__prevOpacity = this.opacity || 1
+                    this.opacity = 0.5
+                } else {
+                    this.pointerEvents = ''
+                    this.opacity = this.__prevOpacity
+                }
+            }
+        })
+
         this.attributes.add({notEditable: true, friendlyName: 'Multi Comp.', name: 'multiComponent',  type: 'bool'})
 
         
