@@ -63,6 +63,18 @@ module.exports = class Superkraft {
 
             onAppReady: opt.onAppReady
         }
+
+        /****************/
+        
+        for (var i in this.info.paths){
+            try { this.info.paths[i] = this.info.paths[i].split('\\').join('/') } catch(err) {}
+        }
+
+        for (var i in this.info.paths.icons){
+            try { this.info.paths.icons[i] = this.info.paths.icons[i].split('\\').join('/') } catch(err) {}
+        }
+
+        /****************/
         
         global[sk_id] = this.info
         var sk = this.info

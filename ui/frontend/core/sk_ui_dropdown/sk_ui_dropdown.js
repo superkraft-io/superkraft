@@ -29,7 +29,6 @@ class sk_ui_dropdown extends sk_ui_button {
             if (this.onItemClicked) this.onItemClicked(itemData)
             if (this.onItemSelected) this.onItemSelected(itemData)
         }
-
     }
 
     set items(items){

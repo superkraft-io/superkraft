@@ -499,6 +499,14 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
                 this.opacity = 1
             }
         }})
+
+        this.attributes.add({friendlyName: 'Passive', name: 'passive', type: 'bool', onSet: val => {
+            if (val){
+                this.pointerEvents = 'none'
+            } else {
+                this.pointerEvents = ''
+            }
+        }})
     }
 
     get submenu(){
@@ -547,6 +555,7 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
         else this.as_item()
 
         this.disabled = opt.disabled
+        this.passive = opt.passive
     }
 
     as_item(){
@@ -558,7 +567,8 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
 
         
 
-        this.content.add.label(_c => {
+        this.content.add.text(_c => {
+            _c.wrap = true
             _c.text = this.opt.label
         })
 
@@ -646,6 +656,7 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
 
     as_separator(){
         this.classAdd('sk_ui_contextMenu_Item_Separator')
+        if (this.opt.passive) this.classAdd('sk_ui_contextMenu_Item_Separator_passive')
     }
 
     as_input(){

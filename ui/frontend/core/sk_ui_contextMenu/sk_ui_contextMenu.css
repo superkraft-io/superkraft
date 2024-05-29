@@ -22,10 +22,8 @@
 
 
 .sk_ui_contextMenu_Item {
-    height: 24px;
     border-radius: 4px;
-    padding-left: 4px;
-    padding-right: 4px;
+    padding: 6px 4px;
 }
 
 .sk_ui_contextMenu_Item_content > .sk_ui_label {
@@ -88,6 +86,11 @@
     height: 1px;
     width: auto;
     margin: 8px 8px;
+}
+
+.sk_ui_contextMenu_Item_Separator_passive {
+    border-top: solid 1px transparent;
+    margin: 4px 8px;
 }
 
 .sk_ui_contextMenu_Item > .sk_ui_contextMenu_Item_rightSide > .sk_ui_icon > #icon {
