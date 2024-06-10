@@ -21,7 +21,7 @@
 }
 
 
-.sk_ui_contextMenu_Item {
+.sk_ui_contextMenu_Item:not(.sk_ui_contextMenu_Item_Separator) {
     border-radius: 4px;
     padding: 6px 4px;
 }
