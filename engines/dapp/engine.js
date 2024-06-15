@@ -3,7 +3,6 @@ const fs = require('fs')
 var _electron =  require('electron')
 const { app } = _electron
 
-
 var _os = require('os')
 
 const {uIOhook, UiohookKey} = require('uiohook-napi')
@@ -36,6 +35,8 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
             this.sk.app = app
             this.app = app
 
+            
+            
             
             const WebSockets_Callback = require('wscb')
             var wscb = new WebSockets_Callback({asElectron: true,
@@ -122,6 +123,29 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
             })
         })   
     }
+
+    /*waitForReady(){
+        return new Promise(resolve => {
+            var checkReadyTimer = setInterval(()=>{
+                var isReady = app.isReady()
+                if (!isReady) return
+        
+                this.deeplink = new (require('./modules/sk_dapp_deeplink.js'))({sk: this.sk})
+                this.sk.country = app.getLocale().split('-')[0]
+
+                if (this.sk.onAppReady) this.sk.onAppReady()
+
+                uIOhook.on('mouseup', _e => {
+                    for (var vid in this.sk.views) this.sk.views[vid].handleMouseUp()
+                })
+                uIOhook.start()
+
+                clearInterval(checkReadyTimer)
+
+                resolve()
+            }, 10)
+        })   
+    }*/
 
     on(cmd, cb){
         this.sk.wscb.on(cmd, async (msg, rW) => {
