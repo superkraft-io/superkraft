@@ -49,6 +49,7 @@ module.exports = class sk_RootEngine {
                     var view = new (require(viewPath))({sk: this.sk})
                     if (view.info.mainRedirect){
                         view = new (require(view.info.mainRedirect))({sk: this.sk})
+                        view.root = viewInfo.path
                     }
                     view.root = viewInfo.path
                     

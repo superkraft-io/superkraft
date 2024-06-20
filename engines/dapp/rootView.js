@@ -1,6 +1,5 @@
 const { BrowserWindow, screen } = require('electron')
 
-const ejse = require('ejs-electron')
 
 
 module.exports = class SK_RootView extends SK_RootViewCore {
@@ -68,6 +67,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
             resolve()
 
+        
             if (doShow){
                 if (!this.sk.showWindowWaitTime) this.sk.showWindowWaitTime = 1
                 
@@ -154,7 +154,10 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         if (!this._view) this.create()
         this._view.show()
         this.closed = false
-        this.sk.ums.broadcast('sk_view_cmd-' + this.id, {viewID: this.id, action: 'show'})
+
+        setTimeout(()=>{
+            this.sk.ums.broadcast('sk_view_cmd-' + this.id, {viewID: this.id, action: 'show'})
+        }, 500)
     }
 
     hide(){

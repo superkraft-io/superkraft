@@ -7,6 +7,8 @@ var _os = require('os')
 
 const {uIOhook, UiohookKey} = require('uiohook-napi')
 
+global.ejse = require('ejs-electron')
+
 module.exports = class SK_LocalEngine extends SK_RootEngine {
     constructor(opt){
         super(opt)
@@ -106,46 +108,20 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
         })
     }
 
-    waitForReady(){
-        return new Promise(resolve => {
-            app.on('ready', ()=>{
-                this.deeplink = new (require('./modules/sk_dapp_deeplink.js'))({sk: this.sk})
-                this.sk.country = app.getLocale().split('-')[0]
+    async waitForReady(){
+        await app.whenReady()
+        ejse.listen()
+    
+        this.deeplink = new (require('./modules/sk_dapp_deeplink.js'))({sk: this.sk})
+        this.sk.country = app.getLocale().split('-')[0]
 
-                if (this.sk.onAppReady) this.sk.onAppReady()
+        if (this.sk.onAppReady) this.sk.onAppReady()
 
-                uIOhook.on('mouseup', _e => {
-                    for (var vid in this.sk.views) this.sk.views[vid].handleMouseUp()
-                })
-                uIOhook.start()
-
-                resolve()
-            })
-        })   
+        uIOhook.on('mouseup', _e => {
+            for (var vid in this.sk.views) this.sk.views[vid].handleMouseUp()
+        })
+        uIOhook.start()
     }
-
-    /*waitForReady(){
-        return new Promise(resolve => {
-            var checkReadyTimer = setInterval(()=>{
-                var isReady = app.isReady()
-                if (!isReady) return
-        
-                this.deeplink = new (require('./modules/sk_dapp_deeplink.js'))({sk: this.sk})
-                this.sk.country = app.getLocale().split('-')[0]
-
-                if (this.sk.onAppReady) this.sk.onAppReady()
-
-                uIOhook.on('mouseup', _e => {
-                    for (var vid in this.sk.views) this.sk.views[vid].handleMouseUp()
-                })
-                uIOhook.start()
-
-                clearInterval(checkReadyTimer)
-
-                resolve()
-            }, 10)
-        })   
-    }*/
 
     on(cmd, cb){
         this.sk.wscb.on(cmd, async (msg, rW) => {

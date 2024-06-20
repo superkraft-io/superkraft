@@ -230,6 +230,7 @@
 
                         _c.ums.on('sk_view_cmd-' + sk.id, async res => {
                             if (res.data.viewID !== sk.id) return
+                            console.log('sk_view_cmd action')
 
                             switch (res.data.action) {
                                 case 'show':
