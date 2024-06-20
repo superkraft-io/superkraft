@@ -47,10 +47,11 @@ module.exports = class sk_RootEngine {
                 var viewPath = viewInfo.path + 'main.js'
                 try {
                     var view = new (require(viewPath))({sk: this.sk})
-                    view.root = viewInfo.path
                     if (view.info.mainRedirect){
                         view = new (require(view.info.mainRedirect))({sk: this.sk})
                     }
+                    view.root = viewInfo.path
+                    
                     
                     var priority = view.info.priority || 0
 
