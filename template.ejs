@@ -154,7 +154,47 @@
 
                 if (sk.app_type === 'wapp') document.body.classList.add('sk_ui_appType_wapp')
 
-                sk.init().then(()=>{
+                var handleSKViewCmd = async res => {
+                    var app = sk.app
+                    if (res.data.viewID !== sk.id) return
+
+                    switch (res.data.action) {
+                        case 'show':
+                            if (app.visible){
+                                app.style.transition = '100ms'
+                                var pulseOnce = async ()=>{
+                                    app.style.transition = '100ms'
+                                    app.opacity = 0.8
+                                    app.style.transform = 'scale(0.99)'
+                                    app.style.filter = 'blur(5px)'
+                                    await sk.utils.sleep(100)
+                                    app.opacity = 1
+                                    app.style.transform = 'scale(1)'
+                                    app.style.filter = ''
+                                    return sk.utils.sleep(100)
+                                }
+                                await pulseOnce()
+                                await pulseOnce()
+                                app.style.transition = ''
+                                return
+                            }
+                            app.visible = true
+                            app.transition('fade in')
+                            break;
+
+                        case 'hide':
+                            if (!app.visible) return
+                            
+                            await app.transition('fade out')
+                            app.visible = false
+                            break;
+                    
+                        default:
+                            break;
+                    }
+                }
+
+                sk.init().then(initAppRes => {
                     sk.app = (new sk_ui_component({parent: {element: document.body}}))
                     sk.app.setup(_c => {
                         _c.styling += ' fullwidth fullheight'
@@ -167,7 +207,7 @@
                         _c.scrollable = true
                         
                         if (sk.app_type !== 'wapp') _c.style.display = 'none'
-
+                        
                         sk._cM = _c.contextMenu
 
                         _c.classAdd('sk_app')
@@ -228,45 +268,15 @@
                         /********/
 
 
-                        _c.ums.on('sk_view_cmd-' + sk.id, async res => {
-                            if (res.data.viewID !== sk.id) return
-                            console.log('sk_view_cmd action')
+                        
+                    
+                        _c.ums.on('sk_view_cmd-' + sk.id, res => { handleSKViewCmd(res) })
 
-                            switch (res.data.action) {
-                                case 'show':
-                                    if (_c.visible){
-                                        _c.style.transition = '100ms'
-                                        var pulseOnce = async ()=>{
-                                            _c.style.transition = '100ms'
-                                            _c.opacity = 0.8
-                                            _c.style.transform = 'scale(0.99)'
-                                            _c.style.filter = 'blur(5px)'
-                                            await sk.utils.sleep(100)
-                                            _c.opacity = 1
-                                            _c.style.transform = 'scale(1)'
-                                            _c.style.filter = ''
-                                            return sk.utils.sleep(100)
-                                        }
-                                        await pulseOnce()
-                                        await pulseOnce()
-                                        _c.style.transition = ''
-                                        return
-                                    }
-                                    _c.visible = true
-                                    _c.transition('fade in')
-                                    break;
-
-                                case 'hide':
-                                    if (!_c.visible) return
-                                    
-                                    await _c.transition('fade out')
-                                    _c.visible = false
-                                    break;
-                            
-                                default:
-                                    break;
+                        if (sk.app !== 'wapp'){
+                            if (initAppRes.show){
+                                handleSKViewCmd({data: {viewID: sk.id, action: 'show'}})
                             }
-                        })
+                        }
                     })
 
                 })

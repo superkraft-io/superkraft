@@ -98,6 +98,16 @@ class sk_ui_modal extends sk_ui_component {
 
             
         })
+
+
+        this.escapeKeyCloser = _e => {
+            if (!_e.key === 'Escape') return
+            _e.stopPropagation()
+            _e.preventDefault()
+            this.hide()
+        }
+
+        document.addEventListener('keydown', this.escapeKeyCloser)
     }
 
     hide(){
@@ -148,6 +158,10 @@ class sk_ui_modal extends sk_ui_component {
 
         if (!val.includes('dimmer')) this.dimmer.remove()
         if (val.includes('content')) this.contentContainer.element.addEventListener('click', ()=>{ this.hide() })
+
+        if (!val.includes('escape')){
+            document.removeEventListener('keydown', this.escapeKeyCloser)
+        }
     }
 
     set autoclose(val){
