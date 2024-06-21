@@ -170,7 +170,7 @@ class sk_ui_iceRink extends sk_ui_component {
 
                 var observer = new ResizeObserver(()=>{
                     var cRect = _c.rect
-                    
+                   
                     //account for padding and margin
                     var getCSSVal = prop => {
                         var val = 0
@@ -186,7 +186,6 @@ class sk_ui_iceRink extends sk_ui_component {
                         this.scrollerX.contentSize = cRect.width
                         this.scrollbarX.updateDimensions()
                         this.scrollbarX_wrapper.updatePosition(this.contentWrapper.rect)
-                        if (this.autoWidth) this.contentWrapper.style.width = cRect.width + 'px'
                     }
 
 
@@ -197,8 +196,10 @@ class sk_ui_iceRink extends sk_ui_component {
                         this.scrollerY.contentSize = cRect.height
                         this.scrollbarY.updateDimensions()
                         this.scrollbarY_wrapper.updatePosition(this.contentWrapper.rect)
-                        if (this.autoHeight) this.contentWrapper.style.height = cRect.height + 'px'
                     }
+                
+                    if (this.autoWidth) this.contentWrapper.style.width = cRect.width + 'px'
+                    if (this.autoHeight) this.contentWrapper.style.height = cRect.height + 'px'
                     
                 }).observe(_c.element)
 
@@ -714,7 +715,7 @@ class sk_ui_iceRink extends sk_ui_component {
         this.attributes.add({friendlyName: 'Auto Width', name: 'autoWidth', type: 'bool', onSet: val => {
             this.contentWrapper.styling = `top center ${(!val ? 'fullwidth' : '')} ${(!this.autoHeight ? 'fullheight' : '')}`
         }})
-
+        this.autoWidth = true
 
 
         

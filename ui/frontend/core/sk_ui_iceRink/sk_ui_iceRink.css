@@ -7,8 +7,8 @@
 }
 
 .sk_ui_iceRink_content {
-    min-width: fit-content;
-    min-height: fit-content;
+    /* min-width: fit-content; */
+    /* min-height: fit-content; */
     position: absolute;
     /*border: solid 1px red;*/
 }
