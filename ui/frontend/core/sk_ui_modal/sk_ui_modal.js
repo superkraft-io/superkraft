@@ -101,7 +101,7 @@ class sk_ui_modal extends sk_ui_component {
 
 
         this.escapeKeyCloser = _e => {
-            if (!_e.key === 'Escape') return
+            if (_e.key !== 'Escape') return
             _e.stopPropagation()
             _e.preventDefault()
             this.hide()
@@ -116,8 +116,9 @@ class sk_ui_modal extends sk_ui_component {
             //this.contentContainer.transition('scale out')
             await this.transition('fade out')
             if (this.onHidden) this.onHidden()
-            resolve()
             this.remove()
+            document.removeEventListener('keydown', this.escapeKeyCloser)
+            resolve()
         })
     }
 
