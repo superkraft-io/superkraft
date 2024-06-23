@@ -54,6 +54,8 @@ module.exports = class SK_UMS {
     }
 
     broadcast(eventID, data){
+        var event = this.addOrGet(eventID)
+        event.data = data
         this.broadcastToFrontend(eventID, data)
     }
 

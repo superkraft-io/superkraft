@@ -4,6 +4,7 @@ class SK_UMS {
         this.clientIDCounter = -1
 
         if (sk.app_type !== 'wapp'){
+            this.init_BE_events()
             wscb.on('sk_ums', (msg, rW)=>{
                 if (msg.action === 'broadcast'){
                     this.broadcastToFrontend(msg.eventID, undefined, msg.data, true)
@@ -11,6 +12,21 @@ class SK_UMS {
             })
         }
     }
+
+    async init_BE_events(){
+        await sk.utils.sleep(2000)
+
+        var res = await await sk.comm.main('get_UMS_BE_events')
+
+        for (var eventName in res.events){
+            var eventRes =  res.events[eventName]
+            var eventObj = new SK_UMS_Event({id: eventRes.id})
+            eventObj.data = eventRes.data
+            this.events[eventName] = eventObj
+        }
+    }
+
+    /**************/
 
     toBE(action, eventID, data){
         return new Promise(resolve => {
