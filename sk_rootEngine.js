@@ -1,3 +1,5 @@
+var fs = require('fs')
+
 module.exports = class sk_RootEngine {
     constructor(opt){
         this.sk = opt.sk
@@ -13,6 +15,66 @@ module.exports = class sk_RootEngine {
                 app: this.sk.paths.app_frontend,
             }
         }
+
+        this.loadPosts()
+    }
+
+    loadPosts(){
+        var postsFolder = this.sk.skModule.opt.postsRoot
+        
+        if (!fs.accessSync(postsFolder)) return console.warn('No posts found')
+        
+        this.posts = {}
+
+        var posts = fs.readdirSync(postsFolder)
+        posts.forEach(_filename => {
+            var split = _filename.split('.')
+            var ext = split[split.length - 1]
+            if (ext !== 'js') return
+            
+            if (fs.lstatSync(postsFolder + _filename).isDirectory() === true) return
+
+            var postName = _filename.split('.')[0]
+            try {
+                var postModule = new (require(postsFolder + _filename))({sk: this.sk})
+
+                this.posts[postName] = postModule
+                
+                this.sk.app.post('/' + postModule.info.route, async (req, res)=>{
+                    var _sw = this.sk.stats.increment({type: 'post', route: postModule.info.route})
+            
+                    var _res = {}
+                    var reject = msg => {
+                        _res.rejected = true
+                        _res.error = msg
+                        res.send(_res)
+                        return
+                    }
+
+                    if (postModule.info.protected){
+                        var auth_token = req.cookies.auth_token
+                        if (!auth_token) return reject('access_denied')
+                        var isAuthTokenValid = await this.sk.engine.isAuthTokenValid(auth_token)
+                        if (isAuthTokenValid === 'invalid_token') return reject('invalid_token')
+                        if (!isAuthTokenValid) return reject('access_denied')
+                    }
+
+                    try {
+                        var json = JSON.parse(req.body.data)
+                        req.body.data = json
+                    } catch(err) {
+
+                    }
+                    
+                    postModule.exec(req, res)
+
+                    _sw.end()
+                })
+            } catch(err) {
+                console.error(err)
+            }
+        })
+
     }
 
     initViews(){
