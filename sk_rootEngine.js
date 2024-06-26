@@ -21,8 +21,7 @@ module.exports = class sk_RootEngine {
 
     loadPosts(){
         var postsFolder = this.sk.skModule.opt.postsRoot
-        
-        if (!fs.accessSync(postsFolder)) return console.warn('No posts found')
+        try { fs.accessSync(postsFolder) } catch(err) { return console.warn('No posts found') }
         
         this.posts = {}
 
