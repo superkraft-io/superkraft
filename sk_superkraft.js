@@ -1,7 +1,7 @@
 if (global){
-    global.window = {_sk_app_type_is_ssc: false}
+    global.window = {_sk_app_type: 'wapp'}
 } else {
-    window = {_sk_app_type_is_ssc: true}
+    window = { _sk_app_type: 'wapp' }
 }
 
 module.exports = class Superkraft {
@@ -11,7 +11,6 @@ module.exports = class Superkraft {
     }
 
     async init(opt){
-        global.sk_fs = new (require(__dirname + '/modules/sk_fs/sk_fs.js'))({app_type: opt.type})
         
 
         var sk_id = opt.sk_id || 'sk'
@@ -64,6 +63,13 @@ module.exports = class Superkraft {
             onAppReady: opt.onAppReady
         }
 
+        global.window._sk_app_type = opt.type
+
+        this.ipc = new (require(__dirname + '/modules/sk_ipc/sk_ipc.js'))({ sk: this })
+
+
+        global.sk_fs = new (require(__dirname + '/modules/sk_fs/sk_fs.js'))({ sk: this, app_type: opt.type })
+
         /****************/
         
         for (var i in this.info.paths){
@@ -81,7 +87,7 @@ module.exports = class Superkraft {
 
         this.info.utils = new (require(__dirname + '/modules/sk_utils.js'))({sk: sk})
         this.info.timers = (opt.type === 'dapp' ? new (require(__dirname + '/modules/sk_timers.js'))({sk: sk}) : undefined)
-        this.info.stats = new (require(__dirname + '/modules/sk_stats.js'))({sk: sk})
+        //this.info.stats = new (require(__dirname + '/modules/sk_stats.js'))({sk: sk})
 
        if(opt.type === 'sapp') this.info.paths.extensions = opt.extensions
 
@@ -117,7 +123,8 @@ module.exports = class Superkraft {
         if (opt.useComplexity) sk.complexity = new (require(__dirname + '/complexity/backend/sk_complexity.js'))
 
         global.SK_RootEngine = require(__dirname + '/sk_rootEngine.js')
-        sk.engine = new (require(__dirname + '/engines/' + opt.type + '/engine.js'))({sk: sk})
+        sk.engine = new (require(__dirname + '/engines/' + opt.type + '/engine.js'))({ sk: sk })
+        await sk.engine.loadPosts()
         
         try { await sk.engine.init() } catch(err) {
             console.error(err)

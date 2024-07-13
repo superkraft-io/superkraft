@@ -1,5 +1,3 @@
-var fs = require('fs')
-
 module.exports = class sk_RootEngine {
     constructor(opt){
         this.sk = opt.sk
@@ -15,23 +13,22 @@ module.exports = class sk_RootEngine {
                 app: this.sk.paths.app_frontend,
             }
         }
-
-        this.loadPosts()
     }
 
-    loadPosts(){
+    async loadPosts(){
         var postsFolder = this.sk.skModule.opt.postsRoot
-        try { fs.accessSync(postsFolder) } catch(err) { return console.warn('No posts found') }
+        try { await sk_fs.promises.access(postsFolder) } catch(err) { return console.warn('No posts found') }
         
         this.posts = {}
 
-        var posts = fs.readdirSync(postsFolder)
-        posts.forEach(_filename => {
+        var posts = await sk_fs.promises.readdirSync(postsFolder)
+        for (var i = 0; i < posts.length; i++) {
+            var _filename = posts[i]
             var split = _filename.split('.')
             var ext = split[split.length - 1]
             if (ext !== 'js') return
             
-            if (fs.lstatSync(postsFolder + _filename).isDirectory() === true) return
+            if ((await sk_fs.promises.lstatSync(postsFolder + _filename)).isDirectory() === true) return
 
             var postName = _filename.split('.')[0]
             try {
@@ -72,7 +69,7 @@ module.exports = class sk_RootEngine {
             } catch(err) {
                 console.error(err)
             }
-        })
+        }
 
     }
 

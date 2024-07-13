@@ -1,12 +1,10 @@
-var fs = require('fs')
-
 module.exports = class SK_UI_FontManager {
     constructor(opt){
         this.opt = opt
         this.sk = opt.sk
     }
 
-    init(){
+    async init(){
         var fontInfo = this.sk.ui.font
         if (!fontInfo) return
 
@@ -14,14 +12,14 @@ module.exports = class SK_UI_FontManager {
 
         var fontRoot = (this.sk.paths.root + 'sk_font/').split('\\').join('/')
         var frontendPath = fontRoot + 'frontend/'
-        try { fs.mkdirSync(fontRoot) } catch(err) { }
-        try { fs.mkdirSync(frontendPath) } catch(err) { }
+        try { await sk_fs.promises.mkdir(fontRoot) } catch(err) { }
+        try { await sk_fs.mkdir(frontendPath) } catch(err) { }
 
         this.opt.parent.paths.font = fontRoot
         this.opt.parent.paths.frontend.font = frontendPath
         this.opt.parent.routes.font = '/sk_ui_font/'
 
-        try { fs.mkdirSync(fontPath) } catch(err) { }
+        try { await sk_fs.mkdir(fontPath) } catch(err) { }
 
         var formattedFontName = fontInfo.name.toLowerCase().split(' ').join('_')
 
@@ -59,7 +57,7 @@ module.exports = class SK_UI_FontManager {
 
         fullCSS += `body { font-family: '${fontInfo.name}', sans-serif !important; }`
 
-        fs.writeFileSync(frontendPath + 'sk_ui_font.css', fullCSS)
+        await fs.writeFile(frontendPath + 'sk_ui_font.css', fullCSS)
 
 
         
@@ -76,7 +74,7 @@ module.exports = class SK_UI_FontManager {
 <link href="https://fonts.googleapis.com/css2?family=${fontInfo.name.split(' ').join('+')}:ital,wght@${weightsFormatted}&display=swap" rel="stylesheet">
 `
 
-            fs.writeFileSync(fontRoot + 'sk_ui_font.ejs', ejs)
+            await fs.writeFile(fontRoot + 'sk_ui_font.ejs', ejs)
         }
 
 

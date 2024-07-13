@@ -21,8 +21,7 @@ module.exports = class sk_ui {
 
         this.endpoint = (opt.endpoint === 'wapp' ? new sk_ui_wapp(this) : new sk_ui_dapp(this))
 
-
-        this.fontMngr = new (require('./sk_ui_fontMngr.js'))({sk: this.sk, parent: this})
+        this.fontMngr = new (require(__dirname + '/sk_ui_fontMngr.js'))({sk: this.sk, parent: this})
         this.fontMngr.init()
 
 
