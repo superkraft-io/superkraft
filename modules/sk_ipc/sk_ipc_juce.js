@@ -2,6 +2,11 @@ module.exports = module.exports = class SK_IPC {
     constructor() {
         this.msgIdx = 0
         this.callbacks = {}
+
+        window.__JUCE__.backend.addEventListener('sk.ipc.callback', _res => {
+            var res = JSON.parse(_res)
+            this.handleCallback(res.msgIdx, res.data)
+        })
     }
 
     send(target = 'sk_c_be', cmd, data = {}, cb, preData = {}) {
@@ -60,10 +65,10 @@ module.exports = module.exports = class SK_IPC {
         }
     }
 
-    execute_Callback_From_C_Backend(msgIdx, data) {
+    handleCallback(msgIdx, data) {
         var entry = this.callbacks[msgIdx]
         if (entry) {
-            entry.cb(JSON.parse(data))
+            entry.cb(data)
             delete this.callbacks[msgIdx]
         }
     }

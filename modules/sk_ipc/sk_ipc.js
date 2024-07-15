@@ -12,4 +12,7 @@ module.exports = class SK_IPC {
 
     toView(viewID, cmd, data) { return this.ipc.sendToView(viewID, cmd, data) }
 
+    execute_Callback_From_C_Backend(msgIdx, data) {
+        this.ipc.execute_Callback_From_C_Backend(msgIdx, data)
+    }
 }

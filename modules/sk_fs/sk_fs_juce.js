@@ -41,9 +41,18 @@ class SK_FS_Promises_JUCE {
         return this.sk.ipc.toCBE('sk_fs', { operation: 'readFile', path: path })
     }
 
-    readdir(path) {
+    readdir(path, asObj) {
         console.log('readdir')
-        return this.sk.ipc.toCBE('sk_fs', { operation: 'readdir', path: path })
+        return new Promise(async (resolve, reject) => {
+            try {
+                var res = await this.sk.ipc.toCBE('sk_fs', { operation: 'readdir', path: path })
+                var list = []
+                for (var i in res) list.push((!asObj ? res[i].name : res[i]))
+                resolve(list)
+            } catch (err) {
+                reject(err)
+            }
+        })
     }
 
     async readJSON(path) {
