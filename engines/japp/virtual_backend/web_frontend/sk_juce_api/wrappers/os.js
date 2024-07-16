@@ -1,5 +1,5 @@
 var _sk_os_def = {
-    EOL: '\n',
+    EOL: sk_juce_api.machineInfo.EOL,
 
     availableParallelism() {
         return sk_juce_api.fetch('sk.getCPUInfo').coreCount
@@ -15,23 +15,65 @@ var _sk_os_def = {
         return sk_juce_api.fetch('sk.getCPUInfo').cores
     },
 
-    devNull: '',
+    devNull: sk_juce_api.machineInfo.devNull,
 
     endianness() {
         return sk_juce_api.machineInfo.endianess
     },
 
-    freemem() {
-        return sk_juce_api.fetch('sk.getMemoryInfo').free
+
+    /* memory */
+
+    meminfo() {
+        return sk_juce_api.fetch('sk.getMemoryInfo')
     },
+
+    totalmem() {
+        return sk_juce_api.fetch('sk.getMemoryInfo').physical.total
+    },
+
+    freemem() {
+        return sk_juce_api.fetch('sk.getMemoryInfo').physical.free
+    },
+
+    usedmem() {
+        return sk_juce_api.fetch('sk.getMemoryInfo').physical.used
+    },
+
+    
+
+
+
+    uptime() {
+        return sk_juce_api.fetch('sk.getMachineTime').uptime
+    },
+
+
+
 
     getPriority(pid) {
         //IPC call
     },
 
+
+    setPriority(pid, priority) {
+        //IPC call
+    },
+
+
+
+    /* paths */
+
     homedir() {
         return sk_juce_api.machineInfo.homedir
     },
+
+    tmpdir() {
+        return sk_juce_api.machineInfo.tmpdir
+    },
+
+
+    /* machine */
 
     hostname() {
         return sk_juce_api.machineInfo.hostname
@@ -41,12 +83,11 @@ var _sk_os_def = {
         //IPC call
     },
 
-    machine() {
-        return sk_juce_api.machineInfo.machine
-    },
 
-    networkInterfaces() {
-        return sk_juce_api.fetch('sk.getNetworInfo').interfaces
+    /* operating system */
+
+    version() {
+        return sk_juce_api.machineInfo.version
     },
 
     platform() {
@@ -57,32 +98,34 @@ var _sk_os_def = {
         return sk_juce_api.machineInfo.release
     },
 
-    setPriority(pid, priority) {
-        //IPC call
-    },
-
-    tmpdir() {
-        return sk_juce_api.machineInfo.tmpdir
-    },
-
-    totalmem() {
-        return sk_juce_api.fetch('sk.getMemoryInfo').total
+    machine() {
+        return sk_juce_api.machineInfo.machine
     },
 
     type() {
         return sk_juce_api.machineInfo.type
     },
 
-    uptime() {
-        return sk_juce_api.fetch('sk.getMachineTime').uptime
+
+
+    /* network */
+
+    networkInterfaces() {
+        return sk_juce_api.fetch('sk.getNetworInfo').interfaces
     },
+
+    
+
+    
+
+    
+
+    
+
+
 
     userInfo(options) {
-
-    },
-
-    version() {
-        return sk_juce_api.machineInfo.version
+        return sk_juce_api.fetch('sk.getUserInfo')
     }
 }
 
