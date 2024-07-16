@@ -31,7 +31,7 @@ public:
 
 
     bool is_IPC_command(juce::String url);
-    auto handle_IPC_command(juce::String url) -> std::optional<juce::WebBrowserComponent::Resource>;
+    auto handle_native_command(juce::String url) -> std::optional<juce::WebBrowserComponent::Resource>;
 
     auto lookUpResource(const juce::String& url) -> std::optional<juce::WebBrowserComponent::Resource>;
     auto SK_VirtualBackend::loadResourceFrom_Disk(const juce::String& url) -> std::optional<juce::WebBrowserComponent::Resource>;

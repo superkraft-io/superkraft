@@ -6,31 +6,6 @@ class SK_Module {
         
     }
 
-    fetch(path) {
-        /*
-        
-            maybe need to format path to handle certain scenarios such as:
-
-            ./targetFile.js
-            ./ targetFile       without extension
-            ../                 walk up the path - !!! IMPORTANT !!! walking up a path may not exceed the root of the "assets" folder
-            \                   non-unix path delimiters
-        
-        */
-        const request = new XMLHttpRequest()
-        request.open('GET', path, false)
-        try { request.send() } catch (err) {
-            console.error(err)
-            throw 'Could not fetch module at ' + path
-        }
-
-        var response = undefined
-
-        try { response = request.responseText } catch { response = request.response }
-
-        return response
-    }
-
     loadFromData(data, path) {
         const wrappedData = `return ${SK_Module_Scope.toString().replace('/*...*/', data)}`
 
@@ -44,8 +19,8 @@ class SK_Module {
         func.call(null, this, path, window)
     }
 
-    loadFromURL(path){
-        var data = this.fetch(path)
+    loadFromURL(path) {
+        var data = sk_juce_api.fetch(path)
 
         var trimmedPath = path.replace('https://juce.backend', '').split(':')[0].split('/')
         trimmedPath.splice(trimmedPath.length - 1, 1)
@@ -55,11 +30,35 @@ class SK_Module {
         SK_Module.cache[path] = this.exports
     }
 
-    static require(path){
-        if (SK_Module.cache[path]) return this.cache[path]
+    getNativeModulePath(path) {
+        var split = path.split(':')
 
+        if (split[0].toLowerCase() !== 'sk') return
+
+        var moduleName = split[1].toLowerCase()
+
+        if (!moduleName || moduleName.trim().length == 0) return
+
+        var modulePath = sk_juce_api.nativeModules[moduleName]
+
+        return modulePath
+    }
+
+
+    /***********************/
+
+
+    static require(path) {
         var module = new SK_Module()
-        module.loadFromURL(path)
+
+        var nativeModulePath = module.getNativeModulePath(path)
+
+        var modulePath = nativeModulePath || path
+
+        if (SK_Module.cache[modulePath]) return this.cache[modulePath]
+
+        
+        module.loadFromURL(modulePath)
 
         return module.exports
     }
@@ -69,14 +68,17 @@ class SK_Module {
 
         })
     }
+
+
+    
 }
 
 SK_Module.cache = {}
 
-sk_c_api.sk_module = SK_Module
+sk_juce_api.sk_module = SK_Module
 
-window.require = sk_c_api.sk_module.require
-window.requireAsync = sk_c_api.sk_module.requireAsync
+window.require = sk_juce_api.sk_module.require
+window.requireAsync = sk_juce_api.sk_module.requireAsync
 
 
 export default SK_Module

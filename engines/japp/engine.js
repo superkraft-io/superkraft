@@ -1,6 +1,5 @@
-window.path = require('socket:path')
-var app = new (require(__dirname + '/modules/sk_sapp_electron/sk_sapp_electron_app.js'))()
-var _os = os
+var app = new (require(__dirname + '/modules/sk_japp_electron/sk_sapp_electron_app.js'))()
+var _os = require('sk:os')
 
 module.exports = class SK_LocalEngine extends SK_RootEngine {
     constructor(opt){

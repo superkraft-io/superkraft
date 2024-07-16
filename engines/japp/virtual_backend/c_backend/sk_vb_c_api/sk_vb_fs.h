@@ -12,6 +12,7 @@ public:
     std::function<void(std::int64_t, std::string)> respondToCallback;
     static String SK_FS::getProjectPath();
     String SK_FS::handle_IPC_Msg(int64 msgIdx, DynamicObject *obj);
+    void respondError(int64 msgIdx, String error);
     void access(int64 msgIdx, String path);
     void stat(int64 msgIdx, String path);
     void writeFile(int64 msgIdx, String path, String data);

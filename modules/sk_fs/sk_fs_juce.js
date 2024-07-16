@@ -28,7 +28,15 @@ class SK_FS_Promises_JUCE {
 
     stat(path) {
         console.log('stat')
-        return this.sk.ipc.toCBE('sk_fs', { operation: 'stat', path: path })
+        return new Promise(async (resolve, reject) => {
+            try {
+                var info = await this.sk.ipc.toCBE('sk_fs', { operation: 'stat', path: path })
+                info.isDirectory = () => { return info.type === 'dir' }
+                resolve(info)
+            } catch (err) {
+                reject(err)
+            }
+        })
     }
 
     writeFile(path, data) {

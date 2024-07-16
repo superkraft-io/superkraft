@@ -26,10 +26,6 @@ auto SK_VirtualBackend::createResource(const juce::String& resourceName) -> juce
     resource.data.resize(dataSize);
     std::memcpy(resource.data.data(), namedResource, dataSize);
 
-    if (resourceName == "LICENSE") {
-        auto x = 0;
-    }
-
     resource.mimeType =  lookUpMimeType(BinaryData::getNamedResourceOriginalFilename(resourceName.toUTF8()));
 
     return resource;
@@ -71,9 +67,8 @@ auto SK_VirtualBackend::lookUpResource(const juce::String& url) -> std::optional
     const auto requestedUrl{ url == "/" ? juce::String{"/superkraft/engines/japp/virtual_backend/web_frontend/sk_vb.html"} : url };
 
 
-    if (is_IPC_command(url) == true) {
-        return handle_IPC_command(url);
-    }
+    auto nativeCommandResponse = handle_native_command(url);
+    if (nativeCommandResponse != std::nullopt) return nativeCommandResponse;
 
     const bool loadFromDisk = true;
 
@@ -134,57 +129,31 @@ auto SK_VirtualBackend::loadResourceFrom_BinaryData(const juce::String& url) -> 
 
 
 
-bool SK_VirtualBackend::is_IPC_command(juce::String url) {
+
+auto SK_VirtualBackend::handle_native_command(juce::String url) -> std::optional<juce::WebBrowserComponent::Resource> {
     std::vector<juce::String> ipc_commands = {
-        "sk.ipc"
-        /*
-        "platform.primordials",
-        "os.paths",
-        "fs.constants",
-        "fs.getOpenDescriptors",
-        */
+        "sk.getMachineStaticInfo",
+        "sk.getCPUInfo",
+        "sk.getMemoryInfo",
+        "sk.getNetworInfo",
+        "sk.getMachineTime"
     };
 
-    std::string urStdStr = url.toStdString();
+    bool isNativeCommand = false;
 
     for (int i = 0; i < ipc_commands.size(); i++) {
         if (url.contains(ipc_commands[i]) == true) {
-            return true;
+            isNativeCommand = true;
+            break;
         }
     }
 
-    return false;
+    if (isNativeCommand == false) return std::nullopt;
+
+    juce::String cmd = url.substring(1, url.length());
+
+    if (cmd == "sk.getMachineStaticInfo") return sk_c_api->machine.getStaticInfo();
+    if (cmd == "sk.getCPUInfo") return sk_c_api->machine.getCPUInfo();
+    if (cmd == "sk.getMemoryInfo") return sk_c_api->machine.getMemoryInfo();
+    if (cmd == "sk.getMachineTime") return sk_c_api->machine.getMachineTime();
 }
-
-auto SK_VirtualBackend::handle_IPC_command(juce::String url) -> std::optional<juce::WebBrowserComponent::Resource> {
-    juce::String cmd = url.substring(1, url.indexOf("?"));
-
-    //if (cmd == "sk.ipc") sk_c_api.handle_ipc_cmd(cmd);
-
-    //parse url parameters
-    //...
-
-    //call appropriate IPC map
-    /*
-    if (cmd == "platform.primordials") return createJSONResponse(ssc_wrapper.ipc_maps.platformPrimordials.get());
-    if (cmd == "os.paths") return createJSONResponse(ssc_wrapper.ipc_maps.osPaths.get());
-    if (cmd == "fs.constants") return createJSONResponse(ssc_wrapper.ipc_maps.fsConstants.get());
-    if (cmd == "fs.getOpenDescriptors") return createJSONResponse(ssc_wrapper.ipc_maps.fsGetOpenDescriptors.get());
-    */
-    return std::nullopt;
-}
-
-/*auto SK_VirtualBackend::createJSONResponse(SSC::JSON::Object json) -> std::optional<juce::WebBrowserComponent::Resource> {
-    juce::WebBrowserComponent::Resource resource;
-    resource.mimeType = lookUpMimeType("foo.json");
-
-    std::string buffer = json.str().c_str();
-
-    long dataSize = buffer.size();
-
-    resource.data.resize(dataSize);
-    std::memcpy(resource.data.data(), buffer.c_str(), dataSize);
-
-    
-    return resource;
-}*/

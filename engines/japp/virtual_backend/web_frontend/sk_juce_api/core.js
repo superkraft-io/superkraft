@@ -1,4 +1,4 @@
-window.sk_c_api = {}
+window.sk_juce_api = {}
 
 
 function getDirname(asArray) {
@@ -17,3 +17,39 @@ Object.defineProperty(window, '__dirname', {
         return getDirname()
     },
 });
+
+
+sk_juce_api.fetch = path => {
+    /*
+    
+        maybe need to format path to handle certain scenarios such as:
+
+        ./targetFile.js
+        ./ targetFile       without extension
+        ../                 walk up the path - !!! IMPORTANT !!! walking up a path may not exceed the root of the "assets" folder
+        \                   non-unix path delimiters
+    
+    */
+    const request = new XMLHttpRequest()
+    request.open('GET', path, false)
+    try { request.send() } catch (err) {
+        console.error(err)
+        throw 'Could not fetch module at ' + path
+    }
+
+    var response = undefined
+
+    try { response = request.responseText } catch { response = request.response }
+
+    if (request.getAllResponseHeaders().indexOf('application/json') > -1) response = JSON.parse(response)
+
+    return response
+}
+
+window.sk_juce_api.nativeModules = {
+    os: __dirname + '/wrappers/os.js',
+    fs: __dirname + '/wrappers/fs.js',
+}
+
+
+sk_juce_api.machineInfo = sk_juce_api.fetch('sk.getMachineStaticInfo')

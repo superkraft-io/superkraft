@@ -5,7 +5,12 @@ module.exports = module.exports = class SK_IPC {
 
         window.__JUCE__.backend.addEventListener('sk.ipc.callback', _res => {
             var res = JSON.parse(_res)
-            this.handleCallback(res.msgIdx, res.data)
+
+            this.handleCallback(res.msgIdx, (res.error ?
+                {error: res.error, code: res.error}
+                :
+                res.data
+            ))
         })
     }
 
@@ -39,6 +44,7 @@ module.exports = module.exports = class SK_IPC {
     sendTo_C_backend(cmd, data) {
         return new Promise((resolve, reject) => {
             this.send('sk_c_be', cmd, data, res => {
+                if (res.error) return reject(res)
                 resolve(res)
             })
         })
@@ -50,12 +56,13 @@ module.exports = module.exports = class SK_IPC {
     sendToView(viewID, cmd, data) {
         return new Promise((resolve, reject) => {
             this.send('sk_view', cmd, data, res => {
+                if (res.error) return reject(res)
                 resolve(res)
             }, { viewID: viewID })
         })
     }
 
-    toView(viewID, cmd, data) { return this.sendTo_C_backend(viewID, cmd, data) }
+    toView(viewID, cmd, data) { return this.sendToView(viewID, cmd, data) }
 
     addCallback(msgIdx, cb) {
         this.callbacks[msgIdx] = {

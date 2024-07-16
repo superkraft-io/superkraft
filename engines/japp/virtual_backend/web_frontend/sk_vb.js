@@ -25,7 +25,7 @@ var start_app = async () => {
 
     global.sai = {}
 
-
+    await sleep(5000)
 
     var opt = {
         sk_id: 'juce_sk',
@@ -61,7 +61,7 @@ var start_app = async () => {
     var sk = new __superkraft(opt)
 
 
-    //sk_c_api.sk_ipc.send('sk_c_be', 'sk.ipc', {test: 'data', num: 12345})
+    //sk_juce_api.sk_ipc.send('sk_juce_be', 'sk.ipc', {test: 'data', num: 12345})
 }
 
 start_app()
