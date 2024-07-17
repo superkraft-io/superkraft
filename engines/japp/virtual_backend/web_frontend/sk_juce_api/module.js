@@ -1,4 +1,4 @@
-var SK_Module_Scope = (module, __dirname, window)=>{ return (()=>{ /*...*/ })() }
+var SK_Module_Scope = (module, __dirname, window) => { return (() => { /*...*/ })() }
 
 class SK_Module {
     static cache = {}
@@ -49,6 +49,10 @@ class SK_Module {
 
 
     static require(path) {
+        var _this = arguments
+        var str = sk_juce_api.path.reformatPath(path)
+
+
         var module = new SK_Module()
 
         var nativeModulePath = module.getNativeModulePath(path)

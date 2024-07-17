@@ -10,6 +10,8 @@
 
 void SK_VirtualBackend::propagateThisPointer(SK_VirtualBackend* thisPtr) {
     //sk_c_api.propagate_vbe_pointer(thisPtr);
+
+
 }
 
 auto SK_VirtualBackend::pageAboutToLoad(const juce::String& newUrl) -> bool

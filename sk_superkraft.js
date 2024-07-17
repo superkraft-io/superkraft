@@ -123,7 +123,7 @@ module.exports = class Superkraft {
         if (opt.useComplexity) sk.complexity = new (require(__dirname + '/complexity/backend/sk_complexity.js'))
 
         global.SK_RootEngine = require(__dirname + '/sk_rootEngine.js')
-        sk.engine = new (require(__dirname + '/engines/' + opt.type + '/engine.js'))({ sk: sk })
+        sk.engine = new (require(__dirname + '/engines/' + opt.type + '/engine.js'))({ sk: this })
         await sk.engine.loadPosts()
         
         try { await sk.engine.init() } catch(err) {

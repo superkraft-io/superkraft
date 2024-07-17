@@ -22,12 +22,10 @@ class SK_FS_Promises_JUCE {
     }
 
     async access(path) {
-        console.log('access')
         return this.sk.ipc.toCBE('sk_fs', {operation: 'access', path: path })
     }
 
     stat(path) {
-        console.log('stat')
         return new Promise(async (resolve, reject) => {
             try {
                 var info = await this.sk.ipc.toCBE('sk_fs', { operation: 'stat', path: path })
@@ -50,7 +48,6 @@ class SK_FS_Promises_JUCE {
     }
 
     readdir(path, asObj) {
-        console.log('readdir')
         return new Promise(async (resolve, reject) => {
             try {
                 var res = await this.sk.ipc.toCBE('sk_fs', { operation: 'readdir', path: path })

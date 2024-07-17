@@ -3,32 +3,32 @@ module.exports = class sk_RootEngine {
         this.sk = opt.sk
         this.paths = {
             frontend: {
-                sk: this.sk.paths.sk_frontend,
+                sk: this.sk.info.paths.sk_frontend,
                 ui: {
-                    core   : this.sk.ui.paths.frontend.core,
-                    shared : this.sk.ui.paths.frontend.shared,
-                    view   : this.sk.ui.paths.frontend.view,
-                    global : this.sk.ui.paths.frontend.global
+                    core: this.sk.info.ui.paths.frontend.core,
+                    shared: this.sk.info.ui.paths.frontend.shared,
+                    view: this.sk.info.ui.paths.frontend.view,
+                    global: this.sk.info.ui.paths.frontend.global
                 },
-                app: this.sk.paths.app_frontend,
+                app: this.sk.info.paths.app_frontend,
             }
         }
     }
 
     async loadPosts(){
-        var postsFolder = this.sk.skModule.opt.postsRoot
+        var postsFolder = this.sk.info.skModule.opt.postsRoot
         try { await sk_fs.promises.access(postsFolder) } catch(err) { return console.warn('No posts found') }
         
         this.posts = {}
 
-        var posts = await sk_fs.promises.readdirSync(postsFolder)
+        var posts = await sk_fs.promises.readdir(postsFolder)
         for (var i = 0; i < posts.length; i++) {
             var _filename = posts[i]
             var split = _filename.split('.')
             var ext = split[split.length - 1]
             if (ext !== 'js') return
             
-            if ((await sk_fs.promises.lstatSync(postsFolder + _filename)).isDirectory() === true) return
+            if ((await sk_fs.promises.stat(postsFolder + _filename)).isDirectory() === true) return
 
             var postName = _filename.split('.')[0]
             try {
@@ -79,7 +79,7 @@ module.exports = class sk_RootEngine {
             var priorities = {}
 
             console.log('Loading views...')
-            var viewsToLoad = await sk_fs.promises.readdir(this.sk.paths.views)
+            var viewsToLoad = await sk_fs.promises.readdir(this.sk.info.paths.views)
            
             var viewInfoArray = []
             for (var i = 0; i < viewsToLoad.length; i++){
@@ -89,11 +89,11 @@ module.exports = class sk_RootEngine {
 
                 viewInfoArray.push({
                     name: viewName,
-                    path: this.sk.paths.views + viewName + '/'
+                    path: this.sk.info.paths.views + viewName + '/'
                 })
             }
 
-            /*if (this.sk.type === 'dapp'){
+            /*if (this.sk.info.type === 'dapp'){
                 var sk_dapp_cursor_path = __dirname + '/engines/dapp/modules/sk_dapp_cursor/'
                 if (sk_fs.existsSync(sk_dapp_cursor_path)) viewInfoArray.push({name: 'sk_dapp_cursor', path: sk_dapp_cursor_path})
             }*/

@@ -18,14 +18,13 @@ function sleep(delay = 1000) {
 var start_app = async () => {
     await import('/superkraft/engines/japp/virtual_backend/web_frontend/sk_juce_api/core.js')
     await import('/superkraft/engines/japp/virtual_backend/web_frontend/sk_juce_api/module.js')
+    await import('/superkraft/engines/japp/virtual_backend/web_frontend/sk_juce_api/wrappers/path.js')
 
     //var ssc = import('/virtual_backend/api/module.js')
 
     window.global = window
 
     global.sai = {}
-
-    await sleep(5000)
 
     var opt = {
         sk_id: 'juce_sk',
@@ -37,6 +36,8 @@ var start_app = async () => {
         templates: '/sk_templates/',
         globalActions: '/sk_globalActions/',
         globalFrontend: '/sk_globalFrontend/',
+
+        nativeActions: __dirname + '/sk_nativeActions/',
 
 
         database: {},

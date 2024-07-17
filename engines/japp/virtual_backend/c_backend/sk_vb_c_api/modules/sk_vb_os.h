@@ -7,12 +7,28 @@
 #if defined(_WIN32) || defined(_WIN64)
     #include <windows.h>
     #include <VersionHelpers.h>
+    #include <comdef.h>
+    #include <Wbemidl.h>
+
+    #pragma comment(lib, "wbemuuid.lib")
+
+    struct CPUInfo {
+        std::string model;
+        int speed; // in MHz
+        long long user;
+        long long nice;
+        long long sys;
+        long long idle;
+        long long irq;
+    };
 #else
     #include <sys/utsname.h>
     #include <unistd.h>
 #endif
 
 #include <iostream>
+#include <vector>
+#include <string>
 #include <iomanip>
 
 
@@ -262,6 +278,152 @@ public:
         #endif
     }
 
+
+    static std::vector<CPUInfo>  SK_Machine::getCPUInformation() {
+        #if defined(_WIN32)
+            //THIS FUNCTION DOES NOT WORK IN WINDOWS BECAUSE APPARENTLY IT MNUST BE CALLED IN THE PROGRAIM main() FUNCTION
+            //IN OTHER WORDS IT MUST BE CALLED AS SOON AS THE PROGRAM STARTS AND THUS THIS FUNCTION CANNOT BE CALLED
+            //AT A LATER STAGE OF RUNTIME
+
+            std::vector<CPUInfo> cpus;
+
+            HRESULT hres;
+            hres = CoInitializeEx(NULL, COINIT_MULTITHREADED);
+            if (FAILED(hres)) {
+                std::cerr << "Failed to initialize COM library. Error code = 0x" << std::hex << hres << std::endl;
+            }
+
+            hres = CoInitializeSecurity(
+                NULL,
+                -1,                          // COM authentication
+                NULL,                        // Authentication services
+                NULL,                        // Reserved
+                RPC_C_AUTHN_LEVEL_DEFAULT,   // Default authentication 
+                RPC_C_IMP_LEVEL_IMPERSONATE, // Default Impersonation  
+                NULL,                        // Authentication info
+                EOAC_NONE,                   // Additional capabilities 
+                NULL                         // Reserved
+            );
+
+            if (FAILED(hres)) {
+                std::cerr << "Failed to initialize security. Error code = 0x" << std::hex << hres << std::endl;
+                CoUninitialize();
+                return cpus;
+            }
+
+            IWbemLocator* pLoc = NULL;
+            hres = CoCreateInstance(
+                CLSID_WbemLocator,
+                0,
+                CLSCTX_INPROC_SERVER,
+                IID_IWbemLocator, (LPVOID*)&pLoc);
+
+            if (FAILED(hres)) {
+                std::cerr << "Failed to create IWbemLocator object. Error code = 0x" << std::hex << hres << std::endl;
+                CoUninitialize();
+                return cpus;
+            }
+
+            IWbemServices* pSvc = NULL;
+            hres = pLoc->ConnectServer(
+                _bstr_t(L"ROOT\\CIMV2"),
+                NULL,
+                NULL,
+                0,
+                NULL,
+                0,
+                0,
+                &pSvc);
+
+            if (FAILED(hres)) {
+                std::cerr << "Could not connect. Error code = 0x" << std::hex << hres << std::endl;
+                pLoc->Release();
+                CoUninitialize();
+                return cpus;
+            }
+
+            hres = CoSetProxyBlanket(
+                pSvc,
+                RPC_C_AUTHN_WINNT,
+                RPC_C_AUTHZ_NONE,
+                NULL,
+                RPC_C_AUTHN_LEVEL_CALL,
+                RPC_C_IMP_LEVEL_IMPERSONATE,
+                NULL,
+                EOAC_NONE
+            );
+
+            if (FAILED(hres)) {
+                std::cerr << "Could not set proxy blanket. Error code = 0x" << std::hex << hres << std::endl;
+                pSvc->Release();
+                pLoc->Release();
+                CoUninitialize();
+                return cpus;
+            }
+
+            IEnumWbemClassObject* pEnumerator = NULL;
+            hres = pSvc->ExecQuery(
+                bstr_t("WQL"),
+                bstr_t("SELECT * FROM Win32_Processor"),
+                WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
+                NULL,
+                &pEnumerator);
+
+            if (FAILED(hres)) {
+                std::cerr << "Query for CPU info failed. Error code = 0x" << std::hex << hres << std::endl;
+                pSvc->Release();
+                pLoc->Release();
+                CoUninitialize();
+                return cpus;
+            }
+
+            IWbemClassObject* pclsObj = NULL;
+            ULONG uReturn = 0;
+
+            while (pEnumerator) {
+                HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1, &pclsObj, &uReturn);
+                if (0 == uReturn) {
+                    break;
+                }
+
+                VARIANT vtProp;
+
+                CPUInfo cpu;
+                hr = pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
+                if (SUCCEEDED(hr)) {
+                    cpu.model = _bstr_t(vtProp.bstrVal);
+                    VariantClear(&vtProp);
+                }
+
+                hr = pclsObj->Get(L"MaxClockSpeed", 0, &vtProp, 0, 0);
+                if (SUCCEEDED(hr)) {
+                    cpu.speed = vtProp.intVal;
+                    VariantClear(&vtProp);
+                }
+
+                // Simulated values for times as they are not readily available via WMI
+                cpu.user = 0;
+                cpu.nice = 0;
+                cpu.sys = 0;
+                cpu.idle = 0;
+                cpu.irq = 0;
+
+                cpus.push_back(cpu);
+                pclsObj->Release();
+            }
+
+            pSvc->Release();
+            pLoc->Release();
+            pEnumerator->Release();
+            CoUninitialize();
+
+            return cpus;
+        #elif defined(__APPLE__ || __linux__)
+            //code...
+        #endif
+    }
+
+
     std::string getHostname() {
         #if defined(_WIN32)
             TCHAR buffer[MAX_COMPUTERNAME_LENGTH + 1];
@@ -322,25 +484,34 @@ public:
     }
 
     juce::WebBrowserComponent::Resource SK_Machine::getCPUInfo() {
+
+
         SSC::JSON::Object cpu = SSC::JSON::Object::Entries{
             {"coreCount", SystemStats::getNumCpus()}, //used by availableParallelism
-            {}
         };
 
 
+        //std::vector<CPUInfo> cpus = getCPUInformation();
 
-        /*cpu.data.insert({
-            {"model", ""}, //e.g "12th Gen Intel(R) Core(TM) i9-12900K"
-            {"speed", 0}, //in MHz
-            {"times", SSC::JSON::Object::Entries{
-                {"user", 0},
-                {"nice", 0},
-                {"sys" , 0},
-                {"idle", 0},
-                {"irq" , 0}
+        SSC::JSON::Array cores = SSC::JSON::Array{};
 
-            }}
-        });*/
+        for (int i = 0; i < SystemStats::getNumCpus(); i++) {
+            cores.push(SSC::JSON::Object::Entries{
+                {"model", SystemStats::getCpuModel().toStdString()},
+                {"speed", SystemStats::getCpuSpeedInMegahertz()},
+                {"times", SSC::JSON::Object::Entries{
+                    {"user", 0},
+                    {"nice", 0},
+                    {"sys", 0},
+                    {"idle", 0},
+                    {"irq", 0},
+                }}
+            });
+        }
+
+        cpu.set("cores", cores);
+
+
 
         return JSON2Resource(cpu);
     }

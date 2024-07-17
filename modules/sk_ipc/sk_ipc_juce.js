@@ -2,15 +2,26 @@ module.exports = module.exports = class SK_IPC {
     constructor() {
         this.msgIdx = 0
         this.callbacks = {}
+        this.events = {}
 
         window.__JUCE__.backend.addEventListener('sk.ipc.callback', _res => {
             var res = JSON.parse(_res)
 
             this.handleCallback(res.msgIdx, (res.error ?
-                {error: res.error, code: res.error}
+                { error: res.error, code: res.error }
                 :
                 res.data
             ))
+        })
+
+        window.__JUCE__.backend.addEventListener('sk.ipc.event', _res => {
+            var res = JSON.parse(_res)
+
+            var event = this.events[res.eventID]
+
+            if (!event) return
+
+            event(res.data)
         })
     }
 
@@ -78,5 +89,9 @@ module.exports = module.exports = class SK_IPC {
             entry.cb(data)
             delete this.callbacks[msgIdx]
         }
+    }
+
+    on(cmd, cb) {
+        this.events[cmd] = cb
     }
 }

@@ -28,7 +28,40 @@ class WebSockets_Callback{
         if (this.options.asClient) this.setupAsClient()
         else this.setupAsServer()
 
-        if (this.options.asSSC){
+        if (this.options.asJUCE) {
+            if (!this.options.asClient) {
+
+                this.sendData = msg => {
+                    var wc = wcs[i]
+                    var idx = wc.index
+                    options.sk.ipc.toCBE('sk.ipc.wnd', msg).then(() => { })
+                }
+
+                options.sk.ipc.on('sk.ipc.wnd', _msg => {
+                    this.handleMessage(this, _msg.detail, {
+                        send: msg => {
+                            options.sk.ipc.toCBE('sk.ipc.wnd', msg).then(() => { })
+                        }
+                    })
+                })
+
+
+
+                return
+            }
+
+            this.sendData = msg => {
+                options.sk.ipc.toCBE('sk.ipc.vbe', msg).then(() => { })
+            }
+
+            options.sk.ipc.on('sk.ipc.vbe', _msg => {
+                this.handleMessage(this, _msg.detail, {
+                    send: msg => {
+                        options.sk.ipc.toCBE('sk.ipc.vbe', msg).then(() => { })
+                    }
+                })
+            })
+        } else if (this.options.asSSC){
             if (!this.options.asClient){
                 
                 this.sendData = msg => {
@@ -121,7 +154,7 @@ class WebSockets_Callback{
 
         var t = this;
 
-        if (this.options.asElectron || this.options.asSSC) return
+        if (this.options.asElectron || this.options.asSSC || this.options.asJUCE) return
 
         this.ws = new WebSocket.Server({ port: this.options.port });
         
@@ -159,7 +192,7 @@ class WebSockets_Callback{
 
         var t = this;
 
-        if (this.options.asElectron || this.options.asSSC) return
+        if (this.options.asElectron || this.options.asSSC || this.options.asJUCE) return
 
         this.log('Connecting to server ' + this.options.address + ' @ ' + this.options.port + '...')
         this.ws = new WebSocket('ws://' + this.options.address + ':' + this.options.port);
@@ -232,11 +265,11 @@ class WebSockets_Callback{
         }
 
         if (conn != undefined){
-            if (this.options.asElectron || this.options.asSSC) conn.send(message)
+            if (this.options.asElectron || this.options.asSSC || this.options.asJUCE) conn.send(message)
             else conn.send(JSON.stringify(message));
         } else {
             if (this.ws_types.expector == '#s'){
-                if (this.options.asElectron || this.options.asSSC){
+                if (this.options.asElectron || this.options.asSSC || this.options.asJUCE){
                     this.sendData(message)
                 } else{
                     for (var i = 0; i < Object.keys(this.clients).length; i++){
@@ -245,7 +278,7 @@ class WebSockets_Callback{
                     }
                 }
             } else {
-                if (this.options.asElectron || this.options.asSSC) this.sendData(message)
+                if (this.options.asElectron || this.options.asSSC || this.options.asJUCE) this.sendData(message)
                 else this.ws.send(JSON.stringify(message));
             }
         }
@@ -253,7 +286,7 @@ class WebSockets_Callback{
 
     simple(msg, onResponse = undefined, t = undefined){
         var conn = conn
-        if (conn != undefined || this.options.asElectron || this.options.asSSC){
+        if (conn != undefined || this.options.asElectron || this.options.asSSC || this.options.asJUCE){
             conn.send({cmd: msg});
         } else {
             if (this.ws_types.expector == '#s'){

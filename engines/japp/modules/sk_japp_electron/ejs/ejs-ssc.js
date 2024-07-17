@@ -1,4 +1,4 @@
-const path = require('socket:path')
+const path = require('sk:path')
 
 module.exports = class EJS_SSC {
     constructor(){

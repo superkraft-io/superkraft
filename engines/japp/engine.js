@@ -1,4 +1,4 @@
-var app = new (require(__dirname + '/modules/sk_japp_electron/sk_sapp_electron_app.js'))()
+var app = new (require(__dirname + '/modules/sk_japp_electron/sk_japp_electron_app.js'))()
 var _os = require('sk:os')
 
 module.exports = class SK_LocalEngine extends SK_RootEngine {
@@ -14,7 +14,8 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
 
 
         var arch = 'x64'
-       if (_os.cpus()[0].model.includes('Apple')) arch = 'arm'
+        var cpus = _os.cpus()
+        if (cpus[0].model.includes('Apple')) arch = 'arm'
 
         this.sk.sysInfo = {
             os: os,
@@ -30,24 +31,18 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
             this.app = app
 
 
-            window.ssc_app = await import('socket:application')
-            this.sk.ssc = {
-                currentWindow: await ssc_app.getCurrentWindow()
-            }
-            window.ssc_currentWindow = this.sk.ssc.currentWindow
-
             await app.__init__()
 
 
-            this.extensionLoader = new (require(__dirname + '/modules/sk_sapp_extensionLoader'))()
-            this.extensionLoader.sk = this.sk
+            //this.nativeActionsLoader = new (require(__dirname + '/modules/sk_japp_nativeActions_Loader'))()
+            //this.nativeActionsLoader.sk = this.sk
 
             
             
             //var wscb = new (require(__dirname + '/modules/sk_sapp_wscb_wrapper'))({
             var wscb = new (require(__dirname + '/frontend/websockets-callback/lib/wscb.js'))({
                 sk: this.sk,
-                asSSC: true,
+                asJUCE: true,
                 onUnexpectedMessage: msg => {
                     if (msg.cmd === 'terminate') app.quit()
                 }
@@ -170,15 +165,15 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
 
 
     async initPosts(){
-        if (!this.sk.skModule.opt.postsRoot) return
+        if (!this.sk.opt.postsRoot) return
 
         try {
-            await sk_fs.promises.access(this.sk.skModule.opt.postsRoot)
+            await sk_fs.promises.access(this.sk.opt.postsRoot)
         } catch(err) {
             return console.error(`[ ERROR: SAPP ENGINE ] initPosts(): posts folder path has been defined but post folder does not exist`)
         }
 
-        var postsFolder = this.sk.skModule.opt.postsRoot
+        var postsFolder = this.sk.opt.postsRoot
             
         this.posts = {}
 
