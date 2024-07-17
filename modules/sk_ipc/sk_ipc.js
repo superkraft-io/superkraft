@@ -1,7 +1,7 @@
 module.exports = class SK_IPC {
     constructor(opt){
         this.sk = opt.sk
-        if (this.sk.info.type === 'japp') this.ipc = new (require(__dirname + '/sk_ipc_juce.js'))
+        if (this.sk.info.type === 'japp') this.ipc = new (require('./sk_ipc_juce.js'))
     }
 
     on(eventID, cb){

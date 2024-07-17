@@ -1,4 +1,4 @@
-var SK_Module_Scope = (module, __dirname, window) => { return (() => { /*...*/ })() }
+var SK_Module_Scope = (module, require, __dirname, window) => { return (() => { /*...*/ })() }
 
 class SK_Module {
     static cache = {}
@@ -16,7 +16,7 @@ class SK_Module {
         }
         func = func()
 
-        func.call(null, this, path, window)
+        func.call(null, this, this.__sk_module_require, path, window)
     }
 
     loadFromURL(path) {
@@ -30,7 +30,7 @@ class SK_Module {
         SK_Module.cache[path] = this.exports
     }
 
-    getNativeModulePath(path) {
+    static getNativeModulePath(path) {
         var split = path.split(':')
 
         if (split[0].toLowerCase() !== 'sk') return
@@ -47,22 +47,65 @@ class SK_Module {
 
     /***********************/
 
+    static getAbsolutePath(_path, parentModule) {
+        var path = sk_juce_api.path.unixify(_path)
 
-    static require(path) {
-        var _this = arguments
-        var str = sk_juce_api.path.reformatPath(path)
+        if (path.substr(0, 2) == './') {
+            if (parentModule) {
+                path = sk_juce_api.path.dirname(parentModule.__sk_module_source_path) + path.substr(1, path.length)
+            } else {
+                //I'm not entirely sure how to format the path if there is no parent module.
+                //What root path do we use? the assets folder? The SK root folder?
+                //I'll have to think about this one.
+                //Also, important to know, if there is no parent module, it most likely means that the require()
+                //function was called from sk_vb.js, which is a reserved root file.
+
+                return _path
+            }
+        }
+
+        if (path.substr(0, 3) != '../') return path
+
+
+        var split = (sk_juce_api.path.dirname(parentModule.__sk_module_source_path) + '/' + path).split('/')
+
+
+        var arr = []
+        for (var i = 0; i < split.length; i++) {
+            var part = split[i]
+
+            if (part == '..') {
+                arr.splice(arr.length - 1, 1)
+            } else {
+                arr.push(part)
+            }
+        }
+
+        var newPath = arr.join('/')
+
+        return newPath
+    }
+
+
+    static require(path, parentModule) {
+        
 
 
         var module = new SK_Module()
+        module.__sk_module_parent = parentModule
+        module.__sk_module_require = path => {
+            var _this = arguments
+            var str = sk_juce_api.path.dirname(path, module)
+            return require(path, module)
+        }
 
-        var nativeModulePath = module.getNativeModulePath(path)
 
-        var modulePath = nativeModulePath || path
+        module.__sk_module_source_path = SK_Module.getNativeModulePath(path) || SK_Module.getAbsolutePath(path, parentModule)
 
-        if (SK_Module.cache[modulePath]) return this.cache[modulePath]
+        if (SK_Module.cache[module.__sk_module_source_path]) return this.cache[module.__sk_module_source_path]
 
         
-        module.loadFromURL(modulePath)
+        module.loadFromURL(module.__sk_module_source_path)
 
         return module.exports
     }

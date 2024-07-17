@@ -65,7 +65,7 @@ module.exports = class Superkraft {
 
         global.window._sk_app_type = opt.type
 
-        this.ipc = new (require(__dirname + '/modules/sk_ipc/sk_ipc.js'))({ sk: this })
+        this.ipc = new (require('./modules/sk_ipc/sk_ipc.js'))({ sk: this })
 
 
         global.sk_fs = new (require(__dirname + '/modules/sk_fs/sk_fs.js'))({ sk: this, app_type: opt.type })
