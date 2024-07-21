@@ -47,10 +47,17 @@ sk_juce_api.fetch = path => {
 }
 
 window.sk_juce_api.nativeModules = {
-    os: __dirname + '/wrappers/os.js',
-    fs: __dirname + '/wrappers/fs.js',
-    path: __dirname + '/wrappers/path.js',
+    node: { os:'', fs:'', path:'' },
+    sk: { application:'' }
+}
+
+for (var catName in window.sk_juce_api.nativeModules) {
+    var category = window.sk_juce_api.nativeModules[catName]
+    for (var modName in category) {
+        window.sk_juce_api.nativeModules[catName][modName] =__dirname + '/' + catName + '/' + modName + '.js'
+    }
 }
 
 
 sk_juce_api.machineInfo = sk_juce_api.fetch('sk.getMachineStaticInfo')
+//sk_juce_api.appInfo = sk_juce_api.fetch('sk.getAppStaticInfo')

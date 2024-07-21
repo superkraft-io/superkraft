@@ -1,4 +1,4 @@
-module.exports = class SK_SAPP_WSCB_Wrapper {
+module.exports = class SK_JAPP_WSCB_Wrapper {
     constructor(opt){
         this.sk = opt.sk
     }

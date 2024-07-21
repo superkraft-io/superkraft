@@ -33,13 +33,24 @@ class SK_Module {
     static getNativeModulePath(path) {
         var split = path.split(':')
 
-        if (split[0].toLowerCase() !== 'sk') return
+        var nativeTarget = split[0].toLowerCase()
+        var nativeModulesCategory = sk_juce_api.nativeModules[nativeTarget]
+
+        if (!nativeModulesCategory) {
+            for (var catName in sk_juce_api.nativeModules) {
+                var category = sk_juce_api.nativeModules[catName]
+                var modPath = category[path]
+                if (modPath) return modPath
+            }
+            return
+        }
 
         var moduleName = split[1].toLowerCase()
 
         if (!moduleName || moduleName.trim().length == 0) return
 
-        var modulePath = sk_juce_api.nativeModules[moduleName]
+        var modulePath = nativeModulesCategory[moduleName]
+
 
         return modulePath
     }
@@ -47,7 +58,7 @@ class SK_Module {
 
     /***********************/
 
-    static getAbsolutePath(_path, parentModule) {
+    static normalizePath(_path, parentModule) {
         var path = sk_juce_api.path.unixify(_path)
 
         if (path.substr(0, 2) == './') {
@@ -59,6 +70,7 @@ class SK_Module {
                 //I'll have to think about this one.
                 //Also, important to know, if there is no parent module, it most likely means that the require()
                 //function was called from sk_vb.js, which is a reserved root file.
+                //For now, lets just return the fed path as-is.
 
                 return _path
             }
@@ -100,10 +112,13 @@ class SK_Module {
         }
 
 
-        module.__sk_module_source_path = SK_Module.getNativeModulePath(path) || SK_Module.getAbsolutePath(path, parentModule)
+        module.__sk_module_source_path = SK_Module.getNativeModulePath(path) || SK_Module.normalizePath(path, parentModule || { __sk_module_source_path: ''})
 
-        if (SK_Module.cache[module.__sk_module_source_path]) return this.cache[module.__sk_module_source_path]
-
+        try {
+            if (SK_Module.cache[module.__sk_module_source_path]) return SK_Module.cache[module.__sk_module_source_path]
+        } catch (err) {
+            var x = 0
+        }
         
         module.loadFromURL(module.__sk_module_source_path)
 

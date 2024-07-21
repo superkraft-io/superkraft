@@ -7,6 +7,7 @@ if (global){
 module.exports = class Superkraft {
     constructor(opt){
         this.opt = opt
+
         this.init(opt)
     }
 
@@ -14,6 +15,9 @@ module.exports = class Superkraft {
         
 
         var sk_id = opt.sk_id || 'sk'
+
+        if (window) window[sk_id] = this
+
         this.info = {
             skModule: this,
             type: opt.type,
@@ -65,8 +69,9 @@ module.exports = class Superkraft {
 
         global.window._sk_app_type = opt.type
 
-        this.ipc = new (require('./modules/sk_ipc/sk_ipc.js'))({ sk: this })
-
+        this.ipc = new (require('./modules/sk_ipc/sk_ipc.js'))({ sk: this, source: 'sk_be' })
+        global.sk_ipc = this.ipc
+        window.sk_ipc = this.ipc
 
         global.sk_fs = new (require(__dirname + '/modules/sk_fs/sk_fs.js'))({ sk: this, app_type: opt.type })
 
@@ -82,7 +87,6 @@ module.exports = class Superkraft {
 
         /****************/
         
-        global[sk_id] = this.info
         var sk = this.info
 
         this.info.utils = new (require(__dirname + '/modules/sk_utils.js'))({sk: sk})

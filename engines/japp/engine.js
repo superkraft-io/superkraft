@@ -1,7 +1,7 @@
-var app = new (require(__dirname + '/modules/sk_japp_electron/sk_japp_electron_app.js'))()
-var _os = require('sk:os')
+var app = new (require('./modules/sk_japp_electron/sk_japp_electron_app.js'))()
+var _os = require('os')
 
-module.exports = class SK_LocalEngine extends SK_RootEngine {
+module.exports = class SK_JUCE_Engine extends SK_RootEngine {
     constructor(opt){
         super(opt)
         this.getSysInfo()
@@ -17,7 +17,7 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
         var cpus = _os.cpus()
         if (cpus[0].model.includes('Apple')) arch = 'arm'
 
-        this.sk.sysInfo = {
+        this.sk.info.sysInfo = {
             os: os,
             arch: arch
         }
@@ -26,16 +26,16 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
 
     init(){
         return new Promise(async resolve => {
-            this.sk._os = _os
-            this.sk.app = app
+            this.sk.info._os = _os
+            this.sk.info.app = app
             this.app = app
 
 
             await app.__init__()
 
 
-            //this.nativeActionsLoader = new (require(__dirname + '/modules/sk_japp_nativeActions_Loader'))()
-            //this.nativeActionsLoader.sk = this.sk
+            this.nativeActionsLoader = new (require('./modules/sk_japp_nativeActionsLoader.js'))()
+            this.nativeActionsLoader.sk = this.sk
 
             
             

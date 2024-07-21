@@ -6,54 +6,22 @@
         }
 
         async init(){
-            await this.configRequire()
-            await this.configDirname()
-            await this.configExtensions()
+            await this.config_SK_JUCE_View_Core()
+            await this.configNativeActions()
             await this.configApp()
             await this.configWSCB()
         }
 
-        async configRequire(){
-            var module = await import('socket:module')
+        async config_SK_JUCE_View_Core(){
+            await import('/superkraft/engines/japp/virtual_backend/web_frontend/sk_juce_api/core.js')
+            await import('/superkraft/engines/japp/virtual_backend/web_frontend/sk_juce_api/module.js')
+            await import('/superkraft/engines/japp/virtual_backend/web_frontend/sk_juce_api/node/path.js')
 
-            var createRequire = module.createRequire
-            window.__require = createRequire(import.meta.url)
-
-            window.require = path => {
-                try {
-                    var res = __require(path)
-                } catch(err) {
-                    try {
-                        var res = __require('socket:' + path)
-                    } catch(err) {
-                        console.error('COULD NOT LOAD MODULE ' + path)
-                        
-                        var res = __require('/libs/modules/placeholder_class.js')
-                    }
-                }
-
-                return res
-            }
-
-        }
-
-        configDirname(){
-            Object.defineProperty(window, '__dirname', {
-                enumerable: true,
-                configurable: true,
-                get: function() {
-                return require('socket:path').dirname(import.meta.url)//.split('\\').join('/').replace('socket://com.dapp.socket', '')
-                }
-            })
+            window.sk.ipc = new (require('/superkraft/modules/sk_ipc/sk_ipc.js'))({ sk: window.sk, source: sk.id })
         }
 
         async configApp(){
-            window.ssc_app = await import('socket:application')
-            sk.ssc = {
-                currentWindow: await ssc_app.getCurrentWindow()
-            }
-
-            window.ssc_currentWindow = sk.ssc.currentWindow
+            window.application = require('application')
         }
 
         async configWSCB(){
@@ -61,15 +29,13 @@
                 if (window.WebSockets_Callback) return true
             })
 
-            window.wscb = new WebSockets_Callback({asSSC: true, asClient: true})
+            window.wscb = new WebSockets_Callback({sk: sk, asJUCE: true, asClient: true})
         }
 
-        async configExtensions(){
-            window.extensions = await import('socket:extension')
-
-            sk.extensions = {}
-            <% for (var i = 0; i < sk.extensions.length; i++) { %>
-                sk.extensions.<%- sk.extensions[i] %> = await window.extensions.load('<%- sk.extensions[i] %>')
+        async configNativeActions(){
+            sk.nativeActions = {}
+            <% for (var i = 0; i < sk.nativeActions.length; i++) { %>
+                sk.nativeActions.<%- sk.nativeActions[i] %> = await window.nativeActions.load('<%- sk.extensions[i] %>')
             <% } %>
 
 
@@ -81,9 +47,9 @@
                 }
             }
 
-            for (var i in sk.extensions){
-                var extension = sk.extensions[i]
-                configExtension(extension)
+            for (var i in sk.nativeActions){
+                var nativeAction = sk.nativeActions[i]
+                configNativeAction(nativeAction)
             }
         }
     }

@@ -1,4 +1,4 @@
-var SK_SAPP_Electron_Window = require(__dirname + '/modules/sk_sapp_electron/sk_sapp_electron_window.js')
+var SK_JAPP_Electron_Window = require(__dirname + '/modules/sk_japp_electron/sk_japp_electron_window.js')
 
 
 module.exports = class SK_RootView extends SK_RootViewCore {
@@ -14,21 +14,24 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                 frontend: {
                     view: opt.root + 'frontend/',
 
-                    sk: this.sk.paths.sk_frontend,
+                    sk: this.sk.info.paths.sk_frontend,
 
-                    ui: this.sk.ui.routes.core,
-                    ui_shared: this.sk.ui.routes.shared,
-                    ui_global: this.sk.ui.routes.global,
+                    ui: this.sk.info.ui.routes.core,
+                    ui_shared: this.sk.info.ui.routes.shared,
+                    ui_global: this.sk.info.ui.routes.global,
 
-                    app_root: this.sk.paths.root,
-                    app: this.sk.paths.app_frontend,
-                    global: this.sk.paths.globalFrontend,
+                    app_root: this.sk.info.paths.root,
+                    app: this.sk.info.paths.app_frontend,
+                    global: this.sk.info.paths.globalFrontend,
                     engine: __dirname,
                 },
 
-                icon: this.info.icon || this.sk.paths.icons.view,
+                icon: '',
             }
 
+            if (this.info.icon) this.routes.icon = this.info.icon
+            if (!this.routes.icon && this.sk.info.paths.icons) this.routes.icon = this.sk.info.paths.icons.view
+                
             function fixPaths(list){
                 for (var i in list){
                     if (list[i] instanceof Object) list[i] = fixPaths(list[i])
@@ -41,17 +44,18 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             this.routes = fixPaths(this.routes)
 
             
-            if (this.sk.complexity) this.routes.frontend.complexity = this.sk.paths.complexity.frontend
+            if (this.sk.info.complexity) this.routes.frontend.complexity = this.sk.info.paths.complexity.frontend
 
             
 
             this.viewInfo = await this._init(opt)
-            this.viewInfo.sk.extensions = await this.sk.engine.extensionLoader.listExtensions()
+            this.viewInfo.sk.nativeActions = await this.sk.info.engine.nativeActionsLoader.listNativeActions()
 
             this.index = 5 + this.sk.viewList.indexOf(opt.id)
             var defOpts = {
+                id: this.viewInfo.id,
                 index: this.index,
-                path: this.routes.frontend.view + 'view.html',
+                path: 'sk_vfs' + this.routes.frontend.view + 'view.html',
 
 
                 icon: __dirname + '/app/assets/img/icon.png',
@@ -80,7 +84,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
     }
 
     async create(){
-        this._view = new SK_SAPP_Electron_Window(this)
+        this._view = new SK_JAPP_Electron_Window(this)
         
 
         this._view.on('ready-to-show', ()=>{
@@ -113,19 +117,19 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         var data = {
             ...{
                 l10n: {
-                    countries: this.sk.l10n.listCountries(),
-                    phrases: this.sk.l10n.getForCountry(this.sk.country)
+                    countries: this.sk.info.l10n.listCountries(),
+                    phrases: this.sk.info.l10n.getForCountry(this.sk.country)
                 }
             },
 
             ...this.viewInfo,
             ...{
                 userData: {},
-                globalData: this.sk.globalData
+                globalData: this.sk.info.globalData
             }
         }
 
-        this._view.loadURL(data, this.sk.paths.superkraft + 'template.ejs', this.defOpts)
+        this._view.loadURL(data, this.sk.info.paths.superkraft + 'template.ejs', this.defOpts)
     }
 
     async show(){

@@ -28,11 +28,11 @@ module.exports = class SK_Window {
         this.sk.engine.on(`action_${route}`, async (msg, rW, srcOpt) => {
             var action = actions[msg.action]
             
-            var _sw = this.sk.stats.increment({type: 'action', route: msg.action})
+            //var _sw = this.sk.stats.increment({type: 'action', route: msg.action})
 
             var view = this.sk.views[msg.vid]
 
-            if (route !== 'root' && this.sk.type === 'dapp') if (view.id !== msg.vid) return
+            if (route !== 'root' && this.sk.type !== 'wapp') if (view.id !== msg.vid) return
 
             var res = {}
 
@@ -58,7 +58,7 @@ module.exports = class SK_Window {
             }
         
             
-            _sw.end()
+            //_sw.end()
             
             rW(res)
         })

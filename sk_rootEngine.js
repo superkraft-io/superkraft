@@ -1,4 +1,4 @@
-module.exports = class sk_RootEngine {
+module.exports = class SK_RootEngine {
     constructor(opt){
         this.sk = opt.sk
         this.paths = {
@@ -144,7 +144,7 @@ module.exports = class sk_RootEngine {
                             root: info.root
                         })
 
-                        this.sk.views[info.name] = info.view
+                        this.sk.info.views[info.name] = info.view
                         console.log('[SUCCESS] View initialized: ' + info.name)
                     } catch(err) {
                         console.error('[ERROR] Could not initialize view %s', info.name)

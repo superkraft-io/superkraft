@@ -14,7 +14,9 @@ module.exports = class SK_Action extends SK_RootAction {
                 maximizable : _v.maximizable,
                 closable    : _v.closable,
                 noTitle     : view.info.noTitle
-            }
+            },
+
+            show: view.info.show
         }
 
         res.resolve(info)

@@ -1,93 +1,114 @@
 module.exports = module.exports = class SK_IPC {
-    constructor() {
-        this.msgIdx = 0
+    constructor(opt) {
+        if (!opt.source || opt.source.toString().trim().length === 0) throw "IPC SOURCE ID MUST BE DEFINED!!!"
+
+        this.parent = opt.parent
+
+        this.source = opt.source
+        this.msgID = 0
         this.callbacks = {}
         this.events = {}
 
-        window.__JUCE__.backend.addEventListener('sk.ipc.callback', _res => {
-            var res = JSON.parse(_res)
+        window.__JUCE__.backend.addEventListener('sk.ipc', _res => {
+            try { var res = JSON.parse(_res) } catch (err) { var res = _res }
 
-            this.handleCallback(res.msgIdx, (res.error ?
-                { error: res.error, code: res.error }
-                :
-                res.data
-            ))
+            if (res.type === 'response') {
+                var cbRes = this.handleCallback(res.sourceMsgID || res.msgID, (res.error ?
+                    { error: res.error, code: res.error }
+                    :
+                    res.data
+                ))
+            }
+
+            if (this.onUnexpectedMessage) this.onUnexpectedMessage(res)
         })
 
+        /*
         window.__JUCE__.backend.addEventListener('sk.ipc.event', _res => {
             var res = JSON.parse(_res)
 
+
             var event = this.events[res.eventID]
 
-            if (!event) return
+            if (!event) return console.error(`No IPC event with id ${res.eventID} exists`)
 
-            event(res.data)
+            res.data = JSON.parse(res.data)
+
+            event(res, cb_res => {
+                this.toCBE('sk.ipc.response', {
+                    target: 'sk_c_be',
+                    cmd: 'sk',
+                    data: cb_res
+                })
+            })
         })
+        */
+
     }
 
-    send(target = 'sk_c_be', cmd, data = {}, cb, preData = {}) {
-        this.msgIdx++
-        if (cb) this.addCallback(this.msgIdx, cb)
-        window.__JUCE__.backend.emitEvent(
-            'sk.ipc',
-            {
-                ...preData,
-                ...{
-                    target: target,
-                    cmd: cmd,
-                    msgIdx: this.msgIdx,
-                    data: JSON.stringify(data),
-                    hasCallback: cb !== undefined
-                }
-            }
-        )
+    sendRaw(cmd, data) {
+        window.__JUCE__.backend.emitEvent(cmd, data)
     }
 
-    sendTo_C_backend_cb(cmd, data, cb) {
-        this.send('sk_c_be', cmd, data, cb)
+    requestWithCallback(target, _data, cb) {
+        this.msgID++
+
+        this.addCallback(this.msgID, cb)
+
+        var data = {
+            type: 'request',
+            source: this.source,
+            target: target,
+            msgID: this.msgID,
+            data: _data
+        }
+
+        this.sendRaw('sk.ipc', data)
     }
 
-
-    sendToView_cb(viewID, data, cb) {
-        this.send('sk_view', cmd, data, cb, { viewID: viewID })
-    }
-
-    sendTo_C_backend(cmd, data) {
+    request(target, _data = '') {
         return new Promise((resolve, reject) => {
-            this.send('sk_c_be', cmd, data, res => {
+            this.requestWithCallback(target, _data, res => {
                 if (res.error) return reject(res)
                 resolve(res)
             })
         })
     }
 
-    toCBE(cmd, data) { return this.sendTo_C_backend(cmd, data) }
+    respond(target, sourceMsgID, _data, data) {
+        this.msgID++
 
+        var data = {
+            type: 'response',
+            source: this.source,
+            sourceMsgID: sourceMsgID,
+            target: target,
+            msgID: this.msgID,
+            data: _data
+        }
 
-    sendToView(viewID, cmd, data) {
-        return new Promise((resolve, reject) => {
-            this.send('sk_view', cmd, data, res => {
-                if (res.error) return reject(res)
-                resolve(res)
-            }, { viewID: viewID })
-        })
+        this.sendRaw('sk.ipc', data)
     }
 
-    toView(viewID, cmd, data) { return this.sendToView(viewID, cmd, data) }
-
-    addCallback(msgIdx, cb) {
-        this.callbacks[msgIdx] = {
+    addCallback(msgID, cb) {
+        this.callbacks[msgID] = {
             timestamp: Date.now(),
-            msgIdx: msgIdx,
+            msgID: msgID,
             cb: cb
         }
     }
 
-    handleCallback(msgIdx, data) {
-        var entry = this.callbacks[msgIdx]
+    handleCallback(msgID, data) {
+        var entry = this.callbacks[msgID]
         if (entry) {
+
+            var roundtripTime = Date.now() - entry.timestamp
+            //console.log(roundtripTime)
+
             entry.cb(data)
-            delete this.callbacks[msgIdx]
+            delete this.callbacks[msgID]
+
+            return true
         }
     }
 

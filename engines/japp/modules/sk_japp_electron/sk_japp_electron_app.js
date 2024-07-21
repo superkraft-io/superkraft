@@ -1,12 +1,12 @@
-window.ejs_ssc = new (require(__dirname + '/ejs/ejs-ssc.js'))()
+window.ejs_juce = new (require(__dirname + '/ejs/ejs-juce.js'))()
 
-module.exports = class SK_SAPP_Electron_App {
+module.exports = class SK_JAPP_Electron_App {
     constructor(opt){
         this.events = {}
     }
 
     async __init__(){
-        await window.ejs_ssc.init()
+        await window.ejs_juce.init()
     }
 
     send(eventName, _e){
@@ -36,6 +36,6 @@ module.exports = class SK_SAPP_Electron_App {
     }
 
     getVersion(){
-        return application.runtimeVersion.short
+        return 'N/A'
     }
 }

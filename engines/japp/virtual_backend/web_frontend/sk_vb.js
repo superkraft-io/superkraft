@@ -18,9 +18,12 @@ function sleep(delay = 1000) {
 var start_app = async () => {
     await import('/superkraft/engines/japp/virtual_backend/web_frontend/sk_juce_api/core.js')
     await import('/superkraft/engines/japp/virtual_backend/web_frontend/sk_juce_api/module.js')
-    await import('/superkraft/engines/japp/virtual_backend/web_frontend/sk_juce_api/wrappers/path.js')
+    await import('/superkraft/engines/japp/virtual_backend/web_frontend/sk_juce_api/node/path.js')
 
+    //await sleep(5000)
     //var ssc = import('/virtual_backend/api/module.js')
+
+    window.application = require('application')
 
     window.global = window
 
@@ -31,7 +34,7 @@ var start_app = async () => {
         type: 'japp',
         root: '',
 
-        projectRoot: '/sk_website',
+        projectRoot: '/sk_project',
         postsRoot: '/sk_posts/',
         templates: '/sk_templates/',
         globalActions: '/sk_globalActions/',
@@ -43,7 +46,12 @@ var start_app = async () => {
         database: {},
         auth: {},
 
-        l10n: { },
+        l10n: {
+            listCountries: () => { return [] },
+            getForCountry: country => {
+                return {}
+            }
+        },
 
         onAppReady: async () => {
 

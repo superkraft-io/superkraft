@@ -1,3 +1,4 @@
+var path = require('path')
 module.exports = class EJS_Template{
     constructor(){
         this.modes = {
@@ -170,7 +171,7 @@ module.exports = class EJS_Template{
             else {
                 ctor = Function;
             }
-            fn = new ctor(opts.localsName + ', escapeFn, include, rethrow', src);
+            fn = new ctor(opts.localsName + ', escapeFn, include, rethrow, window', src);
         }
         catch(e) {
             // istanbul ignore else
@@ -196,7 +197,7 @@ module.exports = class EJS_Template{
             if (fn.name === 'head'){
                 window.onBreak()
             }
-            return fn.apply(opts.context, [data || ejs_utils.createNullProtoObjWherePossible(), escapeFn, ejs_utils.include, this.rethrow]);
+            return fn.apply(opts.context, [data || ejs_utils.createNullProtoObjWherePossible(), escapeFn, ejs_utils.include, this.rethrow, window]);
         };
         if (opts.filename && typeof Object.defineProperty === 'function') {
         var filename = opts.filename;

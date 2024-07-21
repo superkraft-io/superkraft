@@ -22,13 +22,19 @@ class SK_FS_Promises_JUCE {
     }
 
     async access(path) {
-        return this.sk.ipc.toCBE('sk_fs', {operation: 'access', path: path })
+        console.log('access')
+
+        var res = await window.sk_ipc.ipc.request('sk.fs', { operation: 'access', path: path })
+
+        return res
     }
 
     stat(path) {
+        console.log('stat')
+
         return new Promise(async (resolve, reject) => {
             try {
-                var info = await this.sk.ipc.toCBE('sk_fs', { operation: 'stat', path: path })
+                var info = await window.sk_ipc.ipc.request('sk.fs', { operation: 'stat', path: path })
                 info.isDirectory = () => { return info.type === 'dir' }
                 resolve(info)
             } catch (err) {
@@ -39,20 +45,33 @@ class SK_FS_Promises_JUCE {
 
     writeFile(path, data) {
         console.log('writeFile')
-        return this.sk.ipc.toCBE('sk_fs', { operation: 'writeFile', path: path, data: JSON.stringify(data) })
+        return window.sk_ipc.ipc.request('sk.fs', { operation: 'writeFile', path: path, data: data })
     }
 
     readFile(path) {
         console.log('readFile')
-        return this.sk.ipc.toCBE('sk_fs', { operation: 'readFile', path: path })
+        return new Promise(async (resolve, reject) => {
+            try {
+                var res = await window.sk_ipc.ipc.request('sk.fs', { operation: 'readFile', path: path })
+
+                resolve(atob(res))
+            } catch (err) {
+                reject(err)
+            }
+        })
     }
 
     readdir(path, asObj) {
         return new Promise(async (resolve, reject) => {
             try {
-                var res = await this.sk.ipc.toCBE('sk_fs', { operation: 'readdir', path: path })
+                var res = await window.sk_ipc.ipc.request('sk.fs', { operation: 'readdir', path: path })
+
                 var list = []
-                for (var i in res) list.push((!asObj ? res[i].name : res[i]))
+
+                for (var i = 0; i < res.length; i++) {
+                    list.push((!asObj ? res[i].name : res[i]))
+                }
+
                 resolve(list)
             } catch (err) {
                 reject(err)
@@ -62,11 +81,11 @@ class SK_FS_Promises_JUCE {
 
     async readJSON(path) {
         console.log('readJSON')
-        return JSON.parse(await this.sk.ipc.toCBE('sk_fs', { operation: 'readJSON', path: path }))
+        return JSON.parse(await window.sk_ipc.ipc.request('sk.fs', { operation: 'readJSON', path: path }))
     }
 
     async writeJSON(path, data) {
         console.log('writeJSON')
-        return JSON.parse(await this.sk.ipc.toCBE('sk_fs', { operation: 'writeJSON', path: path, data: JSON.stringify(data) }))
+        return JSON.parse(await window.sk_ipc.ipc.request('sk.fs', { operation: 'writeJSON', path: path, data: JSON.stringify(data) }))
     }
 }

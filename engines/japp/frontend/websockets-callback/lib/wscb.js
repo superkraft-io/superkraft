@@ -29,35 +29,31 @@ class WebSockets_Callback{
         else this.setupAsServer()
 
         if (this.options.asJUCE) {
-            if (!this.options.asClient) {
-
-                this.sendData = msg => {
-                    var wc = wcs[i]
-                    var idx = wc.index
-                    options.sk.ipc.toCBE('sk.ipc.wnd', msg).then(() => { })
-                }
-
-                options.sk.ipc.on('sk.ipc.wnd', _msg => {
-                    this.handleMessage(this, _msg.detail, {
-                        send: msg => {
-                            options.sk.ipc.toCBE('sk.ipc.wnd', msg).then(() => { })
-                        }
+            options.sk.ipc.ipc.onUnexpectedMessage = res => {
+                var trigger = this.triggers[res.data.cmd]
+                if (trigger) {
+                    trigger.doHandle(res.data, response => {
+                        if (response.puid == undefined) response.puid = res.data.puid;
+                        options.sk.ipc.ipc.respond(res.source, res.msgID, response)
                     })
-                })
-
-
-
-                return
+                }
             }
 
             this.sendData = msg => {
-                options.sk.ipc.toCBE('sk.ipc.vbe', msg).then(() => { })
+                var data = {
+                    msgID: msg.puid,
+                    viewID: (window.sk && window.sk.id ? window.sk.id : 'sk_vbe'),
+                    data: msg
+                }
+
+                options.sk.ipc.ipc.request('sk_be', msg)
             }
 
-            options.sk.ipc.on('sk.ipc.vbe', _msg => {
-                this.handleMessage(this, _msg.detail, {
+            options.sk.ipc.on('sk.ipc', _msg => {
+                this.handleMessage(this, _msg.data, {
                     send: msg => {
-                        options.sk.ipc.toCBE('sk.ipc.vbe', msg).then(() => { })
+                        var x = 0
+                        //options.sk.ipc.toCBE('sk.ipc', msg)
                     }
                 })
             })

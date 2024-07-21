@@ -1,4 +1,4 @@
-module.exports = class SK_SAPP_Electron_Window {
+module.exports = class SK_JAPP_View {
     constructor(parent){
         this.parent = parent
         this.events = {}
@@ -41,14 +41,29 @@ module.exports = class SK_SAPP_Electron_Window {
     }
 
     async loadURL(data, url, opt){
-        await fs.promises.writeFile('socket://com.dapp.socket/dataOutput.json', JSON.stringify(data))
-        ejs_ssc.data(data)
-        var ejsData = await ejs_ssc.protocolListener({url: url})
-        await fs.promises.writeFile(this.parent.routes.frontend.view + 'view.html', ejsData)
+        //await fs.promises.writeFile('sk_vfs/dataOutput.json', JSON.stringify(data))
+        ejs_juce.data(data)
+        var ejsData = await ejs_juce.protocolListener({ url: url })
+        console.log(ejsData)
+        await fs.promises.writeFile('sk_vfs' + this.parent.routes.frontend.view + 'view.html', ejsData)
 
-        this.__window = await application.createWindow(opt)
-        await this.__window.setBackgroundColor({red: 0, green: 0, blue: 0, alpha: 0})
+        this.res = SK_JAPP_View.createView(opt)
+        await this.setBackgroundColor('#000000')
         
         this.dispatch('ready-to-show')
     }
+
+    /*******/
+
+    static async createView(opt) {
+        var res = await juce_sk.ipc.ipc.request('sk.viewMngr', { action: 'createView', info: opt })
+
+    }
+
+    set backgroundColor(clr) {
+        this.__bgClr = clr
+        juce_sk.ipc.ipc.request('sk.viewMngr', { action: 'setBgClr', clr: clr }).then(() => { })
+    }
+
+    get backgroundColor() { return this.__bgClr }
 }
