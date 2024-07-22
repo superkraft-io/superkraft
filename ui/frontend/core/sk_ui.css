@@ -79,7 +79,7 @@ button:focus-visible {
 }
 
 .sk_ui_appBody_dapp {
-    border-radius: var(--view-radius) !important;
+    border-radius: var(--view-radius);
     /*overflow: hidden !important;*/
 }
 

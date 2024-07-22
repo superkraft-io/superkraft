@@ -489,12 +489,14 @@ class sk_ui_component {
             },
 
             onMove: _e => {
+                if (!sk.app.cursorEl) return
+
                 var cursor = sk.cursors[this.cursor] || {offset: {x: 0, y: 0}}
                 
                 var offset = cursor.offset || {x: 0, y: 0}
                 if (!offset.x) offset.x = 0
                 if (!offset.y) offset.y = 0
-                 return
+
                 var pos = sk.interactions.getPos(_e)
                
                 sk.app.cursorEl.style.left = pos.x + offset.x + 'px'
