@@ -52,6 +52,8 @@ class sk_ui_icon extends sk_ui_component {
                 this.svgEl.setAttribute('height', this.size)
 
                 this.svgEl.setAttribute('fill', this.color)
+
+                this.style.display = 'contents'
             }
 
             //for (var i = this.iconElement.classList.length; i > -1; i--) if (this.iconElement.classList[i] !== 'transition') this.iconElement.classList.remove(this.iconElement.classList[i])
@@ -99,7 +101,7 @@ class sk_ui_icon extends sk_ui_component {
             this.iconElement.style.minWidth  = val + 'px'
             this.iconElement.style.minHeight = val + 'px'
 
-            if (this.type === 'svg'){
+            if (this.type === 'svg' && this.svgEl){
                 this.svgEl.setAttribute('width', val)
                 this.svgEl.setAttribute('height', val)
             }

@@ -41,14 +41,11 @@ module.exports = class SK_JAPP_View {
     }
 
     async loadURL(data, url, opt){
-        //await fs.promises.writeFile('sk_vfs/dataOutput.json', JSON.stringify(data))
         ejs_juce.data(data)
         var ejsData = await ejs_juce.protocolListener({ url: url })
-        console.log(ejsData)
         await fs.promises.writeFile('sk_vfs' + this.parent.routes.frontend.view + 'view.html', ejsData)
 
         this.res = SK_JAPP_View.createView(opt)
-        await this.setBackgroundColor('#000000')
         
         this.dispatch('ready-to-show')
     }

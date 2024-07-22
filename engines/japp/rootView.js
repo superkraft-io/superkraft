@@ -88,7 +88,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         
 
         this._view.on('ready-to-show', ()=>{
-            this.ipc = this._view.webContents
+            //this.ipc = this._view.webContents
         })
 
 
