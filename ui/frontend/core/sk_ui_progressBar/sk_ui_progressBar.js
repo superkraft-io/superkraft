@@ -10,6 +10,7 @@ class sk_ui_progressBar extends sk_ui_component {
     init(){
         if (this.container) this.container.remove()
         this.container = this.add.component(_c => {
+            _c.animate = false
             _c.element.style.display = 'block'
             _c.element.style.width = '16px'
         })
@@ -19,19 +20,24 @@ class sk_ui_progressBar extends sk_ui_component {
         this.init()
         return {
             circle: opt => {
+                this.__pbType = 'circle'
                 var defOpt = {duration: 200, color: 'grey', thickness: 8}
-                defOpt = {...defOpt, ...opt}
+                defOpt = { ...defOpt, ...opt }
+                this.__defOpt = defOpt
 
                 this.pB = new ProgressBar.Circle('.' + this.container.uuid, {
-                    color: defOpt.color,
-                    strokeWidth: defOpt.thickness,
-                    duration: defOpt.duration
+                    ...{
+                        color: defOpt.color,
+                        strokeWidth: defOpt.thickness,
+                        duration: defOpt.duration
+                    }, ...defOpt
                 })
 
                 return this
             },
 
             line: opt => {
+                this.__pbType = 'line'
                 this.style.overflow = 'hidden'
                 
                 var defOpt = {duration: 200, color: 'grey', thickness: 8}
@@ -70,8 +76,23 @@ class sk_ui_progressBar extends sk_ui_component {
         }
     }
 
-    set size(val){
+    set size(val) {
+        this.__size = val
         this.container.style.width = val + 'px'
+    }
+
+    set color(val) {
+        if (val === this.__color) return
+
+        this.__color = val
+
+        if (this.pB) {
+            this.as[this.__pbType]({
+                ...this.__defOpt,
+                ...{color: val}
+            })
+            this.size = this.__size
+        }
     }
 
     set progress(val){

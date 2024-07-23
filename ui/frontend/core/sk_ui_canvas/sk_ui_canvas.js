@@ -70,12 +70,17 @@ class sk_ui_canvas extends sk_ui_component {
         this.tmpClr = this.color
         this.ctx.strokeStyle = opt.color || this.tmpClr
 
+        this.tmplineWidth = this.thickness
+        this.ctx.lineWidth = opt.thickness || this.tmplineWidth
+
         this.ctx.beginPath()
         this.ctx.moveTo(opt.from.x * this.ratio + 0.5, opt.from.y * this.ratio + 0.5)
         this.ctx.lineTo(opt.to.x * this.ratio + 0.5, opt.to.y * this.ratio + 0.5)
         this.ctx.stroke()
 
         this.ctx.strokeStyle = this.tmpClr
+
+        this.ctx.lineWidth = this.tmplineWidth
     }
 
     pixel(opt){

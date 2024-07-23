@@ -1451,8 +1451,8 @@ class sk_ui_movableizer {
                     }
                 }
 
-                if (minX !== Infinity && newPos.x < minX) newPos.x = 0
-                if (maxX !== Infinity && newPos.x > maxX) newPos.x = Math.round(this.parent.parent.rect.width - this.parent.rect.width)
+                if (minX !== Infinity && newPos.x < minX) newPos.x = minX
+                if (maxX !== Infinity && newPos.x > maxX) newPos.x = maxX
                 this.parent.style.left = Math.round(newPos.x) + 'px'
             }
     
@@ -1469,8 +1469,8 @@ class sk_ui_movableizer {
                     }
                 }
 
-                if (minY !== Infinity && newPos.y < minY) newPos.y = 0
-                if (maxY !== Infinity && newPos.y > maxY) newPos.y = Math.round(this.parent.parent.rect.height - this.parent.rect.height)
+                if (minY !== Infinity && newPos.y < minY) newPos.y = minY
+                if (maxY !== Infinity && newPos.y > maxY) newPos.y = maxY
                 this.parent.style.top = Math.round(newPos.y) + 'px'
             }
  

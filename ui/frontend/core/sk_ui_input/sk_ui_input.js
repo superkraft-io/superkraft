@@ -31,6 +31,11 @@ class sk_ui_input extends sk_ui_component {
                             _e.stopPropagation()
                         },
 
+                        dblclick: _e => {
+                            _e.stopPropagation()
+
+                        },
+
                         input: _e => {
                             if (this.onChanged) this.onChanged(this.input.value)
                         }
