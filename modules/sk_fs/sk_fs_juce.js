@@ -24,7 +24,7 @@ class SK_FS_Promises_JUCE {
     async access(path) {
         console.log('access')
 
-        var res = await window.sk_ipc.ipc.request('sk.fs', { operation: 'access', path: path })
+        var res = await window.sk_ipc.ipc.request('node:fs', { operation: 'access', path: path })
 
         return res
     }
@@ -34,7 +34,7 @@ class SK_FS_Promises_JUCE {
 
         return new Promise(async (resolve, reject) => {
             try {
-                var info = await window.sk_ipc.ipc.request('sk.fs', { operation: 'stat', path: path })
+                var info = await window.sk_ipc.ipc.request('node:fs', { operation: 'stat', path: path })
                 info.isDirectory = () => { return info.type === 'dir' }
                 resolve(info)
             } catch (err) {
@@ -45,14 +45,14 @@ class SK_FS_Promises_JUCE {
 
     writeFile(path, data) {
         console.log('writeFile')
-        return window.sk_ipc.ipc.request('sk.fs', { operation: 'writeFile', path: path, data: data })
+        return window.sk_ipc.ipc.request('node:fs', { operation: 'writeFile', path: path, data: data })
     }
 
     readFile(path) {
         console.log('readFile')
         return new Promise(async (resolve, reject) => {
             try {
-                var res = await window.sk_ipc.ipc.request('sk.fs', { operation: 'readFile', path: path })
+                var res = await window.sk_ipc.ipc.request('node:fs', { operation: 'readFile', path: path })
 
                 resolve(atob(res))
             } catch (err) {
@@ -64,7 +64,7 @@ class SK_FS_Promises_JUCE {
     readdir(path, asObj) {
         return new Promise(async (resolve, reject) => {
             try {
-                var res = await window.sk_ipc.ipc.request('sk.fs', { operation: 'readdir', path: path })
+                var res = await window.sk_ipc.ipc.request('node:fs', { operation: 'readdir', path: path })
 
                 var list = []
 
@@ -81,11 +81,11 @@ class SK_FS_Promises_JUCE {
 
     async readJSON(path) {
         console.log('readJSON')
-        return JSON.parse(await window.sk_ipc.ipc.request('sk.fs', { operation: 'readJSON', path: path }))
+        return JSON.parse(await window.sk_ipc.ipc.request('node:fs', { operation: 'readJSON', path: path }))
     }
 
     async writeJSON(path, data) {
         console.log('writeJSON')
-        return JSON.parse(await window.sk_ipc.ipc.request('sk.fs', { operation: 'writeJSON', path: path, data: JSON.stringify(data) }))
+        return JSON.parse(await window.sk_ipc.ipc.request('node:fs', { operation: 'writeJSON', path: path, data: JSON.stringify(data) }))
     }
 }

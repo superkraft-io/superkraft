@@ -54,6 +54,8 @@ class sk_ui_icon extends sk_ui_component {
                 this.svgEl.setAttribute('fill', this.color)
 
                 this.style.display = 'inherit'
+
+                if (this.__svg_color) this.color = this.__svg_color
             }
 
             //for (var i = this.iconElement.classList.length; i > -1; i--) if (this.iconElement.classList[i] !== 'transition') this.iconElement.classList.remove(this.iconElement.classList[i])
@@ -124,6 +126,11 @@ class sk_ui_icon extends sk_ui_component {
                             var y = 0
                         }
                     }
+                }
+
+                if (!allSubEls) {
+                    this.__svg_color = val
+                    this.__color = undefined
                 }
 
                 applyToChildren(allSubEls)

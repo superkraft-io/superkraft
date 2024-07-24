@@ -93,8 +93,6 @@ module.exports = class Superkraft {
         this.info.timers = (opt.type === 'dapp' ? new (require(__dirname + '/modules/sk_timers.js'))({sk: sk}) : undefined)
         //this.info.stats = new (require(__dirname + '/modules/sk_stats.js'))({sk: sk})
 
-       if(opt.type === 'sapp') this.info.paths.extensions = opt.extensions
-
         sk.paths.sk_frontend = sk.paths.superkraft + 'frontend/'
 
 

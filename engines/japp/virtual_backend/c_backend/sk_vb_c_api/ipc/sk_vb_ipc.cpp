@@ -70,27 +70,39 @@ void SK_IPC::handle_IPC_Msg(DynamicObject *obj) {
 int SK_IPC::tryForwardToNativeTarget(DynamicObject* obj, String& responseData) {
     String target = obj->getProperty("target");
 
+    String targetPrefix = target.substring(0, target.indexOf(":"));
+
+    if (targetPrefix.length() == 0) {
+        targetPrefix = target;
+    }
+
     std::vector<juce::String> native_target = {
-        "sk.fs",
-        "sk.viewMngr",
+        "sk",
+        "node"
     };
 
     bool isNativeTarget = false;
 
     for (int i = 0; i < native_target.size(); i++) {
-        if (target.contains(native_target[i]) == true) {
+        String prefix = native_target[i];
+
+        if (targetPrefix == prefix) {
             isNativeTarget = true;
             break;
         }
     }
 
-    if (isNativeTarget == false) return 0;
+    if (isNativeTarget == false) {
+        return 0;
+    }
 
 
     String msgID = obj->getProperty("msgID");
 
-    if (target == "sk.fs") vbe->sk_c_api->fs->handle_IPC_Msg(msgID, obj, responseData);
-    else if (target == "sk.viewMngr") vbe->sk_c_api->viewMngr->handle_IPC_Msg(msgID, obj, responseData);
+    if (targetPrefix == "sk") {
+        if (target == "sk:viewMngr") vbe->sk_c_api->viewMngr->handle_IPC_Msg(msgID, obj, responseData);
+    }
+    else if (targetPrefix == "node") vbe->sk_c_api->nodejs->handle_IPC_Msg(msgID, obj, responseData);
 
     return 1;
 }

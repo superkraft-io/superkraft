@@ -28,7 +28,7 @@ class SK_VFS_Promises_JUCE {
     stat(path) {
         return new Promise(async (resolve, reject) => {
             try {
-                var info = await this.sk.ipc.toCBE('sk_vfs', { operation: 'stat', path: path })
+                var info = await this.sk.ipc.toCBE('node:vfs', { operation: 'stat', path: path })
                 info.isDirectory = () => { return info.type === 'dir' }
                 resolve(info)
             } catch (err) {

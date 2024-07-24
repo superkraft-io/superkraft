@@ -1,14 +1,12 @@
 #pragma once
 
-#include "../../sk_vbe/sk_vbe.hxx"
+#include "../../../sk_vbe/sk_vbe.hxx"
 
-#include "sk_vb_fs.h"
-#include "../sk_vb_c_api.h"
+#include "sk_nodejs_fs.h"
 
 #include <windows.h>
 #include <iostream>
 
-using namespace std::chrono;
 
 SK_FS::SK_FS(SK_VirtualBackend *_vbe) {
     vbe = _vbe;
@@ -44,22 +42,6 @@ String SK_FS::getProjectPath() {
 void SK_FS::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData) {
     var info = obj->getProperty("data");
     
-    auto start = high_resolution_clock::now();
-
-    //var info = JSON::fromString(infoStr);
-
-    /*Array doubleArray = info.getProperty("data", "").getArray();
-
-    auto stop = high_resolution_clock::now();
-
-    auto duration = duration_cast<milliseconds>(stop - start);
-    
-    FILE* fp = fopen("benchmark.txt", "wb");
-    fprintf(fp, "%1.14lf\n", std::chrono::duration<double>(duration).count());
-    fclose(fp);
-    */
-
-   
 
     String operation = info.getProperty("operation", "");
     String path = info.getProperty("path", "");

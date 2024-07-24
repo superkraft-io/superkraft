@@ -47,7 +47,8 @@ sk_juce_api.fetch = path => {
 }
 
 window.sk_juce_api.nativeModules = {
-    node: { os:'', fs:'', path:'' },
+    node: { os: '', fs: '', path: '', child_process: '' },
+    npm: { electron: '' },
     sk: { application:'' }
 }
 

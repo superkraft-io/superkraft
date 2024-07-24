@@ -53,13 +53,13 @@ module.exports = class SK_JAPP_View {
     /*******/
 
     static async createView(opt) {
-        var res = await juce_sk.ipc.ipc.request('sk.viewMngr', { action: 'createView', info: opt })
+        var res = await juce_sk.ipc.ipc.request('sk:viewMngr', { action: 'createView', info: opt })
 
     }
 
     set backgroundColor(clr) {
         this.__bgClr = clr
-        juce_sk.ipc.ipc.request('sk.viewMngr', { action: 'setBgClr', clr: clr }).then(() => { })
+        juce_sk.ipc.ipc.request('sk:viewMngr', { action: 'setBgClr', clr: clr }).then(() => { })
     }
 
     get backgroundColor() { return this.__bgClr }
