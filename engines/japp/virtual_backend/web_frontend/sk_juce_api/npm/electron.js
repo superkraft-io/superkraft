@@ -13,7 +13,7 @@ module.exports = {
         },
 
         openExternal(url, options) {
-            sk_nodejs_electronjs_ipc_call('openExternal', { url: url })
+            sk_nodejs_electronjs_ipc_call('openExternal', { url: url, options: options })
         },
 
         trashItem(path) {
