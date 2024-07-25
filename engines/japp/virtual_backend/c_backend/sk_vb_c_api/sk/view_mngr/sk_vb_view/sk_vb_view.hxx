@@ -3,11 +3,11 @@
 #include <JuceHeader.h>
 #include <juce_gui_extra/juce_gui_extra.h>
 
-#include "../../../libs/ssc/json.hh"
+#include "../../../../libs/ssc/json.hh"
 
 class SK_VirtualBackend;
 
-class SK_View : public juce::WebBrowserComponent {
+class SK_VB_ViewMngr_View : public juce::WebBrowserComponent {
 public:
     using juce::WebBrowserComponent::WebBrowserComponent;
 
@@ -15,19 +15,19 @@ public:
 
     String id;
 
-    auto SK_View::pageAboutToLoad(const juce::String& newUrl) -> bool override;
+    auto SK_VB_ViewMngr_View::pageAboutToLoad(const juce::String& newUrl) -> bool override;
 
-    auto SK_View::createResource_2(const juce::String& resourceName) -> juce::WebBrowserComponent::Resource;
+    auto SK_VB_ViewMngr_View::createResource_2(const juce::String& resourceName) -> juce::WebBrowserComponent::Resource;
 
-    auto SK_View::lookUpMimeType(const juce::String& filename, const juce::String& defaultMimeType = "application/octet-stream") -> juce::String;
+    auto SK_VB_ViewMngr_View::lookUpMimeType(const juce::String& filename, const juce::String& defaultMimeType = "application/octet-stream") -> juce::String;
 
-    auto SK_View::handle_native_command(juce::String url) -> std::optional<juce::WebBrowserComponent::Resource>;
+    auto SK_VB_ViewMngr_View::handle_native_command(juce::String url) -> std::optional<juce::WebBrowserComponent::Resource>;
 
-    auto SK_View::lookUpResource(const juce::String& url) -> std::optional<juce::WebBrowserComponent::Resource>;
-    auto SK_View::loadResourceFrom_Disk(const juce::String& url)->std::optional<juce::WebBrowserComponent::Resource>;
-    auto SK_View::loadResourceFrom_BinaryData(const juce::String& url)->std::optional<juce::WebBrowserComponent::Resource>;
+    auto SK_VB_ViewMngr_View::lookUpResource(const juce::String& url) -> std::optional<juce::WebBrowserComponent::Resource>;
+    auto SK_VB_ViewMngr_View::loadResourceFrom_Disk(const juce::String& url)->std::optional<juce::WebBrowserComponent::Resource>;
+    auto SK_VB_ViewMngr_View::loadResourceFrom_BinaryData(const juce::String& url)->std::optional<juce::WebBrowserComponent::Resource>;
 
-    void SK_View::handle_ipc_msg(const var& object);
+    void SK_VB_ViewMngr_View::handle_ipc_msg(const var& object);
 
 
 

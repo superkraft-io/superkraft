@@ -1,4 +1,6 @@
-#include "sk_view.hxx"
+#pragma once
+
+#include "sk_vb_view.hxx"
 #include "BinaryData.h"
 
 #include <filesystem>
@@ -6,17 +8,16 @@
 
 #include "../../vfs/sk_vb_vfs_file.h"
 
-
-#include "../../../sk_vbe/sk_vbe.hxx"
+#include "../../../../sk_vbe/sk_vbe.hxx"
 class SK_VirtualBackend;
 
-auto SK_View::pageAboutToLoad(const juce::String& newUrl) -> bool
+auto SK_VB_ViewMngr_View::pageAboutToLoad(const juce::String& newUrl) -> bool
 {
     return newUrl == juce::WebBrowserComponent::getResourceProviderRoot();
 }
 
 
-auto SK_View::createResource_2(const juce::String& resourceName) -> juce::WebBrowserComponent::Resource {
+auto SK_VB_ViewMngr_View::createResource_2(const juce::String& resourceName) -> juce::WebBrowserComponent::Resource {
     juce::WebBrowserComponent::Resource resource;
 
     int dataSize{};
@@ -30,7 +31,7 @@ auto SK_View::createResource_2(const juce::String& resourceName) -> juce::WebBro
     return resource;
 }
 
-auto SK_View::lookUpMimeType(const juce::String& filename,
+auto SK_VB_ViewMngr_View::lookUpMimeType(const juce::String& filename,
     const juce::String& defaultMimeType) -> juce::String
 {
     juce::String substr = defaultMimeType;
@@ -52,7 +53,7 @@ auto SK_View::lookUpMimeType(const juce::String& filename,
 
 
 
-auto SK_View::lookUpResource(const juce::String& url) -> std::optional<juce::WebBrowserComponent::Resource> {
+auto SK_VB_ViewMngr_View::lookUpResource(const juce::String& url) -> std::optional<juce::WebBrowserComponent::Resource> {
     const auto requestedUrl{ url == "/" ? juce::String{"/sk_vfs/sk_project/views/" + id + "/frontend/view.html"} : url };
 
     auto nativeCommandResponse = handle_native_command(url);
@@ -71,7 +72,7 @@ auto SK_View::lookUpResource(const juce::String& url) -> std::optional<juce::Web
 }
 
 
-auto SK_View::loadResourceFrom_Disk(const juce::String& url) -> std::optional<juce::WebBrowserComponent::Resource> {
+auto SK_VB_ViewMngr_View::loadResourceFrom_Disk(const juce::String& url) -> std::optional<juce::WebBrowserComponent::Resource> {
 
 
     juce::WebBrowserComponent::Resource* resource = new Resource();
@@ -82,7 +83,7 @@ auto SK_View::loadResourceFrom_Disk(const juce::String& url) -> std::optional<ju
         String fixedURL = url;
         if (fixedURL.substring(0, 1) == "/") fixedURL = fixedURL.substring(1, fixedURL.length());
 
-        SK_VFS_File* file = vbe->sk_c_api->vfs->findByPath(fixedURL);
+        SK_VB_VFS_File* file = vbe->sk_c_api->sk->vfs->findByPath(fixedURL);
         std::string path = String(file->path).toStdString();
         //String dataStr = "<html><head></head><body style=\"font-size: 25px; color: white; background-color: #26292b;\"><br><br><br>HELLO!</body> </html>";
         String dataStr = String(file->data);
@@ -124,7 +125,7 @@ auto SK_View::loadResourceFrom_Disk(const juce::String& url) -> std::optional<ju
 }
 
 
-auto SK_View::loadResourceFrom_BinaryData(const juce::String& url) -> std::optional<juce::WebBrowserComponent::Resource> {
+auto SK_VB_ViewMngr_View::loadResourceFrom_BinaryData(const juce::String& url) -> std::optional<juce::WebBrowserComponent::Resource> {
     /*for (const auto& [route, resource] : s_resources) {
         if (url == route) {
             return resource;
@@ -139,7 +140,7 @@ auto SK_View::loadResourceFrom_BinaryData(const juce::String& url) -> std::optio
 
 
 
-auto SK_View::handle_native_command(juce::String url) -> std::optional<juce::WebBrowserComponent::Resource> {
+auto SK_VB_ViewMngr_View::handle_native_command(juce::String url) -> std::optional<juce::WebBrowserComponent::Resource> {
     std::vector<juce::String> ipc_commands = {
         "sk.getMachineStaticInfo",
         "sk.getCPUInfo",
@@ -167,7 +168,7 @@ auto SK_View::handle_native_command(juce::String url) -> std::optional<juce::Web
     if (cmd == "sk.getMachineTime") return vbe->sk_c_api->machine.getMachineTime();
 }
 
-void SK_View::handle_ipc_msg(const var& object) {
+void SK_VB_ViewMngr_View::handle_ipc_msg(const var& object) {
     DynamicObject* obj = object.getDynamicObject();
 
     String target = obj->getProperty("target");

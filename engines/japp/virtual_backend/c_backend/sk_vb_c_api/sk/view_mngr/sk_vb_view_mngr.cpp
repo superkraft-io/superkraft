@@ -1,24 +1,25 @@
-#include "sk_view_mngr.h"
-#include "../sk_vb_c_api.h"
+#pragma once
 
-#include "sk_view/sk_view.hxx"
+#include "sk_vb_view_mngr.h"
+
+#include "sk_vb_view/sk_vb_view.hxx"
 
 
-#include "../../sk_vbe/sk_vbe.hxx"
+#include "../../../sk_vbe/sk_vbe.hxx"
 class SK_VirtualBackend;
 
-SK_View_Mngr::SK_View_Mngr(SK_VirtualBackend *_vbe) {
+SK_VB_View_Mngr::SK_VB_View_Mngr(SK_VirtualBackend *_vbe) {
     vbe = _vbe;
 }
 
-void SK_View_Mngr::resizeViews(int width, int height) {
+void SK_VB_View_Mngr::resizeViews(int width, int height) {
     for (int i = 0; i < views.size(); i++) {
         auto* view = views[i];
         view->setSize(width, height);
     }
 }
 
-SK_View* SK_View_Mngr::findViewByID(String viewID) {
+SK_VB_ViewMngr_View* SK_VB_View_Mngr::findViewByID(String viewID) {
     for (int i = 0; i < views.size(); i++) {
         auto* view = views[i];
         if (view->id == viewID) return view;
@@ -27,7 +28,7 @@ SK_View* SK_View_Mngr::findViewByID(String viewID) {
     return nullptr;
 }
 
-void SK_View_Mngr::handle_IPC_Msg(String msgID, DynamicObject * obj, String & responseData) {
+void SK_VB_View_Mngr::handle_IPC_Msg(String msgID, DynamicObject * obj, String& responseData) {
     var reqInfo = obj->getProperty("data");
 
     String action = reqInfo.getProperty("action", "");
@@ -36,13 +37,13 @@ void SK_View_Mngr::handle_IPC_Msg(String msgID, DynamicObject * obj, String & re
     if (action == "createView") createView(msgID, reqInfo, responseData);
 };
 
-void SK_View_Mngr::createView(String msgID, var obj, String& responseData) {
+void SK_VB_View_Mngr::createView(String msgID, var obj, String& responseData) {
     var info = obj.getProperty("info", "");
 
 
     String viewID = info.getProperty("id", "");
 
-    SK_View* existingView = findViewByID(viewID);
+    SK_VB_ViewMngr_View* existingView = findViewByID(viewID);
     String indexPath = info.getProperty("path", "N/A");
 
     if (existingView != nullptr) {
@@ -89,7 +90,7 @@ void SK_View_Mngr::createView(String msgID, var obj, String& responseData) {
     
     if (sameWindow){
         
-        SK_View* view = new SK_View({
+        SK_VB_ViewMngr_View* view = new SK_VB_ViewMngr_View({
             juce::WebBrowserComponent::Options{}
                 .withBackend(juce::WebBrowserComponent::Options::Backend::webview2)
                 .withWinWebView2Options(

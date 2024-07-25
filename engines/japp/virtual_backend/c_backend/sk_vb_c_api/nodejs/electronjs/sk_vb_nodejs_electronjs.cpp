@@ -2,7 +2,7 @@
 
 #include "../../../sk_vbe/sk_vbe.hxx"
 
-#include "sk_nodejs_electronjs.h"
+#include "sk_vb_nodejs_electronjs.h"
 
 
 SK_VB_ElectronJS::SK_VB_ElectronJS(SK_VirtualBackend* _vbe) {

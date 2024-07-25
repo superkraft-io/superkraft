@@ -2,7 +2,7 @@
 
 #include "../../../sk_vbe/sk_vbe.hxx"
 
-#include "sk_nodejs_fs.h"
+#include "sk_vb_nodejs_fs.h"
 
 #include <windows.h>
 #include <iostream>
@@ -47,7 +47,7 @@ void SK_FS::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseDat
     String path = info.getProperty("path", "");
 
     if (path.substring(0, 7) == "sk_vfs/") {
-        vbe->sk_c_api->vfs->handle_IPC_Msg(msgID, obj, responseData);
+        vbe->sk_c_api->sk->vfs->handle_IPC_Msg(msgID, obj, responseData);
         return;
     }
 

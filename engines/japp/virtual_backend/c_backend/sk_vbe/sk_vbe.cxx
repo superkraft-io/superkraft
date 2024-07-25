@@ -84,7 +84,7 @@ auto SK_VirtualBackend::loadResourceFrom_Disk(const juce::String& url) -> std::o
         String fixedURL = url;
         if (fixedURL.substring(0, 1) == "/") fixedURL = fixedURL.substring(1, fixedURL.length());
         
-        SK_VFS_File* file = sk_c_api->vfs->findByPath(fixedURL);
+        SK_VB_VFS_File* file = sk_c_api->sk->vfs->findByPath(fixedURL);
         std::string path = String(file->path).toStdString();
         String dataStr = String(file->data);
         std::string data = dataStr.toStdString();

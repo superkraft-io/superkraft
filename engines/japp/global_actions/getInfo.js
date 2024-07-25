@@ -1,11 +1,12 @@
 module.exports = class SK_Action extends SK_RootAction {
-    exec(opt, res, view, _v){
+    async exec(opt, res, view, _v){
 
         var info = {
             os: this.sk.sysInfo.os,
             arch: this.sk.sysInfo.arch,
             
             actions: Object.keys(view.actions),
+            nativeActions: (await window.sk_ipc.ipc.request('sk:nativeActions', { func: 'listActions' })).actions,
             main: view.info.main,
             version: this.sk.app.getVersion(),
 

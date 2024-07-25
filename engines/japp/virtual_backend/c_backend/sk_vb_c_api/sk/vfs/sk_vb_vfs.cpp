@@ -1,17 +1,16 @@
 #pragma once
 
-#include "../../sk_vbe/sk_vbe.hxx"
+#include "../../../sk_vbe/sk_vbe.hxx"
 
 #include "sk_vb_vfs.h"
-#include "../sk_vb_c_api.h"
 
 using namespace std::chrono;
 
-SK_VFS::SK_VFS(SK_VirtualBackend *_vbe) {
+SK_VB_VFS::SK_VB_VFS(SK_VirtualBackend *_vbe) {
     vbe = _vbe;
 }
 
-void SK_VFS::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData) {
+void SK_VB_VFS::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData) {
     var info = obj->getProperty("data");
     
     auto start = high_resolution_clock::now();
@@ -33,29 +32,29 @@ void SK_VFS::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseDa
     else if (operation == "writeJSON") writeJSON(msgID, fullPath, data, responseData);
 };
 
-void SK_VFS::respondError(String msgID, String error, String& responseData) {
+void SK_VB_VFS::respondError(String msgID, String error, String& responseData) {
     String res = "{\"error\":\"" + error + "\"}";
     vbe->sk_c_api->ipc->respondToCallback(msgID, res);
 }
 
 
-SK_VFS_File* SK_VFS::findByPath(String path) {
+SK_VB_VFS_File* SK_VB_VFS::findByPath(String path) {
     for (int i = 0; i < entries.size(); i++) {
-        SK_VFS_File* file = entries[i];
+        SK_VB_VFS_File* file = entries[i];
         if (file->path == path) return entries[i];
     }
 
     return nullptr;
 }
 
-void SK_VFS::access(String msgID, String path, String& responseData) {
+void SK_VB_VFS::access(String msgID, String path, String& responseData) {
     responseData = "{\"access\": false}";
-    SK_VFS_File* file = findByPath(path);
+    SK_VB_VFS_File* file = findByPath(path);
     if (file != nullptr) responseData = "{\"access\": true}";
 }
 
-void SK_VFS::stat(String msgID, String path, String& responseData) {
-    SK_VFS_File* file = findByPath(path);
+void SK_VB_VFS::stat(String msgID, String path, String& responseData) {
+    SK_VB_VFS_File* file = findByPath(path);
 
     if (file == nullptr) {
         respondError(msgID, "ENOENT", responseData);
@@ -91,16 +90,16 @@ void SK_VFS::stat(String msgID, String path, String& responseData) {
     //vbe->sk_c_api->ipc->respondToCallback(msgID, juce::String(juce::CharPointer_UTF8(tempstr.c_str())).toStdString());
 }
 
-void SK_VFS::writeFile(String msgID, String path, String data, String& responseData) {
-    entries.push_back(new SK_VFS_File());
+void SK_VB_VFS::writeFile(String msgID, String path, String data, String& responseData) {
+    entries.push_back(new SK_VB_VFS_File());
 
     auto file = entries.at(entries.size() - 1);
     file->path = path;
     file->data = data;;
 }
 
-void SK_VFS::readFile(String msgID, String path, String& responseData) {
-    SK_VFS_File* file = findByPath(path);
+void SK_VB_VFS::readFile(String msgID, String path, String& responseData) {
+    SK_VB_VFS_File* file = findByPath(path);
 
     if (file == nullptr) {
         respondError(msgID, "ENOENT", responseData);
@@ -110,14 +109,14 @@ void SK_VFS::readFile(String msgID, String path, String& responseData) {
     responseData = file->data;
 }
 
-void SK_VFS::readdir(String msgID, String path, String& responseData) {
+void SK_VB_VFS::readdir(String msgID, String path, String& responseData) {
     
 }
 
-void SK_VFS::readJSON(String msgID, String path, String& responseData) {
+void SK_VB_VFS::readJSON(String msgID, String path, String& responseData) {
     int x = 0;
 }
 
-void SK_VFS::writeJSON(String msgID, String path, String data, String& responseData) {
+void SK_VB_VFS::writeJSON(String msgID, String path, String data, String& responseData) {
     int x = 0;
 }

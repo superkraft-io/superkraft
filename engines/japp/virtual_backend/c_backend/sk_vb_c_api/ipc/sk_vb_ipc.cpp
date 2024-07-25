@@ -11,9 +11,7 @@ SK_IPC::SK_IPC(SK_VirtualBackend *_vbe) {
 
 void SK_IPC::handle_IPC_Msg(DynamicObject *obj) {
 
-    String responseData = "{}";//\"error\":\"invalid_command\", \"cmd\":\"" + cmd + "\"}";
-
-
+    String responseData = "{}";
 
     String type = obj->getProperty("type");
     String source = obj->getProperty("source");
@@ -23,6 +21,29 @@ void SK_IPC::handle_IPC_Msg(DynamicObject *obj) {
         if (tryForwardToNativeTarget(obj, responseData) == 0){
             //so we send the request to the correct target.
             tryForwardToVirtualTarget(obj);
+        }
+        else {
+            if (source != "sk_be"){
+                //respond to view
+                auto msg = SK_IPC_Msg(
+                    "response",
+                    obj->getProperty("msgID"),
+                    obj->getProperty("source"),
+                    obj->getProperty("target"),
+                    responseData
+                );
+
+                String responsePacket = msg.stringifyAsResponse();
+
+
+                auto view = vbe->sk_c_api->sk->viewMngr->findViewByID(source);
+                if (view != nullptr) {
+                    view->emitEventIfBrowserIsVisible("sk.ipc", responsePacket);
+                }
+                else {
+                    throw "Invalid IPC target";
+                }
+            }
         }
     }
     else if (type == "response") {
@@ -37,7 +58,7 @@ void SK_IPC::handle_IPC_Msg(DynamicObject *obj) {
 
         String target = obj->getProperty("target");
 
-        auto view = vbe->sk_c_api->viewMngr->findViewByID(target);
+        auto view = vbe->sk_c_api->sk->viewMngr->findViewByID(target);
         if (view != nullptr) {
             view->emitEventIfBrowserIsVisible("sk.ipc", obj);
         }
@@ -47,23 +68,22 @@ void SK_IPC::handle_IPC_Msg(DynamicObject *obj) {
 
     }
 
+
+    auto msg = SK_IPC_Msg(
+        "response",
+        obj->getProperty("msgID"),
+        obj->getProperty("source"),
+        obj->getProperty("target"),
+        responseData
+    );
+
+    String responsePacket = msg.stringifyAsResponse();
+
     if (source == "sk_be"){
         //respond to virtual backend
-        auto msg = SK_IPC_Msg(
-            "response",
-            obj->getProperty("msgID"),
-            obj->getProperty("source"),
-            obj->getProperty("target"),
-            responseData
-        );
-
-        String responsePacket = msg.stringifyAsResponse();
-
         vbe->emitEventIfBrowserIsVisible("sk.ipc", String(responsePacket));
-    } else {
-        //respond to view
-
     }
+
 };
 
 
@@ -99,9 +119,7 @@ int SK_IPC::tryForwardToNativeTarget(DynamicObject* obj, String& responseData) {
 
     String msgID = obj->getProperty("msgID");
 
-    if (targetPrefix == "sk") {
-        if (target == "sk:viewMngr") vbe->sk_c_api->viewMngr->handle_IPC_Msg(msgID, obj, responseData);
-    }
+    if (targetPrefix == "sk") vbe->sk_c_api->sk->handle_IPC_Msg(msgID, obj, responseData);
     else if (targetPrefix == "node") vbe->sk_c_api->nodejs->handle_IPC_Msg(msgID, obj, responseData);
 
     return 1;
@@ -115,7 +133,7 @@ void SK_IPC::tryForwardToVirtualTarget(DynamicObject* obj) {
         vbe->emitEventIfBrowserIsVisible("sk.ipc", obj);
     }
     else {
-        auto view = vbe->sk_c_api->viewMngr->findViewByID("");
+        auto view = vbe->sk_c_api->sk->viewMngr->findViewByID("");
         if (view != nullptr) {
             view->emitEventIfBrowserIsVisible("sk.ipc", obj);
         } else {

@@ -3,10 +3,10 @@
 
 #include <JuceHeader.h>
 
-#include "fs/sk_nodejs_fs.h"
-#include "child_process/sk_nodejs_child_process.h"
+#include "fs/sk_vb_nodejs_fs.h"
+#include "child_process/sk_vb_nodejs_child_process.h"
 
-#include "electronjs/sk_nodejs_electronjs.h"
+#include "electronjs/sk_vb_nodejs_electronjs.h"
 
 class SK_VirtualBackend;
 

@@ -2,7 +2,7 @@
 
 #include "../../../sk_vbe/sk_vbe.hxx"
 
-#include "sk_nodejs_child_process.h"
+#include "sk_vb_nodejs_child_process.h"
 
 
 

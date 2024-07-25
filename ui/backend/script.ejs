@@ -33,6 +33,7 @@
         title: '<%= title %>',
 
         actions: {},
+		nativeActions: {},
 
         interactions: {
             block: ()=>{ sk.ums.broadcast('sk_ui_block_userInteractons', undefined, {block: true}) },
@@ -173,15 +174,18 @@
 
                 /*************/
 
-                var configureActions = actions => {
+                var configureActions = (actions, targetList)=>{
+				    if (!actions) return
+					
                     var configAction = action => {
-                        sk.actions[action] = opt => { return sk.comm.view(action, opt) }
-                    }
+			            targetList[action] = async opt => { return await window.sk.ipc.ipc.request('sk:nativeActions', {...{func: action}, ...opt}) }
+			        }
 
                     for (var i in actions) configAction(actions[i])
                 }
 
-                configureActions(res.actions)
+                configureActions(res.actions, sk.actions)
+				configureActions(res.nativeActions, sk.nativeActions)
 
 
                 resolve({show: res.show})
