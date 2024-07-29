@@ -12,7 +12,7 @@ class SK_VirtualBackend : public juce::WebBrowserComponent {
 public:
 
     #if JUCE_DEBUG
-        String mode = "release";
+        String mode = "debug";
     #else
         String mode = "release";
     #endif

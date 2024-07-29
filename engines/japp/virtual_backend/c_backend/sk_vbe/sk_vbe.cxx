@@ -67,6 +67,18 @@ auto SK_VirtualBackend::loadResourceFrom_Disk(const juce::String& url) -> std::o
 
         return *resource;
     }
+
+    if (mode == "release") {
+        String fixedURL = url.replace("//", "/");
+
+        auto query = sk_bd.findEntryByPath(fixedURL);
+
+        if (query.first != "file") return std::nullopt;
+
+        SK_VB_BDFS_File* entry = (SK_VB_BDFS_File*)query.second;
+
+        return entry->toResource();
+    }
     
     juce::String targetPath = SK_FS::getProjectPath() + "/assets" + url;
 
