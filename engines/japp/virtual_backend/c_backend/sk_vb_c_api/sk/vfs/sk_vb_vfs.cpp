@@ -33,8 +33,7 @@ void SK_VB_VFS::handle_IPC_Msg(String msgID, DynamicObject *obj, String& respons
 };
 
 void SK_VB_VFS::respondError(String msgID, String error, String& responseData) {
-    String res = "{\"error\":\"" + error + "\"}";
-    vbe->sk_c_api->ipc->respondToCallback(msgID, res);
+    responseData = "{\"error\":\"" + error + "\"}";
 }
 
 
@@ -86,8 +85,6 @@ void SK_VB_VFS::stat(String msgID, String path, String& responseData) {
 
     
     auto tempstr = statInfo.str();
-
-    //vbe->sk_c_api->ipc->respondToCallback(msgID, juce::String(juce::CharPointer_UTF8(tempstr.c_str())).toStdString());
 }
 
 void SK_VB_VFS::writeFile(String msgID, String path, String data, String& responseData) {

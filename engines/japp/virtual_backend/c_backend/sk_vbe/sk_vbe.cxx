@@ -18,39 +18,9 @@ auto SK_VirtualBackend::createResource(const juce::String& resourceName) -> juce
     resource.data.resize(dataSize);
     std::memcpy(resource.data.data(), namedResource, dataSize);
 
-    resource.mimeType =  lookUpMimeType(BinaryData::getNamedResourceOriginalFilename(resourceName.toUTF8()));
+    resource.mimeType = SK_VB_Helpers_MimeTypes::lookUpMimeType(BinaryData::getNamedResourceOriginalFilename(resourceName.toUTF8()));
 
     return resource;
-}
-
-auto SK_VirtualBackend::lookUpMimeType(const juce::String& filename,
-                             const juce::String& defaultMimeType) -> juce::String
-{
-    juce::String substr = defaultMimeType;
-
-    if (filename == "LICENSE") {
-        auto x = 0;
-    }
-
-    auto step1 = std::filesystem::path(filename.toStdString());
-    auto step2 = step1.extension();
-    auto step3 = step2.string();
-
-    if (step3.empty() == true) return defaultMimeType;
-    else substr = step3.substr(1);
-
-    
-
-    if (auto iterator{ s_mimeTypes.find(substr) };
-        iterator != s_mimeTypes.end())
-    {
-        return iterator->second;
-    }
-
-    else
-    {
-        return defaultMimeType;
-    }
 }
 
 
@@ -61,9 +31,9 @@ auto SK_VirtualBackend::lookUpResource(const juce::String& url) -> std::optional
     auto nativeCommandResponse = handle_native_command(url);
     if (nativeCommandResponse != std::nullopt) return nativeCommandResponse;
 
-    const bool loadFromDisk = true;
+    const bool loadFromDisk = false;
 
-    if (loadFromDisk == true){
+    if (mode == "debug" && loadFromDisk == true) {
         auto res = loadResourceFrom_Disk(requestedUrl);
         return res;
     } else {
@@ -78,7 +48,7 @@ auto SK_VirtualBackend::loadResourceFrom_Disk(const juce::String& url) -> std::o
 
     juce::WebBrowserComponent::Resource* resource = new Resource();
     auto filename = std::filesystem::path(url.toStdString()).filename().string();
-    resource->mimeType = lookUpMimeType(filename);
+    resource->mimeType = SK_VB_Helpers_MimeTypes::lookUpMimeType(filename);
 
     if (url.indexOf("sk_vfs:") > -1) {
         String fixedURL = url;
@@ -125,10 +95,11 @@ auto SK_VirtualBackend::loadResourceFrom_Disk(const juce::String& url) -> std::o
 }
 
 
+
 auto SK_VirtualBackend::loadResourceFrom_BinaryData(const juce::String& url) -> std::optional<juce::WebBrowserComponent::Resource> {
-    for (const auto& [route, resource] : s_resources){
-        if (url == route){
-            return resource;
+    for (const auto& [route, resource] : sk_bd.fileEntries){
+        if (route == url){
+            return resource->toResource();;
         }
     }
 

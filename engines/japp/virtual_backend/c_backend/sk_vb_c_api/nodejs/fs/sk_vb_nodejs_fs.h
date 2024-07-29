@@ -1,6 +1,6 @@
 #pragma once
 #include <JuceHeader.h>
-#include "../../libs/ssc/json.hh"
+#include "../../../libs/ssc/json.hh"
 
 class SK_VirtualBackend;
 

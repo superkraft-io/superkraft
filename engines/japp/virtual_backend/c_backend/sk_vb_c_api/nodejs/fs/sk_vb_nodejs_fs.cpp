@@ -51,8 +51,14 @@ void SK_FS::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseDat
         return;
     }
 
+    if (vbe->mode != "debug") {
+        vbe->sk_c_api->sk->bdfs->handle_IPC_Msg(msgID, obj, responseData);
+        return;
+    }
+
     String data = info.getProperty("data", "");
 
+    
     String fullPath = SK_FS::getProjectPath() + "/assets" + path;
 
     if (operation == "access") access(msgID, fullPath, responseData);
@@ -67,7 +73,6 @@ void SK_FS::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseDat
 void SK_FS::respondError(String msgID, String error, String& responseData) {
     String res = "{\"error\":\"" + error + "\"}";
     responseData = "{\"error\":\"" + error + "\"}";
-    //vbe->sk_c_api->ipc->respondToCallback(msgID, res);
 }
 
 void SK_FS::access(String msgID, String path, String& responseData) {
@@ -189,12 +194,10 @@ void SK_FS::readdir(String msgID, String path, String& responseData) {
         fileList.push(SSC::JSON::Object::Entries{
             {"type", (file.isDirectory() == true ? "dir" : "file")},
             {"name", file.getFileName().toStdString()}
-            });
+        });
     }
 
     responseData = String(fileList.str());
-
-    //vbe->sk_c_api->ipc->respondToCallback(msgID, juce::String(juce::CharPointer_UTF8(tempstr.c_str())).toStdString());
 }
 
 void SK_FS::readJSON(String msgID, String path, String& responseData) {

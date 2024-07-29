@@ -12,12 +12,14 @@ SK_VB_SK::SK_VB_SK(SK_VirtualBackend *_vbe) {
 	vfs = new SK_VB_VFS(vbe);
 	viewMngr = new SK_VB_View_Mngr(vbe);
 	nativeActions = new SK_NativeActions(vbe);
+	bdfs = new SK_VB_BDFS(vbe);
 }
 
 SK_VB_SK::~SK_VB_SK() {
 	delete vfs;
 	delete viewMngr;
 	delete nativeActions;
+	delete bdfs;
 };
 
 void SK_VB_SK::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData) {
