@@ -8,8 +8,12 @@
 
 #include "../sk_vb_c_api/sk_vb_c_api.h"
 
+struct SK_Compatible_Editor;
+
 class SK_VirtualBackend : public juce::WebBrowserComponent {
 public:
+
+    using juce::WebBrowserComponent::WebBrowserComponent;
 
     #if JUCE_DEBUG
         String mode = "debug";
@@ -19,7 +23,8 @@ public:
 
     SK_VB_BinaryData sk_bd;
 
-    using juce::WebBrowserComponent::WebBrowserComponent;
+
+    SK_Compatible_Editor* editor;
 
     SK_C_API* sk_c_api = new SK_C_API(this);
 
