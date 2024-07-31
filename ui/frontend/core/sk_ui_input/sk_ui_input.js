@@ -2,6 +2,7 @@ class sk_ui_input extends sk_ui_component {
     constructor(opt){
         super(opt)
 
+
         this.inputBucket = JSOM.parse({root: this.element, tree: {
             div_inputEl: { class: 'ui input',
                 input_input: {
@@ -60,8 +61,13 @@ class sk_ui_input extends sk_ui_component {
             this.input.removeAttribute('readonly')
             if (val) this.input.setAttribute('readonly', '')
         }})
-        this.attributes.add({friendlyName: 'Disabled', name: 'disabled', type: 'text', onSet: val => { this.inputBucket.input.disabled = (val ? 'true' : '') }})
-        //this.attributes.add({friendlyName: 'Auto-Complete', name: 'autocomplete', type: 'bool', onSet: val => { this.inputBucket.input.autocomplete = val }})
+        this.attributes.add({ friendlyName: 'Disabled', name: 'disabled', type: 'text', onSet: val => { this.inputBucket.input.disabled = (val ? 'true' : '') } })
+
+        this.attributes.add({friendlyName: 'Disable Focus', name: 'disableFocus', type: 'bool', onSet: val => {
+            if (val) this.input.setAttribute('tabindex', '-1')
+            else this.input.removeAttribute('tabindex')
+        }})
+
         this.attributes.add({friendlyName: 'Name', name: 'name', type: 'text', onSet: val => {
             this.input.removeAttribute('autocomplete')
             this.input.name = val

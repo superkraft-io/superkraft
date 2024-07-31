@@ -3,6 +3,9 @@ class sk_ui_button extends sk_ui_component {
         super({...{htmlTag: 'button'}, ...opt})
         this.multiComponent = true
 
+
+        this.tabIndex = 100
+
         this.classAdd('sk_ui_button_enabled')
 
         this._icon = this.add.icon(_c => {
