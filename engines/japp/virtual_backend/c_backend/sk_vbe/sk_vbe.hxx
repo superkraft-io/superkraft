@@ -25,9 +25,6 @@ public:
 
     SK_VB_BinaryData sk_bd;
 
-
-    SK_Compatible_Editor* editor;
-
     SK_C_API* sk_c_api = new SK_C_API(this);
 
     auto pageAboutToLoad(const juce::String& newUrl) -> bool override;
