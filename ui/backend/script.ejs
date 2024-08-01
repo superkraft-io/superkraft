@@ -38,6 +38,8 @@
         interactions: {
             block: ()=>{ sk.ums.broadcast('sk_ui_block_userInteractons', undefined, {block: true}) },
             unblock: ()=>{ sk.ums.broadcast('sk_ui_block_userInteractons', undefined, {block: false}) },
+			isBlocked: ()=>{ return sk.app.eventBlocker.style.display === '' },
+			
             getPos: (_e, local, parentRect)=>{
                 var pos = {
                     x: (_e.clientX || _e.touches[0].clientX),
