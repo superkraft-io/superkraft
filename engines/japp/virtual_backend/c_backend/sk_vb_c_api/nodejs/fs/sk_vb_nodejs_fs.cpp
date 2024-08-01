@@ -17,23 +17,20 @@ String SK_FS::getProjectPath() {
 
     File stoppedFile;
 
-    while (start.exists() && !start.isRoot() && start.getFileName() != "Builds") {
-        start = start.getParentDirectory();
+    while (start.exists() && !start.isRoot()) {
+        
 
-        if (start.getFileName() == "Builds")
-        {
-            stoppedFile = start.getSiblingFile("Resources");
-            if (stoppedFile.isDirectory()) {
-                stoppedFile = stoppedFile;
-                break;
-            }
+        
+        stoppedFile = start.getSiblingFile("assets");
 
-            stoppedFile = start.getSiblingFile("Source");
-            if (stoppedFile.isDirectory()) {
-                stoppedFile = stoppedFile;
-                break;
-            }
+        String path = stoppedFile.getFullPathName();
+
+        if (stoppedFile.isDirectory()) {
+            stoppedFile = stoppedFile;
+            break;
         }
+
+        start = start.getParentDirectory();
     }
 
     return stoppedFile.getParentDirectory().getFullPathName().replace("\\", "/");
