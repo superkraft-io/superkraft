@@ -21,10 +21,6 @@ void SK_VB_NodeJS_ChildProcess::handle_IPC_Msg(String msgID, DynamicObject *obj,
     else if (func == "spawn") spawn(msgID, obj, responseData);
 };
 
-void SK_VB_NodeJS_ChildProcess::respondError(String msgID, String error, String& responseData) {
-    String res = "{\"error\":\"" + error + "\"}";
-    vbe->sk_c_api->ipc->respondToCallback(msgID, res);
-}
 
 
 

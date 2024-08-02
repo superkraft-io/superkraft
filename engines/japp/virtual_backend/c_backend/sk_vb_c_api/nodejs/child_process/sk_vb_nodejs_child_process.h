@@ -12,8 +12,6 @@ public:
     void SK_VB_NodeJS_ChildProcess::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData);
 
 
-    void respondError(String msgID, String error, String& responseData);
-
     void exec(String msgID, DynamicObject* obj, String& responseData);
     void execFile(String msgID, DynamicObject* obj, String& responseData);
     void fork(String msgID, DynamicObject* obj, String& responseData);

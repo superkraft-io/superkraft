@@ -7,7 +7,8 @@ module.exports = class sk_ui {
         this.paths = opt.paths
 
         this.routes = {
-            core   : '',
+            core: '',
+            engine: '',
             shared : '',
             view   : '',
             global : ''
@@ -133,7 +134,8 @@ module.exports = class sk_ui {
     }
 
     async refresh(){
-        this.components.core   = await this.getComponentsFromPath(this.paths.frontend.core, 'component')
+        this.components.core = await this.getComponentsFromPath(this.paths.frontend.core, 'component')
+        this.components.engine = await this.getComponentsFromPath(this.paths.frontend.engine, this.sk.engine.ui.root)
         this.components.shared = await this.getComponentsFromPath(this.paths.frontend.shared)
         this.components.global = await this.getComponentsFromPath(this.paths.frontend.global)
 
@@ -153,6 +155,7 @@ module.exports = class sk_ui {
             script: __dirname + '/script.ejs',
             components: {
                 core: this.components.core,
+                engine: this.components.engine,
                 shared: this.components.shared,
                 view: await this.getComponentsFromPath(viewUIComponentsPath),
                 global: this.components.global,
@@ -199,8 +202,8 @@ module.exports = class sk_ui {
 
 class sk_ui_wapp {
     constructor(parent){
-        parent.routes.core   = '/sk_ui/'
-        parent.routes.view   = '/sk_ui_view/'
+        parent.routes.core = '/sk_ui/'
+        parent.routes.view = '/sk_ui_view/'
         parent.routes.global = '/sk_ui_global/'
         parent.routes.shared = '/sk_ui_shared/'
         setInterval(()=>{ parent.refresh() }, 5000)
@@ -209,7 +212,8 @@ class sk_ui_wapp {
 
 class sk_ui_dapp {
     constructor(parent){
-        parent.routes.core   = parent.paths.frontend.core
+        parent.routes.core = parent.paths.frontend.core
+        parent.routes.engine = parent.paths.frontend.engine
         parent.routes.shared = parent.paths.frontend.shared
         parent.routes.global = parent.paths.frontend.global
     }

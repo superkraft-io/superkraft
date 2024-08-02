@@ -31,9 +31,7 @@ auto SK_VirtualBackend::lookUpResource(const juce::String& url) -> std::optional
     auto nativeCommandResponse = handle_native_command(url);
     if (nativeCommandResponse != std::nullopt) return nativeCommandResponse;
 
-    const bool loadFromDisk = false;
-
-    if (mode == "debug" && loadFromDisk == true) {
+    if (mode == "debug") {
         auto res = loadResourceFrom_Disk(requestedUrl);
         return res;
     } else {

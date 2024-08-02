@@ -14,8 +14,6 @@ public:
     
     void SK_FS::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData);
     
-    void respondError(String msgID, String error, String& responseData);
-    
     void access(String msgID, String path, String& responseData);
     void stat(String msgID, String path, String& responseData);
     void writeFile(String msgID, String path, String data, String& responseData);

@@ -67,10 +67,6 @@ void SK_FS::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseDat
     else if (operation == "writeJSON") writeJSON(msgID, fullPath, data, responseData);
 };
 
-void SK_FS::respondError(String msgID, String error, String& responseData) {
-    String res = "{\"error\":\"" + error + "\"}";
-    responseData = "{\"error\":\"" + error + "\"}";
-}
 
 void SK_FS::access(String msgID, String path, String& responseData) {
     File file(path);
@@ -82,7 +78,7 @@ void SK_FS::stat(String msgID, String path, String& responseData) {
     File file(path);
 
     if (!file.exists()) {
-        respondError(msgID, "ENOENT", responseData);
+        SK_IPC::respondWithError(msgID, "ENOENT", responseData);
         return;
     }
 
@@ -116,13 +112,13 @@ void SK_FS::stat(String msgID, String path, String& responseData) {
 
         HANDLE hFile = CreateFile(file.getFullPathName().toStdString().c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
         if (hFile == INVALID_HANDLE_VALUE) {
-            respondError(msgID, "ENOENT", responseData);
+            SK_IPC::respondWithError(msgID, "ENOENT", responseData);
             return;
         }
 
         BY_HANDLE_FILE_INFORMATION fileInfo;
         if (!GetFileInformationByHandle(hFile, &fileInfo)) {
-            respondError(msgID, "ENOENT", responseData);
+            SK_IPC::respondWithError(msgID, "ENOENT", responseData);
             CloseHandle(hFile);
             return;
         }

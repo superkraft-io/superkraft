@@ -18,7 +18,6 @@ public:
     int SK_VB_BDFS::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData);
 
 
-    void SK_VB_BDFS::respondError(String msgID, String error, String& responseData);
     void SK_VB_BDFS::access(String msgID, String path, String& responseData);
     void SK_VB_BDFS::stat(String msgID, String path, String& responseData);
     void SK_VB_BDFS::writeFile(String msgID, String path, String data, String& responseData);

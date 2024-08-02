@@ -17,7 +17,6 @@ public:
 
     SK_VB_VFS_File* SK_VB_VFS::findByPath(String path);
 
-    void SK_VB_VFS::respondError(String msgID, String error, String& responseData);
     void SK_VB_VFS::access(String msgID, String path, String& responseData);
     void SK_VB_VFS::stat(String msgID, String path, String& responseData);
     void SK_VB_VFS::writeFile(String msgID, String path, String data, String& responseData);

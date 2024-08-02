@@ -98,10 +98,16 @@ module.exports = class Superkraft {
 
         /****************/
 
+        global.SK_RootEngine = require(__dirname + '/sk_rootEngine.js')
+        sk.engine = new (require(__dirname + '/engines/' + opt.type + '/engine.js'))({ sk: this })
+
+        /****************/
+
         sk.paths.sk_ui = {root: sk.paths.superkraft + 'ui/'}
         sk.paths.sk_ui.backend = sk.paths.sk_ui.root + 'backend/'
         sk.paths.sk_ui.frontend = {
             core: sk.paths.sk_ui.root + 'frontend/core/',
+            engine: __dirname + '/engines/' + opt.type + '/frontend/sk_ui/',
             shared: opt.projectRoot + '/frontend/sk_ui/',
             global: opt.globalFrontend + 'sk_ui/'
         }
@@ -124,8 +130,7 @@ module.exports = class Superkraft {
 
         if (opt.useComplexity) sk.complexity = new (require(__dirname + '/complexity/backend/sk_complexity.js'))
 
-        global.SK_RootEngine = require(__dirname + '/sk_rootEngine.js')
-        sk.engine = new (require(__dirname + '/engines/' + opt.type + '/engine.js'))({ sk: this })
+        
         await sk.engine.loadPosts()
         
         try { await sk.engine.init() } catch(err) {

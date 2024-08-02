@@ -32,10 +32,6 @@ void SK_VB_VFS::handle_IPC_Msg(String msgID, DynamicObject *obj, String& respons
     else if (operation == "writeJSON") writeJSON(msgID, fullPath, data, responseData);
 };
 
-void SK_VB_VFS::respondError(String msgID, String error, String& responseData) {
-    responseData = "{\"error\":\"" + error + "\"}";
-}
-
 
 SK_VB_VFS_File* SK_VB_VFS::findByPath(String path) {
     for (int i = 0; i < entries.size(); i++) {
@@ -56,7 +52,7 @@ void SK_VB_VFS::stat(String msgID, String path, String& responseData) {
     SK_VB_VFS_File* file = findByPath(path);
 
     if (file == nullptr) {
-        respondError(msgID, "ENOENT", responseData);
+        SK_IPC::respondWithError(msgID, "ENOENT", responseData);
         return;
     }
    
@@ -99,7 +95,7 @@ void SK_VB_VFS::readFile(String msgID, String path, String& responseData) {
     SK_VB_VFS_File* file = findByPath(path);
 
     if (file == nullptr) {
-        respondError(msgID, "ENOENT", responseData);
+        SK_IPC::respondWithError(msgID, "ENOENT", responseData);
         return;
     }
 

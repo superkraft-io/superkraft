@@ -1,0 +1,87 @@
+.sk_ui_vu_meter_signal {
+    height: 100%;
+}
+
+.sk_ui_vu_meter_signal_channel {
+    position: relative;
+    width: 24px;
+    height: 100%;
+}
+
+
+.sk_ui_vu_meter_signal_channel_signal {
+}
+
+.sk_ui_vu_meter_signal_channel_signal_gradient {
+    background: linear-gradient(0deg, #78F063 0%, #32BE00 75%, #F0FF46 75%, #FFFF00 90%, #FF4646 90%, #FF0000 100%)
+}
+
+.sk_ui_vu_meter_signal_channel_signal_gradient_titaniumPlanet {
+    background: linear-gradient(0deg, #5394c3 0%, #0078be 75%, #49ff46 75%, #ffca00 90%, #680000 90%, #ff0000 100%)
+}
+
+.sk_ui_vu_meter_signal_channel_signal_gradient_bubblegum {
+    background: linear-gradient(0deg, #f063b6 0%, #005ebe 75%, #46ff65 75%, #00e5ff 90%, #fff146 90%, #ff008b 100%)
+}
+
+.sk_ui_vu_meter_signal_channel_signal_background {
+    filter: brightness(0.25);
+}
+
+.sk_ui_vu_meter_signal_channel_signal_highlight {
+    position: absolute;
+}
+
+
+.sk_ui_vu_meter_gain_slider {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    width: 100%;
+}
+
+.sk_ui_vu_meter_signal_cursor {
+    position: absolute;
+    transform: translateY(-5px);
+    padding: unset;
+    overflow: visible;
+}
+
+.sk_ui_vu_meter_signal_cursor:hover {
+    background-color: unset;
+    opacity: unset;
+}
+
+.sk_ui_vu_meter_signal_cursor:active {
+    background-color: unset;
+     opacity: unset;
+}
+
+.sk_ui_vu_meter_signal_cursor_pointer {
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: -5px;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 5px solid white;
+}
+
+.sk_ui_vu_meter_signal_cursor_pointer_label {
+    position: absolute;
+    left: -48px;
+    display: block;
+    width: 38px;
+    text-align: right;
+}
+
+.sk_ui_vu_meter_signal_cursor_pointer_rightSide {
+    left: unset;
+    right: -5px;
+    transform: rotate(180deg);
+}
+
+.sk_ui_vu_meter_signal_cursor_pointer_rightSide > .sk_ui_vu_meter_signal_cursor_pointer_label {
+    transform: rotate(180deg);
+    text-align: left;
+}

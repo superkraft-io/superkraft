@@ -32,11 +32,6 @@ int SK_VB_BDFS::handle_IPC_Msg(String msgID, DynamicObject *obj, String& respons
     return (responseData == "{}" ? 0 : 1);
 };
 
-void SK_VB_BDFS::respondError(String msgID, String error, String& responseData) {
-    String res = "{\"error\":\"" + error + "\"}";
-    responseData = res;
-}
-
 
 void SK_VB_BDFS::access(String msgID, String path, String& responseData) {
     responseData = "{\"access\": false}";
@@ -50,7 +45,7 @@ void SK_VB_BDFS::stat(String msgID, String path, String& responseData) {
     auto pair = vbe->sk_bd.findEntryByPath(path);
 
     if (pair.first == "none") {
-        respondError(msgID, "ENOENT", responseData);
+        SK_IPC::respondWithError(msgID, "ENOENT", responseData);
         return;
     }
    
@@ -92,7 +87,7 @@ void SK_VB_BDFS::readFile(String msgID, String path, String& responseData) {
     auto pair = vbe->sk_bd.findEntryByPath(path);
 
     if (pair.first == "dir") {
-        respondError(msgID, "ENOENT", responseData);
+        SK_IPC::respondWithError(msgID, "ENOENT", responseData);
         return;
     }
 

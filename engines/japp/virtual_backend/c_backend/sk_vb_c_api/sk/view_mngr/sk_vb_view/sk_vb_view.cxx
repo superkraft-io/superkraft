@@ -59,9 +59,7 @@ auto SK_VB_ViewMngr_View::lookUpResource(const juce::String& url) -> std::option
     auto nativeCommandResponse = handle_native_command(url);
     if (nativeCommandResponse != std::nullopt) return nativeCommandResponse;
 
-    const bool loadFromDisk = true;
-
-    if (loadFromDisk == true) {
+    if (vbe->mode == "debug") {
         auto res = loadResourceFrom_Disk(requestedUrl);
         return res;
     }

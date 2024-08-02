@@ -1,4 +1,3 @@
-
 module.exports = class SK_Action extends SK_RootAction {
     async exec(opt, res, view, _v){
         if (opt.type === 'open' || opt.type === 'save'){

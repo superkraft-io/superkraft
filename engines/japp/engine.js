@@ -4,6 +4,11 @@ var _os = require('os')
 module.exports = class SK_JUCE_Engine extends SK_RootEngine {
     constructor(opt){
         super(opt)
+
+        this.ui = {
+            root: 'juce_param_component_root'
+        }
+
         this.getSysInfo()
     }
 
@@ -26,6 +31,8 @@ module.exports = class SK_JUCE_Engine extends SK_RootEngine {
 
     init(){
         return new Promise(async resolve => {
+            this.__init()
+
             this.sk.info._os = _os
             this.sk.info.app = app
             this.app = app

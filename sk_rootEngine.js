@@ -1,6 +1,10 @@
 module.exports = class SK_RootEngine {
     constructor(opt){
         this.sk = opt.sk
+       
+    }
+
+    __init() {
         this.paths = {
             frontend: {
                 sk: this.sk.info.paths.sk_frontend,

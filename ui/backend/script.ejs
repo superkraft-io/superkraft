@@ -567,6 +567,12 @@
                         <%= sk.ui.components.core[i].name %>: sk_ui_<%= sk.ui.components.core[i].name %>,
                     <% } %>
                 },
+						
+				engine: {
+                    <% for (var i = 0; i < sk.ui.components.engine.length; i++){ %>
+                        <%= sk.ui.components.engine[i].name %>: sk_ui_<%= sk.ui.components.engine[i].name %>,
+                    <% } %>
+                },
 
                 shared: {
                     <% for (var i = 0; i < sk.ui.components.shared.length; i++){ %>
@@ -584,7 +590,9 @@
                     <% for (var i = 0; i < sk.ui.components.global.length; i++){ %>
                         <%= sk.ui.components.global[i].name %>: sk_ui_<%= sk.ui.components.global[i].name %>,
                     <% } %>
-                }
+                },
+						
+			    
             }
         }
     }

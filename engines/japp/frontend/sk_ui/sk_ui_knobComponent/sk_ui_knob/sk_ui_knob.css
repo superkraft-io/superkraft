@@ -1,0 +1,92 @@
+.sk_ui_knob {
+    position: relative;
+    width: 128px;
+    height: 128px;
+    border-radius: 100%;
+    padding: 0px;
+    overflow: visible;
+}
+
+.sk_ui_knob:hover {
+    background-color: unset;
+}
+.sk_ui_knob:active {
+    opacity: unset;
+}
+
+.sk_ui_knob_face {
+    width: 100%;
+    height: 100%;
+    border-radius: 100%;
+}
+
+.sk_ui_knob_face_texture {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    mix-blend-mode: overlay;
+    opacity: 0.15;
+    border-radius: 100%;
+    outline: none;
+}
+
+.sk_ui_knob_arrowContainer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.sk_ui_knob_arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    right: 0px;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 9px solid white;
+    transform: translate(-6px, 0px);
+}
+
+.sk_ui_knob_progressbar {
+    position: absolute;
+}
+
+.sk_ui_knob_infoContainer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.infoContainerWrapper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.sk_ui_knob_ticks {
+    position: absolute;
+    width: 130%;
+    height: 130%;
+    pointer-events: none;
+}
+
+.sk_ui_knob_input {
+    position: absolute;
+    width: 52px;
+    backdrop-filter: blur(8px);
+    height: unset;
+    border-radius: 6px;
+    background-color: rgba(0,0,0,0.3);
+}
+
+.sk_ui_knob_input > #inputEl {
+    height: auto;
+}
+
+.sk_ui_knob_input > #inputEl > input {
+    text-align: center;
+    background-color: transparent;
+    border: unset;
+}

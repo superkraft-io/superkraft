@@ -17,6 +17,11 @@
                                             <script src="<%= sk.routes.frontend.ui %><%= sk.ui.components.core[i].path %>sk_ui_<%= sk.ui.components.core[i].name %>.js"></script>
         <% } %>
 
+			<% for (var i = 0; i < sk.ui.components.engine.length; i++){ %>
+            <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui_engine %><%= sk.ui.components.engine[i].path %>sk_ui_<%= sk.ui.components.engine[i].name %>.css">
+                                            <script src="<%= sk.routes.frontend.ui_engine %><%= sk.ui.components.engine[i].path %>sk_ui_<%= sk.ui.components.engine[i].name %>.js"></script>
+        <% } %>
+			
         <% for (var i = 0; i < sk.ui.components.shared.length; i++){ %>
             <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui_shared %><%= sk.ui.components.shared[i].path %>sk_ui_<%= sk.ui.components.shared[i].name %>.css">
                                             <script src="<%= sk.routes.frontend.ui_shared %><%= sk.ui.components.shared[i].path %>sk_ui_<%= sk.ui.components.shared[i].name %>.js"></script>

@@ -52,6 +52,10 @@ public:
 
     SK_IPC_Request_Mngr reqMngr;
 
+    static void SK_IPC::respondWithError(String msgID, String errorMsg, String& responseData) {
+        responseData = "{\"error\":\"" + errorMsg + "\"}";
+    };
+
     void handle_IPC_Msg(DynamicObject *obj);
 
     int tryForwardToNativeTarget(DynamicObject* obj, String& responseData);

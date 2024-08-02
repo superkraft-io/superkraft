@@ -11,14 +11,14 @@ SK_VB_SK::SK_VB_SK(SK_VirtualBackend *_vbe) {
 
 	vfs = new SK_VB_VFS(vbe);
 	viewMngr = new SK_VB_View_Mngr(vbe);
-	nativeActions = new SK_NativeActions(vbe);
+	coreNativeActions = new SK_VB_CoreNativeActions(vbe);
 	bdfs = new SK_VB_BDFS(vbe);
 }
 
 SK_VB_SK::~SK_VB_SK() {
 	delete vfs;
 	delete viewMngr;
-	delete nativeActions;
+	delete coreNativeActions;
 	delete bdfs;
 };
 
@@ -28,5 +28,5 @@ void SK_VB_SK::handle_IPC_Msg(String msgID, DynamicObject *obj, String& response
 
 	if (module == "vfs") vfs->handle_IPC_Msg(msgID, obj, responseData);
 	else if (module == "viewMngr") viewMngr->handle_IPC_Msg(msgID, obj, responseData);
-	else if (module == "nativeActions") nativeActions->handle_IPC_Msg(msgID, obj, responseData);
+	else if (module == "nativeActions") coreNativeActions->handle_IPC_Msg(msgID, obj, responseData);
 };
