@@ -35,8 +35,11 @@
         }
 
         target.element.addEventListener('mousedown', async _e => {
-            _e.preventDefault()
-            _e.stopPropagation()
+
+            if (_e.target.tagName.toLowerCase() !== 'input') {
+                _e.preventDefault()
+                _e.stopPropagation()
+            }
 
 
             target.__sk_ui_juce_param_component_root_mdPos = sk.interactions.getPos(_e)

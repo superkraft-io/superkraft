@@ -24,6 +24,11 @@
     background: linear-gradient(0deg, #f063b6 0%, #005ebe 75%, #46ff65 75%, #00e5ff 90%, #fff146 90%, #ff008b 100%)
 }
 
+
+.sk_ui_vu_meter_signal_valueLabel {
+
+}
+
 .sk_ui_vu_meter_signal_channel_signal_background {
     filter: brightness(0.25);
 }

@@ -2,7 +2,7 @@ class sk_ui_vu_meter extends sk_ui_component {
     constructor(opt) {
         super(opt)
 
-        this.infoHint = { icon: 'volume up', text: 'Gain' }
+        this.infoHint = { icon: 'volume up', text: 'Gain. Double-click to reset. Shift+Drag/Scroll to finetune.' }
 
         this.styling += ' fullheight'
         this.vertical = false
@@ -13,15 +13,15 @@ class sk_ui_vu_meter extends sk_ui_component {
 
             _c.label.text = 'INPUT'
 
-            _c.gainSlider.onMouseDown = async val => {
+            _c.channels.gainSlider.onMouseDown = async val => {
                 await sk.nativeActions.writeParams({ componentID: 'volume', parameterID: 'in', mouse_state: 'down' })
             }
 
-            _c.gainSlider.onMouseUp = async val => {
+            _c.channels.gainSlider.onMouseUp = async val => {
                 await sk.nativeActions.writeParams({ componentID: 'volume', parameterID: 'in', mouse_state: 'up' })
             }
 
-            _c.gainSlider.onChanged = async val => {
+            _c.channels.gainSlider.onChanged = async val => {
                 await sk.nativeActions.writeParams({ inputVolume: val })
             }
         })
@@ -32,61 +32,87 @@ class sk_ui_vu_meter extends sk_ui_component {
             _c.jcID = 'Output Volume'
 
             _c.label.text = 'OUTPUT'
-            _c.gainSlider.cursorSide = 'right'
+            _c.channels.gainSlider.cursorSide = 'right'
 
-            _c.gainSlider.onMouseDown = async val => {
+            _c.channels.gainSlider.onMouseDown = async val => {
                 await sk.nativeActions.writeParams({ componentID: 'volume', parameterID: 'out', mouse_state: 'down' })
             }
 
-            _c.gainSlider.onMouseUp = async val => {
+            _c.channels.gainSlider.onMouseUp = async val => {
                 await sk.nativeActions.writeParams({ componentID: 'volume', parameterID: 'out', mouse_state: 'up' })
             }
 
-            _c.gainSlider.onChanged = async val => {
+            _c.channels.gainSlider.onChanged = async val => {
                 await sk.nativeActions.writeParams({ outputVolume: val })
             }
         })
     }
 }
 
-class sk_ui_vu_meter_signal extends sk_ui_juce_param_component_root {
+class sk_ui_vu_meter_signal extends sk_ui_component {
     constructor(opt) {
         super(opt)
 
-        this.channels = {}
 
-        this.add.component(_c => {
-            var meter = _c
-            _c.style.position = 'relative'
+        this.valueLabel = this.add.inputLabel(_c => {
+            _c.classAdd('sk_ui_vu_meter_signal_valueLabel')
+            _c.type = 'number'
+            _c.min = 0
+            _c.max = 150
 
-            _c.styling += ' fullheight'
+            //_c.suffix = '%'
+            _c.value = 100
 
-            _c.width = 52
-
-            _c.vertical = false
-            _c.compact = true
-
-            this.channels.left = _c.add.fromNew(sk_ui_vu_meter_signal_channel, _c => {
-                _c.marginRight = 4
-            })
-
-            this.channels.right = _c.add.fromNew(sk_ui_vu_meter_signal_channel)
-
-            this.gainSlider = _c.add.fromNew(sk_ui_vu_meter_gain_slider, _c => {
-
-            })
+            _c.onKeyDown = _e => {
+                if (_e.key === 'Escape') _c.cancelled = true
+            }
         })
+
+
+        this.channels = this.add.fromNew(sk_ui_vu_meter_signal_channels)
 
         this.label = this.add.label(_c => {
             _c.text = 'SIGNAL'
         })
+    }
+}
+
+class sk_ui_vu_meter_signal_channels extends sk_ui_juce_param_component_draggable {
+    constructor(opt) {
+        super(opt)
 
 
-        this.element.addEventListener('mousewheel', _e => {
-            return
-            this.gainSlider.gain += _e.deltaY / 10
-            this.gainSlider.gain += _e.deltaY / 10
+        this.style.position = 'relative'
+
+        this.styling += ' fullheight'
+
+        this.width = 52
+
+        this.vertical = false
+        this.compact = true
+
+        this.channels = {}
+
+        this.channels.left = this.add.fromNew(sk_ui_vu_meter_signal_channel, _c => {
+            _c.marginRight = 4
         })
+
+        this.channels.right = this.add.fromNew(sk_ui_vu_meter_signal_channel)
+
+        this.gainSlider = this.add.fromNew(sk_ui_vu_meter_gain_slider, _c => {
+
+        })
+
+        this.valueRange.min = 0
+        this.valueRange.max = 150
+
+        this.defaultValue = 100
+        this.initWithValue(this.defaultValue)
+    }
+
+    onUpdate(val) {
+        this.parent.valueLabel.value = Math.round(val)
+        this.gainSlider.updateGainUI(val)
     }
 }
 
@@ -127,10 +153,10 @@ class sk_ui_vu_meter_gain_slider extends sk_ui_component {
             this.cursorPointer = _c.add.component(_c => {
                 _c.classAdd('sk_ui_vu_meter_signal_cursor_pointer')
 
-                this.cursorLabel = _c.add.label(_c => {
+                /*this.cursorLabel = _c.add.label(_c => {
                     _c.classAdd('sk_ui_vu_meter_signal_cursor_pointer_label')
                     _c.text = '100%'
-                })
+                })*/
             })
 
 
@@ -142,7 +168,7 @@ class sk_ui_vu_meter_gain_slider extends sk_ui_component {
             resizeObserver.observe(this.element)
 
 
-            _c.movable = 'y'
+            //_c.movable = 'y'
             _c.movres_izer.mover.offset.y = 5
 
             _c.movres_izer.mover.onStart = res => {
@@ -172,20 +198,12 @@ class sk_ui_vu_meter_gain_slider extends sk_ui_component {
             })
         })
 
-        this.cursorTweener = new SK_Tween({
-            speed: 20,
-            onChanged: res => {
-                this.updateGainUI(res.current)
-            }
-        })
-        this.cursorTweener.current = 100
-        this.cursorTweener.target = 100
     }
 
     updateGainUI(gainVal) {
         var posY = this.mapGainToPx(gainVal)
         this.cursor.style.top = Math.round(posY) + 'px'
-        this.cursorLabel.text = Math.round(gainVal) + '%'
+        //this.cursorLabel.text = Math.round(gainVal) + '%'
 
         if (this.onChanged) this.onChanged(gainVal)
     }
@@ -203,21 +221,11 @@ class sk_ui_vu_meter_gain_slider extends sk_ui_component {
     }
 
     set gain(val) {
-        var target = val
-        if (target < 0) target = 0
-        if (target > 150) target = 150;
-
-        if (this.instantPosition) {
-            this.cursorTweener.target = target
-            this.cursorTweener.current = target
-            this.updateGainUI(target)
-        } else {
-            this.cursorTweener.to(target)
-        }
+        this.value = val
     }
 
     get gain() {
-        return this.cursorTweener.current
+        return this.value
     }
 
     set cursorSide(val) {

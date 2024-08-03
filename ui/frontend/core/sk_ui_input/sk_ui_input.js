@@ -37,8 +37,13 @@ class sk_ui_input extends sk_ui_component {
 
                         },
 
+                        focus: _e => {
+                            this.__focusValue = (this.type !== 'number' ? this.stripSuffix() : Number(this.stripSuffix()))
+                        },
+
                         input: _e => {
-                            if (this.onChanged) this.onChanged(this.input.value)
+                            if (this.type === 'number') return
+                            if (this.onChanged) this.onChanged(this.stripSuffix())
                         }
                     }
                 }
@@ -56,8 +61,13 @@ class sk_ui_input extends sk_ui_component {
 
             this['configAs_' + val]()
         }})
-        this.attributes.add({friendlyName: 'Value', name: 'value', type: 'text', onSet: val => { this.inputBucket.input.value = val }, onGet: ()=>{ return this.input.value }})
-        this.attributes.add({friendlyName: 'Read Only', name: 'readonly', type: 'bool', onSet: val => {
+
+        this.attributes.add({ friendlyName: 'Value', name: 'value', type: 'text', onSet: val => { this.input.value = val }, onGet: () => { return this.input.value } })
+        this.attributes.add({ friendlyName: 'Min', name: 'min', type: 'text', onSet: val => { this.input.setAttribute('min', val) } })
+        this.attributes.add({ friendlyName: 'Max', name: 'max', type: 'text', onSet: val => { this.input.setAttribute('max', val) } })
+
+        this.attributes.add({
+            friendlyName: 'Read Only', name: 'readonly', type: 'bool', onSet: val => {
             this.input.removeAttribute('readonly')
             if (val) this.input.setAttribute('readonly', '')
         }})
@@ -80,19 +90,86 @@ class sk_ui_input extends sk_ui_component {
             if (colors.includes(val)) this.classAdd('sk_ui_input_color_' + val)
         }})
         
-
+        this.attributes.add({friendlyName: 'Suffix', name: 'suffix', type: 'text', onSet: val => {
+            
+        }})
 
         this.input = this.inputBucket.input
         this.__value = ''
     }
 
+    setSelectionRange(input, selectionStart, selectionEnd) {
+        if (input.setSelectionRange) {
+            input.focus();
+            input.setSelectionRange(selectionStart, selectionEnd);
+        }
+        else if (input.createTextRange) {
+            var range = input.createTextRange();
+            range.collapse(true);
+            range.moveEnd('character', selectionEnd);
+            range.moveStart('character', selectionStart);
+            range.select();
+        }
+    }
+
+    stripSuffix(_val) {
+        var val = _val || this.value
+        if (!this.suffix) return val
+        return val.replace(this.suffix, '')
+    }
+
+    fixNumber(val) {
+        if (val.length === 0) {
+            if (this.min) val = this.min
+            else val = 0
+        }
+
+        val = val.replace(/[^0-9]/g, '');
+
+        return Number(val)
+    }
+
+    fixSuffix() {
+        //if (!this.suffix) return
+
+        return new Promise(resolve => {
+            setTimeout(() => {
+                var tmpVal = this.stripSuffix()
+                tmpVal = this.fixNumber(tmpVal)
+                if (isNaN(tmpVal)) tmpVal = ''
+                this.value = Date.now()
+                this.value = tmpVal + (this.suffix || '')
+                resolve()
+            }, 1)
+        })
+    }
+
+
     configAs_number(){
         var accepted = '0123456789'
         var controlKeys = ['Delete', 'Backspace', 'Home', 'ArrowLeft', 'ArrowRight', 'Home', 'End']
-        this.element.addEventListener('keydown', _e => {
+        var destructiveKeys = ['Delete', 'Backspace']
+
+        var firstKeyDown = false
+
+        this.element.addEventListener('keydown', async _e => {
+            var textSelRange = { start: this.input.selectionStart, end: this.input.selectionEnd }
+
+            if (firstKeyDown) {
+                var x = 0
+            }
+
+            firstKeyDown = !firstKeyDown
+            
+
+            if (this.onKeyDown) this.onKeyDown(_e)
+
             if (_e.code === 'Tab') return
             if (this.cancelled){
                 delete this.cancelled
+
+                this.value = this.__focusValue
+
                 return
             }
             
@@ -100,15 +177,77 @@ class sk_ui_input extends sk_ui_component {
 
             if (_e.ctrlKey || _e.shiftKey || _e.altKey || controlKeys.includes(_e.key)) controlKeysUsed = true
 
+            var notNumber = (!/^[0-9]$/.test(_e.key))
 
             if ((_e.keyCode >= 48 && _e.keyCode <= 57) || (_e.keyCode >= 96 && _e.keyCode <= 105)) { 
                 // 0-9 only
-            } else { 
-                if (controlKeysUsed) return
-                return _e.preventDefault()
-            } 
+            } else {
+                notNumber = true
+                if (destructiveKeys.includes(_e.key)) {
+                    await this.fixSuffix()
+                    if (_e.key === 'Delete') this.setSelectionRange(this.input, textSelRange.start, textSelRange.start)
+                    if (_e.key === 'Backspace') this.setSelectionRange(this.input, textSelRange.start - 1, textSelRange.start - 1)
 
-            this.__value = this.value
+                    var textLenBegin = this.stripSuffix().length
+                    await this.fixSuffix()
+
+                    return
+                }
+                if (controlKeysUsed) return await this.fixSuffix()
+                else {
+                    //await this.fixSuffix()
+                    return _e.preventDefault()
+                }
+            }
+
+            if (notNumber) return _e.preventDefault()
+
+            var textLenBegin = this.stripSuffix().length
+
+            await this.fixSuffix()
+
+
+            setTimeout(async () => {
+                if (this.min !== undefined && this.max !== undefined) {
+                    try {
+                        var withoutSuffix = this.stripSuffix()
+                        var num = Number(withoutSuffix)
+                        if (num < this.min || num > this.max) {
+                            this.value = Date.now()
+                            this.value = this.__lastValue || this.__focusValue + (this.suffix || '')
+                            this.setSelectionRange(this.input, textSelRange.start, textSelRange.start)
+                            return _e.preventDefault()
+                        }
+                    } catch (err) {
+                        this.value = this.__lastValue || this.__focusValue
+                        this.input.setSelectionRange(textSelRange.start, textSelRange.start)
+                        return _e.preventDefault()
+                    }
+                }
+
+                var tmpValue = this.value
+
+                if (this.onFormat) tmpValue = this.onFormat(tmpValue) || tmpValue
+
+                this.__value = tmpValue
+
+                this.__lastValue = this.__value
+
+                await this.fixSuffix()
+
+                if (textSelRange.start === textSelRange.end) {
+                    this.setSelectionRange(this.input, textSelRange.start + 1, textSelRange.start + 1)
+                } else {
+                    var selLen = textSelRange.end - textSelRange.start
+                    var selLenRightOffset = textLenBegin - selLen
+                    var suffixLength = 0
+                    if (this.suffix) suffixLength = this.suffix.length
+
+                    this.setSelectionRange(this.input, this.value.length - (selLenRightOffset + suffixLength), this.value.length - (selLenRightOffset + suffixLength))
+                }
+
+                if (this.onChanged) this.onChanged(this.stripSuffix())
+            }, 1)
         })
     }
 
@@ -119,6 +258,8 @@ class sk_ui_input extends sk_ui_component {
         var accepted = '+0123456789'
         var controlKeys = ['Backspace', 'ArrowLeft', 'ArrowRight', 'a', 'x', 'c', 'v', 'z']
         this.element.addEventListener('keydown', _e => {
+            if (this.onKeyUp) this.onKeyUp(_e)
+
             if (_e.code === 'Tab') return
             if (this.cancelled){
                 delete this.cancelled

@@ -7,6 +7,8 @@ class sk_ui_juce_param_component_draggable extends sk_ui_juce_param_component_ro
         this.valueRange = { min: 0, max: 100 }
         this.defaultValue = 0
 
+        this.invertY = true
+
         var mouseMoveHandler = async _e => {
             if (!this.__sk_ui_juce_param_component_root_mdPos) return
 
@@ -18,18 +20,39 @@ class sk_ui_juce_param_component_draggable extends sk_ui_juce_param_component_ro
 
             var pos = sk.interactions.getPos(_e)
 
-            var diff = {
-                x: this.__sk_ui_juce_param_component_root_mdPos.x - pos.x,
-                y: this.__sk_ui_juce_param_component_root_mdPos.y - pos.y
+            
+
+            if (_e.shiftKey) {
+                if (!this.shiftPressed) {
+                    this.shiftPressed = true
+                    this.__sk_ui_juce_param_component_root_mdPos = pos
+                    this.__sk_ui_juce_param_component_draggable_mdValue = this.value
+                }
+            } else {
+                if (this.shiftPressed) {
+                    this.__sk_ui_juce_param_component_root_mdPos = pos
+                    this.__sk_ui_juce_param_component_draggable_mdValue = this.value
+                    delete this.shiftPressed
+                }
             }
 
+            var diff = {
+                x: pos.x - this.__sk_ui_juce_param_component_root_mdPos.x,
+                y: pos.y - this.__sk_ui_juce_param_component_root_mdPos.y
+            }
+
+            if (this.invertX) diff.x = 0 - diff.x
+            if (this.invertY) diff.y = 0 - diff.y
+            
             var newVal = diff.y * this.dragSensitivity
+            if (this.shiftPressed) newVal = newVal * 0.2
 
             this.value = this.__sk_ui_juce_param_component_draggable_mdValue + newVal
         }
 
 
         this.__sk_ui_juce_param_component_root_mouseDown = _e => {
+            this.__last_mdValue = 0
             this.__sk_ui_juce_param_component_draggable_mdValue = this.value
 
             this.__sk_ui_juce_param_component_draggable_manuallyChanging = true
@@ -81,6 +104,7 @@ class sk_ui_juce_param_component_draggable extends sk_ui_juce_param_component_ro
 
         this.preValueEdited(value)
     }
+
     set value(val) {
         this.__value = val
 
@@ -88,12 +112,12 @@ class sk_ui_juce_param_component_draggable extends sk_ui_juce_param_component_ro
         if (val > this.valueRange.max) this.__value = this.valueRange.max
         if (val < this.valueRange.min) this.__value = this.valueRange.min
 
-        if (!this.__manuallyChanged) {
-            this.tweener.to(this.__value)
-        } else {
+        if (this.instant || this.__sk_ui_juce_param_component_draggable_manuallyChanging ) {
             this.tweener.target = this.__value
             this.tweener.current = this.__value
             this.preValueEdited(this.__value)
+        } else {
+            this.tweener.to(this.__value)
         }
     }
 
@@ -102,7 +126,10 @@ class sk_ui_juce_param_component_draggable extends sk_ui_juce_param_component_ro
         if (this.onUpdate) this.onUpdate(value)
     }
 
-    get value() { return this.__value }
+    get value() {
+        return this.tweener.current
+    }
+
     set rangeMinimum(val) {
         this.valueRange.min = val
         if (this.onUpdate) this.onUpdate(val)
