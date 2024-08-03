@@ -27,7 +27,7 @@ class sk_ui_vu_meter extends sk_ui_component {
         })
 
         this.add.fromNew(sk_ui_vu_meter_dbLabels)
-        
+
         this.rightSignal = this.add.fromNew(sk_ui_vu_meter_signal, _c => {
             _c.jcID = 'Output Volume'
 
@@ -87,11 +87,11 @@ class sk_ui_vu_meter_signal extends sk_ui_juce_param_component_root {
             this.gainSlider.gain += _e.deltaY / 10
             this.gainSlider.gain += _e.deltaY / 10
         })
-    }    
+    }
 }
 
 class sk_ui_vu_meter_gain_slider extends sk_ui_component {
-    constructor(opt){
+    constructor(opt) {
         super(opt)
 
         this.__gain = 100
@@ -133,13 +133,17 @@ class sk_ui_vu_meter_gain_slider extends sk_ui_component {
                 })
             })
 
-            _c.movable = 'y'
+
 
             const resizeObserver = new ResizeObserver((entries) => {
                 _c.movres_izer.mover.constraints.y.max = this.rect.height
             })
 
             resizeObserver.observe(this.element)
+
+
+            _c.movable = 'y'
+            _c.movres_izer.mover.offset.y = 5
 
             _c.movres_izer.mover.onStart = res => {
                 this.instantPosition = true
@@ -180,8 +184,8 @@ class sk_ui_vu_meter_gain_slider extends sk_ui_component {
 
     updateGainUI(gainVal) {
         var posY = this.mapGainToPx(gainVal)
-        this.cursor.style.top = posY + 'px'
-        this.cursorLabel.text = gainVal.toFixed(0) + '%'
+        this.cursor.style.top = Math.round(posY) + 'px'
+        this.cursorLabel.text = Math.round(gainVal) + '%'
 
         if (this.onChanged) this.onChanged(gainVal)
     }
@@ -265,7 +269,7 @@ class sk_ui_vu_meter_dbLabels extends sk_ui_canvas {
         this.update()
     }
 
-    onResize(){
+    onResize() {
 
     }
 }
