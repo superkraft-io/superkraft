@@ -66,6 +66,10 @@ class sk_ui_vu_meter_signal extends sk_ui_component {
             _c.onKeyDown = _e => {
                 if (_e.key === 'Escape') _c.cancelled = true
             }
+
+            _c.onChanged = val => {
+                this.channels.value = val
+            }
         })
 
 
