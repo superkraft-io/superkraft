@@ -63,11 +63,7 @@ class sk_ui_vu_meter_signal extends sk_ui_component {
             //_c.suffix = '%'
             _c.value = 100
 
-            _c.onKeyDown = _e => {
-                if (_e.key === 'Escape') _c.cancelled = true
-            }
-
-            _c.onChanged = val => {
+            _c.onValueSet = val => {
                 this.channels.value = val
             }
         })
@@ -282,6 +278,6 @@ class sk_ui_vu_meter_dbLabels extends sk_ui_canvas {
     }
 
     onResize() {
-
+        
     }
 }

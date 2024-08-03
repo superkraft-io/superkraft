@@ -3,7 +3,16 @@
     backdrop-filter: blur(8px);
     height: unset;
     border-radius: 6px;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.sk_ui_inputLabel:hover {
     background-color: rgb(100 100 100 / 25%);
+}
+
+.sk_ui_inputLabel:has(> #inputEl > input:focus) {
+    background-color: rgb(100 100 100 / 25%) !important;
 }
 
 sk_ui_inputLabel > #inputEl {

@@ -2,6 +2,9 @@
     z-index: 1;
 }
 
+.sk_ui_component_tabIndex-1:focus {
+    outline: none;
+}
 
 .sk_ui_component_spaced_horizontal > .sk_ui_component {
     margin-right: 12px;

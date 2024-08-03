@@ -437,6 +437,11 @@ class sk_ui_component {
 
         this.attributes.add({friendlyName: 'Tab Index', name: 'tabIndex', type: 'number', onSet: val => {
             this.element.setAttribute('tabIndex', val)
+            if (val === -1) {
+                this.classAdd('sk_ui_component_tabIndex-1')
+            } else {
+                this.classRemove('sk_ui_component_tabIndex-1')
+            }
         }})
 
         this.tabIndex = -1

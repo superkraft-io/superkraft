@@ -30,7 +30,7 @@ namespace SSC::JSON {
         i--;
       }
 
-      return output.substr(0, i);
+      return output.substr(0, i) + "0";
     }
 
     return output;
