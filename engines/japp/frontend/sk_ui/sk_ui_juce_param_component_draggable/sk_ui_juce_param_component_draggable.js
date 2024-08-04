@@ -87,47 +87,21 @@ class sk_ui_juce_param_component_draggable extends sk_ui_juce_param_component_ro
 
             this.value = this.defaultValue
         })
-
-        this.tweener = new SK_Tween({
-            speed: 20,
-            onChanged: res => {
-                this.preValueEdited(res.current)
-            }
-        })
-    }
-
-    initWithValue(value) {
-        this.value = value
-
-        this.tweener.target = value
-        this.tweener.current = value
-
-        this.preValueEdited(value)
     }
 
     set value(val) {
         this.__value = val
 
-
         if (val > this.valueRange.max) this.__value = this.valueRange.max
         if (val < this.valueRange.min) this.__value = this.valueRange.min
 
-        if (this.instant || this.__sk_ui_juce_param_component_draggable_manuallyChanging ) {
-            this.tweener.target = this.__value
-            this.tweener.current = this.__value
-            this.preValueEdited(this.__value)
-        } else {
-            this.tweener.to(this.__value)
-        }
-    }
+        if (!this.__sk_ui_juce_param_component_draggable_blockWrite) this.writeValue({ value: this.__value })
 
-    preValueEdited(value) {
-        if (this.onPreUpdate) this.onPreUpdate(value)
-        if (this.onUpdate) this.onUpdate(value)
+        if (this.onUpdate) this.onUpdate(this.__value)
     }
 
     get value() {
-        return this.tweener.current
+        return this.__value
     }
 
     set rangeMinimum(val) {
@@ -138,5 +112,21 @@ class sk_ui_juce_param_component_draggable extends sk_ui_juce_param_component_ro
     set rangeMaximum(val) {
         this.valueRange.max = val
         if (this.onUpdate) this.onUpdate(val)
+    }
+
+    async writeValue(opt) {
+        return this.__writeValue(opt)
+    }
+
+    async readValue() {
+        if (this.__sk_ui_juce_param_component_draggable_manuallyChanging || this.__busyReading) return
+
+        this.__sk_ui_juce_param_component_draggable_blockWrite = true
+
+        var normalizedValue = Number((await this.__readValue()).value)
+
+        this.value = sk.utils.map(normalizedValue, 0, 1, this.valueRange.min, this.valueRange.max)
+
+        this.__sk_ui_juce_param_component_draggable_blockWrite = false
     }
 }

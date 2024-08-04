@@ -14,12 +14,13 @@ SK_VB_cNA_handleParamComponentMouseEvent::SK_VB_cNA_handleParamComponentMouseEve
 void SK_VB_cNA_handleParamComponentMouseEvent::handle_IPC_Msg(String msgID, DynamicObject* obj, String& responseData) {
     var info = obj->getProperty("data");
 
-    String jcID = info.getProperty("jcID", "");
-    String event = info.getProperty("event", "");
-    String button = info.getProperty("button", "");
+    String juceParamID = info.getProperty("juceParamID", "");
+    RangedAudioParameter* param = vbe->editor->m_processor.state.getParameter(juceParamID);
 
-    int left = info.getProperty("left", "");
-    int top = info.getProperty("top", "");
+    if (param == NULL) return SK_IPC::respondWithError(msgID, "invalid_juce_param_id", responseData);
+
+    String event = info.getProperty("event", "");
+
 
     if (event == "contextmenu") {
         if (JUCEApplicationBase::isStandaloneApp()) {
@@ -27,7 +28,10 @@ void SK_VB_cNA_handleParamComponentMouseEvent::handle_IPC_Msg(String msgID, Dyna
             return;
         }
 
-        RangedAudioParameter* param = vbe->editor->m_processor.state.getParameter(jcID);
+        int left = info.getProperty("left", "");
+        int top = info.getProperty("top", "");
+
+       
         auto ctx = vbe->editor->getHostContext();
         std::unique_ptr<juce::HostProvidedContextMenu> menu = ctx->getContextMenuForParameter(param);
 
@@ -36,4 +40,20 @@ void SK_VB_cNA_handleParamComponentMouseEvent::handle_IPC_Msg(String msgID, Dyna
         return;
     }
 
+    String button = info.getProperty("button", "");
+
+    if (event == "mousedown") return param->beginChangeGesture();
+    if (event == "mouseup") return param->beginChangeGesture();
+
+    if (event == "write") {
+        float value = info.getProperty("value", 0);
+        const auto normalisedValue = param->convertTo0to1(value);
+        param->setValueNotifyingHost(normalisedValue);
+        return;
+    }
+
+    if (event == "read") {
+        responseData = "{\"value\": \"" + String(param->getValue()) + "\"}";
+        return;
+    }
 }

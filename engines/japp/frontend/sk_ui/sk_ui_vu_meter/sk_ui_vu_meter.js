@@ -9,41 +9,41 @@ class sk_ui_vu_meter extends sk_ui_component {
 
 
         this.leftSignal = this.add.fromNew(sk_ui_vu_meter_signal, _c => {
-            _c.jcID = 'Input Volume'
+            _c.juceParamID = 'Input Volume'
 
             _c.label.text = 'INPUT'
 
             _c.channels.gainSlider.onMouseDown = async val => {
-                await sk.nativeActions.writeParams({ componentID: 'volume', parameterID: 'in', mouse_state: 'down' })
+                //await sk.nativeActions.writeParams({ componentID: 'volume', parameterID: 'in', mouse_state: 'down' })
             }
 
             _c.channels.gainSlider.onMouseUp = async val => {
-                await sk.nativeActions.writeParams({ componentID: 'volume', parameterID: 'in', mouse_state: 'up' })
+                //await sk.nativeActions.writeParams({ componentID: 'volume', parameterID: 'in', mouse_state: 'up' })
             }
 
             _c.channels.gainSlider.onChanged = async val => {
-                await sk.nativeActions.writeParams({ inputVolume: val })
+                //await sk.nativeActions.writeParams({ inputVolume: val })
             }
         })
 
         this.add.fromNew(sk_ui_vu_meter_dbLabels)
 
         this.rightSignal = this.add.fromNew(sk_ui_vu_meter_signal, _c => {
-            _c.jcID = 'Output Volume'
+            _c.juceParamID = 'Output Volume'
 
             _c.label.text = 'OUTPUT'
             _c.channels.gainSlider.cursorSide = 'right'
 
             _c.channels.gainSlider.onMouseDown = async val => {
-                await sk.nativeActions.writeParams({ componentID: 'volume', parameterID: 'out', mouse_state: 'down' })
+                //await sk.nativeActions.writeParams({ componentID: 'volume', parameterID: 'out', mouse_state: 'down' })
             }
 
             _c.channels.gainSlider.onMouseUp = async val => {
-                await sk.nativeActions.writeParams({ componentID: 'volume', parameterID: 'out', mouse_state: 'up' })
+                //await sk.nativeActions.writeParams({ componentID: 'volume', parameterID: 'out', mouse_state: 'up' })
             }
 
             _c.channels.gainSlider.onChanged = async val => {
-                await sk.nativeActions.writeParams({ outputVolume: val })
+                //await sk.nativeActions.writeParams({ outputVolume: val })
             }
         })
     }
@@ -107,7 +107,6 @@ class sk_ui_vu_meter_signal_channels extends sk_ui_juce_param_component_draggabl
         this.valueRange.max = 150
 
         this.defaultValue = 100
-        this.initWithValue(this.defaultValue)
     }
 
     onUpdate(val) {

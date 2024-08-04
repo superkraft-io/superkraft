@@ -122,9 +122,6 @@ class sk_ui_knob extends sk_ui_juce_param_component_draggable {
 
 
         this.angleOffset = -135
-
-
-        this.initWithValue(this.defaultValue)
     }
 
     set angleOffset(val) {
@@ -140,12 +137,9 @@ class sk_ui_knob extends sk_ui_juce_param_component_draggable {
         this.progressBar.size = this.rect.width + this.__progressbarOffset
     }
     
-    onPreUpdate(val) {
-        this.valueInput.value = (this.formatValueLabel ? this.formatValueLabel(val) : val)
-    }
 
     onUpdate(value) {
-        
+        this.valueInput.value = (this.formatValueLabel ? this.formatValueLabel(value) : value)
 
         var angle = sk.utils.map(value, this.valueRange.min, this.valueRange.max, 0, this.angleRange.max)
 
