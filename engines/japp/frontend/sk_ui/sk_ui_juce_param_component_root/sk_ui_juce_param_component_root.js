@@ -14,7 +14,8 @@
         var step = async _ts => {
             for (var i in this.components) {
                 var component = this.components[i]
-                if (!component.busyReading) await component.readValue()
+                if (component.readValue) component.readValue()
+                else component.__readValue()
             }
 
             window.requestAnimationFrame(step)
@@ -75,58 +76,53 @@ class sk_ui_juce_param_component_root extends sk_ui_component {
 
             await sk.nativeActions.handleParamComponentMouseEvent({ juceParamID: target.juceParamID, event: 'mousedown' })
         })
+
+        
+
+        target.__writeValue = async (opt = {}) => {
+            if (sk.juceParamMngr.onParameterWritten) sk.juceParamMngr.onParameterWritten(target, opt)
+
+            var res = await sk.nativeActions.handleParamComponentMouseEvent({
+                ...{
+                    juceParamID: target.__juceParamID,
+                    event: 'write'
+                },
+                ...opt
+            })
+
+            return res
+        }
+
+        target.__readValue = async (opt = {}) => {
+
+            var res = await sk.nativeActions.handleParamComponentMouseEvent({
+                ...{
+                    juceParamID: target.__juceParamID,
+                    event: 'read'
+                },
+                ...opt
+            })
+
+            if (sk.juceParamMngr.onParameterRead) sk.juceParamMngr.onParameterRead(target, opt, res)
+
+            return res
+        }
+
+        Object.defineProperty(target, 'juceParamID', {
+            set(val) {
+                target.__juceParamID = val
+                sk.juceParamMngr.add(val, target)
+            },
+
+            get() {
+                return target.__juceParamID;
+            }
+        });
     }
 
     constructor(opt) {
         super(opt)
 
-        if (!sk.juceParamMngr) sk.juceParamMngr = new sk_ui_juceParamManager()
-
         sk_ui_juce_param_component_root.configRootHandlers(this)
-    }
-
-    set juceParamID(val) {
-        this.__juceParamID = val
-        sk.juceParamMngr.add(val, this)
-    }
-
-
-    async writeValue() {
-        await sk.nativeActions.handleParamComponentMouseEvent({
-            juceParamID: this.__juceParamID,
-            event: 'write',
-            value: sk.utils.map(this.value, this.valueRange.min, this.valueRange.max, 0, 1)
-        })
-    }
-
-    async __writeValue(opt = {}) {
-        var res = await sk.nativeActions.handleParamComponentMouseEvent({
-            ...{
-                juceParamID: this.__juceParamID,
-                event: 'write'
-            },
-            ...opt
-        })
-
-        return res
-    }
-
-    async __readValue(opt = {}) {
-        if (this.__busyReading) return
-
-        this.__busyReading = true
-
-        var res = await sk.nativeActions.handleParamComponentMouseEvent({
-            ...{
-                juceParamID: this.__juceParamID,
-                event: 'read'
-            },
-
-            ...opt
-        })
-
-        this.__busyReading = false
-
-        return res
     }
 }

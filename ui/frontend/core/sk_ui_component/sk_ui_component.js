@@ -619,6 +619,15 @@ class sk_ui_component {
         return _classHierarchy
     }
 
+    set focused(val) {
+        if (val) this.element.focus()
+        else this.element.blur()
+    }
+
+    get focused() {
+        return document.activeElement.id === this.element.id
+    }
+
     getPath(opt = {}){
         var path = []
 

@@ -21,6 +21,12 @@ void SK_VB_cNA_handleParamComponentMouseEvent::handle_IPC_Msg(String msgID, Dyna
 
     String event = info.getProperty("event", "");
 
+    if (event == "read") {
+        responseData = "{\"value\": \"" + String(param->getValue()) + "\"}";
+        DBG(responseData);
+        return;
+    }
+
 
     if (event == "contextmenu") {
         if (JUCEApplicationBase::isStandaloneApp()) {
@@ -40,10 +46,9 @@ void SK_VB_cNA_handleParamComponentMouseEvent::handle_IPC_Msg(String msgID, Dyna
         return;
     }
 
-    String button = info.getProperty("button", "");
 
     if (event == "mousedown") return param->beginChangeGesture();
-    if (event == "mouseup") return param->beginChangeGesture();
+    if (event == "mouseup") return param->endChangeGesture();
 
     if (event == "write") {
         float value = info.getProperty("value", 0);
@@ -52,8 +57,5 @@ void SK_VB_cNA_handleParamComponentMouseEvent::handle_IPC_Msg(String msgID, Dyna
         return;
     }
 
-    if (event == "read") {
-        responseData = "{\"value\": \"" + String(param->getValue()) + "\"}";
-        return;
-    }
+   
 }

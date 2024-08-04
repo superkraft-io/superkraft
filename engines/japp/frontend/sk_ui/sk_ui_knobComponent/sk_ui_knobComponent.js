@@ -36,6 +36,12 @@ class sk_ui_knobComponent extends sk_ui_component {
 
                 if (this.onBypassChanged) this.onBypassChanged(this.bypassed)
             }
+
+            _c.setValueFromExternalSource = value => {
+                this.bypassed = value
+                _c.ums.set('onBypassStates', { bypassed: this.bypassed, components: [this.componentID] })
+                if (this.onBypassChanged) this.onBypassChanged(this.bypassed)
+            }
         })
 
         this.knob = this.add.knob(_c => {

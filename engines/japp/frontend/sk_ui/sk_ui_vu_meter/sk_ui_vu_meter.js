@@ -110,8 +110,14 @@ class sk_ui_vu_meter_signal_channels extends sk_ui_juce_param_component_draggabl
     }
 
     onUpdate(val) {
-        this.parent.valueLabel.value = Math.round(val)
+        if (!this.parent.valueLabel.focused) this.parent.valueLabel.value = Math.round(val)
         this.gainSlider.updateGainUI(val)
+    }
+
+    setValueFromExternalSource(value) {
+        this.value = value
+        this.onUpdate(value)
+        this.applyValue()
     }
 }
 

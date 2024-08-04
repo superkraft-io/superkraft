@@ -48,6 +48,7 @@ class sk_ui_juce_param_component_draggable extends sk_ui_juce_param_component_ro
             if (this.shiftPressed) newVal = newVal * 0.2
 
             this.value = this.__sk_ui_juce_param_component_draggable_mdValue + newVal
+            this.applyValue()
         }
 
 
@@ -73,12 +74,13 @@ class sk_ui_juce_param_component_draggable extends sk_ui_juce_param_component_ro
 
         this.element.addEventListener('wheel', _e => {
             this.value += (sk.os === 'win' ? 0 - _e.deltaY : _e.deltaY) / (_e.shiftKey ? 100 : 10)
+            this.applyValue()
         })
 
         this.element.addEventListener('keydown', _e => {
             if (_e.code === 'ArrowUp' || _e.code === 'ArrowRight') this.value += (_e.shiftKey ? 1 : 5)
             else if (_e.code === 'ArrowDown' || _e.code === 'ArrowLeft') this.value -= (_e.shiftKey ? 1 : 5)
-
+            this.applyValue()
         })
 
         this.element.addEventListener('dblclick', _e => {
@@ -86,7 +88,13 @@ class sk_ui_juce_param_component_draggable extends sk_ui_juce_param_component_ro
             _e.stopPropagation()
 
             this.value = this.defaultValue
+
+            this.applyValue()
         })
+    }
+
+    applyValue() {
+        this.writeValue({ value: this.__value })
     }
 
     set value(val) {
@@ -94,8 +102,6 @@ class sk_ui_juce_param_component_draggable extends sk_ui_juce_param_component_ro
 
         if (val > this.valueRange.max) this.__value = this.valueRange.max
         if (val < this.valueRange.min) this.__value = this.valueRange.min
-
-        if (!this.__sk_ui_juce_param_component_draggable_blockWrite) this.writeValue({ value: this.__value })
 
         if (this.onUpdate) this.onUpdate(this.__value)
     }
@@ -128,5 +134,10 @@ class sk_ui_juce_param_component_draggable extends sk_ui_juce_param_component_ro
         this.value = sk.utils.map(normalizedValue, 0, 1, this.valueRange.min, this.valueRange.max)
 
         this.__sk_ui_juce_param_component_draggable_blockWrite = false
+    }
+
+    setValueFromExternalSource(value) {
+        this.value = value
+        this.applyValue()
     }
 }
