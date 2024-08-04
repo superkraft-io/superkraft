@@ -42,7 +42,7 @@ class sk_ui_knob extends sk_ui_juce_param_component_draggable {
         this.ticksCanvas = this.add.fromNew(sk_ui_knob_ticks)
 
         this.knobFaceImg = this.add.image(_c => {
-            _c.classAdd('sk_ui_knob_face')
+            _c.classAdd('sk_ui_knob_face sk_ui_shadow_black')
             _c.tabIndex = 1
         })
 
@@ -51,6 +51,14 @@ class sk_ui_knob extends sk_ui_juce_param_component_draggable {
             _c.animate = false
         })
 
+
+
+        this.innerGlow = this.add.fromNew(sk_ui_knob_innerGlow, _c => {
+            _c.animate = false
+        })
+        this.outerGlow = this.add.fromNew(sk_ui_knob_outerGlow, _c => {
+            _c.animate = false
+        })
 
 
 
@@ -158,6 +166,9 @@ class sk_ui_knob extends sk_ui_juce_param_component_draggable {
 
         this.knobFaceTextureImg.style.transform = `rotate(${angle}deg)`;
 
+        this.innerGlow.angle = angle - 135
+        this.outerGlow.angle = angle - 135
+
         if (this.onChanged) this.onChanged(value)
     }
 
@@ -194,6 +205,12 @@ class sk_ui_knob extends sk_ui_juce_param_component_draggable {
     set ticks(arr) {
         this.__ticks = arr
         this.ticksCanvas.draw()
+    }
+
+    set indicationColor(val) {
+        this.progressBar.color = val
+        this.innerGlow.color = val
+        this.outerGlow.color = val
     }
 }
 
@@ -241,5 +258,57 @@ class sk_ui_knob_ticks extends sk_ui_canvas {
         const x = centerX + distance * Math.cos(angleInRadians);
         const y = centerY + distance * Math.sin(angleInRadians);
         return { x, y };
+    }
+}
+
+class sk_ui_knob_innerGlow extends sk_ui_component {
+    constructor(opt) {
+        super(opt)
+
+        this.color = 'white'
+    }
+
+    set color(val) {
+        this.__color = val
+        this.style.boxShadow = `inset 0px -3px 8px 2px ${this.__color}`;
+    }
+
+    set angle(val) {
+        var targetVal = val
+        if (val < 0) {
+            this.style.transform = 'scaleX(-1)'
+            targetVal = 0 - val
+        } else this.style.transform = 'scaleX(1)'
+
+        this.style.mask = `conic-gradient(black 0deg, black ${targetVal}deg, transparent 0deg)`;
+    }
+}
+
+class sk_ui_knob_outerGlow extends sk_ui_component {
+    constructor(opt) {
+        super(opt)
+
+
+        this.glow = this.add.component(_c => {
+            _c.classAdd('sk_ui_knob_outerGlow_glow')
+            _c.animate = false
+        })
+
+
+        this.color = 'white'
+    }
+
+    set color(val) {
+        this.glow.backgroundColor = val
+    }
+
+    set angle(val) {
+        var targetVal = val
+        if (val < 0) {
+            this.style.transform = 'scaleX(-1)'
+            targetVal = 0 - val
+        } else this.style.transform = 'scaleX(1)'
+
+        this.style.mask = `conic-gradient(black 0deg, black ${targetVal}deg, transparent 0deg)`;
     }
 }
