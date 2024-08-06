@@ -328,9 +328,9 @@ class sk_ui_vu_meter_dbLabels extends sk_ui_canvas {
     onResize() {
         var ticks = [
             { text: '+20', pos: 0 },
-            { text: '+10', pos: 12.5 },
+            { text: '+15', pos: 10 },
             { text: '0', pos: 25 },
-            { text: '-10', pos: 32.5 },
+            { text: '-25', pos: 43.75 },
             { text: '-50', pos: 62.5 },
             { text: '-∞', pos: 100 },
 
