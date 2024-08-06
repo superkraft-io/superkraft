@@ -1,4 +1,4 @@
-class sk_ui_vu_meter extends sk_ui_component {
+﻿class sk_ui_vu_meter extends sk_ui_component {
     constructor(opt) {
         super(opt)
 
@@ -322,12 +322,24 @@ class sk_ui_vu_meter_dbLabels extends sk_ui_canvas {
     constructor(opt) {
         super(opt)
 
-        this.styling += ' fullheight'
-
         this.update()
     }
 
     onResize() {
-        
+        var ticks = [
+            { text: '+20', pos: 0 },
+            { text: '+10', pos: 12.5 },
+            { text: '0', pos: 25 },
+            { text: '-10', pos: 32.5 },
+            { text: '-50', pos: 62.5 },
+            { text: '-∞', pos: 100 },
+
+        ]
+
+        for (var i in ticks) {
+            var tick = ticks[i]
+
+            this.text({ text: tick.text, font: {family: 'Kanit', size: 10, color: 'grey'}, top: sk.utils.map(tick.pos, 0, 100, 0, this.rect.height-14)})
+        }
     }
 }

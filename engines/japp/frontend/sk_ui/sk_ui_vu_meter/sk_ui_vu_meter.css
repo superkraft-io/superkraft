@@ -109,3 +109,9 @@
     height: 1px;
     background-color: white;
 }
+
+.sk_ui_vu_meter_dbLabels {
+    width: 22px;
+    height: 312px;
+    margin-top: 14px;
+}
