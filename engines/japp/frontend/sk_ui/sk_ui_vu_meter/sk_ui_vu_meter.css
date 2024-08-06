@@ -101,3 +101,11 @@
     transform: rotate(180deg);
     text-align: left;
 }
+
+
+.sk_ui_vu_meter_peakHoldHandle {
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background-color: white;
+}

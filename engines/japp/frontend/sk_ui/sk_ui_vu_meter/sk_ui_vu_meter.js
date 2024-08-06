@@ -14,15 +14,12 @@ class sk_ui_vu_meter extends sk_ui_component {
             _c.label.text = 'INPUT'
 
             _c.channels.gainSlider.onMouseDown = async val => {
-                //await sk.nativeActions.writeParams({ componentID: 'volume', parameterID: 'in', mouse_state: 'down' })
             }
 
             _c.channels.gainSlider.onMouseUp = async val => {
-                //await sk.nativeActions.writeParams({ componentID: 'volume', parameterID: 'in', mouse_state: 'up' })
             }
 
             _c.channels.gainSlider.onChanged = async val => {
-                //await sk.nativeActions.writeParams({ inputVolume: val })
             }
         })
 
@@ -35,15 +32,12 @@ class sk_ui_vu_meter extends sk_ui_component {
             _c.channels.gainSlider.cursorSide = 'right'
 
             _c.channels.gainSlider.onMouseDown = async val => {
-                //await sk.nativeActions.writeParams({ componentID: 'volume', parameterID: 'out', mouse_state: 'down' })
             }
 
             _c.channels.gainSlider.onMouseUp = async val => {
-                //await sk.nativeActions.writeParams({ componentID: 'volume', parameterID: 'out', mouse_state: 'up' })
             }
 
             _c.channels.gainSlider.onChanged = async val => {
-                //await sk.nativeActions.writeParams({ outputVolume: val })
             }
         })
     }
@@ -262,6 +256,8 @@ class sk_ui_vu_meter_signal_channel extends sk_ui_component {
             })
         })
 
+        this.peakHoldHandle = this.add.fromNew(sk_ui_vu_meter_peakHoldHandle)
+
         this.value = 0
     }
 
@@ -269,6 +265,8 @@ class sk_ui_vu_meter_signal_channel extends sk_ui_component {
         this.__value = val
         this.highlight.style.maskImage = `linear-gradient(to bottom, transparent, transparent ${100 - val}%, white ${100 - val}%, white)`
         this.highlightGlow.style.maskImage = `linear-gradient(to bottom, transparent, transparent ${100 - val}%, white ${100 - val}%, white)`
+
+        this.peakHoldHandle.value = val
     }
 
     get value() {
@@ -276,6 +274,49 @@ class sk_ui_vu_meter_signal_channel extends sk_ui_component {
     }
 }
 
+class sk_ui_vu_meter_peakHoldHandle extends sk_ui_component {
+    constructor(opt) {
+        super(opt)
+
+        this.animate = false
+    }
+
+    set value(val) {
+        if (val <= this.__value) return;
+
+        this.__value = val
+        this.style.bottom = val + '%'
+
+        this.resetDropTimer()
+    }
+
+    resetDropTimer() {
+
+        clearInterval(this.__startDroppingTimer)
+
+        clearTimeout(this.__startDropDelayTimer)
+        this.__startDropDelayTimer = setTimeout(() => {
+            this.startDropTimer()
+        }, 3000)
+    }
+
+    startDropTimer() {
+        this.__startDroppingTimer = setInterval(() => {
+            this.__value -= 0.2
+            if (this.__value < 0) {
+                this.__value = 0
+                clearInterval(this.__startDroppingTimer)
+                return
+            }
+
+            this.update()
+        }, 30)
+    }
+
+    update() {
+        this.style.bottom = this.__value + '%'
+    }
+}
 
 class sk_ui_vu_meter_dbLabels extends sk_ui_canvas {
     constructor(opt) {
