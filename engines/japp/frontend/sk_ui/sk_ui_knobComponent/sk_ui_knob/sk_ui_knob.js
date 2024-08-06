@@ -41,6 +41,10 @@ class sk_ui_knob extends sk_ui_juce_param_component_draggable {
 
         this.ticksCanvas = this.add.fromNew(sk_ui_knob_ticks)
 
+        this.knobTicksCanvas = this.add.fromNew(sk_ui_knob_knobTicks, _c => {
+            _c.animate = false
+        })
+
         this.knobFaceImg = this.add.image(_c => {
             _c.classAdd('sk_ui_knob_face sk_ui_shadow_black')
             _c.tabIndex = 1
@@ -121,6 +125,7 @@ class sk_ui_knob extends sk_ui_juce_param_component_draggable {
             this.progressBarPlaceholder.size = this.rect.width + this.__progressbarOffset
 
             this.ticksCanvas.draw()
+            this.knobTicksCanvas.draw()
         })
 
         resizeObserver.observe(this.element)
@@ -168,6 +173,7 @@ class sk_ui_knob extends sk_ui_juce_param_component_draggable {
 
         this.innerGlow.angle = angle - 135
         this.outerGlow.angle = angle - 135
+        this.knobTicksCanvas.style.transform = `rotate(${angle}deg)`;
 
         if (this.onChanged) this.onChanged(value)
     }
@@ -234,7 +240,7 @@ class sk_ui_knob_ticks extends sk_ui_canvas {
 
 
 
-        var degreesPerTick = (this.parent.angleRange.max - this.parent.angleRange.min) / tickCount
+        var degreesPerTick = ((this.parent.angleRange.max - this.parent.angleRange.min)) / tickCount
 
         for (var i = 0; i <= tickCount; i++) {
             var tick = this.parent.__ticks[i]
@@ -248,13 +254,64 @@ class sk_ui_knob_ticks extends sk_ui_canvas {
                 from: startPoint,
                 to: endPoint,
                 color: tick.color || 'grey',
-                thickness: tick.thickness || 2
+                thickness: tick.thickness || 1
             })
         }
     }
 
     calculatePoint(centerX, centerY, distance, angleInDegrees) {
         const angleInRadians = (-90 + angleInDegrees + this.parent.__angleOffset) * (Math.PI / 180);
+        const x = centerX + distance * Math.cos(angleInRadians);
+        const y = centerY + distance * Math.sin(angleInRadians);
+        return { x, y };
+    }
+}
+
+class sk_ui_knob_knobTicks extends sk_ui_canvas {
+    constructor(opt) {
+        super(opt)
+
+        this.draw()
+
+    }
+
+    draw() {
+        this.clear()
+        var rect = this.rect
+        var centerPoint = { x: rect.width / 2, y: rect.height / 2 }
+        var tickCount = 360 / 4
+        var degreesPerTick = 360 / tickCount
+
+        var tickLength = 3
+
+        for (var i = 0; i < tickCount; i++) {
+            var angle = degreesPerTick * i
+
+            var startPoint = this.calculatePoint(centerPoint.x, centerPoint.y, this.parent.rect.width / 2 - tickLength, angle)
+            var endPoint = this.calculatePoint(centerPoint.x, centerPoint.y, this.parent.rect.width / 2, angle)
+
+            this.line({
+                from: startPoint,
+                to: endPoint,
+                color: 'white',
+                thickness: 1
+            })
+
+
+            var startPoint = this.calculatePoint(centerPoint.x, centerPoint.y, this.parent.rect.width / 2 - tickLength, angle + 1)
+            var endPoint = this.calculatePoint(centerPoint.x, centerPoint.y, this.parent.rect.width / 2, angle + 1)
+
+            this.line({
+                from: startPoint,
+                to: endPoint,
+                color: 'black',
+                thickness: 1
+            })
+        }
+    }
+
+    calculatePoint(centerX, centerY, distance, angleInDegrees) {
+        const angleInRadians = angleInDegrees * (Math.PI / 180);
         const x = centerX + distance * Math.cos(angleInRadians);
         const y = centerY + distance * Math.sin(angleInRadians);
         return { x, y };

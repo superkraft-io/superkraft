@@ -72,6 +72,17 @@
     pointer-events: none;
 }
 
+.sk_ui_knob_knobTicks {
+    position: absolute;
+    width: 110%;
+    height: 110%;
+    pointer-events: none;
+    z-index: 99999;
+    opacity: 0.5;
+    mix-blend-mode: luminosity;
+    filter: contrast(0.3);
+}
+
 .sk_ui_knob_input {
     position: absolute;
     width: 52px;

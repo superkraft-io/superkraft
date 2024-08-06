@@ -136,12 +136,22 @@ auto SK_VB_ViewMngr_View::loadResourceFrom_Disk(const juce::String& url) -> std:
 
 
 auto SK_VB_ViewMngr_View::loadResourceFrom_BinaryData(const juce::String& url) -> std::optional<juce::WebBrowserComponent::Resource> {
-    /*for (const auto& [route, resource] : s_resources) {
-        if (url == route) {
-            return resource;
+    if (url.substring(0, 8) == "/sk_vfs/") {
+        String vfsPath = url.substring(1, url.length());
+        
+        SK_VB_VFS_File* file = vbe->sk_c_api->sk->vfs->findByPath(vfsPath);
+        
+        if (file == nullptr) return std::nullopt;
+
+        return file->toResource();
+    }
+    
+    for (const auto& [route, resource] : vbe->sk_bd.fileEntries) {
+        if (route == url.replace("//", "/")) {
+            return resource->toResource();;
         }
     }
-    */
+
     return std::nullopt;
 }
 

@@ -254,17 +254,21 @@ class sk_ui_vu_meter_signal_channel extends sk_ui_component {
             _c.classAdd('sk_ui_vu_meter_signal_channel_signal sk_ui_vu_meter_signal_channel_signal_gradient sk_ui_vu_meter_signal_channel_signal_highlight')
         })
 
-        this.__value = 0
+        this.highlightGlowWrapper = this.add.component(_c => {
+            _c.classAdd('sk_ui_vu_meter_signal_channel_signal_highlight_glowWrapper')
+            this.highlightGlow = _c.add.component(_c => {
+                _c.styling += ' fullwidth fullheight'
+                _c.classAdd('sk_ui_vu_meter_signal_channel_signal sk_ui_vu_meter_signal_channel_signal_gradient sk_ui_vu_meter_signal_channel_signal_highlight_glow')
+            })
+        })
 
-        setInterval(() => {
-            this.value += 10
-            if (this.value > 100) this.value = 0
-        }, 500)
+        this.value = 0
     }
 
     set value(val) {
         this.__value = val
         this.highlight.style.maskImage = `linear-gradient(to bottom, transparent, transparent ${100 - val}%, white ${100 - val}%, white)`
+        this.highlightGlow.style.maskImage = `linear-gradient(to bottom, transparent, transparent ${100 - val}%, white ${100 - val}%, white)`
     }
 
     get value() {

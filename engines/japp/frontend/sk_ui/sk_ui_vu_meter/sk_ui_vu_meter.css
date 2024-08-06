@@ -37,6 +37,17 @@
     position: absolute;
 }
 
+.sk_ui_vu_meter_signal_channel_signal_highlight_glowWrapper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    filter: blur(25px);
+    opacity: 0.5;
+    z-index: -1;
+}
+
+
+
 
 .sk_ui_vu_meter_gain_slider {
     position: absolute;
