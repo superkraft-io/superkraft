@@ -40,7 +40,7 @@ class sk_ui_section extends sk_ui_component {
 
             _c.rightSide = _c.add.component(_c => {
                 _c.styling += ' fullheight'
-                _c.padding = 4
+                _c.padding = 2
             })
         })
 
@@ -70,7 +70,7 @@ class sk_ui_section extends sk_ui_component {
             _c.compact = true
         })
 
-        this.titleSize = 16
+        this.titleSize = 14
     }
 
     set title(val) {

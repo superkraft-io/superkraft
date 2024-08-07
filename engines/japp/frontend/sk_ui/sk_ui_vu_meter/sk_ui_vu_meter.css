@@ -4,7 +4,7 @@
 
 .sk_ui_vu_meter_signal_channel {
     position: relative;
-    width: 24px;
+    width: 16px;
     height: 100%;
 }
 
@@ -13,20 +13,31 @@
 }
 
 .sk_ui_vu_meter_signal_channel_signal_gradient {
-    background: linear-gradient(0deg, #78F063 0%, #32BE00 75%, #F0FF46 75%, #FFFF00 90%, #FF4646 90%, #FF0000 100%)
+    background: linear-gradient(0deg, #78F063 0%, #32BE00 75%, #F0FF46 75%, #FFFF00 94%, #FF4646 94%, #FF0000 100%)
 }
 
 .sk_ui_vu_meter_signal_channel_signal_gradient_titaniumPlanet {
-    background: linear-gradient(0deg, #5394c3 0%, #0078be 75%, #49ff46 75%, #ffca00 90%, #680000 90%, #ff0000 100%)
+    background: linear-gradient(0deg, #5394c3 0%, #0078be 75%, #49ff46 75%, #ffca00 94%, #680000 94%, #ff0000 100%)
 }
 
 .sk_ui_vu_meter_signal_channel_signal_gradient_bubblegum {
-    background: linear-gradient(0deg, #f063b6 0%, #005ebe 75%, #46ff65 75%, #00e5ff 90%, #fff146 90%, #ff008b 100%)
+    background: linear-gradient(0deg, #f063b6 0%, #005ebe 75%, #46ff65 75%, #00e5ff 94%, #fff146 94%, #ff008b 100%)
 }
 
 
 .sk_ui_vu_meter_signal_valueLabel {
+    position: relative;
+}
 
+.sk_ui_vu_meter_signal_valueLabel_suffix {
+    position: absolute;
+    right: 0px;
+    margin-right: 3px;
+}
+
+.sk_ui_vu_meter_signal_label {
+    font-size: 12px;
+    color: grey;
 }
 
 .sk_ui_vu_meter_signal_channel_signal_background {
@@ -111,7 +122,8 @@
 }
 
 .sk_ui_vu_meter_dbLabels {
-    width: 22px;
+    width: 28px;
     height: 312px;
     margin-top: 14px;
+    margin-right: 6px !important;
 }

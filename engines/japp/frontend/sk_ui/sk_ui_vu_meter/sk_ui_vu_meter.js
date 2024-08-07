@@ -23,7 +23,6 @@
             }
         })
 
-        this.add.fromNew(sk_ui_vu_meter_dbLabels)
 
         this.rightSignal = this.add.fromNew(sk_ui_vu_meter_signal, _c => {
             _c.juceParamID = 'Output Volume'
@@ -40,6 +39,8 @@
             _c.channels.gainSlider.onChanged = async val => {
             }
         })
+
+        this.add.fromNew(sk_ui_vu_meter_dbLabels)
     }
 }
 
@@ -54,8 +55,12 @@ class sk_ui_vu_meter_signal extends sk_ui_component {
             _c.min = 0
             _c.max = 150
 
-            //_c.suffix = '%'
             _c.value = 100
+
+            _c.add.label(_c => {
+                _c.classAdd('sk_ui_vu_meter_signal_valueLabel_suffix')
+                _c.text = '%'
+            })
 
             _c.onValueSet = val => {
                 this.channels.value = val
@@ -66,6 +71,7 @@ class sk_ui_vu_meter_signal extends sk_ui_component {
         this.channels = this.add.fromNew(sk_ui_vu_meter_signal_channels)
 
         this.label = this.add.label(_c => {
+            _c.classAdd('sk_ui_vu_meter_signal_label')
             _c.text = 'SIGNAL'
         })
     }
@@ -80,7 +86,6 @@ class sk_ui_vu_meter_signal_channels extends sk_ui_juce_param_component_draggabl
 
         this.styling += ' fullheight'
 
-        this.width = 52
 
         this.vertical = false
         this.compact = true
@@ -330,8 +335,9 @@ class sk_ui_vu_meter_dbLabels extends sk_ui_canvas {
             { text: '+20', pos: 0 },
             { text: '+15', pos: 10 },
             { text: '0', pos: 25 },
-            { text: '-25', pos: 43.75 },
-            { text: '-50', pos: 62.5 },
+            { text: '-25', pos: 39 },
+            { text: '-50', pos: 52.5 },
+            { text: '-100', pos: 80 },
             { text: '-∞', pos: 100 },
 
         ]
