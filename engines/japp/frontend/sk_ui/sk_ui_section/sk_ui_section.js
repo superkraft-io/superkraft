@@ -2,6 +2,8 @@ class sk_ui_section extends sk_ui_component {
     constructor(opt) {
         super(opt)
 
+        this.compact = true
+
         this.top = this.add.component(_c => {
             _c.classAdd('sk_ui_section_top')
 

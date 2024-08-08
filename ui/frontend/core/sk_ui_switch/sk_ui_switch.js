@@ -54,5 +54,21 @@ class sk_ui_switch extends sk_ui_component {
                 this.classAdd('sk_ui_switch_flipped')
             }
         })
+
+        this.attributes.add({
+            friendlyName: 'Size',
+            name: 'size',
+            type: 'number',
+
+            onSet: val => {
+                this.style.width = Math.round(val * 1.75) + 'px'
+                this.style.height = val + 'px'
+                this.style.padding = '2px'
+                this.style.borderRadius = val + 'px'
+
+                this.handle.style.borderRadius = val + 'px'
+                this.handle.style.width = val - 4 + 'px'
+            }
+        })
     }
 }

@@ -32,6 +32,7 @@
 .sk_ui_vu_meter_signal_valueLabel_suffix {
     position: absolute;
     right: 0px;
+    margin-top: 2px;
     margin-right: 3px;
 }
 
