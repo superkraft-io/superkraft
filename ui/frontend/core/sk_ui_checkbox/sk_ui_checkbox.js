@@ -5,7 +5,14 @@ class sk_ui_checkbox extends sk_ui_button {
         this.styling = 'left middle fullwidth'
 
         this.label.wrap = true
-        
+
+        this.add.component(_c => {
+            _c.classAdd('sk_ui_checkbox_iconContainer')
+            var tmpEl = _c.add.component()
+            _c.moveBefore(this.label)
+            this._icon.moveBefore(tmpEl)
+            tmpEl.remove()
+        })
         this._icon.iconElement.classList.add('transition')
 
         this.icon = ''
@@ -52,6 +59,16 @@ class sk_ui_checkbox extends sk_ui_button {
 
         this.attributes.add({friendlyName: 'Icon', name: 'icon', type: 'text', onSet: val => {
             this.classAdd('sk_ui_checkbox_shape_' + val)
+        }})
+
+        this.attributes.add({friendlyName: 'Checkbox Size', name: 'checkboxSize', type: 'number', onSet: val => {
+            this.label.size = val
+            this._icon.style.minWidth = val + 'px'
+            this._icon.style.minHeight = val + 'px'
+            this._icon.style.maxWidth = val + 'px'
+            this._icon.style.maxHeight = val + 'px'
+            this._icon.style.fontSize = val + 'px'
+            this._icon.size = val
         }})
     }
 }

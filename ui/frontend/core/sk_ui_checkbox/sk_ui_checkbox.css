@@ -10,21 +10,23 @@
     text-align: left;
 }
 
-.sk_ui_checkbox:hover > .sk_ui_icon {
+.sk_ui_checkbox:hover > .sk_ui_checkbox_iconContainer {
     border: solid 1px white;
 }
 
-.sk_ui_checkbox > .sk_ui_icon {
+.sk_ui_checkbox_iconContainer {
     border: solid 1px rgb(89, 89, 89) !important;
     border-radius: 4px;
+}
+
+.sk_ui_checkbox_iconContainer > .sk_ui_icon {
     padding: 2px;
     font-size: 10px;
-
     min-width: 16px;
     min-height: 16px
 }
 
-.sk_ui_checkbox > .sk_ui_icon.sk_ui_safari {
+.sk_ui_checkbox_iconContainer > .sk_ui_icon.sk_ui_safari {
     padding-top: 3px;
 }
 
@@ -34,6 +36,6 @@
 }
 
 
-.sk_ui_checkbox_shape_circle > .sk_ui_icon {
+.sk_ui_checkbox_shape_circle > .sk_ui_checkbox_iconContainer {
     border-radius: 100%;
 }
