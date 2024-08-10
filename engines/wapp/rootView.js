@@ -11,29 +11,29 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                 frontend: {
                     view: this.info.route + 'vfe_frontend/',
 
-                    sk: (this.sk.cdn ? this.sk.cdn.route + 'sk_cdn/sk_frontend' : '/sk'),
+                    sk: (this.sk.info.cdn ? this.sk.info.cdn.route + 'sk_cdn/sk_frontend' : '/sk'),
 
-                    ui: this.sk.ui.routes.core,
+                    ui: this.sk.info.ui.routes.core,
                     ui_shared: 'sk_ui_shared/',
                     ui_global: 'sk_ui_global/',
 
                     
 
-                    app_root: (this.sk.cdn ? this.sk.cdn.route + 'sk_cdn/app_frontend/' : '/'),
-                    app: (this.sk.cdn ? this.sk.cdn.route + 'sk_cdn/app_frontend/' : '/'),
-                    global: (this.sk.cdn ? this.sk.cdn.route + 'sk_cdn/app_global/' : '/global'),
+                    app_root: (this.sk.info.cdn ? this.sk.info.cdn.route + 'sk_cdn/app_frontend/' : '/'),
+                    app: (this.sk.info.cdn ? this.sk.info.cdn.route + 'sk_cdn/app_frontend/' : '/'),
+                    global: (this.sk.info.cdn ? this.sk.info.cdn.route + 'sk_cdn/app_global/' : '/global'),
 
                     complexity: '/complexity/',
 
-                    favIcon: this.sk.paths.icons.favIcon
+                    favIcon: this.sk.info.paths.icons.favIcon
                 }
             }
 
 
            
-            if (this.sk.mobile) this.routes.frontend.mobile = this.sk.engine.mobile.viewInfo
+            if (this.sk.info.mobile) this.routes.frontend.mobile = this.sk.info.engine.mobile.viewInfo
             
-            if (this.sk.complexity) this.routes.frontend.complexity = '/complexity/'
+            if (this.sk.info.complexity) this.routes.frontend.complexity = '/complexity/'
 
 
            
@@ -41,18 +41,18 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             await this._init(opt)
 
 
-            if (this.sk.cdn) this.routes.frontend.ui_cdn = this.sk.cdn.route + 'sk_cdn'
+            if (this.sk.info.cdn) this.routes.frontend.ui_cdn = this.sk.info.cdn.route + 'sk_cdn'
 
             
             var render = async (res, page, userData, country) => {
-                if (this.sk.cdn) this.routes.frontend.view = this.sk.cdn.route + 'sk_cdn/views/' + this.id + '/'
+                if (this.sk.info.cdn) this.routes.frontend.view = this.sk.info.cdn.route + 'sk_cdn/views/' + this.id + '/'
                 
 
-                var globalData = this.sk.globalData
-                if (this.sk.dynamicGlobalData) globalData = {...globalData, ...this.sk.dynamicGlobalData()}
+                var globalData = this.sk.info.globalData
+                if (this.sk.info.dynamicGlobalData) globalData = {...globalData, ...this.sk.info.dynamicGlobalData()}
 
-                var countries = await this.sk.l10n.listCountries()
-                var phrases = await this.sk.l10n.getForCountry(country)
+                var countries = await this.sk.info.l10n.listCountries()
+                var phrases = await this.sk.info.l10n.getForCountry(country)
 
                 res.render(
                     page,
@@ -73,17 +73,17 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                 )
             }
            
-            this.sk.app.use(this.routes.frontend.view, this.sk.engine.express.static(opt.root + 'frontend/'))
-            this.sk.app.use(this.routes.frontend.global, this.sk.engine.express.static(this.sk.paths.globalFrontend))
+            this.sk.app.use(this.routes.frontend.view, this.sk.info.engine.express.static(opt.root + 'frontend/'))
+            this.sk.app.use(this.routes.frontend.global, this.sk.info.engine.express.static(this.sk.info.paths.globalFrontend))
         
 
             if (this.info.vanilla){
-                this.sk.app.use('/vanillaFE', this.sk.engine.express.static(this.sk.paths.vanillaFrontend))
+                this.sk.app.use('/vanillaFE', this.sk.info.engine.express.static(this.sk.info.paths.vanillaFrontend))
                 this.routes.frontend.view = {}
             }
 
             this.sk.app.get(this.info.route, async (req, res)=>{
-                this.sk.stats.increment({type: 'get', route: this.info.route})
+                //this.sk.stats.increment({type: 'get', route: this.info.route})
                 
                 var auth_token = req.cookies.auth_token
 
@@ -171,7 +171,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                     lang = 'en'
                 }
 
-                var ejsPath = this.sk.paths.superkraft + '/template.ejs'
+                var ejsPath = this.sk.info.paths.superkraft + '/template.ejs'
                 if (this.info.vanilla){
                     ejsPath = this.root + 'frontend/view.ejs'
                 }

@@ -28,7 +28,7 @@ module.exports = class SK_WAPP_Mobile {
     }
 
     initPathsAndRoutes(){
-        this.paths = {root: this.sk.paths.root}
+        this.paths = {root: this.sk.info.paths.root}
         var pCopyAdd = (from, key, path) => { this.paths[key] = this.paths[from] + path + '/' }
 
         pCopyAdd('root', 'container', 'sk_wapp_mobile')
@@ -87,27 +87,27 @@ module.exports = class SK_WAPP_Mobile {
             }
 
             var props = ['width=device-width', 'initial-scale=1.0']
-            if (!this.sk.mobile.allowScaling) props.push('user-scalable=no')
+            if (!this.sk.info.mobile.allowScaling) props.push('user-scalable=no')
             this.templateAdd(`<meta name="viewport" content="${props.join(', ')}">`)
             
-            if (this.sk.paths.icons.app) this.templateAdd('<link rel="apple-touch-icon" href="<%>">', this.sk.paths.icons.app)
-            if (this.sk.mobile.name){
+            if (this.sk.info.paths.icons.app) this.templateAdd('<link rel="apple-touch-icon" href="<%>">', this.sk.info.paths.icons.app)
+            if (this.sk.info.mobile.name){
                 manifest.name = this.sk.mobile.name
-                this.templateAdd('<meta name="apple-mobile-web-app-title" content="<%>">', this.sk.mobile.name)
+                this.templateAdd('<meta name="apple-mobile-web-app-title" content="<%>">', this.sk.info.mobile.name)
             }
 
-            if (this.sk.mobile.name) manifest.short_name = this.sk.mobile.short_name
-            if (this.sk.mobile.start_url) manifest.start_url = this.sk.mobile.start_url
-            if (this.sk.mobile.categories) manifest.categories = this.sk.mobile.categories
+            if (this.sk.info.mobile.name) manifest.short_name = this.sk.info.mobile.short_name
+            if (this.sk.info.mobile.start_url) manifest.start_url = this.sk.info.mobile.start_url
+            if (this.sk.info.mobile.categories) manifest.categories = this.sk.info.mobile.categories
 
-            if (this.sk.mobile.nativeStyle){
+            if (this.sk.info.mobile.nativeStyle){
                 var nS = this.sk.mobile.nativeStyle
                 if (nS === true) nS = 'fullscreen'
                 if (nS !== undefined && nS !== false && nS !== true) manifest.display = nS
                 this.templateAdd('<meta name="apple-mobile-web-app-capable" content="yes"></meta>')
                 this.templateAdd('<meta name="mobile-web-app-capable" content="yes">')
             }
-            if (this.sk.mobile.statusBarStyle) this.templateAdd('<meta name="apple-mobile-web-app-status-bar-style" content="<%>">', this.sk.mobile.statusBarStyle)
+            if (this.sk.info.mobile.statusBarStyle) this.templateAdd('<meta name="apple-mobile-web-app-status-bar-style" content="<%>">', this.sk.mobile.statusBarStyle)
             
             fs.writeFileSync(this.paths.manifest, JSON.stringify(manifest))
             this.templateAdd('\n<link rel="manifest" href="<%>" />', this.routes.manifest)

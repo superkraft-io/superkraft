@@ -15,12 +15,14 @@ const helmet      = require('helmet')
 module.exports = class SK_WebEngine extends SK_RootEngine {
     constructor(opt){
         super(opt)
+
+        this.sk.app = express()
     }
 
     init(){
         return new Promise(async resolve => {
             this.express = express
-            this.sk.app = this.express()
+           
             var app = this.sk.app
             this.app = app
             
@@ -54,7 +56,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
               
             var csp = {defaultSrc: ["'self'"]}
-            for (var _i in this.sk.csp) csp[_i] = ["'self'", ...this.sk.csp[_i]]
+            for (var _i in this.sk.info.csp) csp[_i] = ["'self'", ...this.sk.info.csp[_i]]
 
             //The following two policies will mess up social sign ins like Google and Facebook
             //app.use(helmet.crossOriginEmbedderPolicy())
@@ -70,15 +72,15 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
             this.paths = {
                 frontend: {
-                    sk: this.sk.paths.sk_frontend,
+                    sk: this.sk.info.paths.sk_frontend,
                     ui: {
-                        core   : this.sk.ui.paths.frontend.core,
-                        shared : this.sk.ui.paths.frontend.shared,
-                        view   : this.sk.ui.paths.frontend.view,
-                        global : this.sk.ui.paths.frontend.global,
-                        font   : this.sk.ui.paths.frontend.font
+                        core   : this.sk.info.ui.paths.frontend.core,
+                        shared : this.sk.info.ui.paths.frontend.shared,
+                        view   : this.sk.info.ui.paths.frontend.view,
+                        global : this.sk.info.ui.paths.frontend.global,
+                        font   : this.sk.info.ui.paths.frontend.font
                     },
-                    app: this.sk.paths.app_frontend,
+                    app: this.sk.info.paths.app_frontend,
                 }
             }
 
@@ -91,10 +93,10 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
             
             if (this.sk.cdn && this.sk.cdn.servePath) this.sk.app.use(this.sk.cdn.route, this.express.static(this.sk.cdn.servePath))
 
-            this.sk.app.use(this.sk.ui.routes.core, this.express.static(this.paths.frontend.ui.core))
-            this.sk.app.use(this.sk.ui.routes.shared, this.express.static(this.paths.frontend.ui.shared))
+            this.sk.app.use(this.sk.info.ui.routes.core, this.express.static(this.paths.frontend.ui.core))
+            this.sk.app.use(this.sk.info.ui.routes.shared, this.express.static(this.paths.frontend.ui.shared))
 
-            if (this.sk.ui.routes.font) this.sk.app.use(this.sk.ui.routes.font, this.express.static(this.paths.frontend.ui.font))
+            if (this.sk.info.ui.routes.font) this.sk.app.use(this.info.sk.ui.routes.font, this.express.static(this.paths.frontend.ui.font))
 
 
             if (this.sk.complexity) app.use('/complexity', this.express.static(this.sk.complexity.paths.frontend))
@@ -107,7 +109,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
                 sk: this.sk,
                 express: this.express,
                 xapp: app,
-                mopts: this.sk.mobile
+                mopts: this.sk.info.mobile
             })
             await this.mobile.init()
 
@@ -121,7 +123,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
     on(cmd, cb){
         var actionRoute = '/' + cmd
         this.sk.app.post(actionRoute, (req, res) => {
-            var _sw = this.sk.stats.increment({type: 'post', route: actionRoute})
+            //var _sw = this.sk.stats.increment({type: 'post', route: actionRoute})
                 
             cb(
                 req.body,
@@ -139,11 +141,11 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
     start(){
         return new Promise((resolve, reject)=>{
-            var config = this.sk.config
+            var config = this.sk.info.config
 
             var ports = {
-                http: this.sk.ports.http || config.webserver.ports.http,
-                https: this.sk.ports.https || config.webserver.ports.https
+                http: this.sk.info.ports.http || config.webserver.ports.http,
+                https: this.sk.info.ports.https || config.webserver.ports.https
             }
 
             if (config.isWhat.env === 'dev'){

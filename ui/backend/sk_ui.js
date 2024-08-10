@@ -135,7 +135,8 @@ module.exports = class sk_ui {
 
     async refresh(){
         this.components.core = await this.getComponentsFromPath(this.paths.frontend.core, 'component')
-        this.components.engine = await this.getComponentsFromPath(this.paths.frontend.engine, this.sk.engine.ui.root)
+        if (this.sk.engine.ui) this.components.engine = await this.getComponentsFromPath(this.paths.frontend.engine, this.sk.engine.ui.root)
+        else this.components.engine = []
         this.components.shared = await this.getComponentsFromPath(this.paths.frontend.shared)
         this.components.global = await this.getComponentsFromPath(this.paths.frontend.global)
 
