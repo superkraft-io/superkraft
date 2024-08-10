@@ -24,11 +24,13 @@ class sk_ui_knobComponent extends sk_ui_component {
                 _c.marginRight = 6
             })
 
-            this.bypassLED = _c.add.led(_c => {
+            _c.led = _c.add.led(_c => {
                 _c.classAdd('sk_ui_knobComponent_bypassLED')
                 _c.pointerEvents = 'none'
                 _c.tabIndex = -1
             })
+
+            this.bypassLED = _c.led
 
             _c.onClick = _e => {
                 this.bypassed = !this.bypassed

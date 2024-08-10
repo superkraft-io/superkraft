@@ -4,7 +4,6 @@
 
         this.infoHint = { icon: 'volume up', text: 'Gain. Double-click to reset. Shift+Drag/Scroll to finetune.' }
 
-        this.styling += ' fullheight'
         this.vertical = false
 
 

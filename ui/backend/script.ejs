@@ -244,7 +244,7 @@
                 return distance
             },
 
-            cssVar(varName){ return getComputedStyle(sk.app.element).getPropertyValue(varName) },
+            cssVar(varName, src){ return getComputedStyle((src ? src.element : undefined) || sk.app.element).getPropertyValue(varName) },
 
             
             colors: {

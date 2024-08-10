@@ -39,3 +39,8 @@
 .sk_ui_checkbox_shape_circle > .sk_ui_checkbox_iconContainer {
     border-radius: 100%;
 }
+
+
+.sk_ui_checkbox_shape_circle > .sk_ui_checkbox_iconContainer > .sk_ui_icon {
+    margin: 2px;
+}

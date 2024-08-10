@@ -2,10 +2,6 @@
     background-color: #3c3c3c;
 }
 
-.sk_ui_switch > .sk_ui_component {
-    background-color: #767676;
-}
-
 .sk_ui_switch_highlighted {
     background-color: rgb(0, 166, 255) !important;
 }
@@ -16,4 +12,8 @@
 
 .sk_ui_switch_flipped {
     transform: rotate(180deg);
+}
+
+.sk_ui_switch_handle {
+    background-color: #767676;
 }

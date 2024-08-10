@@ -1,3 +1,7 @@
+.sk_ui_vu_meter {
+    height: 350px;
+}
+
 .sk_ui_vu_meter_signal {
     height: 100%;
 }
@@ -124,7 +128,7 @@
 
 .sk_ui_vu_meter_dbLabels {
     width: 28px;
-    height: 312px;
-    margin-top: 14px;
+    height: 300px;
+    margin-top: 16px;
     margin-right: 6px !important;
 }

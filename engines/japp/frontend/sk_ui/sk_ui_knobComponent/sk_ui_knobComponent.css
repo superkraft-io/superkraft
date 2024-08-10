@@ -35,16 +35,3 @@
 .sk_ui_knobComponent_bottomLabel {
     font-size: 18px;
 }
-
-
-.sk_ui_knobComponent_bypassLED {
-    background-color: #6b4b11 !important;
-}
-
-.sk_ui_knobComponent_bypassLED.sk_ui_led_on {
-    background-color: #e39300 !important;
-}
-
-.sk_ui_knobComponent_bypassLED > .sk_ui_led_glow {
-    background-color: orange !important;
-}

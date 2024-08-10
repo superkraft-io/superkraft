@@ -18,10 +18,10 @@ class sk_ui_switch extends sk_ui_component {
         this.spacer = this.add.spacer(_c => _c.styling = '' )
 
         this.handle = this.add.component(_c => {
+            _c.classAdd('sk_ui_switch_handle')
             _c.style.borderRadius = size + 'px'
             _c.style.width = size-4 + 'px'
             _c.styling += ' fullheight'
-            _c.style.backgroundColor = '#767676'
         })
 
         this.element.onclick = async ()=>{

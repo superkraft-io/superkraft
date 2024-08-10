@@ -3,7 +3,7 @@ class sk_ui_knob extends sk_ui_juce_param_component_draggable {
         super(opt)
 
 
-        this.infoHint = { icon: 'mouse', text: '[Shift + Mouse Wheel] for +/- 1%' }
+        this.infoHint = { icon: 'mouse', text: 'Shift + Mouse Wheel for +/- 1%. Double Click to reset.' }
 
         this.compact = true
 
