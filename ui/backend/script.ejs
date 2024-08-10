@@ -180,7 +180,11 @@
 				    if (!actions) return
 					
                     var configAction = action => {
-			            targetList[action] = async opt => { return await window.sk.ipc.ipc.request('sk:nativeActions', {...{func: action}, ...opt}) }
+			            targetList[action] = async opt => {
+                            if (!window.sk.ipc) return sk.comm.view(action, opt)
+                            
+                            return await window.sk.ipc.ipc.request('sk:nativeActions', {...{func: action}, ...opt})
+                        }
 			        }
 
                     for (var i in actions) configAction(actions[i])
