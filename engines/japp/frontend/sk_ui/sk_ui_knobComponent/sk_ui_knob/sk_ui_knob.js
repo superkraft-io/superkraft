@@ -45,6 +45,8 @@ class sk_ui_knob extends sk_ui_juce_param_component_draggable {
             _c.animate = false
         })
 
+        this.cursor = 'pointer'
+
         this.knobFaceImg = this.add.image(_c => {
             _c.classAdd('sk_ui_knob_face sk_ui_shadow_black')
             _c.tabIndex = 1

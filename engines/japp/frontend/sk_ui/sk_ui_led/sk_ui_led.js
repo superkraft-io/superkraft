@@ -10,6 +10,18 @@ class sk_ui_led extends sk_ui_button {
         this.glow = this.add.component(_c => {
             _c.classAdd('sk_ui_led_glow')
         })
+
+        this.filters = {
+            red: { filter: '', color: 'red' },
+            green: { filter: 'hue-rotate(100deg)', color: 'green' },
+            blue: { filter: 'hue-rotate(200deg)', color: '#0072ff' },
+            yellow: { filter: 'sepia(1) saturate(5) hue-rotate(15deg)', color: 'yellow' },
+            orange: { filter: 'sepia(1) saturate(5)', color: 'orange' },
+            pink: { filter: 'hue-rotate(300deg)', color: '#ff00c8' },
+            purple: { filter: 'sepia(1) saturate(5) hue-rotate(212deg);', color: '#aa22ff' },
+
+            white: { filter: { off: 'brightness(2) grayscale(1)', on: 'grayscale(1)' }, color: 'white' }
+        }
     }
 
     set active(val) {
@@ -52,20 +64,10 @@ class sk_ui_led extends sk_ui_button {
     }
 
     set color(val) {
-        var filters = {
-            red     : { filter: ''                  , color: 'red'},
-            green   : { filter: 'hue-rotate(100deg)', color: 'green' },
-            blue    : { filter: 'hue-rotate(200deg)', color: '#0072ff' },
-            yellow  : { filter: 'hue-rotate(62deg)' , color: 'yellow' },
-            orange  : { filter: 'hue-rotate(42deg)' , color: 'orange' },
-            pink    : { filter: 'hue-rotate(300deg)', color: '#ff00c8' },
-            purple  : { filter: 'hue-rotate(275deg)', color: '#aa22ff' },
+        var filter = this.filters[val]
 
-            white   : { filter: {off: 'brightness(2) grayscale(1)', on: 'grayscale(1)'}, color: 'white' }
-        }
-
-        this.glow.backgroundColor = filters[val].color
-        this.offImg.style.filter  = (filters[val].filter.off ? filters[val].filter.off : filters[val].filter)
-        this.onImg.style.filter   = (filters[val].filter.on ? filters[val].filter.on : filters[val].filter)
+        this.glow.backgroundColor = filter.color
+        this.offImg.style.filter = (filter.filter.off ? filter.filter.off : filter.filter)
+        this.onImg.style.filter = (filter.filter.on ? filter.filter.on : filter.filter)
     }
 }
