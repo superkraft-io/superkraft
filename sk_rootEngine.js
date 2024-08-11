@@ -41,7 +41,7 @@ module.exports = class SK_RootEngine {
                 this.posts[postName] = postModule
                 
                 this.sk.app.post('/' + postModule.info.route, async (req, res)=>{
-                    var _sw = this.sk.stats.increment({type: 'post', route: postModule.info.route})
+                    //var _sw = this.sk.stats.increment({type: 'post', route: postModule.info.route})
             
                     var _res = {}
                     var reject = msg => {
@@ -68,7 +68,7 @@ module.exports = class SK_RootEngine {
                     
                     postModule.exec(req, res)
 
-                    _sw.end()
+                    //_sw.end()
                 })
             } catch(err) {
                 console.error(err)
