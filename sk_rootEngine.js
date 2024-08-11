@@ -25,6 +25,41 @@ module.exports = class SK_RootEngine {
         
         this.posts = {}
 
+
+        var addPostModule = postModule => {
+            this.sk.app.post('/' + postModule.info.route, async (req, res)=>{
+                //var _sw = this.sk.stats.increment({type: 'post', route: postModule.info.route})
+        
+                var _res = {}
+                var reject = msg => {
+                    _res.rejected = true
+                    _res.error = msg
+                    res.send(_res)
+                    return
+                }
+
+                if (postModule.info.protected){
+                    var auth_token = req.cookies.auth_token
+                    if (!auth_token) return reject('access_denied')
+                    var isAuthTokenValid = await this.sk.engine.isAuthTokenValid(auth_token)
+                    if (isAuthTokenValid === 'invalid_token') return reject('invalid_token')
+                    if (!isAuthTokenValid) return reject('access_denied')
+                }
+
+                try {
+                    var json = JSON.parse(req.body.data)
+                    req.body.data = json
+                } catch(err) {
+
+                }
+                
+                postModule.exec(req, res)
+
+                //_sw.end()
+            })
+        }
+
+
         var posts = await sk_fs.promises.readdir(postsFolder)
         for (var i = 0; i < posts.length; i++) {
             var _filename = posts[i]
@@ -40,36 +75,7 @@ module.exports = class SK_RootEngine {
 
                 this.posts[postName] = postModule
                 
-                this.sk.app.post('/' + postModule.info.route, async (req, res)=>{
-                    //var _sw = this.sk.stats.increment({type: 'post', route: postModule.info.route})
-            
-                    var _res = {}
-                    var reject = msg => {
-                        _res.rejected = true
-                        _res.error = msg
-                        res.send(_res)
-                        return
-                    }
-
-                    if (postModule.info.protected){
-                        var auth_token = req.cookies.auth_token
-                        if (!auth_token) return reject('access_denied')
-                        var isAuthTokenValid = await this.sk.engine.isAuthTokenValid(auth_token)
-                        if (isAuthTokenValid === 'invalid_token') return reject('invalid_token')
-                        if (!isAuthTokenValid) return reject('access_denied')
-                    }
-
-                    try {
-                        var json = JSON.parse(req.body.data)
-                        req.body.data = json
-                    } catch(err) {
-
-                    }
-                    
-                    postModule.exec(req, res)
-
-                    //_sw.end()
-                })
+                addPostModule(postModule)
             } catch(err) {
                 console.error(err)
             }
