@@ -25,37 +25,15 @@ void SK_VB_NodeJS_ChildProcess::handle_IPC_Msg(String msgID, DynamicObject *obj,
 
 
 void SK_VB_NodeJS_ChildProcess::exec(String msgID, DynamicObject* obj, String& responseData) {
-    #ifdef _WIN32
-        static int platform = 1;
-    #elif _WIN64
-        static int platform = 1;
-    #elif __linux__
-        static int platform = 2;
-    #elif __APPLE__
-        static int platform = 3;
-    #else
-        static int platform = 0;
+    var info = obj->getProperty("data");
+
+    String path = info.getProperty("path", "");
+
+    #if defined(_WIN32) || defined(_WIN64)
+        ShellExecute(0, 0, path.toStdString().c_str(), 0, 0, SW_SHOW);
+    #elif defined(__APPLE__( || )
+    #elif defined(__linux__)
     #endif
-
-    std::string str;
-    switch (platform) {
-    case 1:
-        str = "explorer";
-        break;
-    case 2:
-        str = "xdg-open";
-        break;
-    case 3:
-        str = "open";
-        break;
-    default:
-        std::cout << "Should never happen on the 3 defined platforms" << std::endl;
-    }
-
-    String command = obj->getProperty("command");
-
-    str.append(" " + command.toStdString());
-    std::system(str.data());
 }
 
 void SK_VB_NodeJS_ChildProcess::execFile(String msgID, DynamicObject* obj, String& responseData) {

@@ -26,7 +26,7 @@ class sk_ui_button extends sk_ui_component {
                 _e.stopPropagation()
             }
 
-            if (sk.app_type === 'dapp'){
+            if (sk.app_type !== 'wapp'){
                 if (this.goto || this.goto_){
                     sk.comm.main('openURL', {url: this.goto || this.goto_})
                     //this.addStatusIndicator({status: 'external'})
