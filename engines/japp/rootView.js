@@ -114,7 +114,16 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         })
     }
 
-    reload(){
+    async reload() {
+        var userData = {}
+        if (this.onForwardUserData) {
+            try {
+                userData = await this.onForwardUserData()
+            } catch (err) {
+                console.error(err)
+            }
+        }
+
         var data = {
             ...{
                 l10n: {
@@ -125,7 +134,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
             ...this.viewInfo,
             ...{
-                userData: {},
+                userData: userData,
                 globalData: this.sk.info.globalData
             }
         }

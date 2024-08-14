@@ -131,7 +131,16 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         this.sk.ums.broadcast('sk_be_app_resize_end-' + this.id, this.resizeRect)
     }
 
-    reload(){
+    async reload() {
+        var userData = {}
+        if (this.onForwardUserData) {
+            try {
+                userData = await this.onForwardUserData()
+            } catch (err) {
+                console.error(err)
+            }
+        }
+
         ejse.data({
             ...{
                 l10n: {
@@ -142,7 +151,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
             ...this.viewInfo,
             ...{
-                userData: {},
+                userData: userData,
                 globalData: this.sk.globalData
             }
         })

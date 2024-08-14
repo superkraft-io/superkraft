@@ -100,6 +100,21 @@ module.exports = class Superkraft {
 
         global.SK_RootEngine = require(__dirname + '/sk_rootEngine.js')
         sk.engine = new (require(__dirname + '/engines/' + opt.type + '/engine.js'))({ sk: this })
+        try {
+            //configure native actions if the engine provides any
+            var nativeActionsList = (await window.sk_ipc.ipc.request('sk:nativeActions', { func: 'listActions' })).actions
+            sk.nativeActions = {}
+
+            var configAction = action => {
+                sk.nativeActions[action] = async opt => {
+                    return await sk_ipc.ipc.request('sk:nativeActions', { ...{ func: action }, ...opt })
+                }
+            }
+
+            for (var i in nativeActionsList) configAction(nativeActionsList[i])
+
+        } catch (err) {
+        }
 
         /****************/
 
@@ -151,6 +166,7 @@ module.exports = class Superkraft {
         sk.utils.captureActions('root', sk.actions)
 
         sk.globalActions = await sk.utils.loadActions(sk.paths.globalActions)
+        
 
         if (opt.onPreStart) opt.onPreStart()
         

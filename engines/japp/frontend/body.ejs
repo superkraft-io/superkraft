@@ -11,7 +11,6 @@
 
         async init(){
             await this.config_SK_JUCE_View_Core()
-            await this.configNativeActions()
             await this.configApp()
             await this.configWSCB()
         }
@@ -34,27 +33,6 @@
             })
 
             window.wscb = new WebSockets_Callback({sk: sk, asJUCE: true, asClient: true})
-        }
-
-        async configNativeActions(){
-            sk.nativeActions = {}
-            <% for (var i = 0; i < sk.nativeActions.length; i++) { %>
-                sk.nativeActions.<%- sk.nativeActions[i] %> = await window.nativeActions.load('<%- sk.extensions[i] %>')
-            <% } %>
-
-
-            var configExtension = extension => {
-                extension.call = async (cmd, data, responseType)=>{
-                    var _data = data
-                    var res = await extension.binding[cmd](_data, (!responseType ? undefined : {responseType: responseType}))
-                    return res.data
-                }
-            }
-
-            for (var i in sk.nativeActions){
-                var nativeAction = sk.nativeActions[i]
-                configNativeAction(nativeAction)
-            }
         }
     }
 
