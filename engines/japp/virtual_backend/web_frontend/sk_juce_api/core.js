@@ -49,7 +49,7 @@ sk_juce_api.fetch = path => {
 window.sk_juce_api.nativeModules = {
     node: { os: '', fs: '', path: '', child_process: '' },
     npm: { electron: '' },
-    sk: { application:'' }
+    sk: { application: '', web: '' }
 }
 
 for (var catName in window.sk_juce_api.nativeModules) {
@@ -61,4 +61,3 @@ for (var catName in window.sk_juce_api.nativeModules) {
 
 
 sk_juce_api.machineInfo = sk_juce_api.fetch('sk.getMachineStaticInfo')
-//sk_juce_api.appInfo = sk_juce_api.fetch('sk.getAppStaticInfo')

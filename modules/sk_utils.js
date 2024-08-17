@@ -17,8 +17,9 @@ module.exports = class SK_Window {
 
             return actions
         } catch(err) {
-            //console.error(err)
             console.error('Could not load actions at ' + srcPath)
+            console.error(err)
+            console.error('======================')
         }
 
         return {}

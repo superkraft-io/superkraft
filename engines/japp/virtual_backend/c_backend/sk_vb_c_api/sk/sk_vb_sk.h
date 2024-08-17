@@ -8,6 +8,8 @@
 #include "../../../../../../../sk_nativeActions/sk_nativeActions.h"
 #include "coreNativeActions/sk_vb_coreNativeActions.h"
 #include "bdfs/sk_vb_bdfs.h"
+#include "web/sk_vb_web.h"
+#include "application/sk_vb_application.h"
 
 
 class SK_VirtualBackend;
@@ -21,6 +23,8 @@ public:
     SK_VB_View_Mngr* viewMngr;
     SK_VB_CoreNativeActions* coreNativeActions;
     SK_VB_BDFS* bdfs;
+    SK_VB_Web* web;
+    SK_VB_Application* application;
 
     SK_VB_SK::SK_VB_SK(SK_VirtualBackend *_vbe);
     SK_VB_SK::~SK_VB_SK();

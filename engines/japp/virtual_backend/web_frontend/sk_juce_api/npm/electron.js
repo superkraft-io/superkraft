@@ -1,5 +1,5 @@
 var sk_nodejs_electronjs_ipc_call = (func, data = {})=>{
-    window.sk_ipc.ipc.request('node:electronjs', { ...{func: func}, ...data })
+    sk_juce_api.ipc_call('node:electronjs', { ...{func: func}, ...data })
 }
 
 module.exports = {

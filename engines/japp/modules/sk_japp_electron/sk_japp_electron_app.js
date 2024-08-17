@@ -1,3 +1,5 @@
+var application = require('application')
+
 window.ejs_juce = new (require(__dirname + '/ejs/ejs-juce.js'))()
 
 module.exports = class SK_JAPP_Electron_App {

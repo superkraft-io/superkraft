@@ -20,17 +20,12 @@ var start_app = async () => {
     await import('/superkraft/engines/japp/virtual_backend/web_frontend/sk_juce_api/module.js')
     await import('/superkraft/engines/japp/virtual_backend/web_frontend/sk_juce_api/node/path.js')
 
-    //await sleep(5000)
-    //var ssc = import('/virtual_backend/api/module.js')
-
-    window.application = require('application')
 
     window.global = window
 
     global.sai = {}
 
     var opt = {
-        sk_id: 'juce_sk',
         type: 'japp',
         root: '',
 
@@ -66,11 +61,21 @@ var start_app = async () => {
         }
     }
 
+
+
+    try {
+        window.appMain = require('/main.js')
+    } catch (err) {
+        if (err.indexOf && err.indexOf('Could not fetch module') > -1) {
+            console.warn('Could not load the project main.js file. Create a file named main.js inside the assets folder.')
+        } else {
+            console.error(err)
+        }
+    }
+
+
     var __superkraft = require('/superkraft/sk_superkraft.js')
     var sk = new __superkraft(opt)
-
-
-    //sk_juce_api.sk_ipc.send('sk_juce_be', 'sk.ipc', {test: 'data', num: 12345})
 }
 
 start_app()

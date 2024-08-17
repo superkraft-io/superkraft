@@ -176,26 +176,21 @@
 
                 /*************/
 
-                var configureActions = (actions, targetList)=>{
+                var configureActions = (actions, targetList, targetBackend)=>{
 				    if (!actions) return
 					
-                    var configAction = action => {
+                    var configAction = (action, targetBackend)=>{
 			            targetList[action] = async opt => {
-                            if (!window.sk.ipc){
-							    //if the "ipc" module doesn't exist, then we're most likely running a NodeJS web app, so we'll make a POST request
-							    return sk.comm.view(action, opt)
-                            }
-							
-							//if the "ipc" modules does exist, then we are most likely running a C/C++ app, so we'll make an IPC request
-                            return await window.sk.ipc.ipc.request('sk:nativeActions', {...{func: action}, ...opt})
+                            if (!window.sk.ipc || targetBackend === 'jsbe') return sk.comm.view(action, opt)
+							else return await window.sk.ipc.ipc.request('sk:nativeActions', {...{func: action}, ...opt})
                         }
 			        }
 
-                    for (var i in actions) configAction(actions[i])
+                    for (var i in actions) configAction(actions[i], targetBackend)
                 }
 
-                configureActions(res.actions, sk.actions)
-				configureActions(res.nativeActions, sk.nativeActions)
+                configureActions(res.actions, sk.actions, 'jsbe')
+				configureActions(res.nativeActions, sk.nativeActions, 'native')
 
 
                 resolve({show: res.show})
