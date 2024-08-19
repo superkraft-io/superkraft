@@ -2,6 +2,7 @@
 
 #include "core/sk_vb_machine.h"
 #include "core/sk_vb_app.h"
+#include "core/sk_vb_web.h"
 
 
 #include "nodejs/sk_vb_nodejs.h"
@@ -19,6 +20,7 @@ public:
 
 	SK_Machine machine;
 	SK_App app;
+	SK_CURL curl;
 
 	SK_VB_SK* sk;
 	SK_VB_NodeJS* nodejs;
