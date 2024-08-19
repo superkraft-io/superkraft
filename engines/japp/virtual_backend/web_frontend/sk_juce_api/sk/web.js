@@ -19,8 +19,12 @@ var sk_web_ipc_call = async (func, data = {}, onProgress) => {
         })
     }
 
-
-    var res = await window.sk_ipc.ipc.request('sk:web', { ...{ func: func, progressCallbackID: progressCallbackID }, ...data })
+    var res = undefined
+    try {
+        res = await window.sk_ipc.ipc.request('sk:web', { ...{ func: func, progressCallbackID: progressCallbackID }, ...data })
+    } catch (err) {
+        res = err
+    }
 
     clearInterval(callbackTimer)
 
@@ -31,31 +35,31 @@ module.exports = {
     get: (opt, onProgress) => {
         var defOpts = {
             url: '',
-            headers: '',
+            headers: {},
             timeout: 7000,
             redirects: 5
         }
         defOpts = { ...defOpts, ...opt }
 
-        sk_web_ipc_call('get', defOpts, onProgress)
+        return sk_web_ipc_call('get', defOpts, onProgress)
     },
 
     post: (opt, onProgress) => {
         var defOpts = {
             url: '',
-            headers: '',
+            headers: {},
             timeout: 7000,
             redirects: 5
         }
         defOpts = { ...defOpts, ...opt }
 
-        sk_web_ipc_call('post', defOpts, onProgress)
+       return sk_web_ipc_call('post', defOpts, onProgress)
     },
 
     download: (opt, onProgress) => {
         var defOpts = {
             url: '',
-            headers: '',
+            headers: {},
             timeout: 7000,
             redirects: 5
         }
@@ -65,6 +69,6 @@ module.exports = {
 
         }
 
-        sk_web_ipc_call('download', defOpts, onProgress)
+        return sk_web_ipc_call('download', defOpts, onProgress)
     }
 }
