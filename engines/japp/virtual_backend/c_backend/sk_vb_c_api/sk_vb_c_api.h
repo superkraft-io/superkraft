@@ -2,7 +2,7 @@
 
 #include "core/sk_vb_machine.h"
 #include "core/sk_vb_app.h"
-#include "core/sk_vb_curl.h"
+#include "core/sk_vb_curl/sk_vb_curl.h"
 
 
 #include "nodejs/sk_vb_nodejs.h"
