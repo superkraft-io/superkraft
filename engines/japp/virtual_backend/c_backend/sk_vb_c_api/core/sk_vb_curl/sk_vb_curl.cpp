@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../libs/curl/curl.h"
+#include "curl/curl.h"
 
 typedef size_t WriteMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp);
     
@@ -16,7 +16,7 @@ SK_CURL_Request::SK_CURL_Request(unsigned long long _id, const String& _url, std
 }
             
 
-size_t SK_CURL_Request::writeMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp) {
+size_t writeMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp) {
     size_t realsize = size * nmemb;
     struct MemoryStruct* mem = (struct MemoryStruct*)userp;
 
@@ -34,12 +34,12 @@ size_t SK_CURL_Request::writeMemoryCallback(void* contents, size_t size, size_t 
     return realsize;
 }
 
-void SK_CURL_Request::call()  {
+void SK_CURL_Request::call() {
 
     CURL* curl_handle;
     CURLcode res;
 
-    struct MemoryStruct chunk;
+    MemoryStruct chunk{};
     chunk.memory = (char*)malloc(1);
     chunk.size = 0;
 
@@ -51,7 +51,7 @@ void SK_CURL_Request::call()  {
         curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void*)&chunk);
         curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "libcurl-agent/1.0");
 
-        res = curl_easy_perform(curl_handle);
+       // res = curl_easy_perform(curl_handle);
 
         if (res != CURLE_OK) {
             fprintf(stderr, "error: %s\n", curl_easy_strerror(res));
@@ -60,7 +60,7 @@ void SK_CURL_Request::call()  {
             printf("Size: %lu\n", (unsigned long)chunk.size);
             printf("Data: %s\n", chunk.memory);
         }
-        curl_easy_cleanup(curl_handle);
+        //curl_easy_cleanup(curl_handle);
         free(chunk.memory);
     }
 

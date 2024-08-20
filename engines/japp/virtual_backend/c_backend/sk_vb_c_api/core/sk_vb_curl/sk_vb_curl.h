@@ -7,7 +7,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../libs/curl/curl.h"
+
+#include "curl/curl.h"
 
 struct MemoryStruct {
     char* memory;
@@ -30,7 +31,6 @@ public:
     SK_CURL_Request(unsigned long long _id, const String& _url, std::function<void(const char*)> _onRequestCb);
             
 
-    size_t writeMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp);
 
     void call();
 };
