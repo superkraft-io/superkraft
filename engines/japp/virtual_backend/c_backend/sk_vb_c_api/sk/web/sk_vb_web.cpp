@@ -15,6 +15,8 @@ SK_VB_Web::SK_VB_Web(SK_VirtualBackend *_vbe) {
 
 
 void SK_VB_Web::request(String msgID, var info, String& responseData) {
+    vbe->sk_c_api->curl.createRequest("https://localhost/login_p", "POST");
+    return;
     juce::URL url("https://localhost/login_p");
 
     // Create a JSON string

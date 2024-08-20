@@ -8,24 +8,25 @@ class SK_CURL_Request {
 public:
     unsigned long long id;
     String url;
-    //std::function<void(const char*)> onRequestCb;
+    std::function<void(const char*)> onRequestCb;
 
-    /*
-    SK_CURL_Request(unsigned long long _id, const String& _url, std::function<void(const char*)> _onRequestCb)
-        : id(_id), url(_url), onRequestCb(_onRequestCb) {}
+    
+    SK_CURL_Request(unsigned long long _id, const String& _url, std::function<void(const char*)> _onRequestCb) : id(_id), url(_url), onRequestCb(_onRequestCb) {
+        
+    }
+            
 
-    void call() {
+    void call()  {
         auto future_text = cpr::PostCallback([this](cpr::Response r) {
             onRequestCb(r.text.c_str());
-            return r.text;
-            }, cpr::Url{ url.toStdString() });  // Use the provided URL in the constructor
+            //return r.text;
+        }, cpr::Url{ url.toStdString()});
 
         // Sometime later
-        if (future_text.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+        /*if (future_text.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
             std::cout << future_text.get() << std::endl;
-        }
+        }*/
     }
-    */
 };
 
 class SK_CURL {
@@ -42,11 +43,11 @@ public:
 
     void createRequest(const String& url, const String& type = "GET") {
         requestIdx++;
-        //auto callback = std::bind(&SK_CURL::onRequestCallback, this, std::placeholders::_1);
-        /*requests.push_back(new SK_CURL_Request(requestIdx, url, callback));
+        auto callback = std::bind(&SK_CURL::onRequestCallback, this, std::placeholders::_1);
+        requests.push_back(new SK_CURL_Request(requestIdx, url, callback));
         SK_CURL_Request* request = requests.back();
         request->call();
-        */
+        
     }
 
     void onRequestCallback(const char* data) {
