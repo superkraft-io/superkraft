@@ -25,10 +25,13 @@ void SK_VB_Application::handle_IPC_Msg(String msgID, DynamicObject *obj, String&
 
 
 void SK_VB_Application::getAppInfo(String msgID, var info, String& responseData) {
+    String appName = JUCEApplicationBase::getInstance()->getApplicationName();
+    String appVersion = JUCEApplicationBase::getInstance()->getApplicationVersion();
+
     SSC::JSON::Object res = SSC::JSON::Object::Entries {
         {"mode", vbe->mode.toStdString()},
-        {"name", ""},
-        {"version", "0.0"}
+        {"name", appName.toStdString()},
+        {"version", appVersion.toStdString()}
     };
 
     responseData = res.str();

@@ -1,4 +1,4 @@
-var sk_web_ipc_call = async (func, data = {}, onProgress) => {
+var sk_web_ipc_call = async (func, payload = {}, onProgress) => {
     var callbackTimer = undefined
     var progressCallbackID = undefined
 
@@ -21,7 +21,27 @@ var sk_web_ipc_call = async (func, data = {}, onProgress) => {
 
     var res = undefined
     try {
-        res = await window.sk_ipc.ipc.request('sk:web', { ...{ func: func, progressCallbackID: progressCallbackID }, ...data })
+        var defPayload = {
+            url: '',
+            headers: {},
+            timeout: 7000,
+            redirects: 5
+        }
+        defPayload = { ...defPayload, ...payload }
+
+        defPayload.body = JSON.stringify(defPayload.body)
+
+
+        
+        var headersArr = []
+        for (var headerName in defPayload.headers) {
+            var headerValue = defPayload.headers[headerName]
+            headersArr.push(headerName + ': ' + headerValue)
+        }
+        defPayload.headers = headersArr.join('<!-!>')
+
+
+        res = await window.sk_ipc.ipc.request('sk:web', { ...{ func: func, progressCallbackID: progressCallbackID }, ...defPayload })
     } catch (err) {
         res = err
     }
@@ -33,42 +53,13 @@ var sk_web_ipc_call = async (func, data = {}, onProgress) => {
 
 module.exports = {
     get: (opt, onProgress) => {
-        var defOpts = {
-            url: '',
-            headers: {},
-            timeout: 7000,
-            redirects: 5
-        }
-        defOpts = { ...defOpts, ...opt }
-
-        return sk_web_ipc_call('get', defOpts, onProgress)
+        return sk_web_ipc_call('get', opt, onProgress)
     },
 
     post: (opt, onProgress) => {
-        var defOpts = {
-            url: '',
-            headers: {},
-            timeout: 7000,
-            redirects: 5
-        }
-        defOpts = { ...defOpts, ...opt }
-
-       return sk_web_ipc_call('post', defOpts, onProgress)
+        return sk_web_ipc_call('post', opt, onProgress)
     },
 
     download: (opt, onProgress) => {
-        var defOpts = {
-            url: '',
-            headers: {},
-            timeout: 7000,
-            redirects: 5
-        }
-        defOpts = { ...defOpts, ...opt }
-
-        if (onProgress) {
-
-        }
-
-        return sk_web_ipc_call('download', defOpts, onProgress)
     }
 }

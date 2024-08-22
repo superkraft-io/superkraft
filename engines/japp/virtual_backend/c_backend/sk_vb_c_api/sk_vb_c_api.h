@@ -20,7 +20,8 @@ public:
 
 	SK_Machine machine;
 	SK_App app;
-	SK_CURL curl;
+
+	SK_CURL* curl;
 
 	SK_VB_SK* sk;
 	SK_VB_NodeJS* nodejs;

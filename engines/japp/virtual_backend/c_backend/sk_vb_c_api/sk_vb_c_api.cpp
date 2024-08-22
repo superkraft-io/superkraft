@@ -5,6 +5,8 @@
 SK_C_API::SK_C_API(SK_VirtualBackend *_vbe) {
 	vbe = _vbe;
 
+	curl = new SK_CURL(vbe);
+
 	sk = new SK_VB_SK(vbe);
 	nodejs = new SK_VB_NodeJS(vbe);
 
@@ -12,6 +14,7 @@ SK_C_API::SK_C_API(SK_VirtualBackend *_vbe) {
 }
 
 SK_C_API::~SK_C_API() {
+	delete curl;
 	delete ipc;
 	delete sk;
 	delete nodejs;

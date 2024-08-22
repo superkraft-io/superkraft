@@ -37,7 +37,7 @@ module.exports = class SK_JAPP_Electron_App {
         return navigator.language
     }
 
-    getVersion(){
-        return 'N/A'
+    getVersion() {
+        return sk.application.version
     }
 }

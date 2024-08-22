@@ -23,7 +23,9 @@ var start_app = async () => {
 
     window.global = window
 
-    global.sai = {}
+
+
+    window.appMain = new (require('/main.js'))()
 
     var opt = {
         type: 'japp',
@@ -53,25 +55,25 @@ var start_app = async () => {
         },
 
         onPreStart: () => {
-
+            try {
+                if (appMain.preSKStart) appMain.preSKStart()
+            } catch (err) {
+                if (err.indexOf && err.indexOf('Could not fetch module') > -1) {
+                    console.warn('Could not load the project main.js file. Create a file named main.js inside the assets folder.')
+                } else {
+                    console.error(err)
+                }
+            }
         },
 
         onReady: async () => {
-                
+            if (appMain.postSKInit) appMain.postSKInit(sk)                
         }
     }
 
 
 
-    try {
-        window.appMain = require('/main.js')
-    } catch (err) {
-        if (err.indexOf && err.indexOf('Could not fetch module') > -1) {
-            console.warn('Could not load the project main.js file. Create a file named main.js inside the assets folder.')
-        } else {
-            console.error(err)
-        }
-    }
+    if (appMain.preSKInit) appMain.preSKInit(opt)
 
 
     var __superkraft = require('/superkraft/sk_superkraft.js')

@@ -15,43 +15,39 @@ SK_VB_Web::SK_VB_Web(SK_VirtualBackend *_vbe) {
 
 
 void SK_VB_Web::request(String msgID, var info, String& responseData) {
-    vbe->sk_c_api->curl.createRequest("https://localhost/login_p", "POST");
-    return;
-    juce::URL url("https://localhost/login_p");
-
-    // Create a JSON string
-    juce::String jsonData = "hello world";
-    url.withPOSTData(jsonData);
-
-    // Set headers
-    juce::String headers = "Content-Type: application/json";
-
-
-    juce::StringPairArray responseHeaders;
-    int statusCode = 0;
-
-    // Make the POST request
-    std::unique_ptr<juce::InputStream> inputStream(url.createInputStream(
-        true,        // usePostCommand
-        nullptr,     // progressCallback
-        nullptr,     // progressCallbackContext
-        {""},     // extraHeaders
-        7000,           // connectionTimeOutMs
-        &responseHeaders,     // responseHeaders
-        &statusCode,      // statusCode
-        5,
-        "POST"
-    ));
-
-    if (inputStream != nullptr)
-    {
-        juce::String response = inputStream->readEntireStreamAsString();
-        juce::Logger::writeToLog("Response: " + response);
+    String url = info.getProperty("url", "");
+    
+    //validate URL
+    if (url == "") {
+        responseData = "{\"error\":\"invalid_url\"}";
+        return;
     }
-    else
-    {
-        juce::Logger::writeToLog("Failed to connect to the server!");
+
+    String body = info.getProperty("body", "{}");
+    String mimeType = info.getProperty("mimeType", "");
+    String headers = info.getProperty("headers", "");
+
+    Jayson reqRes = vbe->sk_c_api->curl->post({
+        {"url", url.toStdString().c_str()},
+        {"body", body.toStdString().c_str()},
+        {"mimeType", mimeType.toStdString().c_str()},
+        {"headers", headers.toStdString().c_str()}
+    });
+
+    const char* error = nullptr;
+    try {
+        error = std::any_cast<const char*>(reqRes["error"]);
     }
+    catch (const std::bad_any_cast& e) {
+        //can't cast if it doesn't exist, therefor everything is ok
+    };
+
+    if (error != nullptr) {
+        responseData = "{\"error\":\"" + String(error) + "\"}";
+        return;
+    }
+
+    responseData = std::any_cast<std::string>(reqRes["data"]);
 }
 
 /*

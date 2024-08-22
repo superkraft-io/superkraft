@@ -23,7 +23,7 @@ void SK_VB_cNA_handleParamComponentMouseEvent::handle_IPC_Msg(String msgID, Dyna
 
     if (event == "read") {
         responseData = "{\"value\": \"" + String(param->getValue()) + "\"}";
-        DBG(responseData);
+        //DBG(responseData);
         return;
     }
 

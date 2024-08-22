@@ -7,6 +7,6 @@ module.exports = class SK_Application {
         var res = await window.sk_ipc.ipc.request('sk:application', { func: 'getAppInfo' })
         this.mode = res.mode
         this.name = res.name
-        this.version = version
+        this.version = res.version
     }
 }
