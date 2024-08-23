@@ -37,7 +37,7 @@ std::vector<std::string> splitString(const std::string& str, const std::string& 
 
 typedef size_t WriteMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp);
     
-SK_CURL_Request::SK_CURL_Request(SK_VirtualBackend* _vbe, unsigned long long _id, std::function<void(const char*)> _onRequestCb) : id(_id), onRequestCb(_onRequestCb) {
+SK_CURL_Request::SK_CURL_Request(SK_VirtualBackend* _vbe) {
     vbe = _vbe;
 }
             
@@ -71,7 +71,7 @@ Jayson SK_CURL_Request::call(Jayson opt)  {
         std::string mimeTypeStr;
 
         try {
-            mimeTypeStr = std::any_cast<const char*>(opt["mimeType"]);
+            mimeTypeStr = std::any_cast<std::string>(opt["mimeType"]);
         }
         catch (const std::bad_any_cast& e) {
             std::cerr << "Bad any_cast: " << e.what() << std::endl;
@@ -83,7 +83,7 @@ Jayson SK_CURL_Request::call(Jayson opt)  {
         hStr = "Content-Type: " + mimeType.toStdString();
         headers = curl_slist_append(headers, hStr.c_str());
 
-        const char* headersStr = std::any_cast<const char*>(opt["headers"]);
+        std::string headersStr = std::any_cast<std::string>(opt["headers"]).c_str();
 
 
         std::vector<std::string> headersArr = splitString(headersStr, "<!-!>");
@@ -97,17 +97,17 @@ Jayson SK_CURL_Request::call(Jayson opt)  {
 
 
         // Set the URL to request
-        String url = std::any_cast<const char*>(opt["url"]);
-        curl_easy_setopt(handle, CURLOPT_URL, url.toStdString().c_str());
+        std::string url = std::any_cast<std::string>(opt["url"]);
+        curl_easy_setopt(handle, CURLOPT_URL, url.c_str());
 
         // Set the request method to POST
-        String type = std::any_cast<const char*>(opt["type"]);
-        curl_easy_setopt(handle, CURLOPT_CUSTOMREQUEST, type);
+        std::string type = std::any_cast<std::string>(opt["type"]);
+        curl_easy_setopt(handle, CURLOPT_CUSTOMREQUEST, type.c_str());
 
         // Set the request body
-        const char* body = std::any_cast<const char*>(opt["body"]);
-        curl_easy_setopt(handle, CURLOPT_POSTFIELDSIZE, (long)strlen(body));
-        curl_easy_setopt(handle, CURLOPT_POSTFIELDS, body);
+        std::string body = std::any_cast<std::string>(opt["body"]);
+        curl_easy_setopt(handle, CURLOPT_POSTFIELDSIZE, (long)strlen(body.c_str()));
+        curl_easy_setopt(handle, CURLOPT_POSTFIELDS, body.c_str());
         //curl_easy_setopt(handle, CURLOPT_POST, 1);
 
         // Set redirect count
@@ -152,16 +152,6 @@ Jayson SK_CURL_Request::call(Jayson opt)  {
 
 
 
-SK_CURL_Request* SK_CURL::findRequestByID(unsigned long long reqID) {
-    for (SK_CURL_Request* request : requests) {
-        if (request->id == reqID) return request;
-    }
-    return nullptr;
-}
-
-
-
-
 
 
 
@@ -170,20 +160,18 @@ SK_CURL::SK_CURL(SK_VirtualBackend* _vbe) {
 }
 
 Jayson SK_CURL::createRequest(Jayson opt){//const String& url, String data, const String& type) {
-    requestIdx++;
-    auto callback = std::bind(&SK_CURL::onRequestCallback, this, std::placeholders::_1);
-    requests.push_back(new SK_CURL_Request(vbe, requestIdx, callback));
-    SK_CURL_Request* request = requests.back();
-    return request->call(opt);
+   
+    SK_CURL_Request request(vbe);
+    return request.call(opt);
 }
 
 Jayson SK_CURL::get(Jayson opt) {
-    opt["type"] = "GET";
+    opt["type"] = String("GET").toStdString();
     return createRequest(opt);
 }
 
 Jayson SK_CURL::post(Jayson opt) {
-    opt["type"] = "POST";
+    opt["type"] = String("POST").toStdString();
     return createRequest(opt);
 }
 

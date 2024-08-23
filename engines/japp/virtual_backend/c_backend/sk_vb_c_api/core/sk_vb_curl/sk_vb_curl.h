@@ -74,12 +74,9 @@ class SK_CURL_Request {
 public:
     SK_VirtualBackend* vbe;
 
-    unsigned long long id;
-    std::function<void(const char*)> onRequestCb;
-
     typedef size_t WriteMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp);
     
-    SK_CURL_Request(SK_VirtualBackend* _vbe, unsigned long long _id, std::function<void(const char*)> _onRequestCb);
+    SK_CURL_Request(SK_VirtualBackend* _vbe);
             
 
     Jayson call(Jayson  opt);
@@ -89,12 +86,7 @@ class SK_CURL {
 public:
     SK_VirtualBackend* vbe;
 
-    unsigned long long requestIdx = 0;
-    std::vector<SK_CURL_Request*> requests;
-
     SK_CURL::SK_CURL(SK_VirtualBackend* _vbe);
-
-    SK_CURL_Request* findRequestByID(unsigned long long reqID);
 
     Jayson createRequest(Jayson  opt);//const String& url, String data, String& type = "GET", String mimeType);
 

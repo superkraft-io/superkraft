@@ -2,6 +2,7 @@
 
 #include <JuceHeader.h>
 #include "../../../libs/ssc/json.hh"
+#include "../.../../libs/threadPool/thpool.h"
 
 class SK_VirtualBackend;
 
@@ -9,7 +10,11 @@ class SK_VB_Web {
 public:
     SK_VirtualBackend * vbe;
 
+    unsigned long taskIdx = 0;
+    threadpool thpool;
+
     SK_VB_Web(SK_VirtualBackend * _vbe);
+    ~SK_VB_Web();
 
 
     void SK_VB_Web::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData);

@@ -61,5 +61,5 @@ public:
     int tryForwardToNativeTarget(DynamicObject* obj, String& responseData);
     void tryForwardToVirtualTarget(DynamicObject* obj);
 
-    void respondToCallback(String msgID, String data);
+    void sendTo(String type, String& msgID, String& source, String& target, String& responseData);
 };

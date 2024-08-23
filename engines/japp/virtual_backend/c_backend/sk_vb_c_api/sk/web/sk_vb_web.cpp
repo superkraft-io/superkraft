@@ -8,10 +8,23 @@ using namespace std::chrono;
 
 SK_VB_Web::SK_VB_Web(SK_VirtualBackend *_vbe) {
     vbe = _vbe;
+    thpool = thpool_init(8); // 8 threads
+}
+SK_VB_Web::~SK_VB_Web() {
+    thpool_destroy(thpool);
 }
 
+typedef struct {
+    unsigned long id;
+    SK_VirtualBackend * vbe;
 
+    String msgID;
+    String source;
+    String target;
 
+    Jayson opt;
+    String responseData;
+} webRequestTask;
 
 
 void SK_VB_Web::request(String msgID, var info, String& responseData) {
@@ -27,69 +40,59 @@ void SK_VB_Web::request(String msgID, var info, String& responseData) {
     String mimeType = info.getProperty("mimeType", "");
     String headers = info.getProperty("headers", "");
 
-    Jayson reqRes = vbe->sk_c_api->curl->post({
-        {"url", url.toStdString().c_str()},
-        {"body", body.toStdString().c_str()},
-        {"mimeType", mimeType.toStdString().c_str()},
-        {"headers", headers.toStdString().c_str()}
-    });
+    taskIdx++;
 
-    const char* error = nullptr;
-    try {
-        error = std::any_cast<const char*>(reqRes["error"]);
-    }
-    catch (const std::bad_any_cast& e) {
-        //can't cast if it doesn't exist, therefor everything is ok
+    webRequestTask* reqTask = new webRequestTask();
+    
+
+    reqTask->vbe = vbe;
+    reqTask->id = taskIdx;
+    reqTask->source = info.getProperty("source", "");
+    reqTask->target = info.getProperty("target", "");
+    reqTask->msgID = msgID;
+
+    reqTask->opt = {
+        {"url", url.toStdString()},
+        {"body", body.toStdString()},
+        {"mimeType", mimeType.toStdString()},
+        {"headers", headers.toStdString()}
     };
 
-    if (error != nullptr) {
-        responseData = "{\"error\":\"" + String(error) + "\"}";
-        return;
-    }
+    //thpool_add_work(thpool, task, (void*)dat);
 
-    responseData = std::any_cast<std::string>(reqRes["data"]);
+    juce::MessageManager::callAsync([this, reqTask]() -> void {
+        Jayson reqRes = vbe->sk_c_api->curl->post(reqTask->opt);
+
+        const char* error = nullptr;
+
+        try {
+            error = std::any_cast<const char*>(reqRes["error"]);
+        }
+        catch (const std::bad_any_cast& e) {
+            //can't cast if it doesn't exist, therefor everything is ok
+        }
+
+        if (error != nullptr)
+            reqTask->responseData = "{\"error\":\"" + String(error) + "\"}";
+        else
+            reqTask->responseData = std::any_cast<std::string>(reqRes["data"]);
+
+
+        vbe->sk_c_api->ipc->sendTo("response", reqTask->msgID, reqTask->source, reqTask->target, reqTask->responseData);
+
+        free(reqTask);
+    });
+
+    responseData = "ignore";
 }
-
-/*
-void SK_VB_Web::request(String msgID, var info, String& responseData) {
-    String url = info.getProperty("url", "");
-    int timeout = info.getProperty("timeout", 7000);
-    int follow = info.getProperty("follows", 5);
-
-
-    String headers = info.getProperty("headers", "");
-    
-    var _body = "{\"hello\":\"test\"}";//info.getProperty("body", "{\"hello\":\"test\"}");
-    String body = JSON::toString(_body);
-
-    juce::URL _url(url);
-    juce::StringPairArray responseHeaders;
-
-    int statusCode = 0;
-
-
-    _url = _url.withPOSTData(body);
-
-    std::unique_ptr<juce::InputStream> stream(_url.createInputStream(true, nullptr, nullptr, headers, timeout, &responseHeaders, &statusCode, follow, "POST"));
-
-    SSC::JSON::Object json;
-
-    if (stream == nullptr) {
-        json.set("error", "stream");
-        json.set("status_code", statusCode);
-    }
-    else {
-        json.set("data", stream->readEntireStreamAsString().toStdString());
-    }
-
-    std::string str = json.str();
-    responseData = str;
-}
-*/
-
 
 void SK_VB_Web::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData) {
+    String sender = obj->getProperty("source");
+
     var info = obj->getProperty("data");
+    info.getDynamicObject()->setProperty("msgID", msgID);
+    info.getDynamicObject()->setProperty("source", obj->getProperty("source"));
+    info.getDynamicObject()->setProperty("target", obj->getProperty("target"));
 
     String func = info.getProperty("func", "");
 

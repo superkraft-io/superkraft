@@ -70,8 +70,7 @@ void SK_FS::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseDat
 
 void SK_FS::access(String msgID, String path, String& responseData) {
     File file(path);
-    String res = "{\"access\":" + String((file.exists() ? "true" : "false")) + "}";
-    vbe->sk_c_api->ipc->respondToCallback(msgID, res);
+    responseData = "{\"access\":" + String((file.exists() ? "true" : "false")) + "}";
 }
 
 void SK_FS::stat(String msgID, String path, String& responseData) {

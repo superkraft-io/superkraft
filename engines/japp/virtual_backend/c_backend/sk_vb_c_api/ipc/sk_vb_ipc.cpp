@@ -51,9 +51,6 @@ void SK_IPC::handle_IPC_Msg(DynamicObject *obj) {
         //We do this by populating "responseData".
 
 
-        int x = 0;
-
-
         String source = obj->getProperty("source");
 
         String target = obj->getProperty("target");
@@ -68,6 +65,7 @@ void SK_IPC::handle_IPC_Msg(DynamicObject *obj) {
 
     }
 
+    if (responseData == "ignore") return;
 
     auto msg = SK_IPC_Msg(
         "response",
@@ -136,27 +134,34 @@ void SK_IPC::tryForwardToVirtualTarget(DynamicObject* obj) {
         auto view = vbe->sk_c_api->sk->viewMngr->findViewByID("");
         if (view != nullptr) {
             view->emitEventIfBrowserIsVisible("sk.ipc", obj);
-        } else {
+        }
+        else {
             throw "Invalid IPC target";
         }
     }
-    
+
 }
 
 
+void SK_IPC::sendTo(String type, String& msgID, String& source, String& target, String& responseData) {
+    auto msg = SK_IPC_Msg(
+        type,
+        msgID,
+        source,
+        target,
+        responseData
+    );
 
-void SK_IPC::respondToCallback(String msgID, String data) {
-    //String script = "sk.ipc.execute_Callback_From_C_Backend(" + String(msgID) + ", " + data + ")";
-    //String script = "alert('from C++ backend')";
-    /*String script = "setTimeout(()=>{console.log(sk)}, 1000)";
-    vbe->evaluateJavascript(script, [](WebBrowserComponent::EvaluationResult result){
-       if (const auto* resultPtr = result.getResult()) {
-            DBG(resultPtr->toString());
-        } else {
-            DBG(result.getError()->message);
+    String responsePacket = msg.stringifyAsResponse();
+
+    if (source == "sk_be") {
+        //respond to virtual backend
+        vbe->emitEventIfBrowserIsVisible("sk.ipc", String(responsePacket));
+    }
+    else {
+        auto view = vbe->sk_c_api->sk->viewMngr->findViewByID(source);
+        if (view != nullptr) {
+            view->emitEventIfBrowserIsVisible("sk.ipc", responsePacket);
         }
-    });*/
-
-    //auto responseObj = "{\"msgID\":" + msgID + ", \"data\":" + (data.length() == 0 ? "\"\"" : data) + "}";
-    //vbe->emitEventIfBrowserIsVisible("sk.ipc.callback", responseObj);
+    }
 }
