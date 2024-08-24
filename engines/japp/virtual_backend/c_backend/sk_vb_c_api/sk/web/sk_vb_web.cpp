@@ -8,10 +8,8 @@ using namespace std::chrono;
 
 SK_VB_Web::SK_VB_Web(SK_VirtualBackend *_vbe) {
     vbe = _vbe;
-    thpool = thpool_init(8); // 8 threads
 }
 SK_VB_Web::~SK_VB_Web() {
-    thpool_destroy(thpool);
 }
 
 typedef struct {
@@ -57,8 +55,6 @@ void SK_VB_Web::request(String msgID, var info, String& responseData) {
         {"mimeType", mimeType.toStdString()},
         {"headers", headers.toStdString()}
     };
-
-    //thpool_add_work(thpool, task, (void*)dat);
 
     juce::MessageManager::callAsync([this, reqTask]() -> void {
         Jayson reqRes = vbe->sk_c_api->curl->post(reqTask->opt);

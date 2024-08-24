@@ -1,8 +1,8 @@
 #pragma once
 
 #include <JuceHeader.h>
-//#include "../libs/cpr/cpr.h"
-#include "../../libs/ssc/json.hh"
+
+#include "../../../libs/ssc/json.hh"
 
 #include <stdio.h>
 #include <stdlib.h>

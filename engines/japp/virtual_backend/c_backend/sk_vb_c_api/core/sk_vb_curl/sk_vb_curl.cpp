@@ -3,9 +3,9 @@
 #include <JuceHeader.h>
 #include "sk_vb_curl.h"
 
-#include "../../sk_vbe/sk_vbe.hxx"
+#include "../../../sk_vbe/sk_vbe.hxx"
 
-#include "../../libs/ssc/json.hh"
+#include "../../../libs/ssc/json.hh"
 
 #include <stdio.h>
 #include <stdlib.h>
