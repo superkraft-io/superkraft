@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <any>
-#include "../libs/curl/curl.h"
+#include "../../../libs/curl/curl.h"
 
 
 class SK_VirtualBackend;
@@ -86,7 +86,7 @@ class SK_CURL {
 public:
     SK_VirtualBackend* vbe;
 
-    SK_CURL::SK_CURL(SK_VirtualBackend* _vbe);
+    SK_CURL(SK_VirtualBackend* _vbe);
 
     Jayson createRequest(Jayson  opt);//const String& url, String data, String& type = "GET", String mimeType);
 

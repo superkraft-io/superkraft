@@ -5,7 +5,12 @@ function getDirname(asArray) {
     var stack = (new Error()).stack
     //stack = console.trace()
     var firstCaller = stack.split('\n').at(-1)
-    var trimmedPath = firstCaller.split('https://juce.backend')[1].split(':')[0].split('/')
+    var split1 = firstCaller.split('//juce.backend')
+    var el1 = split1[1]
+    var split2 = el1.split(':')
+    var el2 = split2[0]
+    var split3 = el2.split('/')
+    var trimmedPath = split3
     trimmedPath.splice(trimmedPath.length - 1, 1)
     trimmedPath = trimmedPath.join('/')
 

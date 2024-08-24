@@ -11,7 +11,12 @@
     #include <ctime>
     #include <unistd.h>
 
-   
+    struct FileComparator {
+        static int compareElements(const File& file1, const File& file2) {
+            // Compare the filenames in a case-insensitive manner
+            return file1.getFileName().compareIgnoreCase(file2.getFileName());
+        }
+    };
 #endif
 
 #include <iostream>
@@ -241,6 +246,13 @@ void SK_FS::readdir(String msgID, String path, String& responseData) {
     Array<File> list;
     list = f.findChildFiles(File::findFilesAndDirectories, false, "*");
 
+    
+    #if defined(__APPLE__)
+        FileComparator sorter;
+        list.sort(sorter);
+    #endif
+    
+    
     for (int i = 0; i < list.size(); i++) {
         File file = list[i];
 
@@ -250,6 +262,8 @@ void SK_FS::readdir(String msgID, String path, String& responseData) {
             {"name", file.getFileName().toStdString()}
         });
     }
+    
+    
 
     responseData = String(fileList.str());
 }

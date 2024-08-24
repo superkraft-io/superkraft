@@ -10,7 +10,6 @@ module.exports = module.exports = class SK_IPC {
         this.events = {}
 
         window.__JUCE__.backend.addEventListener('sk.ipc', _res => {
-            console.log(_res)
             try { var res = JSON.parse(_res) } catch (err) { var res = _res }
 
             if (res.type === 'response') {
