@@ -4,20 +4,22 @@
 #include "core/sk_vb_app.h"
 #include "core/sk_vb_curl/sk_vb_curl.h"
 
-
-#include "nodejs/sk_vb_nodejs.h"
-
+#include "sk_router/sk_vb_router.h"
 #include "ipc/sk_vb_ipc.h"
 
 
-#include "sk/sk_vb_sk.h"
+
+#include "modules/nodejs/sk_vb_nodejs.h"
+#include "modules/sk/sk_vb_sk.h"
 
 class SK_VirtualBackend;
 
 class SK_C_API {
 public:
 	SK_VirtualBackend* vbe;
-
+    
+    SK_VB_Router router;
+    
 	SK_Machine machine;
 	SK_App app;
 

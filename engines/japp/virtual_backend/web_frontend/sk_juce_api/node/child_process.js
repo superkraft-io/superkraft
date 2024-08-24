@@ -1,12 +1,12 @@
 module.exports = {
     exec(command, options, callback){
-        this.sk.ipc.toCBE('node:child_process', { func: 'exec', options: options }).then(res => {
+        this.sk.ipc.request('node:child_process', { func: 'exec', options: options }).then(res => {
             callback(res)
         })
     },
 
     execFile(file, args, options, callback){
-        this.sk.ipc.toCBE('node:child_process', { func: 'execFile', args: args, options: options }).then(res => {
+        this.sk.ipc.request('node:child_process', { func: 'execFile', args: args, options: options }).then(res => {
             callback(res)
         })
     },
@@ -16,7 +16,7 @@ module.exports = {
     },
 
     spawn(command, args, options){
-        this.sk.ipc.toCBE('node:child_process', { func: 'spawn', args: args, options: options }).then(res => {
+        this.sk.ipc.request('node:child_process', { func: 'spawn', args: args, options: options }).then(res => {
             
         })
     }
