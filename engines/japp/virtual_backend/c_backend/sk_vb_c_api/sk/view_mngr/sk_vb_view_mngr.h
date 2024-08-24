@@ -14,9 +14,9 @@ public:
 
     SK_VB_View_Mngr(SK_VirtualBackend *_vbe);
     
-    void SK_VB_View_Mngr::resizeViews(int width, int height);
-    SK_VB_ViewMngr_View* SK_VB_View_Mngr::findViewByID(String viewID);
+    void resizeViews(int width, int height);
+    SK_VB_ViewMngr_View* findViewByID(String viewID);
 
-    void SK_VB_View_Mngr::handle_IPC_Msg(String msgID, DynamicObject* obj, String& responseData);
-    void SK_VB_View_Mngr::createView(String msgID, var obj, String& responseData);
+    void handle_IPC_Msg(String msgID, DynamicObject* obj, String& responseData);
+    void createView(String msgID, var obj, String& responseData);
 };

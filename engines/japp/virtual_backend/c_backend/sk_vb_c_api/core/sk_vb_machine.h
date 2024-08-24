@@ -12,18 +12,18 @@
 
     #pragma comment(lib, "wbemuuid.lib")
 
-    struct CPUInfo {
-        std::string model;
-        int speed; // in MHz
-        long long user;
-        long long nice;
-        long long sys;
-        long long idle;
-        long long irq;
-    };
+    typedef NTSTATUS(WINAPI* RtlGetVersionFunc)(RTL_OSVERSIONINFOEXW*);
 #else
     #include <sys/utsname.h>
     #include <unistd.h>
+    #include <sys/sysctl.h>
+    #include <mach/mach.h>
+
+    struct MemoryInfo {
+        uint64_t totalMemory; // in bytes
+        uint64_t freeMemory;  // in bytes
+        uint64_t usedMemory;  // in bytes
+    };
 #endif
 
 #include <iostream>
@@ -33,14 +33,21 @@
 
 
 
-typedef NTSTATUS(WINAPI* RtlGetVersionFunc)(RTL_OSVERSIONINFOEXW*);
-
+struct CPUInfo {
+    std::string model;
+    int speed; // in MHz
+    long long user;
+    long long nice;
+    long long sys;
+    long long idle;
+    long long irq;
+};
 
 
 class SK_Machine {
 public:
 
-    juce::WebBrowserComponent::Resource SK_Machine::JSON2Resource(SSC::JSON::Object json) {
+    juce::WebBrowserComponent::Resource JSON2Resource(SSC::JSON::Object json) {
         juce::WebBrowserComponent::Resource resource;
 
         std::string data = json.str().c_str();
@@ -55,7 +62,7 @@ public:
         return resource;
     }
 
-    juce::WebBrowserComponent::Resource SK_Machine::respondError(std::string errorMsg) {
+    juce::WebBrowserComponent::Resource respondError(std::string errorMsg) {
         auto json = SSC::JSON::Object{ SSC::JSON::Object::Entries{
             {"error", errorMsg}
         }};
@@ -65,7 +72,7 @@ public:
 
 
 
-    std::string SK_Machine::getCPUArch() {
+    std::string getCPUArch() {
         #if defined(__x86_64__) || defined(_M_X64)
             return "x64";
         #elif defined(__i386__) || defined(_M_IX86)
@@ -111,7 +118,7 @@ public:
         #endif
     }
 
-    std::string SK_Machine::getMachineType(){
+    std::string getMachineType(){
         #if defined(_WIN32) || defined(_WIN64)
             SYSTEM_INFO sysinfo;
             GetNativeSystemInfo(&sysinfo);
@@ -150,7 +157,7 @@ public:
                 default:
                     return "Unknown machine type";
             }
-        #elif
+        #else
             struct utsname buffer;
             if (uname(&buffer) != 0) {
                 return "Unknown machine type";
@@ -161,7 +168,7 @@ public:
     }
 
 
-    std::string SK_Machine::getOSType() {
+    std::string getOSType() {
         // Determine the platform using preprocessor macros
 
         #if defined(_WIN32)
@@ -186,7 +193,7 @@ public:
                 return "Unknown";
             }
 
-        #elif defined(__APPLE__ || __linux__)
+        #elif defined(__APPLE__) || defined(__linux__)
         // macOS platform
             struct utsname buffer;
             if (uname(&buffer) == 0) {
@@ -202,7 +209,7 @@ public:
         #endif
     }
 
-    std::string SK_Machine::getOSPlatform() {
+    std::string getOSPlatform() {
         // Determine the platform using preprocessor macros
         #if defined(_WIN32)
             return "win32";
@@ -230,7 +237,7 @@ public:
     }
 
 
-    std::string SK_Machine::getOSVersion(bool releaseVersion = true) {
+    std::string getOSVersion(bool releaseVersion = true) {
         #if defined(_WIN32)
             RTL_OSVERSIONINFOEXW osvi;
             ZeroMemory(&osvi, sizeof(RTL_OSVERSIONINFOEXW));
@@ -258,7 +265,7 @@ public:
                 }
             }
             return "unknown";
-        #elif defined(__APPLE__ || __linux__)
+        #elif defined(__APPLE__) || defined(__linux__)
             FILE* pipe = popen("/usr/bin/sw_vers -productVersion", "r");
             if (!pipe) return "unknown";
 
@@ -279,13 +286,14 @@ public:
     }
 
 
-    static std::vector<CPUInfo>  SK_Machine::getCPUInformation() {
+    static std::vector<CPUInfo>  getCPUInformation() {
+        std::vector<CPUInfo> cpus;
+        
         #if defined(_WIN32)
             //THIS FUNCTION DOES NOT WORK IN WINDOWS BECAUSE APPARENTLY IT MNUST BE CALLED IN THE PROGRAIM main() FUNCTION
             //IN OTHER WORDS IT MUST BE CALLED AS SOON AS THE PROGRAM STARTS AND THUS THIS FUNCTION CANNOT BE CALLED
             //AT A LATER STAGE OF RUNTIME
 
-            std::vector<CPUInfo> cpus;
 
             HRESULT hres;
             hres = CoInitializeEx(NULL, COINIT_MULTITHREADED);
@@ -418,8 +426,8 @@ public:
             CoUninitialize();
 
             return cpus;
-        #elif defined(__APPLE__ || __linux__)
-            //code...
+        #elif defined(__APPLE__) || defined(__linux__)
+            //code
         #endif
     }
 
@@ -447,7 +455,7 @@ public:
         #endif
     }
 
-    juce::WebBrowserComponent::Resource SK_Machine::getStaticInfo(){
+    juce::WebBrowserComponent::Resource getStaticInfo(){
         SSC::JSON::Object json = SSC::JSON::Object{ SSC::JSON::Object::Entries{
             {"EOL", "\\n"},
             {"endianess", (juce::ByteOrder::isBigEndian() ? "BE" : "LE")},
@@ -487,7 +495,7 @@ public:
     std::string cpuModel = SystemStats::getCpuModel().toStdString();
     int cpuSpeed = SystemStats::getCpuSpeedInMegahertz();
 
-    juce::WebBrowserComponent::Resource SK_Machine::getCPUInfo() {
+    juce::WebBrowserComponent::Resource getCPUInfo() {
 
 
         SSC::JSON::Object cpu = SSC::JSON::Object::Entries{
@@ -520,52 +528,132 @@ public:
         return JSON2Resource(cpu);
     }
 
-    juce::WebBrowserComponent::Resource SK_Machine::getMemoryInfo() {
-        MEMORYSTATUSEX memoryStatus;
-        memoryStatus.dwLength = sizeof(MEMORYSTATUSEX);
+    juce::WebBrowserComponent::Resource getMemoryInfo() {
+        #if defined(_WIN32)
+            MEMORYSTATUSEX memoryStatus;
+            memoryStatus.dwLength = sizeof(MEMORYSTATUSEX);
 
-        if (GlobalMemoryStatusEx(&memoryStatus)){
-            
-        } else {
-            return respondError("Unable to get memory status");
-        }
+            if (GlobalMemoryStatusEx(&memoryStatus)){
+                
+            } else {
+                return respondError("Unable to get memory status");
+            }
 
+            SSC::JSON::Object info = SSC::JSON::Object::Entries{
+                {"physical", SSC::JSON::Object::Entries{
+                    {"free", memoryStatus.ullAvailPhys},
+                    {"total", memoryStatus.ullTotalPhys},
+                    {"used", memoryStatus.ullTotalPhys - memoryStatus.ullAvailPhys}
+                }},
+
+                {"page", SSC::JSON::Object::Entries{
+                    {"free", memoryStatus.ullAvailPageFile},
+                    {"total", memoryStatus.ullTotalPageFile},
+                    {"used", memoryStatus.ullTotalPageFile - memoryStatus.ullAvailPageFile}
+                }},
+
+                {"virtual", SSC::JSON::Object::Entries{
+                    {"free", memoryStatus.ullAvailVirtual},
+                    {"total", memoryStatus.ullTotalVirtual},
+                    {"used", memoryStatus.ullTotalVirtual - memoryStatus.ullAvailVirtual}
+                }},
+
+                {"extendedAvailable", (size_t)memoryStatus.ullAvailExtendedVirtual},
+                {"usageInPercent",(size_t)memoryStatus.dwMemoryLoad}
+            };
+        
+        #elif defined(__APPLE__)
+        
+            MemoryInfo memInfo;
+
+            // Get total memory
+            int mib[2] = {CTL_HW, HW_MEMSIZE};
+            uint64_t totalMemory;
+            size_t size = sizeof(totalMemory);
+            if (sysctl(mib, 2, &totalMemory, &size, NULL, 0) == 0) {
+                memInfo.totalMemory = totalMemory;
+            } else {
+                std::cerr << "Failed to get total memory" << std::endl;
+                memInfo.totalMemory = 0;
+            }
+
+            // Get free memory
+            mach_msg_type_number_t count = HOST_BASIC_INFO_COUNT;
+            host_basic_info_data_t hostInfo;
+            kern_return_t ret = host_info(mach_host_self(), HOST_BASIC_INFO, (host_info_t)&hostInfo, &count);
+
+            /*
+            if (ret == KERN_SUCCESS) {
+                 memInfo.freeMemory = hostInfo.memory_size - hostInfo.memory_used;
+                 memInfo.usedMemory = hostInfo.memory_used;
+            } else {
+                std::cerr << "Failed to get memory statistics" << std::endl;
+                 memInfo.freeMemory = 0;
+                 memInfo.usedMemory = 0;
+            }
+             */
+        
+        
+            SSC::JSON::Object info = SSC::JSON::Object::Entries{
+                {"physical", SSC::JSON::Object::Entries{
+                    {"free", 0},
+                    {"total", 0},
+                    {"used", 0}
+                }},
+
+                {"page", SSC::JSON::Object::Entries{
+                    {"free", 0},
+                    {"total", 0},
+                    {"used", 0}
+                }},
+
+                {"virtual", SSC::JSON::Object::Entries{
+                    {"free", 0},
+                    {"total", 0},
+                    {"used", 0}
+                }},
+
+                {"extendedAvailable", 0},
+                {"usageInPercent", 0}
+            };
+        #endif
+        
+        return JSON2Resource(info);
+    }
+
+    juce::WebBrowserComponent::Resource getNetworkInfo() {
         SSC::JSON::Object info = SSC::JSON::Object::Entries{
-            {"physical", SSC::JSON::Object::Entries{
-                {"free", memoryStatus.ullAvailPhys},
-                {"total", memoryStatus.ullTotalPhys},
-                {"used", memoryStatus.ullTotalPhys - memoryStatus.ullAvailPhys}
-            }},
 
-            {"page", SSC::JSON::Object::Entries{
-                {"free", memoryStatus.ullAvailPageFile},
-                {"total", memoryStatus.ullTotalPageFile},
-                {"used", memoryStatus.ullTotalPageFile - memoryStatus.ullAvailPageFile}
-            }},
-
-            {"virtual", SSC::JSON::Object::Entries{
-                {"free", memoryStatus.ullAvailVirtual},
-                {"total", memoryStatus.ullTotalVirtual},
-                {"used", memoryStatus.ullTotalVirtual - memoryStatus.ullAvailVirtual}
-            }},
-
-            {"extendedAvailable", (size_t)memoryStatus.ullAvailExtendedVirtual},
-            {"usageInPercent",(size_t)memoryStatus.dwMemoryLoad}
         };
 
         return JSON2Resource(info);
     }
 
-    juce::WebBrowserComponent::Resource SK_Machine::getNetworkInfo() {
-        SSC::JSON::Object info = SSC::JSON::Object::Entries{
+    juce::WebBrowserComponent::Resource getMachineTime() {
+        #if defined(_WIN32)
+            double number = GetTickCount64();
+        #elif defined(__APPLE__)
+            uint64_t number = 1;
+        
+            struct timeval boottime;
+            size_t size = sizeof(boottime);
 
-        };
-
-        return JSON2Resource(info);
-    }
-
-    juce::WebBrowserComponent::Resource SK_Machine::getMachineTime() {
-        double number = GetTickCount64();  // Example number
+            // Get system boot time
+            if (sysctlbyname("kern.boottime", &boottime, &size, NULL, 0) != 0) {
+                int x = 0;
+            } else {
+                
+                auto boot_ms = boottime.tv_sec * 1000 + boottime.tv_usec / 1000;
+                
+                // Current time
+                auto now = std::chrono::system_clock::now();
+                auto now_time = std::chrono::system_clock::to_time_t(now);
+                auto now_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+                
+                number = now_ms - boot_ms;
+            }
+        #endif
+        
         double result = number / 1000.0;
 
         // Store the formatted result in a string variable
@@ -580,7 +668,7 @@ public:
         return JSON2Resource(info);
     }
 
-    juce::WebBrowserComponent::Resource SK_Machine::getTemplate() {
+    juce::WebBrowserComponent::Resource getTemplate() {
         SSC::JSON::Object info = SSC::JSON::Object::Entries{
                
         };

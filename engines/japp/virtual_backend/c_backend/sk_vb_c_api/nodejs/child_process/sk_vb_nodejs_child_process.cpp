@@ -31,7 +31,7 @@ void SK_VB_NodeJS_ChildProcess::exec(String msgID, DynamicObject* obj, String& r
 
     #if defined(_WIN32) || defined(_WIN64)
         ShellExecute(0, 0, path.toStdString().c_str(), 0, 0, SW_SHOW);
-    #elif defined(__APPLE__( || )
+    #elif defined(__APPLE__)
     #elif defined(__linux__)
     #endif
 }

@@ -15,19 +15,19 @@ public:
 
     String id;
 
-    auto SK_VB_ViewMngr_View::pageAboutToLoad(const juce::String& newUrl) -> bool override;
+    auto pageAboutToLoad(const juce::String& newUrl) -> bool override;
 
-    auto SK_VB_ViewMngr_View::createResource_2(const juce::String& resourceName) -> juce::WebBrowserComponent::Resource;
+    auto createResource_2(const juce::String& resourceName) -> juce::WebBrowserComponent::Resource;
 
-    auto SK_VB_ViewMngr_View::lookUpMimeType(const juce::String& filename, const juce::String& defaultMimeType = "application/octet-stream") -> juce::String;
+    auto lookUpMimeType(const juce::String& filename, const juce::String& defaultMimeType = "application/octet-stream") -> juce::String;
 
-    auto SK_VB_ViewMngr_View::handle_native_command(juce::String url) -> std::optional<juce::WebBrowserComponent::Resource>;
+    auto handle_native_command(juce::String url) -> std::optional<juce::WebBrowserComponent::Resource>;
 
-    auto SK_VB_ViewMngr_View::lookUpResource(const juce::String& url) -> std::optional<juce::WebBrowserComponent::Resource>;
-    auto SK_VB_ViewMngr_View::loadResourceFrom_Disk(const juce::String& url)->std::optional<juce::WebBrowserComponent::Resource>;
-    auto SK_VB_ViewMngr_View::loadResourceFrom_BinaryData(const juce::String& url)->std::optional<juce::WebBrowserComponent::Resource>;
+    auto lookUpResource(const juce::String& url) -> std::optional<juce::WebBrowserComponent::Resource>;
+    auto loadResourceFrom_Disk(const juce::String& url)->std::optional<juce::WebBrowserComponent::Resource>;
+    auto loadResourceFrom_BinaryData(const juce::String& url)->std::optional<juce::WebBrowserComponent::Resource>;
 
-    void SK_VB_ViewMngr_View::handle_ipc_msg(const var& object);
+    void handle_ipc_msg(const var& object);
 
 
 

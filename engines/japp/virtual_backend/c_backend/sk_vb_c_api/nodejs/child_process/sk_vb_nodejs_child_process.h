@@ -9,7 +9,7 @@ public:
     
     SK_VB_NodeJS_ChildProcess(SK_VirtualBackend * _vbe);
     
-    void SK_VB_NodeJS_ChildProcess::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData);
+    void handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData);
 
 
     void exec(String msgID, DynamicObject* obj, String& responseData);

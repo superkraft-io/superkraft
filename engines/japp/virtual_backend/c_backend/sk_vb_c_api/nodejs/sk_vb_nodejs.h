@@ -21,9 +21,9 @@ public:
     SK_VB_ElectronJS* electronjs;
 
 
-    SK_VB_NodeJS::SK_VB_NodeJS(SK_VirtualBackend *_vbe);
-    SK_VB_NodeJS::~SK_VB_NodeJS();
+    SK_VB_NodeJS(SK_VirtualBackend *_vbe);
+    ~SK_VB_NodeJS();
 
 
-    void SK_VB_NodeJS::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData);
+    void handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData);
 };

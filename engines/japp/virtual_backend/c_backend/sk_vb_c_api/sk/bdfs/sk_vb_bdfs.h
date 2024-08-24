@@ -15,14 +15,14 @@ public:
     
     SK_VB_BDFS(SK_VirtualBackend * _vbe);
     
-    int SK_VB_BDFS::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData);
+    int handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData);
 
 
-    void SK_VB_BDFS::access(String msgID, String path, String& responseData);
-    void SK_VB_BDFS::stat(String msgID, String path, String& responseData);
-    void SK_VB_BDFS::writeFile(String msgID, String path, String data, String& responseData);
-    void SK_VB_BDFS::readFile(String msgID, String path, String& responseData);
-    void SK_VB_BDFS::readdir(String msgID, String path, String& responseData);
-    void SK_VB_BDFS::readJSON(String msgID, String path, String& responseData);
-    void SK_VB_BDFS::writeJSON(String msgID, String path, String data, String& responseData);
+    void access(String msgID, String path, String& responseData);
+    void stat(String msgID, String path, String& responseData);
+    void writeFile(String msgID, String path, String data, String& responseData);
+    void readFile(String msgID, String path, String& responseData);
+    void readdir(String msgID, String path, String& responseData);
+    void readJSON(String msgID, String path, String& responseData);
+    void writeJSON(String msgID, String path, String data, String& responseData);
 };

@@ -14,7 +14,7 @@ public:
     String target;
     String data;
 
-    SK_IPC_Msg::SK_IPC_Msg(String _type, String _id, String _source, String _target, String _data) {
+    SK_IPC_Msg(String _type, String _id, String _source, String _target, String _data) {
         type = _type;
         id = _id;
         source = _source;
@@ -22,7 +22,7 @@ public:
         data = _data;
     }
 
-    String SK_IPC_Msg::stringifyAsResponse() {
+    String stringifyAsResponse() {
         return "{\"type\":\"response\", \"msgID\": \"" + id + "\", \"source\": \"" + target + "\", \"target\": \"" + source + "\", \"data\": " + data + "}";
     }
 };
@@ -52,7 +52,7 @@ public:
 
     SK_IPC_Request_Mngr reqMngr;
 
-    static void SK_IPC::respondWithError(String msgID, String errorMsg, String& responseData) {
+    static void respondWithError(String msgID, String errorMsg, String& responseData) {
         responseData = "{\"error\":\"" + errorMsg + "\"}";
     };
 

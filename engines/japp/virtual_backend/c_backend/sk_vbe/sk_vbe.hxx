@@ -37,14 +37,14 @@ public:
     auto handle_native_command(juce::String url) -> std::optional<juce::WebBrowserComponent::Resource>;
 
     auto lookUpResource(const juce::String& url) -> std::optional<juce::WebBrowserComponent::Resource>;
-    auto SK_VirtualBackend::loadResourceFrom_Disk(const juce::String& url) -> std::optional<juce::WebBrowserComponent::Resource>;
-    auto SK_VirtualBackend::loadResourceFrom_BinaryData(const juce::String& url) -> std::optional<juce::WebBrowserComponent::Resource>;
+    auto loadResourceFrom_Disk(const juce::String& url) -> std::optional<juce::WebBrowserComponent::Resource>;
+    auto loadResourceFrom_BinaryData(const juce::String& url) -> std::optional<juce::WebBrowserComponent::Resource>;
 
-    void SK_VirtualBackend::handle_sk_ipc_msg(const var& object) {
+    void handle_sk_ipc_msg(const var& object) {
         juce::DynamicObject* obj = object.getDynamicObject();
 
         sk_c_api->ipc->handle_IPC_Msg(obj);
     };
 
-    void SK_VirtualBackend::handle_ipc_msg_from_view(const String& sk_ipc_msg);
+    void handle_ipc_msg_from_view(const String& sk_ipc_msg);
 };

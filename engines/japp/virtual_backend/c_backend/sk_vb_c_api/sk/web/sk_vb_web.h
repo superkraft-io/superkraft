@@ -17,14 +17,14 @@ public:
     ~SK_VB_Web();
 
 
-    void SK_VB_Web::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData);
+    void handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData);
 
-    void SK_VB_Web::createProgressCallback(String msgID, var info, String& responseData);
-    void SK_VB_Web::getProgress(String msgID, var info, String& responseData);
+    void createProgressCallback(String msgID, var info, String& responseData);
+    void getProgress(String msgID, var info, String& responseData);
 
-    void SK_VB_Web::request(String msgID, var info, String& responseData);
+    void request(String msgID, var info, String& responseData);
 
-    void SK_VB_Web::get(String msgID, var info, String& responseData);
-    void SK_VB_Web::post(String msgID, var info, String& responseData);
-    void SK_VB_Web::download(String msgID, var info, String& responseData);
+    void get(String msgID, var info, String& responseData);
+    void post(String msgID, var info, String& responseData);
+    void download(String msgID, var info, String& responseData);
 };

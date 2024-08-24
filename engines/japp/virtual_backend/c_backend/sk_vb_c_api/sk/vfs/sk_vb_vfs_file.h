@@ -12,14 +12,13 @@ public:
     int mtime;
     int atime;
 
-    size_t SK_VB_VFS_File::getSize() const {
+    size_t getSize() const {
         return data.length();
     }
 
     WebBrowserComponent::Resource toResource() const {
         WebBrowserComponent::Resource resource;
 
-        int dataSize{};
         resource.data.resize(data.length());
         std::memcpy(resource.data.data(), data.toStdString().c_str(), data.length());
 

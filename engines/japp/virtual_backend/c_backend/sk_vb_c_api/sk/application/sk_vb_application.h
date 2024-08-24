@@ -8,7 +8,7 @@ public:
 
     SK_VB_Application(SK_VirtualBackend * _vbe);
 
-    void SK_VB_Application::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData);
+    void handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData);
 
-    void SK_VB_Application::getAppInfo(String msgID, var info, String& responseData);
+    void getAppInfo(String msgID, var info, String& responseData);
 };

@@ -4,7 +4,26 @@
 
 #include "sk_vb_nodejs_fs.h"
 
-#include <windows.h>
+#if defined(_WIN32)
+    #include <windows.h>
+#elif defined(__APPLE__)
+    #include <sys/stat.h>
+    #include <ctime>
+    #include <unistd.h>
+
+    struct FileInfo {
+        uint64_t volumeSerialNumber;
+        std::string mode;
+        int numberOfLinks;
+        
+        uint64_t ino;
+
+        char* atime;
+        char* mtime;
+        char* ctime;
+    };
+#endif
+
 #include <iostream>
 
 
@@ -59,7 +78,7 @@ void SK_FS::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseDat
     String fullPath = SK_FS::getProjectPath() + "/assets" + path;
 
     if (operation == "access") access(msgID, fullPath, responseData);
-    else if (operation == "stat") stat(msgID, fullPath, responseData);
+    else if (operation == "stat") _stat(msgID, fullPath, responseData);
     else if (operation == "writeFile") writeFile(msgID, fullPath, data, responseData);
     else if (operation == "readFile") readFile(msgID, fullPath, responseData);
     else if (operation == "readdir") readdir(msgID, fullPath, responseData);
@@ -73,7 +92,7 @@ void SK_FS::access(String msgID, String path, String& responseData) {
     responseData = "{\"access\":" + String((file.exists() ? "true" : "false")) + "}";
 }
 
-void SK_FS::stat(String msgID, String path, String& responseData) {
+void SK_FS::_stat(String msgID, String path, String& responseData) {
     File file(path);
 
     if (!file.exists()) {
@@ -82,6 +101,9 @@ void SK_FS::stat(String msgID, String path, String& responseData) {
     }
 
 
+    
+    FileInfo fileInfo;
+    
     auto statInfo = SSC::JSON::Object();
 
     if (file.isDirectory()) {
@@ -108,32 +130,70 @@ void SK_FS::stat(String msgID, String path, String& responseData) {
             });
     }
     else {
+        std::string filePath = file.getFullPathName().toStdString();
+        
+        #if defined(_WIN32)
+            HANDLE hFile = CreateFile(filePath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+            if (hFile == INVALID_HANDLE_VALUE) {
+                SK_IPC::respondWithError(msgID, "ENOENT", responseData);
+                return;
+            }
 
-        HANDLE hFile = CreateFile(file.getFullPathName().toStdString().c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-        if (hFile == INVALID_HANDLE_VALUE) {
-            SK_IPC::respondWithError(msgID, "ENOENT", responseData);
-            return;
-        }
+            BY_HANDLE_FILE_INFORMATION _fileInfo;
+            if (!GetFileInformationByHandle(hFile, &fileInfo)) {
+                SK_IPC::respondWithError(msgID, "ENOENT", responseData);
+                CloseHandle(hFile);
+                return;
+            }
 
-        BY_HANDLE_FILE_INFORMATION fileInfo;
-        if (!GetFileInformationByHandle(hFile, &fileInfo)) {
-            SK_IPC::respondWithError(msgID, "ENOENT", responseData);
             CloseHandle(hFile);
-            return;
-        }
+        
+            fileInfo.serialvolumeSerialNumber = (uint64_t)_fileInfo.dwVolumeSerialNumber;
+            fileInfo.numberOfLinks = (uint64_t)fileInfo.nNumberOfLinks;
+            fileInfo.ino = ((uint64_t)fileInfo.nFileIndexHigh << 32) | fileInfo.nFileIndexLow;
+        #elif defined(__APPLE__)
+        
+            struct stat fileStat;
 
-        CloseHandle(hFile);
+            // Get file statistics
+            if (stat(filePath.c_str(), &fileStat) != 0) {
+                std::cerr << "Failed to get file stats for " << filePath << std::endl;
+                return;
+            }
+
+            // Print file size
+            std::cout << "File size: " << fileStat.st_size << " bytes" << std::endl;
+
+            // Print file permissions
+            char* permissions;
+            /*permissions << ((fileStat.st_mode & S_IRUSR) ? "r" : "-")
+                          << ((fileStat.st_mode & S_IWUSR) ? "w" : "-")
+                          << ((fileStat.st_mode & S_IXUSR) ? "x" : "-")
+                          << ((fileStat.st_mode & S_IRGRP) ? "r" : "-")
+                          << ((fileStat.st_mode & S_IWGRP) ? "w" : "-")
+                          << ((fileStat.st_mode & S_IXGRP) ? "x" : "-")
+                          << ((fileStat.st_mode & S_IROTH) ? "r" : "-")
+                          << ((fileStat.st_mode & S_IWOTH) ? "w" : "-")
+                          << ((fileStat.st_mode & S_IXOTH) ? "x" : "-")
+                          << std::endl;
+            */
+        
+            fileInfo.atime = std::ctime(&fileStat.st_atime);
+            fileInfo.mtime = std::ctime(&fileStat.st_mtime);
+            fileInfo.ctime = std::ctime(&fileStat.st_ctime);
+        #endif
+        
 
         statInfo = SSC::JSON::Object(SSC::JSON::Object::Entries{
             {"type", "file"},
-            {"dev", (uint64_t)fileInfo.dwVolumeSerialNumber},
+            {"dev", fileInfo.volumeSerialNumber},
             {"mode", -1},
-            {"nlink", (uint64_t)fileInfo.nNumberOfLinks},
+            {"nlink", fileInfo.numberOfLinks},
             {"uid", 0},
             {"gid", 0},
             {"rdev", 0},
             {"blksize", -1},
-            {"ino", ((uint64_t)fileInfo.nFileIndexHigh << 32) | fileInfo.nFileIndexLow},
+            {"ino", fileInfo.ino},
             {"size", file.getSize()},
             {"blocks", -1},
             {"atimeMs", file.getLastAccessTime().getHighResolutionTicks()},

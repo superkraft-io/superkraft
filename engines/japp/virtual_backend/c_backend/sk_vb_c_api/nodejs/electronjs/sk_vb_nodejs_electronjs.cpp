@@ -8,7 +8,7 @@
 #if defined(_WIN32) || defined(_WIN64)
     #include <windows.h>
     #include <shellapi.h>
-#elif defined(__APPLE__( || )
+#elif defined(__APPLE__)
 #elif defined(__linux__)
 #endif
 
@@ -42,7 +42,7 @@ void SK_VB_ElectronJS::openPath(String msgID, DynamicObject* obj, String& respon
 
     #if defined(_WIN32) || defined(_WIN64)
         ShellExecute(0, 0, path.toStdString().c_str(), 0, 0, SW_SHOW);
-    #elif defined(__APPLE__( || )
+    #elif defined(__APPLE__)
     #elif defined(__linux__)
     #endif
 };
@@ -54,7 +54,7 @@ void SK_VB_ElectronJS::openExternal(String msgID, DynamicObject* obj, String& re
 
     #if defined(_WIN32) || defined(_WIN64)
         ShellExecute(0, 0, url.toStdString().c_str(), 0, 0, SW_SHOW);
-    #elif defined(__APPLE__( || )
+    #elif defined(__APPLE__)
     #elif defined(__linux__)
     #endif
 };
