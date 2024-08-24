@@ -11,20 +11,22 @@
     #include <ctime>
     #include <unistd.h>
 
-    struct FileInfo {
-        uint64_t volumeSerialNumber;
-        std::string mode;
-        int numberOfLinks;
-        
-        uint64_t ino;
-
-        char* atime;
-        char* mtime;
-        char* ctime;
-    };
+   
 #endif
 
 #include <iostream>
+
+struct FileInfo {
+    uint64_t volumeSerialNumber;
+    std::string mode;
+    int numberOfLinks;
+
+    uint64_t ino;
+
+    char* atime;
+    char* mtime;
+    char* ctime;
+    };
 
 
 SK_FS::SK_FS(SK_VirtualBackend *_vbe) {
@@ -140,7 +142,7 @@ void SK_FS::_stat(String msgID, String path, String& responseData) {
             }
 
             BY_HANDLE_FILE_INFORMATION _fileInfo;
-            if (!GetFileInformationByHandle(hFile, &fileInfo)) {
+            if (!GetFileInformationByHandle(hFile, &_fileInfo)) {
                 SK_IPC::respondWithError(msgID, "ENOENT", responseData);
                 CloseHandle(hFile);
                 return;
@@ -148,9 +150,9 @@ void SK_FS::_stat(String msgID, String path, String& responseData) {
 
             CloseHandle(hFile);
         
-            fileInfo.serialvolumeSerialNumber = (uint64_t)_fileInfo.dwVolumeSerialNumber;
-            fileInfo.numberOfLinks = (uint64_t)fileInfo.nNumberOfLinks;
-            fileInfo.ino = ((uint64_t)fileInfo.nFileIndexHigh << 32) | fileInfo.nFileIndexLow;
+            fileInfo.volumeSerialNumber = (uint64_t)_fileInfo.dwVolumeSerialNumber;
+            fileInfo.numberOfLinks = (uint64_t)_fileInfo.nNumberOfLinks;
+            fileInfo.ino = ((uint64_t)_fileInfo.nFileIndexHigh << 32) | _fileInfo.nFileIndexLow;
         #elif defined(__APPLE__)
         
             struct stat fileStat;
