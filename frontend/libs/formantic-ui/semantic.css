@@ -28709,9 +28709,9 @@ i.icon.broken.chain:before {
   content: "\f127";
 }
 
-i.icon.browser:before {
+/*i.icon.browser:before {
   content: "\f022";
-}
+}*/
 
 i.icon.call:before {
   content: "\f095";
