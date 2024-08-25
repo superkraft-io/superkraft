@@ -4,6 +4,10 @@
 
 #include "sk_vb_nodejs_process.h"
 
+#include <iostream>
+#include <cstdlib>
+
+extern char** environ;
 
 
 SK_VB_NodeJS_Process::SK_VB_NodeJS_Process(SK_VirtualBackend *_vbe) {
@@ -22,13 +26,15 @@ void SK_VB_NodeJS_Process::handle_IPC_Msg(String msgID, DynamicObject *obj, Stri
 
 
 void SK_VB_NodeJS_Process::env(String msgID, DynamicObject* obj, String& responseData) {
-    var info = obj->getProperty("data");
+    SSC::JSON::Object json = SSC::JSON::Object{};
 
-    String path = info.getProperty("path", "");
+    for (char** env = environ; *env != nullptr; ++env) {
+        String envStr = String(*env);
+        StringArray paramsArr;
+        paramsArr.addTokens(envStr, "=", "");
 
-    #if defined(_WIN32) || defined(_WIN64)
-        ShellExecute(0, 0, path.toStdString().c_str(), 0, 0, SW_SHOW);
-    #elif defined(__APPLE__)
-    #elif defined(__linux__)
-    #endif
+        json.set(paramsArr[0].toStdString(), paramsArr[1].replace("\\", "\\\\").toStdString());
+    }
+
+    responseData = json.str();
 }

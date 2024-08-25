@@ -1,12 +1,12 @@
-var _sk_os_def = {
+module.exports = {
     EOL: sk_juce_api.machineInfo.EOL,
 
     availableParallelism() {
-        return sk_juce_api.fetch('sk/machine', {func: getCPUInfo'}).coreCount
+        return sk_juce_api.fetch('sk/machine', {func: 'getCPUInfo'}).coreCount
     },
 
     arch() {
-        return sk_juce_api.machineInfo.arch
+        return sk_juce_api.staticInfo.os.arch
     },
 
     constants: '',
@@ -15,10 +15,10 @@ var _sk_os_def = {
         return sk_juce_api.fetch('sk/machine', {func: 'getCPUInfo'}).cores
     },
 
-    devNull: sk_juce_api.machineInfo.devNull,
+    devNull: sk_juce_api.staticInfo.os.devNull,
 
     endianness() {
-        return sk_juce_api.machineInfo.endianess
+        return sk_juce_api.staticInfo.os.endianess
     },
 
 
@@ -37,7 +37,7 @@ var _sk_os_def = {
     },
 
     usedmem() {
-        return sk_juce_api.fetch('sk/machine', {func: 'getMemoryInfo').physical.used
+        return sk_juce_api.fetch('sk/machine', { func: 'getMemoryInfo' }).physical.used
     },
 
     
@@ -65,18 +65,18 @@ var _sk_os_def = {
     /* paths */
 
     homedir() {
-        return sk_juce_api.machineInfo.homedir
+        return sk_juce_api.staticInfo.os.homedir
     },
 
     tmpdir() {
-        return sk_juce_api.machineInfo.tmpdir
+        return sk_juce_api.staticInfo.os.tmpdir
     },
 
 
     /* machine */
 
     hostname() {
-        return sk_juce_api.machineInfo.hostname
+        return sk_juce_api.staticInfo.os.hostname
     },
 
     loadavg() {
@@ -87,23 +87,23 @@ var _sk_os_def = {
     /* operating system */
 
     version() {
-        return sk_juce_api.machineInfo.version
+        return sk_juce_api.staticInfo.os.version
     },
 
     platform() {
-        return sk_juce_api.machineInfo.platform
+        return sk_juce_api.staticInfo.os.platform
     },
 
     release() {
-        return sk_juce_api.machineInfo.release
+        return sk_juce_api.staticInfo.os.release
     },
 
     machine() {
-        return sk_juce_api.machineInfo.machine
+        return sk_juce_api.staticInfo.os.machine
     },
 
     type() {
-        return sk_juce_api.machineInfo.type
+        return sk_juce_api.staticInfo.os.type
     },
 
 
@@ -128,5 +128,3 @@ var _sk_os_def = {
         return sk_juce_api.fetch('sk/machine', {func: 'getUserInfo'})
     }
 }
-
-module.exports = _sk_os_def

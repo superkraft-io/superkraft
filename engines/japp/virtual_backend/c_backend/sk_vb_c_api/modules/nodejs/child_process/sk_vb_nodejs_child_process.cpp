@@ -34,16 +34,21 @@ void SK_VB_NodeJS_ChildProcess::exec(String msgID, DynamicObject* obj, String& r
     #elif defined(__APPLE__)
     #elif defined(__linux__)
     #endif
+
+    responseData = SK_IPC::OK;
 }
 
 void SK_VB_NodeJS_ChildProcess::execFile(String msgID, DynamicObject* obj, String& responseData) {
 
+    responseData = SK_IPC::OK;
 }
 
 void SK_VB_NodeJS_ChildProcess::fork(String msgID, DynamicObject* obj, String& responseData) {
 
+    responseData = SK_IPC::OK;
 }
 
 void SK_VB_NodeJS_ChildProcess::spawn(String msgID, DynamicObject* obj, String& responseData) {
 
+    responseData = SK_IPC::OK;
 }

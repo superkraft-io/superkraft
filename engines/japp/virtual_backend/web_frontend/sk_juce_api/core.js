@@ -1,4 +1,6 @@
-window.sk_juce_api = {}
+window.sk_juce_api = {
+    staticInfo: {}
+}
 
 
 function getDirname(asArray) {
@@ -24,7 +26,7 @@ Object.defineProperty(window, '__dirname', {
 });
 
 
-sk_juce_api.fetch = (path, data)=>{
+sk_juce_api.fetch = (path, data, onPreParse)=>{
     /*
     
         maybe need to format path to handle certain scenarios such as:
@@ -38,7 +40,6 @@ sk_juce_api.fetch = (path, data)=>{
     
     var finalPath = path
     if (data) path += '!' + btoa(JSON.stringify(data))
-        console.log(path)
         
     const request = new XMLHttpRequest()
     try {
@@ -53,15 +54,18 @@ sk_juce_api.fetch = (path, data)=>{
 
     try { response = request.responseText } catch { response = request.response }
 
-    if (request.getAllResponseHeaders().indexOf('application/json') > -1) response = JSON.parse(response)
+    if (request.getAllResponseHeaders().indexOf('application/json') > -1) {
+        if (!onPreParse) response = JSON.parse(response)
+        else response = onPreParse(response)
+    }
 
     return response
 }
 
 window.sk_juce_api.nativeModules = {
-    node: { os: '', fs: '', path: '', child_process: '' },
-    npm: { electron: '' },
-    sk: { application: '', web: '' }
+    node: {     process: '', os: '', fs: '', path: '', child_process: '' },
+     npm: {    electron: '' },
+      sk: { application: '', web: '' }
 }
 
 for (var catName in window.sk_juce_api.nativeModules) {
@@ -71,5 +75,4 @@ for (var catName in window.sk_juce_api.nativeModules) {
     }
 }
 
-
-sk_juce_api.machineInfo = sk_juce_api.fetch('sk/machine', {func: 'getStaticInfo'})
+sk_juce_api.staticInfo.os = sk_juce_api.fetch('sk/machine', { func: 'getStaticInfo' })

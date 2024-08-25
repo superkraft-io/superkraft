@@ -57,5 +57,7 @@ void SK_VB_cNA_handleParamComponentMouseEvent::handle_IPC_Msg(String msgID, Dyna
         return;
     }
 
+
+    responseData = SK_IPC::OK;
    
 }

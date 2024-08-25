@@ -47,6 +47,8 @@ public:
 
 class SK_IPC {
 public:
+    static inline const String OK = "{}";
+
     SK_VirtualBackend* vbe;
     SK_IPC(SK_VirtualBackend *_vbe);
 

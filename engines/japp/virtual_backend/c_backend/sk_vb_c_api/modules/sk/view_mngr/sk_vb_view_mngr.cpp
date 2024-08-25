@@ -135,5 +135,6 @@ void SK_VB_View_Mngr::createView(String msgID, var obj, String& responseData) {
         vbe->getParentComponent()->setSize(width, height);
     }
 
-    responseData = "{}";
+
+    responseData = SK_IPC::OK;
 }

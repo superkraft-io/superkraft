@@ -3,6 +3,7 @@
 
 #include <JuceHeader.h>
 
+#include "process/sk_vb_nodejs_process.h"
 #include "fs/sk_vb_nodejs_fs.h"
 #include "child_process/sk_vb_nodejs_child_process.h"
 
@@ -15,6 +16,7 @@ class SK_VB_NodeJS {
 public:
     SK_VirtualBackend* vbe;
 
+    SK_VB_NodeJS_Process* process;
     SK_FS* fs;
     SK_VB_NodeJS_ChildProcess* child_process;
 

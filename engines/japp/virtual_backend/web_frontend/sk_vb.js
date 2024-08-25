@@ -23,8 +23,7 @@ var start_app = async () => {
 
     window.global = window
 
-
-
+    window.process = require('node:process')
     window.appMain = new (require('/main.js'))()
 
     var opt = {

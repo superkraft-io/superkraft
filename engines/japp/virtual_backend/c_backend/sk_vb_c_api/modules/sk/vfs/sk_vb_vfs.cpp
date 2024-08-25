@@ -88,7 +88,9 @@ void SK_VB_VFS::writeFile(String msgID, String path, String data, String& respon
 
     auto file = entries.at(entries.size() - 1);
     file->path = path;
-    file->data = data;;
+    file->data = data;
+
+    responseData = SK_IPC::OK;
 }
 
 void SK_VB_VFS::readFile(String msgID, String path, String& responseData) {
@@ -103,13 +105,16 @@ void SK_VB_VFS::readFile(String msgID, String path, String& responseData) {
 }
 
 void SK_VB_VFS::readdir(String msgID, String path, String& responseData) {
-    
+
+    responseData = SK_IPC::OK;    
 }
 
 void SK_VB_VFS::readJSON(String msgID, String path, String& responseData) {
-    int x = 0;
+
+    responseData = SK_IPC::OK;
 }
 
 void SK_VB_VFS::writeJSON(String msgID, String path, String data, String& responseData) {
-    int x = 0;
+
+    responseData = SK_IPC::OK;
 }

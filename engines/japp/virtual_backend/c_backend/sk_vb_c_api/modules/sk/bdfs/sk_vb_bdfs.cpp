@@ -80,7 +80,8 @@ void SK_VB_BDFS::stat(String msgID, String path, String& responseData) {
 }
 
 void SK_VB_BDFS::writeFile(String msgID, String path, String data, String& responseData) {
-   
+
+    responseData = SK_IPC::OK;
 }
 
 void SK_VB_BDFS::readFile(String msgID, String path, String& responseData) {
@@ -107,9 +108,11 @@ void SK_VB_BDFS::readdir(String msgID, String path, String& responseData) {
 }
 
 void SK_VB_BDFS::readJSON(String msgID, String path, String& responseData) {
-    int x = 0;
+
+    responseData = SK_IPC::OK;
 }
 
 void SK_VB_BDFS::writeJSON(String msgID, String path, String data, String& responseData) {
-    int x = 0;
+
+    responseData = SK_IPC::OK;
 }

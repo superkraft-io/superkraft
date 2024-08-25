@@ -33,6 +33,7 @@ void SK_VB_ElectronJS::handle_IPC_Msg(String msgID, DynamicObject *obj, String& 
 
 void SK_VB_ElectronJS::showItemInFolder(String msgID, DynamicObject* obj, String& responseData) {
 
+    responseData = SK_IPC::OK;
 };
 
 void SK_VB_ElectronJS::openPath(String msgID, DynamicObject* obj, String& responseData) {
@@ -45,6 +46,8 @@ void SK_VB_ElectronJS::openPath(String msgID, DynamicObject* obj, String& respon
     #elif defined(__APPLE__)
     #elif defined(__linux__)
     #endif
+
+    responseData = SK_IPC::OK;
 };
 
 void SK_VB_ElectronJS::openExternal(String msgID, DynamicObject* obj, String& responseData) {
@@ -57,20 +60,26 @@ void SK_VB_ElectronJS::openExternal(String msgID, DynamicObject* obj, String& re
     #elif defined(__APPLE__)
     #elif defined(__linux__)
     #endif
+
+    responseData = SK_IPC::OK;
 };
 
 void SK_VB_ElectronJS::trashItem(String msgID, DynamicObject* obj, String& responseData) {
 
+    responseData = SK_IPC::OK;
 };
 
 void SK_VB_ElectronJS::beep(String msgID, DynamicObject* obj, String& responseData) {
 
+    responseData = SK_IPC::OK;
 };
 
 void SK_VB_ElectronJS::writeShortcutLink(String msgID, DynamicObject* obj, String& responseData) {
 
+    responseData = SK_IPC::OK;
 };
 
 void SK_VB_ElectronJS::readShortcutLink(String msgID, DynamicObject* obj, String& responseData) {
 
+    responseData = SK_IPC::OK;
 };
