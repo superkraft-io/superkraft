@@ -10,6 +10,7 @@
 #include "bdfs/sk_vb_bdfs.h"
 #include "web/sk_vb_web.h"
 #include "application/sk_vb_application.h"
+#include "machine/sk_vb_machine.h"
 
 
 class SK_VirtualBackend;
@@ -25,6 +26,7 @@ public:
     SK_VB_BDFS* bdfs;
     SK_VB_Web* web;
     SK_VB_Application* application;
+    SK_VB_Machine* machine;
 
     SK_VB_SK(SK_VirtualBackend *_vbe);
     ~SK_VB_SK();

@@ -1,4 +1,8 @@
-module.exports = __sk_node_process = {
+class SK_Node_Process {
+    get env(){
+        return sk_juce_api.fetch('sk/getProcessInfo')
+    },
+    
     exec(command, options, callback){
         this.sk.ipc.toCBE('node:child_process', { func: 'exec', options: options }).then(res => {
             callback(res)
@@ -21,8 +25,7 @@ module.exports = __sk_node_process = {
     }
 }
 
-__sk_node_process
+sk_juce_api.node_process = new SK_Node_Process()
 
-sk_juce_api.awaitIPC(()=>{
-    = sk_juce_api.fetch('sk.getMachineStaticInfo')
-})
+sk_juce_api.machineInfo = sk_juce_api.node_process
+

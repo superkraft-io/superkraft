@@ -12,8 +12,5 @@ public:
     void handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData);
 
 
-    void exec(String msgID, DynamicObject* obj, String& responseData);
-    void execFile(String msgID, DynamicObject* obj, String& responseData);
-    void fork(String msgID, DynamicObject* obj, String& responseData);
-    void spawn(String msgID, DynamicObject* obj, String& responseData);
+    void env(String msgID, DynamicObject* obj, String& responseData);
 };

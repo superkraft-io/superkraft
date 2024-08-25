@@ -17,7 +17,5 @@ public:
 
     auto pageAboutToLoad(const juce::String& newUrl) -> bool override;
 
-    auto handle_native_command(juce::String url) -> std::optional<juce::WebBrowserComponent::Resource>;
-
     void handle_ipc_msg(const var& object);
 };

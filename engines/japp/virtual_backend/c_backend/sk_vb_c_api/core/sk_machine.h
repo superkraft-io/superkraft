@@ -47,26 +47,13 @@ struct CPUInfo {
 class SK_Machine {
 public:
 
-    juce::WebBrowserComponent::Resource JSON2Resource(SSC::JSON::Object json) {
-        juce::WebBrowserComponent::Resource resource;
+    
 
-        std::string data = json.str().c_str();
-
-        resource.data.resize(data.length());
-
-        std::memcpy(resource.data.data(), data.c_str(), data.length());
-
-
-        resource.mimeType = "application/json";
-
-        return resource;
-    }
-
-    juce::WebBrowserComponent::Resource respondError(std::string errorMsg) {
-        auto json = SSC::JSON::Object{ SSC::JSON::Object::Entries{
+    SSC::JSON::Object respondError(std::string errorMsg) {
+        auto json = SSC::JSON::Object { SSC::JSON::Object ::Entries{
             {"error", errorMsg}
         }};
-        return JSON2Resource(json);
+        return json;//JSON2Resource(json);
     }
 
 
@@ -455,8 +442,8 @@ public:
         #endif
     }
 
-    juce::WebBrowserComponent::Resource getStaticInfo(){
-        SSC::JSON::Object json = SSC::JSON::Object{ SSC::JSON::Object::Entries{
+    SSC::JSON::Object getStaticInfo(){
+        SSC::JSON::Object  json = SSC::JSON::Object { SSC::JSON::Object ::Entries{
             {"EOL", "\\n"},
             {"endianess", (juce::ByteOrder::isBigEndian() ? "BE" : "LE")},
             {"arch", getCPUArch()},
@@ -488,17 +475,17 @@ public:
 
         
         
-        return JSON2Resource(json);
+        return json;//JSON2Resource(json);
     }
 
 
     std::string cpuModel = SystemStats::getCpuModel().toStdString();
     int cpuSpeed = SystemStats::getCpuSpeedInMegahertz();
 
-    juce::WebBrowserComponent::Resource getCPUInfo() {
+    SSC::JSON::Object getCPUInfo() {
 
 
-        SSC::JSON::Object cpu = SSC::JSON::Object::Entries{
+        SSC::JSON::Object cpu = SSC::JSON::Object ::Entries{
             {"coreCount", SystemStats::getNumCpus()}, //used by availableParallelism
         };
 
@@ -508,10 +495,10 @@ public:
         SSC::JSON::Array cores = SSC::JSON::Array{};
 
         for (int i = 0; i < SystemStats::getNumCpus(); i++) {
-            cores.push(SSC::JSON::Object::Entries{
+            cores.push(SSC::JSON::Object ::Entries{
                 {"model", cpuModel},
                 {"speed", cpuSpeed},
-                {"times", SSC::JSON::Object::Entries{
+                {"times", SSC::JSON::Object ::Entries{
                     {"user", 0},
                     {"nice", 0},
                     {"sys", 0},
@@ -525,10 +512,10 @@ public:
 
 
 
-        return JSON2Resource(cpu);
+        return cpu;//JSON2Resource(cpu);
     }
 
-    juce::WebBrowserComponent::Resource getMemoryInfo() {
+    SSC::JSON::Object getMemoryInfo() {
         #if defined(_WIN32)
             MEMORYSTATUSEX memoryStatus;
             memoryStatus.dwLength = sizeof(MEMORYSTATUSEX);
@@ -539,20 +526,20 @@ public:
                 return respondError("Unable to get memory status");
             }
 
-            SSC::JSON::Object info = SSC::JSON::Object::Entries{
-                {"physical", SSC::JSON::Object::Entries{
+            SSC::JSON::Object  info = SSC::JSON::Object ::Entries{
+                {"physical", SSC::JSON::Object ::Entries{
                     {"free", memoryStatus.ullAvailPhys},
                     {"total", memoryStatus.ullTotalPhys},
                     {"used", memoryStatus.ullTotalPhys - memoryStatus.ullAvailPhys}
                 }},
 
-                {"page", SSC::JSON::Object::Entries{
+                {"page", SSC::JSON::Object ::Entries{
                     {"free", memoryStatus.ullAvailPageFile},
                     {"total", memoryStatus.ullTotalPageFile},
                     {"used", memoryStatus.ullTotalPageFile - memoryStatus.ullAvailPageFile}
                 }},
 
-                {"virtual", SSC::JSON::Object::Entries{
+                {"virtual", SSC::JSON::Object ::Entries{
                     {"free", memoryStatus.ullAvailVirtual},
                     {"total", memoryStatus.ullTotalVirtual},
                     {"used", memoryStatus.ullTotalVirtual - memoryStatus.ullAvailVirtual}
@@ -594,20 +581,20 @@ public:
              */
         
         
-            SSC::JSON::Object info = SSC::JSON::Object::Entries{
-                {"physical", SSC::JSON::Object::Entries{
+            SSC::JSON::Object info = SSC::JSON::Object ::Entries{
+                {"physical", SSC::JSON::Object ::Entries{
                     {"free", 0},
                     {"total", 0},
                     {"used", 0}
                 }},
 
-                {"page", SSC::JSON::Object::Entries{
+                {"page", SSC::JSON::Object ::Entries{
                     {"free", 0},
                     {"total", 0},
                     {"used", 0}
                 }},
 
-                {"virtual", SSC::JSON::Object::Entries{
+                {"virtual", SSC::JSON::Object ::Entries{
                     {"free", 0},
                     {"total", 0},
                     {"used", 0}
@@ -618,18 +605,18 @@ public:
             };
         #endif
         
-        return JSON2Resource(info);
+        return info;//JSON2Resource(info);
     }
 
-    juce::WebBrowserComponent::Resource getNetworkInfo() {
-        SSC::JSON::Object info = SSC::JSON::Object::Entries{
+    SSC::JSON::Object getNetworkInfo() {
+        SSC::JSON::Object json = SSC::JSON::Object ::Entries{
 
         };
 
-        return JSON2Resource(info);
+        return json;//JSON2Resource(info);
     }
 
-    juce::WebBrowserComponent::Resource getMachineTime() {
+    SSC::JSON::Object getMachineTime() {
         #if defined(_WIN32)
             double number = GetTickCount64();
         #elif defined(__APPLE__)
@@ -661,18 +648,18 @@ public:
         uptime_three_decimals << std::fixed << std::setprecision(3) << result;
         std::string uptime_three_decimals_str = uptime_three_decimals.str();
 
-        SSC::JSON::Object info = SSC::JSON::Object::Entries{
+        SSC::JSON::Object json = SSC::JSON::Object ::Entries{
             {"uptime", stof(uptime_three_decimals_str)}
         };
 
-        return JSON2Resource(info);
+        return json;//JSON2Resource(info);
     }
 
-    juce::WebBrowserComponent::Resource getTemplate() {
-        SSC::JSON::Object info = SSC::JSON::Object::Entries{
+    SSC::JSON::Object getTemplate() {
+        SSC::JSON::Object  info = SSC::JSON::Object ::Entries{
                
         };
 
-        return JSON2Resource(info);
+        return info;//JSON2Resource(info);
     }
 };

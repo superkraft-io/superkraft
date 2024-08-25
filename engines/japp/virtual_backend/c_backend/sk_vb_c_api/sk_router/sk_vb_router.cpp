@@ -116,31 +116,42 @@ auto SK_VB_Router::loadResourceFrom_BinaryData(const juce::String& url) -> std::
 
 
 auto SK_VB_Router::handle_native_command(juce::String url) -> std::optional<juce::WebBrowserComponent::Resource> {
-    std::vector<juce::String> ipc_commands = {
-        "sk.getMachineStaticInfo",
-        "sk.getCPUInfo",
-        "sk.getMemoryInfo",
-        "sk.getNetworInfo",
-        "sk.getMachineTime"
-    };
-
-    bool isNativeCommand = false;
-
-    for (int i = 0; i < ipc_commands.size(); i++) {
-        if (url.contains(ipc_commands[i]) == true) {
-            isNativeCommand = true;
-            break;
+    String path = url.substring(1, url.length());
+    
+    String responseData = "{\"error\":\"invalid_ipc_request\"}";
+    
+    StringArray strArr;
+    strArr.addTokens(path, "/", "");
+    
+    StringArray paramsArr;
+    paramsArr.addTokens(strArr[1], "!", "");
+    
+    String target = strArr[0] + ":" + paramsArr[0];
+    
+   
+    
+    DynamicObject obj;
+    obj.setProperty("target", target);
+    
+    var data;
+    
+   
+    if (paramsArr.size() > 1){
+        MemoryOutputStream decodedData;
+        if (Base64::convertFromBase64(decodedData, paramsArr[1])) {
+            String b63_str = decodedData.toString();
+            juce::JSON::parse(b63_str, data);
+            obj.setProperty("data", data);
+        } else {
+            DBG("Failed to decode the Base64 string.");
         }
+        
+        
     }
-
-    if (isNativeCommand == false) return std::nullopt;
-
-    juce::String cmd = url.substring(1, url.length());
-
-    if (cmd == "sk.getMachineStaticInfo") return vbe->sk_c_api->machine.getStaticInfo();
-    if (cmd == "sk.getCPUInfo") return vbe->sk_c_api->machine.getCPUInfo();
-    if (cmd == "sk.getMemoryInfo") return vbe->sk_c_api->machine.getMemoryInfo();
-    if (cmd == "sk.getMachineTime") return vbe->sk_c_api->machine.getMachineTime();
+    
+    if (vbe->sk_c_api->ipc->tryForwardToNativeTarget(&obj, responseData) == 0) return std::nullopt;
+    
+    return SK_VB_Helpers_WebResource::JSON2Resource(responseData);
 }
 
 

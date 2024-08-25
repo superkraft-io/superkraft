@@ -11,7 +11,7 @@ SK_IPC::SK_IPC(SK_VirtualBackend *_vbe) {
 
 void SK_IPC::handle_IPC_Msg(DynamicObject *obj) {
 
-    String responseData = "{}";
+    String responseData = "{\"error\":\"invalid_ipc_request\"}";
 
     String type = obj->getProperty("type");
     String source = obj->getProperty("source");
@@ -85,7 +85,7 @@ void SK_IPC::handle_IPC_Msg(DynamicObject *obj) {
 };
 
 
-int SK_IPC::tryForwardToNativeTarget(DynamicObject* obj, String& responseData) {
+int SK_IPC::tryForwardToNativeTarget(DynamicObject* obj, String& responseData, String delimiter) {
     String target = obj->getProperty("target");
 
     String targetPrefix = target.substring(0, target.indexOf(":"));

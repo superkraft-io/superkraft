@@ -1,8 +1,10 @@
 #pragma once
 
-#include "core/sk_vb_machine.h"
-#include "core/sk_vb_app.h"
-#include "core/sk_vb_curl/sk_vb_curl.h"
+#include "../sk_vb_c_api/helpers/sk_vb_mimeTypes.h"
+#include "../sk_vb_c_api/helpers/sk_vb_web_resource.h"
+
+#include "core/sk_machine.h"
+#include "core/sk_curl/sk_curl.h"
 
 #include "sk_router/sk_vb_router.h"
 #include "ipc/sk_vb_ipc.h"
@@ -21,13 +23,11 @@ public:
     SK_VB_Router router;
     
 	SK_Machine machine;
-	SK_App app;
 
 	SK_CURL* curl;
 
 	SK_VB_SK* sk;
 	SK_VB_NodeJS* nodejs;
-
 
 	SK_IPC* ipc;
 

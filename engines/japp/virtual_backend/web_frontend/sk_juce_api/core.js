@@ -24,7 +24,7 @@ Object.defineProperty(window, '__dirname', {
 });
 
 
-sk_juce_api.fetch = path => {
+sk_juce_api.fetch = (path, data)=>{
     /*
     
         maybe need to format path to handle certain scenarios such as:
@@ -35,9 +35,16 @@ sk_juce_api.fetch = path => {
         \                   non-unix path delimiters
     
     */
+    
+    var finalPath = path
+    if (data) path += '!' + btoa(JSON.stringify(data))
+        console.log(path)
+        
     const request = new XMLHttpRequest()
-    request.open('GET', path, false)
-    try { request.send() } catch (err) {
+    try {
+        request.open('GET', path, false)
+        request.send()
+    } catch (err) {
         console.error(err)
         throw 'Could not fetch module at ' + path
     }
@@ -65,4 +72,4 @@ for (var catName in window.sk_juce_api.nativeModules) {
 }
 
 
-sk_juce_api.machineInfo = sk_juce_api.fetch('sk.getMachineStaticInfo')
+sk_juce_api.machineInfo = sk_juce_api.fetch('sk/machine', {func: 'getStaticInfo'})

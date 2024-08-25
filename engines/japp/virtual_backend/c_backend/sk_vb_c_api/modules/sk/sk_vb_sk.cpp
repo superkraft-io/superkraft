@@ -14,7 +14,8 @@ SK_VB_SK::SK_VB_SK(SK_VirtualBackend *_vbe) {
 	coreNativeActions = new SK_VB_CoreNativeActions(vbe);
 	bdfs = new SK_VB_BDFS(vbe);
 	web = new SK_VB_Web(vbe);
-	application = new SK_VB_Application(vbe);
+    application = new SK_VB_Application(vbe);
+    machine = new SK_VB_Machine(vbe);
 }
 
 SK_VB_SK::~SK_VB_SK() {
@@ -23,7 +24,8 @@ SK_VB_SK::~SK_VB_SK() {
 	delete coreNativeActions;
 	delete bdfs;
 	delete web;
-	delete application;
+    delete application;
+    delete machine;
 };
 
 void SK_VB_SK::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData) {
@@ -34,5 +36,6 @@ void SK_VB_SK::handle_IPC_Msg(String msgID, DynamicObject *obj, String& response
 	else if (module == "viewMngr") viewMngr->handle_IPC_Msg(msgID, obj, responseData);
 	else if (module == "nativeActions") coreNativeActions->handle_IPC_Msg(msgID, obj, responseData);
 	else if (module == "web") web->handle_IPC_Msg(msgID, obj, responseData);
-	else if (module == "application") application->handle_IPC_Msg(msgID, obj, responseData);
+    else if (module == "application") application->handle_IPC_Msg(msgID, obj, responseData);
+    else if (module == "machine") machine->handle_IPC_Msg(msgID, obj, responseData);
 };

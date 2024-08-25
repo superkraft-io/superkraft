@@ -58,7 +58,7 @@ public:
 
     void handle_IPC_Msg(DynamicObject *obj);
 
-    int tryForwardToNativeTarget(DynamicObject* obj, String& responseData);
+    int tryForwardToNativeTarget(DynamicObject* obj, String& responseData, String delimiter = ":");
     void tryForwardToVirtualTarget(DynamicObject* obj);
 
     void sendTo(String type, String& msgID, String& source, String& target, String& responseData);

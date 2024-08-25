@@ -3,7 +3,6 @@
 #include <JuceHeader.h>
 #include <juce_gui_extra/juce_gui_extra.h>
 
-#include "../sk_vb_c_api/helpers/sk_vb_mimeTypes.h"
 #include "../../../../../../sk_vb_binarydata.hxx"
 
 #include "../sk_vb_c_api/sk_vb_c_api.h"

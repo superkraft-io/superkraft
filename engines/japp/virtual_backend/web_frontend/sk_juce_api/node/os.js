@@ -2,7 +2,7 @@ var _sk_os_def = {
     EOL: sk_juce_api.machineInfo.EOL,
 
     availableParallelism() {
-        return sk_juce_api.fetch('sk.getCPUInfo').coreCount
+        return sk_juce_api.fetch('sk/machine', {func: getCPUInfo'}).coreCount
     },
 
     arch() {
@@ -12,7 +12,7 @@ var _sk_os_def = {
     constants: '',
 
     cpus() {
-        return sk_juce_api.fetch('sk.getCPUInfo').cores
+        return sk_juce_api.fetch('sk/machine', {func: 'getCPUInfo'}).cores
     },
 
     devNull: sk_juce_api.machineInfo.devNull,
@@ -25,19 +25,19 @@ var _sk_os_def = {
     /* memory */
 
     meminfo() {
-        return sk_juce_api.fetch('sk.getMemoryInfo')
+        return sk_juce_api.fetch('sk/machine', {func: 'getMemoryInfo'})
     },
 
     totalmem() {
-        return sk_juce_api.fetch('sk.getMemoryInfo').physical.total
+        return sk_juce_api.fetch('sk/machine', {func: 'getMemoryInfo'}).physical.total
     },
 
     freemem() {
-        return sk_juce_api.fetch('sk.getMemoryInfo').physical.free
+        return sk_juce_api.fetch('sk/machine', {func: 'getMemoryInfo'}).physical.free
     },
 
     usedmem() {
-        return sk_juce_api.fetch('sk.getMemoryInfo').physical.used
+        return sk_juce_api.fetch('sk/machine', {func: 'getMemoryInfo').physical.used
     },
 
     
@@ -45,7 +45,7 @@ var _sk_os_def = {
 
 
     uptime() {
-        return sk_juce_api.fetch('sk.getMachineTime').uptime
+        return sk_juce_api.fetch('sk/machine', {func: 'getMachineTime'}).uptime
     },
 
 
@@ -111,7 +111,7 @@ var _sk_os_def = {
     /* network */
 
     networkInterfaces() {
-        return sk_juce_api.fetch('sk.getNetworInfo').interfaces
+        return sk_juce_api.fetch('sk/machine', {func: 'getNetworInfo'}).interfaces
     },
 
     
@@ -125,7 +125,7 @@ var _sk_os_def = {
 
 
     userInfo(options) {
-        return sk_juce_api.fetch('sk.getUserInfo')
+        return sk_juce_api.fetch('sk/machine', {func: 'getUserInfo'})
     }
 }
 

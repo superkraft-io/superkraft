@@ -15,16 +15,13 @@ void SK_VB_NodeJS_Process::handle_IPC_Msg(String msgID, DynamicObject *obj, Stri
     
 
     String func = info.getProperty("func", "");
-    if (func == "exec") exec(msgID, obj, responseData);
-    else if (func == "execFile") execFile(msgID, obj, responseData);
-    else if (func == "fork") fork(msgID, obj, responseData);
-    else if (func == "spawn") spawn(msgID, obj, responseData);
+    if (func == "env") env(msgID, obj, responseData);
 };
 
 
 
 
-void SK_VB_NodeJS_Process::exec(String msgID, DynamicObject* obj, String& responseData) {
+void SK_VB_NodeJS_Process::env(String msgID, DynamicObject* obj, String& responseData) {
     var info = obj->getProperty("data");
 
     String path = info.getProperty("path", "");
@@ -34,16 +31,4 @@ void SK_VB_NodeJS_Process::exec(String msgID, DynamicObject* obj, String& respon
     #elif defined(__APPLE__)
     #elif defined(__linux__)
     #endif
-}
-
-void SK_VB_NodeJS_Process::execFile(String msgID, DynamicObject* obj, String& responseData) {
-
-}
-
-void SK_VB_NodeJS_Process::fork(String msgID, DynamicObject* obj, String& responseData) {
-
-}
-
-void SK_VB_NodeJS_Process::spawn(String msgID, DynamicObject* obj, String& responseData) {
-
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "sk_vb_curl.h"
+#include "sk_curl.h"
 
 #include "../../../sk_vbe/sk_vbe.hxx"
 
