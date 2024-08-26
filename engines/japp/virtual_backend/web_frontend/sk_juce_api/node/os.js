@@ -1,12 +1,12 @@
 module.exports = {
-    EOL: sk_juce_api.machineInfo.EOL,
+    EOL: sk_juce_api.staticInfo.machine.EOL,
 
     availableParallelism() {
         return sk_juce_api.fetch('sk/machine', {func: 'getCPUInfo'}).coreCount
     },
 
     arch() {
-        return sk_juce_api.staticInfo.os.arch
+        return sk_juce_api.staticInfo.machine.arch
     },
 
     constants: '',
@@ -15,10 +15,10 @@ module.exports = {
         return sk_juce_api.fetch('sk/machine', {func: 'getCPUInfo'}).cores
     },
 
-    devNull: sk_juce_api.staticInfo.os.devNull,
+    devNull: sk_juce_api.staticInfo.machine.devNull,
 
     endianness() {
-        return sk_juce_api.staticInfo.os.endianess
+        return sk_juce_api.staticInfo.machine.endianess
     },
 
 
@@ -65,18 +65,18 @@ module.exports = {
     /* paths */
 
     homedir() {
-        return sk_juce_api.staticInfo.os.homedir
+        return sk_juce_api.staticInfo.machine.homedir
     },
 
     tmpdir() {
-        return sk_juce_api.staticInfo.os.tmpdir
+        return sk_juce_api.staticInfo.machine.tmpdir
     },
 
 
     /* machine */
 
     hostname() {
-        return sk_juce_api.staticInfo.os.hostname
+        return sk_juce_api.staticInfo.machine.hostname
     },
 
     loadavg() {
@@ -87,23 +87,23 @@ module.exports = {
     /* operating system */
 
     version() {
-        return sk_juce_api.staticInfo.os.version
+        return sk_juce_api.staticInfo.machine.version
     },
 
     platform() {
-        return sk_juce_api.staticInfo.os.platform
+        return sk_juce_api.staticInfo.machine.platform
     },
 
     release() {
-        return sk_juce_api.staticInfo.os.release
+        return sk_juce_api.staticInfo.machine.release
     },
 
     machine() {
-        return sk_juce_api.staticInfo.os.machine
+        return sk_juce_api.staticInfo.machine.machine
     },
 
     type() {
-        return sk_juce_api.staticInfo.os.type
+        return sk_juce_api.staticInfo.machine.type
     },
 
 

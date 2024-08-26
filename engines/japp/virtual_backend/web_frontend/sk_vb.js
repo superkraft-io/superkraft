@@ -16,12 +16,13 @@ function sleep(delay = 1000) {
 
 
 var start_app = async () => {
+    window.global = window
+
     await import('/superkraft/engines/japp/virtual_backend/web_frontend/sk_juce_api/core.js')
     await import('/superkraft/engines/japp/virtual_backend/web_frontend/sk_juce_api/module.js')
     await import('/superkraft/engines/japp/virtual_backend/web_frontend/sk_juce_api/node/path.js')
 
 
-    window.global = window
 
     window.process = require('node:process')
     window.appMain = new (require('/main.js'))()

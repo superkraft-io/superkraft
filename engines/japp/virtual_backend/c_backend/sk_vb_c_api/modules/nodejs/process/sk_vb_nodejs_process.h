@@ -13,4 +13,5 @@ public:
 
 
     void env(String msgID, DynamicObject* obj, String& responseData);
+    void chdir(String msgID, DynamicObject* obj, String& responseData);
 };

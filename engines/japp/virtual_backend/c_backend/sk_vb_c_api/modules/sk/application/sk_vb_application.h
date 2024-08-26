@@ -10,5 +10,5 @@ public:
 
     void handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData);
 
-    void getAppInfo(String msgID, var info, String& responseData);
+    void getStaticInfo(String msgID, var info, String& responseData);
 };

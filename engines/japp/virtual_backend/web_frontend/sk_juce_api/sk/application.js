@@ -1,12 +1,10 @@
-
 module.exports = class SK_Application {
     constructor(opt) {
     }
 
     async init() {
-        var res = await window.sk_ipc.ipc.request('sk:application', { func: 'getAppInfo' })
-        this.mode = res.mode
-        this.name = res.name
-        this.version = res.version
+        this.mode = sk_juce_api.staticInfo.application.mode
+        this.name = sk_juce_api.staticInfo.application.name
+        this.version = sk_juce_api.staticInfo.application.version
     }
 }

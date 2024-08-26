@@ -75,4 +75,5 @@ for (var catName in window.sk_juce_api.nativeModules) {
     }
 }
 
-sk_juce_api.staticInfo.os = sk_juce_api.fetch('sk/machine', { func: 'getStaticInfo' })
+sk_juce_api.staticInfo.machine = sk_juce_api.fetch('sk/machine', { func: 'getStaticInfo' })
+sk_juce_api.staticInfo.application = sk_juce_api.fetch('sk/application', { func: 'getStaticInfo' })

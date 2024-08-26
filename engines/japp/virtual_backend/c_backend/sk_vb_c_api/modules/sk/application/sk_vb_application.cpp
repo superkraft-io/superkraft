@@ -20,19 +20,32 @@ void SK_VB_Application::handle_IPC_Msg(String msgID, DynamicObject *obj, String&
 
     String func = info.getProperty("func", "");
 
-    if (func == "getAppInfo") getAppInfo(msgID, info, responseData);
+    if (func == "getStaticInfo") getStaticInfo(msgID, info, responseData);
 };
 
 
-void SK_VB_Application::getAppInfo(String msgID, var info, String& responseData) {
+void SK_VB_Application::getStaticInfo(String msgID, var info, String& responseData) {
     String appName = JUCEApplicationBase::getInstance()->getApplicationName();
     String appVersion = JUCEApplicationBase::getInstance()->getApplicationVersion();
 
+    
+    
+
     SSC::JSON::Object res = SSC::JSON::Object::Entries {
+        {"argv",  "<argv>"},
+        {"argv0",  juce::JUCEApplicationBase::getCommandLineParameterArray()[0].toStdString()},
         {"mode", vbe->mode.toStdString()},
         {"name", appName.toStdString()},
         {"version", appVersion.toStdString()}
     };
 
-    responseData = res.str();
+    String output = res.str();
+
+    String args = String("[\"" + juce::JUCEApplicationBase::getCommandLineParameterArray().joinIntoString("\",\"") + "\"]");
+    if (args == "[\"\"]") {
+        args = "[]";
+    }
+    output = output.replace("\"<argv>\"", args);
+
+    responseData = output.toStdString();
 }
