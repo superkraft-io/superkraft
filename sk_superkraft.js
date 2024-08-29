@@ -74,7 +74,7 @@ module.exports = class Superkraft {
         window.sk_ipc = this.ipc
 
         try {
-            this.application = new (require('application'))()
+            this.application = require('application')
             await this.application.init()
         } catch (err) {
             console.error(err)

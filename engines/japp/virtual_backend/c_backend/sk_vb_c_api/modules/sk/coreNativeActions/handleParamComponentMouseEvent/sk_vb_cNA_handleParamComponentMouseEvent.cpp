@@ -17,7 +17,10 @@ void SK_VB_cNA_handleParamComponentMouseEvent::handle_IPC_Msg(String msgID, Dyna
     String juceParamID = info.getProperty("juceParamID", "");
     RangedAudioParameter* param = vbe->editor->m_processor.state.getParameter(juceParamID);
 
-    if (param == NULL) return SK_IPC::respondWithError(msgID, "invalid_juce_param_id", responseData);
+    if (param == NULL) {
+        responseData = SK_IPC::Error("invalid_juce_param_id");
+        return;
+    }
 
     String event = info.getProperty("event", "");
 
@@ -30,7 +33,7 @@ void SK_VB_cNA_handleParamComponentMouseEvent::handle_IPC_Msg(String msgID, Dyna
 
     if (event == "contextmenu") {
         if (JUCEApplicationBase::isStandaloneApp()) {
-            SK_IPC::respondWithError(msgID, "standalone_runtime", responseData);
+            responseData = SK_IPC::Error("standalone_runtime");
             return;
         }
 

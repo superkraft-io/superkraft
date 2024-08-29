@@ -52,7 +52,7 @@ void SK_VB_VFS::stat(String msgID, String path, String& responseData) {
     SK_VB_VFS_File* file = findByPath(path);
 
     if (file == nullptr) {
-        SK_IPC::respondWithError(msgID, "ENOENT", responseData);
+        responseData = SK_IPC::Error("ENOENT");
         return;
     }
    
@@ -97,7 +97,7 @@ void SK_VB_VFS::readFile(String msgID, String path, String& responseData) {
     SK_VB_VFS_File* file = findByPath(path);
 
     if (file == nullptr) {
-        SK_IPC::respondWithError(msgID, "ENOENT", responseData);
+        responseData = SK_IPC::Error("ENOENT");
         return;
     }
 

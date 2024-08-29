@@ -49,7 +49,7 @@ void SK_VB_NodeJS_Process::chdir(String msgID, DynamicObject* obj, String& respo
     String directory = info.getProperty("directory", "");
 
     if (directory == "") {
-        SK_IPC::respondWithError(msgID, "Path may not be empty", responseData);
+        responseData = SK_IPC::Error("Path may not be empty");
         return;
     }
 
@@ -75,7 +75,7 @@ void SK_VB_NodeJS_Process::chdir(String msgID, DynamicObject* obj, String& respo
 
     if (failed == true) {
 
-        SK_IPC::respondWithError(msgID, "Could not change working directory", responseData);
+        responseData = SK_IPC::Error("Could not change working directory");
         return;
     }
 

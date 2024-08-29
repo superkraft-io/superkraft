@@ -53,11 +53,6 @@ module.exports = module.exports = class SK_IPC {
     requestWithCallback(target, _data, cb) {
         this.msgID++
 
-        if (target === 'sk:web') {
-            console.log(this.msgID)
-            console.log(_data)
-        }
-
         this.addCallback(this.msgID, cb)
 
         var data = {

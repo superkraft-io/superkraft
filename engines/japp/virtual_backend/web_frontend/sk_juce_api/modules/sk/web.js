@@ -42,6 +42,7 @@ var sk_web_ipc_call = async (func, payload = {}, onProgress) => {
 
 
         res = await window.sk_ipc.ipc.request('sk:web', { ...{ func: func, progressCallbackID: progressCallbackID }, ...defPayload })
+
     } catch (err) {
         res = err
     }

@@ -48,15 +48,15 @@ public:
 class SK_IPC {
 public:
     static inline const String OK = "{}";
+    static inline const String Error(String error) {
+        return "{\"error\"" + error + "\"}";
+    };
 
     SK_VirtualBackend* vbe;
     SK_IPC(SK_VirtualBackend *_vbe);
 
     SK_IPC_Request_Mngr reqMngr;
 
-    static void respondWithError(String msgID, String errorMsg, String& responseData) {
-        responseData = "{\"error\":\"" + errorMsg + "\"}";
-    };
 
     void handle_IPC_Msg(DynamicObject *obj);
 

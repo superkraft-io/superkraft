@@ -20,6 +20,10 @@
 #endif
 
 #include <iostream>
+#include <cstdio>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 struct FileInfo {
     uint64_t volumeSerialNumber;
@@ -82,15 +86,28 @@ void SK_FS::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseDat
     String data = info.getProperty("data", "");
 
     
-    String fullPath = SK_FS::getProjectPath() + "/assets" + path;
+    String fullPath = path;
+
+    //check if file exists using path as-is. If it does exist, then most likely the path is n absolute path, se we do not prepend project path.
+    /*if (!fs::exists(path.toStdString())) {
+        if (operation != "mkdir") {
+            fullPath = SK_FS::getProjectPath() + "/assets" + path;
+        }
+    }*/
+
+    if (!File::isAbsolutePath(path)) {
+        if (operation != "mkdir") {
+            fullPath = SK_FS::getProjectPath() + "/assets" + path;
+        }
+    }
 
     if (operation == "access") access(msgID, fullPath, responseData);
     else if (operation == "stat") _stat(msgID, fullPath, responseData);
     else if (operation == "writeFile") writeFile(msgID, fullPath, data, responseData);
     else if (operation == "readFile") readFile(msgID, fullPath, responseData);
     else if (operation == "readdir") readdir(msgID, fullPath, responseData);
-    else if (operation == "readJSON") readJSON(msgID, fullPath, responseData);
-    else if (operation == "writeJSON") writeJSON(msgID, fullPath, data, responseData);
+    else if (operation == "unlink") unlink(msgID, fullPath, responseData);
+    else if (operation == "mkdir") mkdir(msgID, fullPath, responseData);
 };
 
 
@@ -103,7 +120,7 @@ void SK_FS::_stat(String msgID, String path, String& responseData) {
     File file(path);
 
     if (!file.exists()) {
-        SK_IPC::respondWithError(msgID, "ENOENT", responseData);
+        responseData = SK_IPC::Error("ENOENT");
         return;
     }
 
@@ -142,13 +159,13 @@ void SK_FS::_stat(String msgID, String path, String& responseData) {
         #if defined(_WIN32)
             HANDLE hFile = CreateFile(filePath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
             if (hFile == INVALID_HANDLE_VALUE) {
-                SK_IPC::respondWithError(msgID, "ENOENT", responseData);
+                responseData = SK_IPC::Error("ENOENT");
                 return;
             }
 
             BY_HANDLE_FILE_INFORMATION _fileInfo;
             if (!GetFileInformationByHandle(hFile, &_fileInfo)) {
-                SK_IPC::respondWithError(msgID, "ENOENT", responseData);
+                responseData = SK_IPC::Error("ENOENT");
                 CloseHandle(hFile);
                 return;
             }
@@ -224,7 +241,9 @@ void SK_FS::_stat(String msgID, String path, String& responseData) {
 }
 
 void SK_FS::writeFile(String msgID, String path, String data, String& responseData) {
-    int x = 0;
+    File file(path);
+    if (file.exists()) file.deleteFile();
+    file.appendData(data.toStdString().c_str(), data.length());
 }
 
 void SK_FS::readFile(String msgID, String path, String& responseData) {
@@ -268,10 +287,37 @@ void SK_FS::readdir(String msgID, String path, String& responseData) {
     responseData = String(fileList.str());
 }
 
-void SK_FS::readJSON(String msgID, String path, String& responseData) {
-    int x = 0;
+void SK_FS::unlink(String msgID, String path, String& responseData) {
+    std::string filePath = path.toStdString();
+
+
+    try {
+        if (fs::remove(filePath)) {
+            responseData = SK_IPC::OK;
+        }
+        else {
+            responseData = SK_IPC::Error("EBUSY");
+        }
+    }
+    catch (const fs::filesystem_error& e) {
+        responseData = SK_IPC::Error(e.what());
+    }
 }
 
-void SK_FS::writeJSON(String msgID, String path, String data, String& responseData) {
-    int x = 0;
+
+void SK_FS::mkdir(String msgID, String path, String& responseData) {
+    std::string dirPath = path.toStdString();
+
+    try {
+        // Use create_directories to create the directory and all its parent directories
+        if (fs::create_directories(dirPath)) {
+            responseData = SK_IPC::OK;
+        }
+        else {
+            responseData = SK_IPC::Error("EBUSY");
+        }
+    }
+    catch (const fs::filesystem_error& e) {
+        responseData = SK_IPC::Error(e.what());
+    }
 }

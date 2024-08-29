@@ -3,6 +3,9 @@
 #include "../sk_vb_c_api/helpers/sk_vb_mimeTypes.h"
 #include "../sk_vb_c_api/helpers/sk_vb_web_resource.h"
 
+
+#include "../../../../../../sk_vb_shared_class.hxx"
+
 #include "core/sk_machine.h"
 #include "core/sk_curl/sk_curl.h"
 
@@ -22,6 +25,8 @@ public:
     
     SK_VB_Router router;
     
+	SK_VB_Shared_Class sharedClass;
+
 	SK_Machine machine;
 
 	SK_CURL* curl;

@@ -63,15 +63,25 @@ sk_juce_api.fetch = (path, data, onPreParse)=>{
 }
 
 window.sk_juce_api.nativeModules = {
-    node: {     process: '', os: '', fs: '', path: '', child_process: '' },
-     npm: {    electron: '' },
-      sk: { application: '', web: '' }
+    node: { fs: __dirname + '/modules/node/fs.js' }
 }
 
-for (var catName in window.sk_juce_api.nativeModules) {
-    var category = window.sk_juce_api.nativeModules[catName]
-    for (var modName in category) {
-        window.sk_juce_api.nativeModules[catName][modName] =__dirname + '/' + catName + '/' + modName + '.js'
+
+
+sk_juce_api.initModules = (rootDir) => {
+    var fs = require('fs')
+    var categories = fs.readdirSync(rootDir + '/modules/')
+
+    for (var i in categories) {
+        var catName = categories[i]
+
+        if (!sk_juce_api.nativeModules[catName]) sk_juce_api.nativeModules[catName] = {}
+
+        var moduleCategory = fs.readdirSync(rootDir + '/modules/' + catName + '/')
+        for (var u in moduleCategory) {
+            var modName = moduleCategory[u].split('.')[0]
+            sk_juce_api.nativeModules[catName][modName] = rootDir + '/modules/' + catName + '/' + modName + '.js'
+        }
     }
 }
 

@@ -89,8 +89,8 @@ module.exports = {
             has(scope, reference) { },
         }
     },
-    get pid(){ },
-    get platform(){ },
+    get pid() { },
+    get platform() { return sk_juce_api.staticInfo.machine.platform },
     get ppid(){ },
     get release(){ },
     get report(){

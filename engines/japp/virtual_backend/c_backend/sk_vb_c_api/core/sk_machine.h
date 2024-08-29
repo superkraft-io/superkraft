@@ -47,7 +47,7 @@ struct CPUInfo {
 class SK_Machine {
 public:
 
-    
+    var  staticInfo = juce::JSON::parse(getStaticInfo().str());
 
     SSC::JSON::Object respondError(std::string errorMsg) {
         auto json = SSC::JSON::Object { SSC::JSON::Object ::Entries{

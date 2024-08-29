@@ -20,7 +20,8 @@ var start_app = async () => {
 
     await import('/superkraft/engines/japp/virtual_backend/web_frontend/sk_juce_api/core.js')
     await import('/superkraft/engines/japp/virtual_backend/web_frontend/sk_juce_api/module.js')
-    await import('/superkraft/engines/japp/virtual_backend/web_frontend/sk_juce_api/node/path.js')
+    await import('/superkraft/engines/japp/virtual_backend/web_frontend/sk_juce_api/modules/node/path.js')
+    sk_juce_api.initModules(__dirname + '/sk_juce_api')
 
 
 
@@ -61,7 +62,7 @@ var start_app = async () => {
                 if (err.indexOf && err.indexOf('Could not fetch module') > -1) {
                     console.warn('Could not load the project main.js file. Create a file named main.js inside the assets folder.')
                 } else {
-                    console.error(err)
+                    throw err
                 }
             }
         },

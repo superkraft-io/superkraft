@@ -45,7 +45,7 @@ void SK_VB_BDFS::stat(String msgID, String path, String& responseData) {
     auto pair = vbe->sk_bd.findEntryByPath(path);
 
     if (pair.first == "none") {
-        SK_IPC::respondWithError(msgID, "ENOENT", responseData);
+        responseData = SK_IPC::Error("ENOENT");
         return;
     }
    
@@ -88,7 +88,7 @@ void SK_VB_BDFS::readFile(String msgID, String path, String& responseData) {
     auto pair = vbe->sk_bd.findEntryByPath(path);
 
     if (pair.first == "dir") {
-        SK_IPC::respondWithError(msgID, "ENOENT", responseData);
+        responseData = SK_IPC::Error("ENOENT");
         return;
     }
 

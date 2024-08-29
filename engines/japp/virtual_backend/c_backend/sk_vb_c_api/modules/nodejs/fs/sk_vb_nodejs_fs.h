@@ -19,6 +19,6 @@ public:
     void writeFile(String msgID, String path, String data, String& responseData);
     void readFile(String msgID, String path, String& responseData);
     void readdir(String msgID, String path, String& responseData);
-    void readJSON(String msgID, String path, String& responseData);
-    void writeJSON(String msgID, String path, String data, String& responseData);
+    void unlink(String msgID, String path, String& responseData);
+    void mkdir(String msgID, String path, String& responseData);
 };

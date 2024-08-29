@@ -2,7 +2,7 @@
 
 #include "sk_vb_c_api.h"
 
-SK_C_API::SK_C_API(SK_VirtualBackend *_vbe) : router(_vbe) {
+SK_C_API::SK_C_API(SK_VirtualBackend *_vbe) : sharedClass(_vbe), router(_vbe) {
 	vbe = _vbe;
     
     curl = new SK_CURL(vbe);
