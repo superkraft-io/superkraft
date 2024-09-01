@@ -7,6 +7,10 @@
 #include <iostream>
 #include <cstdlib>
 
+#if defined(__APPLE__)
+    #include <unistd.h>
+#endif
+
 
 namespace fs = std::filesystem;
 extern char** environ;
@@ -68,7 +72,7 @@ void SK_VB_NodeJS_Process::chdir(String msgID, DynamicObject* obj, String& respo
     #else
         const char* newPath = directory.toStdString().c_str();
 
-        if (chdir(newPath) != 0) {
+    if (::chdir(newPath) != 0) {
             failed = true;
         }
     #endif

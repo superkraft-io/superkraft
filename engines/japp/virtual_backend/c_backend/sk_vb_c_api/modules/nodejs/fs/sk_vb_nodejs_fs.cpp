@@ -66,6 +66,28 @@ String SK_FS::getProjectPath() {
     return stoppedFile.getParentDirectory().getFullPathName().replace("\\", "/");
 }
 
+bool SK_FS::pathExists(String path){
+    File file(path);
+    return file.exists();
+}
+
+bool SK_FS::isAbsolutePath(String path){
+    #if defined(_WIN32)
+    return File::isAbsolutePath(path);
+    #else
+    String _path = path;
+    if (!_path.startsWithChar('/')) _path = "/" + _path;
+    int secondSlashIndex = _path.indexOf(1, "/");
+
+    if (secondSlashIndex == -1) int x = 0;
+    else _path = _path.substring(0, secondSlashIndex);
+    
+    bool exists = pathExists(_path);
+    
+    return exists;
+    #endif
+}
+
 void SK_FS::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData) {
     var info = obj->getProperty("data");
     
@@ -95,7 +117,7 @@ void SK_FS::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseDat
         }
     }*/
 
-    if (!File::isAbsolutePath(path)) {
+    if (!isAbsolutePath(path)) {
         if (operation != "mkdir") {
             fullPath = SK_FS::getProjectPath() + "/assets" + path;
         }
@@ -186,7 +208,7 @@ void SK_FS::_stat(String msgID, String path, String& responseData) {
             }
 
             // Print file size
-            std::cout << "File size: " << fileStat.st_size << " bytes" << std::endl;
+            //std::cout << "File size: " << fileStat.st_size << " bytes" << std::endl;
 
             // Print file permissions
             char* permissions;
@@ -243,7 +265,15 @@ void SK_FS::_stat(String msgID, String path, String& responseData) {
 void SK_FS::writeFile(String msgID, String path, String data, String& responseData) {
     File file(path);
     if (file.exists()) file.deleteFile();
-    file.appendData(data.toStdString().c_str(), data.length());
+    
+    bool writeStatus = file.appendData(data.toStdString().c_str(), data.length());
+    
+    if (writeStatus) {
+        responseData = SK_IPC::OK;
+    } else {
+        responseData = SK_IPC::Error("ENOACCESS");
+    }
+    
 }
 
 void SK_FS::readFile(String msgID, String path, String& responseData) {

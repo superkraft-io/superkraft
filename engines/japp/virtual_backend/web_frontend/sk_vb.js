@@ -26,7 +26,12 @@ var start_app = async () => {
 
 
     window.process = require('node:process')
-    window.appMain = new (require('/main.js'))()
+    
+    try {
+        window.appMain = new (require('/main.js'))()
+    } catch(err) {
+        
+    }
 
     var opt = {
         type: 'japp',
@@ -74,11 +79,18 @@ var start_app = async () => {
 
 
 
-    if (appMain.preSKInit) appMain.preSKInit(opt)
+    if (appMain && appMain.preSKInit) appMain.preSKInit(opt)
 
 
     var __superkraft = require('/superkraft/sk_superkraft.js')
-    var sk = new __superkraft(opt)
+    
+    var sk_start = ()=>{
+        var sk = new __superkraft(opt)
+    }
+    
+    window.sk_start = sk_start
+    
+    sk_start()
 }
 
 start_app()

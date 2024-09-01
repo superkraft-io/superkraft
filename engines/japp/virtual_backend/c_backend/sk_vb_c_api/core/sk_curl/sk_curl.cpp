@@ -89,7 +89,7 @@ Jayson SK_CURL_Request::call(Jayson opt)  {
         std::vector<std::string> headersArr = splitString(headersStr, "<!-!>");
         for (const auto& item : headersArr)
         {
-            DBG(item);
+            //DBG(item);
             headers = curl_slist_append(headers, item.c_str());
         }
 

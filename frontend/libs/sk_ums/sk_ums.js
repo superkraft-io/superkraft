@@ -32,6 +32,7 @@ class SK_UMS {
         return new Promise(resolve => {
             var _data = data || {sk_ums_empty: true}
             _data = JSON.parse(JSON.stringify(_data))
+            return
             wscb.send({cmd: 'sk_ums', action: action, eventID: eventID, data: _data}, res => {
                 resolve(res)
             })

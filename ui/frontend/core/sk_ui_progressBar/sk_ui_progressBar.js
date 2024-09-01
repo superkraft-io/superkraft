@@ -96,6 +96,9 @@ class sk_ui_progressBar extends sk_ui_component {
     }
 
     set progress(val){
+        if (val === this.__lastVal) return
+        this.__lastVal = val
+            
         try {
             this.pB.animate(1/100*val)
         } catch(err) {

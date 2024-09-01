@@ -13,9 +13,13 @@ SK_VB_View_Mngr::SK_VB_View_Mngr(SK_VirtualBackend *_vbe) {
 }
 
 void SK_VB_View_Mngr::resizeViews(int width, int height) {
+    int offset = 0;
+    if (vbe->mode == "debug") offset = 16;
+    
     for (int i = 0; i < views.size(); i++) {
         auto* view = views[i];
-        view->setSize(width, height);
+        view->setTopLeftPosition(offset, 0);
+        view->setSize(width - offset, height);
     }
 }
 
@@ -133,6 +137,8 @@ void SK_VB_View_Mngr::createView(String msgID, var obj, String& responseData) {
         //view->setSize(width, height);
 
         vbe->getParentComponent()->setSize(width, height);
+        
+        vbe->toFront(false);
     }
 
 

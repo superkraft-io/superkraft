@@ -12,6 +12,10 @@ public:
     
     static String getProjectPath();
     
+    bool pathExists(String path);
+    bool isAbsolutePath(String path);
+    
+    
     void handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData);
     
     void access(String msgID, String path, String& responseData);

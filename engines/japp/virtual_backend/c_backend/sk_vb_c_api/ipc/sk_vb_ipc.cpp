@@ -20,7 +20,7 @@ void SK_IPC::handle_IPC_Msg(DynamicObject *obj) {
         //First try to handle a native target, such as SK FS...
         if (tryForwardToNativeTarget(obj, responseData) == 0){
             //so we send the request to the correct target.
-            tryForwardToVirtualTarget(obj);
+              tryForwardToVirtualTarget(obj);
         }
         else {
             if (source != "sk_be"){
