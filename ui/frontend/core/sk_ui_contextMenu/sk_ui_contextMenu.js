@@ -28,46 +28,49 @@ class SK_ContextMenu {
         cb(this)
     }
 
+    
+    getElPath(_el){
+        var path = [];
+        var currentElem = _el;
+        while (currentElem) {
+            path.push(currentElem);
+            currentElem = currentElem.parentElement;
+        }
+        if (path.indexOf(window) === -1 && path.indexOf(document) === -1)
+            path.push(document);
+        if (path.indexOf(window) === -1)
+            path.push(window);
+        return path;
+    }
+
+    shouldIgnore(parent, path){
+        if (parent.element.id === path[0].id) return false
+
+        if (path[0].tagName === 'INPUT') return true
+
+        for (var i in path){
+            var element = path[i]
+            
+            try {
+                var suo = element.sk_ui_obj
+                var cm = suo.contextMenu
+                if (parent.element.id === element.id) return false
+                if (cm.items) return true
+                if (cm.blockPropagation) return true
+            } catch(err) {
+            }
+        }
+
+        return
+    }
+    
     setEventListener(){
-        var getElPath = _el => {
-            var path = [];
-            var currentElem = _el;
-            while (currentElem) {
-                path.push(currentElem);
-                currentElem = currentElem.parentElement;
-            }
-            if (path.indexOf(window) === -1 && path.indexOf(document) === -1)
-                path.push(document);
-            if (path.indexOf(window) === -1)
-                path.push(window);
-            return path;
-        }
-
-        var shouldIgnore = path => {
-            if (this.parent.element.id === path[0].id) return false
-
-            if (path[0].tagName === 'INPUT') return true
-
-            for (var i in path){
-                var element = path[i]
-                
-                try {
-                    var suo = element.sk_ui_obj
-                    var cm = suo.contextMenu
-                    if (this.parent.element.id === element.id) return false
-                    if (cm.items) return true
-                    if (cm.blockPropagation) return true
-                } catch(err) {
-                }
-            }
-
-            return
-        }
+        
 
         this.parent.element.addEventListener('contextmenu', _e => {
             _e.stopPropagation()
             _e.preventDefault()
-            if (shouldIgnore(getElPath(_e.currentTarget))) return
+            if (this.shouldIgnore(this.getElPath(_e.currentTarget))) return
             if (this.__button === 'right') this.handleMouseEvent(_e)
         })
 

@@ -30,7 +30,7 @@ class sk_ui_canvas extends sk_ui_component {
     }
     
     clear(){
-        this.ctx.clearRect(0, 0, this.rect.width, this.rect.height)
+        this.ctx.clearRect(0, 0, this.rect.width * this.ratio, this.rect.height * this.ratio)
     }
 
     fillRect(opt){

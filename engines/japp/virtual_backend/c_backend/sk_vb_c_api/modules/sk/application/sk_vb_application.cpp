@@ -25,8 +25,9 @@ void SK_VB_Application::handle_IPC_Msg(String msgID, DynamicObject *obj, String&
 
 
 void SK_VB_Application::getStaticInfo(String msgID, var info, String& responseData) {
-    String appName = JUCEApplicationBase::getInstance()->getApplicationName();
-    String appVersion = JUCEApplicationBase::getInstance()->getApplicationVersion();
+    //JUCEApplicationBase* instance = JUCEApplicationBase::getInstance();
+    String appName = vbe->sk_c_api->sharedClass.product_name;//instance->getApplicationName();
+    String appVersion = vbe->sk_c_api->sharedClass.product_version;
 
     
     

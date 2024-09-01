@@ -126,19 +126,21 @@ void SK_VB_View_Mngr::createView(String msgID, var obj, String& responseData) {
         
         view->id = String(viewID);
 
-        vbe->getParentComponent()->addAndMakeVisible(view);
 
 
         String fullPath = juce::WebBrowserComponent::getResourceProviderRoot();// +indexPath;
         view->goToURL(fullPath);
 
 
+        view->setSize(0, 0);
+        view->setColour(juce::ResizableWindow::backgroundColourId, juce::Colours::black);
         
-        //view->setSize(width, height);
-
+        vbe->getParentComponent()->addAndMakeVisible(view);
+        
+        
         vbe->getParentComponent()->setSize(width, height);
         
-        vbe->toFront(false);
+        vbe->toFront(true);
     }
 
 

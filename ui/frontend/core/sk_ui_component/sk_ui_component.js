@@ -578,11 +578,11 @@ class sk_ui_component {
         this.vertical = true
 
 
-        //this.contextMenu = new sk_ui_contextMenuMngr(this)
         this.contextMenu = new SK_ContextMenu({parent: this})
         this.ums = new SK_UMS_Client()
         if (!opt.noHint) this._hint = new SK_Hint({parent: this})
 
+            
         /********/
 
         //continue construction. used by plugins to extend capabilities
@@ -597,6 +597,8 @@ class sk_ui_component {
 
         resizeObserver.observe(this.element)
         */
+            
+        if (sk.onAfterComponentCreated) sk.onAfterComponentCreated(this)
     }
 
     get classHierarchy(){
@@ -1119,80 +1121,6 @@ class sk_ui_attribute {
 
 
 /*********/
-
-
-class sk_ui_contextMenuMngr {
-    constructor(parent){
-        this.parent = parent
-
-        this.activeWhenParentDisabled = false
-        this.__button = 'right'
-    }
-
-    set items(val){
-        if (!this.__items) this.setEventListener()
-        this.__items = val
-    }
-
-    get items(){ return this.__items }
-
-    set button(val){ this.__button = val }
-
-    setEventListener(){
-
-        var shouldIgnore = path => {
-            if (this.parent.element.id === path[0].id) return false
-
-            if (path[0].tagName === 'INPUT') return true
-
-            for (var i in path){
-                var element = path[i]
-                
-                try {
-                    var suo = element.sk_ui_obj
-                    var cm = suo.contextMenu
-                    if (this.parent.element.id === element.id) return false
-                    if (cm.items) return true
-                    if (cm.blockPropagation) return true
-                } catch(err) {
-                }
-            }
-
-            return
-        }
-
-        this.parent.element.addEventListener('contextmenu', _e => {
-            if (shouldIgnore(_e.path)) return
-            _e.preventDefault()
-            if (this.__button === 'right') this.handleMouseEvent(_e)
-        })
-        this.parent.element.addEventListener('click', _e => { if (this.__button === 'left') this.handleMouseEvent(_e) })
-    }
-
-    handleMouseEvent(_e){
-        if (this.parent.disabled && !this.activeWhenParentDisabled) return
-        this.show(_e)
-    }
-
-    show(_e){
-        var items = undefined
-        
-        if (this.__items instanceof Function){
-            items = this.__items()
-        } else {
-            items = this.__items
-        }
-
-        if (!items) return
-
-        sk._cM.show({
-            pos    : {x: _e.clientX, y: _e.clientY},
-            sender : this.parent.element,
-            items  : items
-        })
-    }
-}
-
 
 
 
