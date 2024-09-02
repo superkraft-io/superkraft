@@ -275,3 +275,12 @@ i.icon, i.icons, i.flag {
     border-radius: 0px !important;
     height: 0px !important;
 }
+
+
+
+.sk_ui_dbgFPSMonitor {
+    position: absolute;
+    border-radius: 8px;
+    padding: 16px;
+    border: solid 1px red;
+}

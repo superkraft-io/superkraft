@@ -214,6 +214,35 @@
             traverseChildren(sk.app.body)
             
         },
+        
+        showFPS: ()=>{
+            sk.fpsMonitor = sk.app.add.component(_c => {
+                _c.classAdd('sk_ui_dbgFPSMonitor')
+                _c.animate = false
+                _c.frosted = true
+                _c.movable = 'xy'
+                _c.label = _c.add.label(_c => {
+                    _c.text = 'FPS: N/A'
+                })
+            })
+            
+            var lastMS = Date.now()
+            var lastUpdateMS = Date.now()
+            var step = async _ts => {
+                var msDiff = Date.now() - lastMS
+                lastMS = Date.now()
+                var fps = 1000 / msDiff
+                
+                var msUpdateDiff = Date.now() - lastUpdateMS
+                if (msUpdateDiff > 100){
+                    sk.fpsMonitor.label.text = 'FPS: ' + fps.toFixed(0)
+                    lastUpdateMS = Date.now()
+                }
+                
+                window.requestAnimationFrame(step)
+            }
+            window.requestAnimationFrame(step)
+        },
 
         utils: {
             sleep: (delay = 1000)=>{ return new Promise(resolve => { setTimeout(()=>{ resolve() }, delay)})},
