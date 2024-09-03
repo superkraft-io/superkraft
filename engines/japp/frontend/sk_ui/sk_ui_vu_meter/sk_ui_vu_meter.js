@@ -1,4 +1,4 @@
-﻿class sk_ui_vu_meter extends sk_ui_component {
+class sk_ui_vu_meter extends sk_ui_component {
     constructor(opt) {
         super(opt)
 
@@ -63,6 +63,7 @@ class sk_ui_vu_meter_signal extends sk_ui_component {
 
             _c.onValueSet = val => {
                 this.channels.value = val
+                this.channels.applyValue()
             }
         })
 

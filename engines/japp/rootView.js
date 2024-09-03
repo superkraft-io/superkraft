@@ -138,7 +138,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                 globalData: this.sk.info.globalData
             }
         }
-
+        
         this._view.loadURL(data, this.sk.info.paths.superkraft + 'template.ejs', this.defOpts)
     }
 

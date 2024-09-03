@@ -8,6 +8,10 @@
 #include "../../../../sk_vbe/sk_vbe.hxx"
 class SK_VirtualBackend;
 
+
+#include "../../../../../../../../../../src/Editor.hxx"
+class SK_Compatible_Editor;
+
 SK_VB_View_Mngr::SK_VB_View_Mngr(SK_VirtualBackend *_vbe) {
     vbe = _vbe;
 }
@@ -131,16 +135,41 @@ void SK_VB_View_Mngr::createView(String msgID, var obj, String& responseData) {
         String fullPath = juce::WebBrowserComponent::getResourceProviderRoot();// +indexPath;
         view->goToURL(fullPath);
 
-
-        view->setSize(0, 0);
-        view->setColour(juce::ResizableWindow::backgroundColourId, juce::Colours::black);
+        juce::Timer::callAfterDelay(10000, [this]() {
+            //String fullPath = juce::WebBrowserComponent::getResourceProviderRoot();// +indexPath;
+            //view->goToURL(fullPath);
+        });
         
         vbe->getParentComponent()->addAndMakeVisible(view);
         
         
         vbe->getParentComponent()->setSize(width, height);
         
-        vbe->toFront(true);
+        
+        
+        view->setSize(0, 0);
+        //view->setAlpha(0.0f);
+        view->setColour(juce::ResizableWindow::backgroundColourId, juce::Colours::black);
+        
+        
+        resizeViews(vbe->editor->getWidth(), vbe->editor->getHeight());
+        
+        vbe->toFront(false);
+        
+        if (vbe->editor->overlayComponent == nullptr){
+            vbe->editor->overlayComponent = new BackgroundOverlayComponent();
+            vbe->editor->addAndMakeVisible(vbe->editor->overlayComponent, 999);
+            vbe->editor->overlayComponent->setBounds(0, 0, vbe->editor->getWidth(), vbe->editor->getHeight());
+            vbe->editor->overlayComponent->toFront(false);
+            //view->toBack();
+        }
+        
+        juce::Timer::callAfterDelay(3000, [this, view]() {
+            return;
+            auto view = findViewByID("first_view");
+            //view->setAlpha(1.0f);
+            resizeViews(vbe->editor->getWidth(), vbe->editor->getHeight());
+        });
     }
 
 

@@ -25,22 +25,25 @@ auto SK_VB_Router::lookUpResource(const juce::String& url, const juce::String& v
     auto nativeCommandResponse = handle_native_command(url);
     if (nativeCommandResponse != std::nullopt) return nativeCommandResponse;
 
+    std::optional<juce::WebBrowserComponent::Resource> res;
+    
     if (vbe->mode == "debug") {
-        auto res = loadResourceFrom_Disk(requestedUrl);
-        return res;
+        res = loadResourceFrom_Disk(requestedUrl);
     } else {
-        auto res = loadResourceFrom_BinaryData(requestedUrl);
-        return res;
+        res = loadResourceFrom_BinaryData(requestedUrl);
     }
+    
+    return res;
 }
 
 
-auto SK_VB_Router::loadResourceFrom_Disk(const juce::String& url) -> std::optional<juce::WebBrowserComponent::Resource> {
+std::optional<juce::WebBrowserComponent::Resource>  SK_VB_Router::loadResourceFrom_Disk(const juce::String& url){
 
 
     juce::WebBrowserComponent::Resource* resource = new juce::WebBrowserComponent::Resource();
     auto filename = std::filesystem::path(url.toStdString()).filename().string();
-    resource->mimeType = SK_VB_Helpers_MimeTypes::lookUpMimeType(filename);
+    String mimeType = SK_VB_Helpers_MimeTypes::lookUpMimeType(filename);
+    resource->mimeType = mimeType;
 
     if (url.indexOf("sk_vfs/") > -1) {
         String fixedURL = url;
@@ -74,25 +77,48 @@ auto SK_VB_Router::loadResourceFrom_Disk(const juce::String& url) -> std::option
     
     juce::String targetPath = SK_FS::getProjectPath() + "/assets" + url;
 
-    FILE* file = fopen(targetPath.toStdString().c_str(), "rb");
-    if (file)
-    {
-        fseek(file, 0, SEEK_END);
-        long dataSize = ftell(file);
-        char* buffer = (char*)malloc(dataSize + 1);
-        fseek(file, 0, SEEK_SET);
-        fread(buffer, 1, dataSize, file);
-
-
-        resource->data.resize(dataSize);
-        std::memcpy(resource->data.data(), buffer, dataSize);
-
-        free(buffer);
-
-        fclose(file);
-
-
-        return *resource;
+    if (mimeType == "text/javascript" && url.indexOf(".min.js") == -1){
+        File file(targetPath);
+        
+        if (file.existsAsFile()){
+            String fileAsString = file.loadFileAsString();
+            
+            long originalSize = fileAsString.length();
+            
+            fileAsString = SK_VB_Router::removeLeadingWhitespace(fileAsString);
+            
+            long newSize = fileAsString.length();
+            
+            float compression = 100 * (float(newSize) / float(originalSize));
+            DBG(String(url + ": " + String(compression) + "%"));
+            
+            long dataSize = fileAsString.toStdString().length();
+            resource->data.resize(dataSize);
+            std::memcpy(resource->data.data(), fileAsString.toStdString().c_str(), dataSize);
+            
+            return *resource;
+        }
+    } else {
+        FILE* file = fopen(targetPath.toStdString().c_str(), "rb");
+        if (file)
+        {
+            fseek(file, 0, SEEK_END);
+            long dataSize = ftell(file);
+            char* buffer = (char*)malloc(dataSize + 1);
+            fseek(file, 0, SEEK_SET);
+            fread(buffer, 1, dataSize, file);
+            
+            
+            resource->data.resize(dataSize);
+            std::memcpy(resource->data.data(), buffer, dataSize);
+            
+            free(buffer);
+            
+            fclose(file);
+            
+            
+            return *resource;
+        }
     }
 
     return std::nullopt;
@@ -100,7 +126,7 @@ auto SK_VB_Router::loadResourceFrom_Disk(const juce::String& url) -> std::option
 
 
 
-auto SK_VB_Router::loadResourceFrom_BinaryData(const juce::String& url) -> std::optional<juce::WebBrowserComponent::Resource> {
+std::optional<juce::WebBrowserComponent::Resource> SK_VB_Router::loadResourceFrom_BinaryData(const juce::String& url){
     for (const auto& [route, resource] : vbe->sk_bd.fileEntries){
         if (route == url){
             return resource->toResource();;

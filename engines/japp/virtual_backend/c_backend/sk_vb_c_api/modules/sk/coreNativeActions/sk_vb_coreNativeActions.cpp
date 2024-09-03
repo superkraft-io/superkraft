@@ -23,10 +23,6 @@ void SK_VB_CoreNativeActions::handle_IPC_Msg(String msgID, DynamicObject* obj, S
     }
     else if (func == "handleParamComponentMouseEvent") handleParamComponentMouseEvent.handle_IPC_Msg(msgID, obj, responseData);
     else {
-        if (func == "login") {
-            int x = 0;
-        }
-
         if (projectNativeActions.actions.contains(func) == true){
             projectNativeActions.handle_IPC_Msg(msgID, obj, responseData);
         }

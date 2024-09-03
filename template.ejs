@@ -5,104 +5,124 @@
         <title><%= title %></title>
         <link rel="icon" type="image/x-icon" href="<%= sk.routes.frontend.favIcon %>">
 
-        <% if (sk.routes.frontend.mobile){ %>
-            <%- include(sk.routes.frontend.mobile.main) %>
+        <% if (!sk.ui.useCDN){ %>
+            <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui %>sk_ui_colors.css">
+            <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui %>sk_ui.css">
+            <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui %>sk_ui_gradients.css">
+            <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui %>sk_ui_shadows.css">
+            
+            <% if (sk.routes.frontend.engine){ %>
+                <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.engine %>/frontend/engine_style.css">
+            <% } %>
+            
+        <% } else { %>
+            //Get the above assets from CDN sources
         <% } %>
-
-        <script> try { var $ = jQuery = require("jquery") } catch(err) {} </script>
-        <script src="<%= sk.routes.frontend.sk%>/libs/jquery/dist/jquery.slim.min.js"></script>
-        <script src="<%= sk.routes.frontend.sk%>/libs/jquery/jquery-ui/jquery-ui.min.js"></script>
-        
-        <script src="<%= sk.routes.frontend.sk%>/libs/ua_parser/ua_parser.min.js"></script>
-        
-        <% if (sk.ui && sk.ui.font){ %>
-            <%- include(sk.ui.font) %>
-        <% } %>
-        <link rel="stylesheet" type="text/css" href="/sk_ui_font/sk_ui_font.css">
-        
-
-        <script src="<%= sk.routes.frontend.sk%>/libs/sk_mobile/sk_mobile.js"></script>
-        
-
-        <script src="<%= sk.routes.frontend.sk%>/libs/sk_helpers.js"></script>
-
-        <link rel="stylesheet" href="<%= sk.routes.frontend.sk%>/libs/formantic-ui/semantic.css"/>
-        <script src="<%= sk.routes.frontend.sk%>/libs/formantic-ui/semantic.min.js"></script>
-        
-
-        <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.sk%>/libs/jsom/jsom.css">
-        <script src="<%= sk.routes.frontend.sk%>/libs/jsom/jsom.js"></script>
-
-
-        <script src="<%= sk.routes.frontend.sk%>/libs/sk_comm/sk_comm_<%= app_type %>.js"></script>
-        <script src="<%= sk.routes.frontend.sk%>/libs/sk_comm/sk_comm_core.js"></script>
-
-        <script src="<%= sk.routes.frontend.sk%>/libs/sk_dialog/sk_dialog_<%= app_type %>.js"></script>
-        <script src="<%= sk.routes.frontend.sk%>/libs/sk_dialog/sk_dialog_core.js"></script>
-
-
-        <script src="<%= sk.routes.frontend.sk%>/libs/sk_fileDrop/sk_fileDrop.js"></script>
-
-        <script src="<%= sk.routes.frontend.sk%>/libs/sk_tween.js"></script>
-        <script src="<%= sk.routes.frontend.sk%>/libs/sk_commands/sk_commands.js"></script>
-
-       
-        <script src="<%= sk.routes.frontend.sk%>/libs/sk_ums/sk_ums.js"></script>
-
-        <!--<script src="<%= sk.routes.frontend.sk%>/libs/sk_thread.js"></script>-->
-
-
-        <!--<link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.sk%>libs/sk_contextMenu/sk_contextMenu.css">
-        <script src="<%= sk.routes.frontend.sk%>libs/sk_contextMenu/sk_contextMenu.js"></script>-->
-
-        <script src="<%= sk.routes.frontend.sk%>/libs/sk_childMngr/sk_childMngr.js"></script>
-
-        
-
-        <script src="<%= sk.routes.frontend.sk%>/libs/js-cookie/js.cookie.min.js"></script>
-
-       
-
-        <%- include(globalHead) %>
-
-        
-        <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.view%>view.css">
-        <%- include(viewHead) %>
-
-        <script src="<%= sk.routes.frontend.sk%>/libs/sk_hint/sk_hint.js"></script>
     </head>
-
-    <%- include(sk.ui.head) %>
-
-    <% if (sk.useComplexity){ %>
+    
+    <body>
+        <div id="sk_ui_loadingView" class="sk_ui_component sk_ui_noSelect jsomStyle_fullwidth jsomStyle_fullheight jsomStyle_center jsomStyle_middle" style="display: flex; justify-content: center; position: absolute; width: 100%; height: 100%; z-index: 99999;">
+            <div iclass="sk_ui_component sk_ui_noSelect" style="width: fit-content; color: white;">Loading...</div>
+        </div>
+        
         <head>
-            <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.complexity %>complexity.css">
-            <script src="<%= sk.routes.frontend.complexity %>icons.js"></script>
-            <script src="<%= sk.routes.frontend.complexity %>comm.js"></script>
-            <script src="<%= sk.routes.frontend.complexity %>selectionManager.js"></script>
-            <script src="<%= sk.routes.frontend.complexity %>complexity.js"></script>
+            <% if (sk.routes.frontend.mobile){ %>
+                <%- include(sk.routes.frontend.mobile.main) %>
+            <% } %>
+
+            <script> try { var $ = jQuery = require("jquery") } catch(err) {} </script>
+            <script src="<%= sk.routes.frontend.sk%>/libs/jquery/dist/jquery.slim.min.js"></script>
+            <script src="<%= sk.routes.frontend.sk%>/libs/jquery/jquery-ui/jquery-ui.min.js"></script>
+            
+            <script src="<%= sk.routes.frontend.sk%>/libs/ua_parser/ua_parser.min.js"></script>
+            
+            <% if (sk.ui && sk.ui.font){ %>
+                <%- include(sk.ui.font) %>
+            <% } %>
+            <link rel="stylesheet" type="text/css" href="/sk_ui_font/sk_ui_font.css">
+            
+
+            <script src="<%= sk.routes.frontend.sk%>/libs/sk_mobile/sk_mobile.js"></script>
+            
+
+            <script src="<%= sk.routes.frontend.sk%>/libs/sk_helpers.js"></script>
+
+            <link rel="stylesheet" href="<%= sk.routes.frontend.sk%>/libs/formantic-ui/semantic.css"/>
+            <script src="<%= sk.routes.frontend.sk%>/libs/formantic-ui/semantic.min.js"></script>
+            
+
+            <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.sk%>/libs/jsom/jsom.css">
+            <script src="<%= sk.routes.frontend.sk%>/libs/jsom/jsom.js"></script>
 
 
-            <script src="<%= sk.routes.frontend.complexity %>editor/components/objectTree.js"></script>
-            <script src="<%= sk.routes.frontend.complexity %>editor/components/stylingEditor.js"></script>
-            <script src="<%= sk.routes.frontend.complexity %>editor/components/attributeEditor.js"></script>
-            <script src="<%= sk.routes.frontend.complexity %>editor/components/iconList.js"></script>
+            <script src="<%= sk.routes.frontend.sk%>/libs/sk_comm/sk_comm_<%= app_type %>.js"></script>
+            <script src="<%= sk.routes.frontend.sk%>/libs/sk_comm/sk_comm_core.js"></script>
+
+            <script src="<%= sk.routes.frontend.sk%>/libs/sk_dialog/sk_dialog_<%= app_type %>.js"></script>
+            <script src="<%= sk.routes.frontend.sk%>/libs/sk_dialog/sk_dialog_core.js"></script>
+
+
+            <script src="<%= sk.routes.frontend.sk%>/libs/sk_fileDrop/sk_fileDrop.js"></script>
+
+            <script src="<%= sk.routes.frontend.sk%>/libs/sk_tween.js"></script>
+            <script src="<%= sk.routes.frontend.sk%>/libs/sk_commands/sk_commands.js"></script>
+
+           
+            <script src="<%= sk.routes.frontend.sk%>/libs/sk_ums/sk_ums.js"></script>
+
+            <!--<script src="<%= sk.routes.frontend.sk%>/libs/sk_thread.js"></script>-->
+
+
+            <!--<link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.sk%>libs/sk_contextMenu/sk_contextMenu.css">
+            <script src="<%= sk.routes.frontend.sk%>libs/sk_contextMenu/sk_contextMenu.js"></script>-->
+
+            <script src="<%= sk.routes.frontend.sk%>/libs/sk_childMngr/sk_childMngr.js"></script>
 
             
 
-            <link rel="stylesheet" href="<%= sk.routes.frontend.complexity %>codeEditor/codemirror/theme/vscode-dark.css">
+            <script src="<%= sk.routes.frontend.sk%>/libs/js-cookie/js.cookie.min.js"></script>
 
-            <link rel="stylesheet" href="<%= sk.routes.frontend.complexity %>codeEditor/codemirror/lib/codemirror.css">
-            <script src="<%= sk.routes.frontend.complexity %>codeEditor/codemirror/lib/codemirror.js"></script>
-            <script src="<%= sk.routes.frontend.complexity %>codeEditor/codemirror/mode/javascript/javascript.js"></script>
-            <script src="<%= sk.routes.frontend.complexity %>codeEditor/bakery.js"></script>
-            <script src="<%= sk.routes.frontend.complexity %>codeEditor/codeEditor.js"></script>
+           
 
-            <script src="<%= sk.routes.frontend.complexity %>editor/editor.js"></script>
+            <%- include(globalHead) %>
+
+            
+            <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.view%>view.css">
+            <%- include(viewHead) %>
+
+            <script src="<%= sk.routes.frontend.sk%>/libs/sk_hint/sk_hint.js"></script>
         </head>
-    <% } %>
-    
-    <body>
+
+        <%- include(sk.ui.head) %>
+
+        <% if (sk.useComplexity){ %>
+            <head>
+                <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.complexity %>complexity.css">
+                <script src="<%= sk.routes.frontend.complexity %>icons.js"></script>
+                <script src="<%= sk.routes.frontend.complexity %>comm.js"></script>
+                <script src="<%= sk.routes.frontend.complexity %>selectionManager.js"></script>
+                <script src="<%= sk.routes.frontend.complexity %>complexity.js"></script>
+
+
+                <script src="<%= sk.routes.frontend.complexity %>editor/components/objectTree.js"></script>
+                <script src="<%= sk.routes.frontend.complexity %>editor/components/stylingEditor.js"></script>
+                <script src="<%= sk.routes.frontend.complexity %>editor/components/attributeEditor.js"></script>
+                <script src="<%= sk.routes.frontend.complexity %>editor/components/iconList.js"></script>
+
+                
+
+                <link rel="stylesheet" href="<%= sk.routes.frontend.complexity %>codeEditor/codemirror/theme/vscode-dark.css">
+
+                <link rel="stylesheet" href="<%= sk.routes.frontend.complexity %>codeEditor/codemirror/lib/codemirror.css">
+                <script src="<%= sk.routes.frontend.complexity %>codeEditor/codemirror/lib/codemirror.js"></script>
+                <script src="<%= sk.routes.frontend.complexity %>codeEditor/codemirror/mode/javascript/javascript.js"></script>
+                <script src="<%= sk.routes.frontend.complexity %>codeEditor/bakery.js"></script>
+                <script src="<%= sk.routes.frontend.complexity %>codeEditor/codeEditor.js"></script>
+
+                <script src="<%= sk.routes.frontend.complexity %>editor/editor.js"></script>
+            </head>
+        <% } %>
+    </head>
         <script>
             if (window.location.href[window.location.href.length - 1] === '/'){
                 var sk_1639264_url = window.location.href.replace('http://', '').replace('https://', '')
@@ -119,7 +139,7 @@
         
         <% if (sk.routes.frontend.engine){ %>
             <script>sk.needsEngineInit = true</script>
-            <%- include(sk.routes.frontend.engine + "/frontend/body.ejs") %>
+            <%- include(sk.routes.frontend.engine + "/frontend/engine_body.ejs") %>
             <script>
                 sk.initEngine().then(()=>{})
             </script>
@@ -195,6 +215,8 @@
                 }
 
                 sk.init().then(initAppRes => {
+                    document.getElementById('sk_ui_loadingView').remove()
+                    
                     sk.app = (new sk_ui_component({parent: {element: document.body}}))
                     sk.app.setup(_c => {
                         _c.styling += ' fullwidth fullheight'
