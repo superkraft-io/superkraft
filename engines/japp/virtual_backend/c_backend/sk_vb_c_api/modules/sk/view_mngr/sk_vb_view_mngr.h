@@ -13,6 +13,7 @@ public:
     std::vector<SK_VB_ViewMngr_View*> views;
 
     SK_VB_View_Mngr(SK_VirtualBackend *_vbe);
+    ~SK_VB_View_Mngr();
     
     void resizeViews(int width, int height);
     SK_VB_ViewMngr_View* findViewByID(String viewID);

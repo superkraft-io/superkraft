@@ -12,6 +12,7 @@ public:
     std::vector<SK_VB_VFS_File*> entries;
 
     SK_VB_VFS(SK_VirtualBackend * _vbe);
+    ~SK_VB_VFS();
     
     void handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData);
 

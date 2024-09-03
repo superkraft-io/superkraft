@@ -9,6 +9,11 @@ using namespace std::chrono;
 SK_VB_VFS::SK_VB_VFS(SK_VirtualBackend *_vbe) {
     vbe = _vbe;
 }
+SK_VB_VFS::~SK_VB_VFS()
+{
+    for (int i = 0; i < entries.size(); i++)
+        delete entries[i];
+}
 
 void SK_VB_VFS::handle_IPC_Msg(String msgID, DynamicObject *obj, String& responseData) {
     var info = obj->getProperty("data");

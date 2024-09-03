@@ -15,6 +15,11 @@ class SK_Compatible_Editor;
 SK_VB_View_Mngr::SK_VB_View_Mngr(SK_VirtualBackend *_vbe) {
     vbe = _vbe;
 }
+SK_VB_View_Mngr::~SK_VB_View_Mngr()
+{
+    for (int i = 0; i < views.size(); i++)
+        delete views[i];
+}
 
 void SK_VB_View_Mngr::resizeViews(int width, int height) {
     int offset = 0;
