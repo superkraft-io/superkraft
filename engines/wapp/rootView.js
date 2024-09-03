@@ -101,7 +101,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                         if (this.info.onAuthFail) return res.redirect(this.info.onAuthFail)
                         if (!this.info.bypassOnAuthFail) return res.redirect('/404')
                     } else {
-                        var auth_res = await this.sk.engine.isAuthTokenValid(auth_token, true)
+                        var auth_res = await this.sk.info.engine.isAuthTokenValid(auth_token, true)
                     
                         if (auth_res){
                             if (auth_res.error === 'invalid_token'){
@@ -110,7 +110,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
 
                             //check ban
-                            var latestRestrictionRes = await this.sk.database.do.getLatestRestriction({user_id: auth_res.userID})
+                            var latestRestrictionRes = await this.sk.info.database.do.getLatestRestriction({user_id: auth_res.userID})
                             if (latestRestrictionRes.latestRestriction){
                                 if (this.info.route !== '/restricted') return res.redirect('/restricted')
                             } else {
@@ -127,7 +127,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                                     this.onCheckAccActivation ?
                                     await this.onCheckAccActivation(auth_token)
                                     :
-                                    (await this.sk.database.do.isAccActivated(auth_token)).accActivated
+                                    (await this.sk.info.database.do.isAccActivated(auth_token)).accActivated
                                 )
                                 
                                 if (isAccActivated){

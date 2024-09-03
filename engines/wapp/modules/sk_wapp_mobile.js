@@ -92,7 +92,7 @@ module.exports = class SK_WAPP_Mobile {
             
             if (this.sk.info.paths.icons.app) this.templateAdd('<link rel="apple-touch-icon" href="<%>">', this.sk.info.paths.icons.app)
             if (this.sk.info.mobile.name){
-                manifest.name = this.sk.mobile.name
+                manifest.name = this.sk.info.mobile.name
                 this.templateAdd('<meta name="apple-mobile-web-app-title" content="<%>">', this.sk.info.mobile.name)
             }
 
@@ -101,13 +101,13 @@ module.exports = class SK_WAPP_Mobile {
             if (this.sk.info.mobile.categories) manifest.categories = this.sk.info.mobile.categories
 
             if (this.sk.info.mobile.nativeStyle){
-                var nS = this.sk.mobile.nativeStyle
+                var nS = this.sk.info.mobile.nativeStyle
                 if (nS === true) nS = 'fullscreen'
                 if (nS !== undefined && nS !== false && nS !== true) manifest.display = nS
                 this.templateAdd('<meta name="apple-mobile-web-app-capable" content="yes"></meta>')
                 this.templateAdd('<meta name="mobile-web-app-capable" content="yes">')
             }
-            if (this.sk.info.mobile.statusBarStyle) this.templateAdd('<meta name="apple-mobile-web-app-status-bar-style" content="<%>">', this.sk.mobile.statusBarStyle)
+            if (this.sk.info.mobile.statusBarStyle) this.templateAdd('<meta name="apple-mobile-web-app-status-bar-style" content="<%>">', this.sk.info.mobile.statusBarStyle)
             
             fs.writeFileSync(this.paths.manifest, JSON.stringify(manifest))
             this.templateAdd('\n<link rel="manifest" href="<%>" />', this.routes.manifest)

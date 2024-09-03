@@ -39,9 +39,13 @@ module.exports = class SK_RootEngine {
                 }
 
                 if (postModule.info.protected){
+                    if (!req.cookies){
+                        var x = 0
+                        return reject('invalid_request')
+                    }
                     var auth_token = req.cookies.auth_token
                     if (!auth_token) return reject('access_denied')
-                    var isAuthTokenValid = await this.sk.engine.isAuthTokenValid(auth_token)
+                    var isAuthTokenValid = await this.sk.info.engine.isAuthTokenValid(auth_token)
                     if (isAuthTokenValid === 'invalid_token') return reject('invalid_token')
                     if (!isAuthTokenValid) return reject('access_denied')
                 }
@@ -65,7 +69,7 @@ module.exports = class SK_RootEngine {
             var _filename = posts[i]
             var split = _filename.split('.')
             var ext = split[split.length - 1]
-            if (ext !== 'js') return
+            if (ext !== 'js') continue
             
             if ((await sk_fs.promises.stat(postsFolder + _filename)).isDirectory() === true) return
 

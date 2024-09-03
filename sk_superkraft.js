@@ -17,6 +17,7 @@ module.exports = class Superkraft {
         var sk_id = opt.sk_id || 'sk'
 
         if (window) window[sk_id] = this
+        if (global) global[sk_id] = this
 
         this.info = {
             skModule: this,
@@ -153,12 +154,14 @@ module.exports = class Superkraft {
         if (opt.useComplexity) sk.complexity = new (require(__dirname + '/complexity/backend/sk_complexity.js'))
 
         
-        await sk.engine.loadPosts()
         
         try { await sk.engine.init() } catch(err) {
             console.error(err)
             if (opt.onFail) return opt.onFail()
         }
+
+        
+        await sk.engine.loadPosts()
         
         global.SK_RootViewCore = require(__dirname + '/sk_rootViewCore.js')
         global.SK_RootView = require(__dirname + '/engines/' + opt.type + '/rootView.js')
