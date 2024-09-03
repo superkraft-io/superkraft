@@ -37,6 +37,7 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
             this.sk.app = app
             this.app = app
 
+            app.post = ()=>{} //dummy, to override rootEngine POST loader. POs are loaded  in this current init() function, below
             
             
             
@@ -50,7 +51,7 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
 
 
 
-            var postsFolder = this.sk.skModule.opt.postsRoot
+            var postsFolder = this.sk.info.skModule.opt.postsRoot
             
             this.posts = {}
 
@@ -74,7 +75,7 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
             app.on('window-all-closed', () => {
                 // On macOS it is common for applications and their menu bar
                 // to stay active until the user quits explicitly with Cmd + Q
-                /*if (this.sk.sysInfo.os !== 'macos'){
+                /*if (this.sk.info.sysInfo.os !== 'macos'){
                     app.exit()
                 }
                 */
@@ -94,10 +95,10 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
 
             
 
-            this.sk.ums = new (require('../../modules/sk_ums.js'))({sk: this.sk, app: app})
+            this.sk.info.ums = new (require('../../modules/sk_ums.js'))({sk: this.sk, app: app})
             
             this.sk.online = false
-            this.sk.ums.on('isOnline', res => {
+            this.sk.info.ums.on('isOnline', res => {
                 this.sk.online = res.data
             })
 
@@ -118,7 +119,7 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
         if (this.sk.onAppReady) this.sk.onAppReady()
 
         uIOhook.on('mouseup', _e => {
-            for (var vid in this.sk.views) this.sk.views[vid].handleMouseUp()
+            for (var vid in this.sk.info.views) this.sk.info.views[vid].handleMouseUp()
         })
         uIOhook.start()
     }
@@ -131,22 +132,22 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
 
     async terminate(){
         this.closeAllViews()
-        this.sk.timers.destroyAll()
+        this.sk.info.timers.destroyAll()
 
-        if (this.sk.onBeforeTerminate) await this.sk.onBeforeTerminate()
+        if (this.sk.info.onBeforeTerminate) await this.sk.onBeforeTerminate()
 
         process.exit()
     }
 
     closeAllViews(){
-        for (var i in this.sk.views){
-            var view = this.sk.views[i]
+        for (var i in this.sk.info.views){
+            var view = this.sk.info.views[i]
             if (view.closed === false) view.close()
         }
     }
 
     flog(data){
-        this.sk.ums.broadcast('sk_flog', data)
+        this.sk.info.ums.broadcast('sk_flog', data)
     }
 
 
@@ -160,8 +161,8 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
     checkIfAllViewsClosed(){
         var created = []
 
-        for (var i in this.sk.views){
-            var view = this.sk.views[i]
+        for (var i in this.sk.info.views){
+            var view = this.sk.info.views[i]
             var _view = view._view
             if (_view) created.push(view)
         }

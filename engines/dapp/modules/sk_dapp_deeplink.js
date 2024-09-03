@@ -6,7 +6,7 @@ module.exports = class SK_DAPP_Deeplink {
         this.opt = opt
         this.sk = opt.sk
 
-        if (!this.sk.dapp.deeplink) return
+        if (!this.sk.info.dapp.deeplink) return
 
         this.configSchemes()
 
