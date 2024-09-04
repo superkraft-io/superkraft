@@ -7,7 +7,7 @@ module.exports = class SK_Action extends SK_RootAction {
             
             actions: Object.keys(view.actions),
             main: view.info.main,
-            version: this.sk.app.getVersion(),
+            version: this.sk.engine.app.getVersion(),
 
             view: {
                 minimizable : _v.minimizable,

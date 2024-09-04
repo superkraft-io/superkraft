@@ -27,8 +27,8 @@ class sk_ui_list extends sk_ui_component {
         this.list = []
 
         this.items = {
-            add: opt => {
-                var item = this.container.add.fromNew(sk_ui_listItem, _c => {
+            add: (opt, itemClass = sk_ui_listItem)=>{
+                var item = this.container.add.fromNew(itemClass, _c => {
                     _c.info = opt
                     _c.text = opt.label
 
@@ -59,7 +59,7 @@ class sk_ui_list extends sk_ui_component {
                 this.list.push(item)
                 if (this.onNewItem) this.onNewItem(item)
 
-                if (opt.icon) item.icon = opt.icon
+                if (opt.icon && item.icon) item.icon = opt.icon
 
                 return item
             }

@@ -24,7 +24,7 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
         var arch = 'x64'
        if (_os.cpus()[0].model.includes('Apple')) arch = 'arm'
 
-        this.sk.sysInfo = {
+        this.sk.info.sysInfo = {
             os: os,
             arch: arch
         }

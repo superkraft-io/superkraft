@@ -16,9 +16,15 @@ class sk_ui_prompter extends sk_ui_modal {
             //_c.styling += ' fullwidth'
         })
 
-        this.actionBtn = this.content.add.simpleActionBtn(_c => {
-            _c.text = 'OK'
-            _c.styling += 'fullwidth'
+        this.footer = this.content.add.component(_c => {
+            _c.styling += ' fullwidth'
+            _c.vertical = false
+
+            this.actionBtn = _c.add.simpleActionBtn(_c => {
+                _c.text = 'OK'
+                _c.styling += 'fullwidth'
+            })
         })
+        
     }
 }

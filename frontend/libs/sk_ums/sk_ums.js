@@ -22,7 +22,7 @@ class SK_UMS {
             var eventRes =  res.events[eventName]
             var eventObj = new SK_UMS_Event({id: eventRes.id})
             eventObj.data = eventRes.data
-            this.events[eventName] = eventObj
+            if (!this.events[eventName]) this.events[eventName] = eventObj
         }
     }
 
@@ -32,7 +32,7 @@ class SK_UMS {
         return new Promise(resolve => {
             var _data = data || {sk_ums_empty: true}
             _data = JSON.parse(JSON.stringify(_data))
-            return
+            
             wscb.send({cmd: 'sk_ums', action: action, eventID: eventID, data: _data}, res => {
                 resolve(res)
             })

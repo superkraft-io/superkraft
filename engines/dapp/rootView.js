@@ -14,21 +14,22 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                 frontend: {
                     view: opt.root + 'frontend/',
 
-                    sk: this.sk.paths.sk_frontend,
+                    sk: this.sk.info.paths.sk_frontend,
 
-                    ui: this.sk.ui.routes.core,
-                    ui_shared: this.sk.ui.routes.shared,
-                    ui_global: this.sk.ui.routes.global,
+                    ui: this.sk.info.ui.routes.core,
+                    ui_shared: this.sk.info.ui.routes.shared,
+                    ui_global: this.sk.info.ui.routes.global,
 
-                    app_root: this.sk.paths.root,
-                    app: this.sk.paths.app_frontend,
-                    global: this.sk.paths.globalFrontend
+                    app_root: this.sk.info.paths.root,
+                    app: this.sk.info.paths.app_frontend,
+                    global: this.sk.info.paths.globalFrontend,
+                    engine: __dirname,
                 },
 
                 
             }
 
-            if (this.info.icon || this.sk.paths.icons.view) this.routes.icon = this.info.icon || this.sk.paths.icons.view
+            if (this.info.icon || this.sk.info.paths.icons.view) this.routes.icon = this.info.icon || this.sk.info.paths.icons.view
 
             function fixPaths(list){
                 for (var i in list){
@@ -42,7 +43,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             this.routes = fixPaths(this.routes)
 
             
-            if (this.sk.complexity) this.routes.frontend.complexity = this.sk.paths.complexity.frontend
+            if (this.sk.info.complexity) this.routes.frontend.complexity = this.sk.info.paths.complexity.frontend
 
             this.viewInfo = await this._init(opt)
             
@@ -69,14 +70,14 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
         
             if (doShow){
-                if (!this.sk.showWindowWaitTime) this.sk.showWindowWaitTime = 1
+                if (!this.sk.info.showWindowWaitTime) this.sk.info.showWindowWaitTime = 1
                 
-                this.sk.showWindowWaitTime += 500
+                this.sk.info.showWindowWaitTime += 500
 
                 setTimeout(()=>{
                     this.create()
                     this.show()
-                }, this.sk.showWindowWaitTime)
+                }, this.sk.info.showWindowWaitTime)
             }
         })
     }
@@ -118,8 +119,8 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             this.resizeRect = {width: size[0], height: size[1]}
             //this.resizeRect.viewID = this.id
 
-            if (!this.isResizing) this.sk.ums.broadcast('sk_be_app_resize_begin-' + this.id, this.resizeRect)
-            else this.sk.ums.broadcast('sk_be_app_resize-' + this.id, this.resizeRect)
+            if (!this.isResizing) this.sk.info.ums.broadcast('sk_be_app_resize_begin-' + this.id, this.resizeRect)
+            else this.sk.info.ums.broadcast('sk_be_app_resize-' + this.id, this.resizeRect)
             
             this.isResizing = true
         })
@@ -128,7 +129,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
     handleMouseUp(){
         if (!this.isResizing) return
         this.isResizing = false
-        this.sk.ums.broadcast('sk_be_app_resize_end-' + this.id, this.resizeRect)
+        this.sk.info.ums.broadcast('sk_be_app_resize_end-' + this.id, this.resizeRect)
     }
 
     async reload() {
@@ -144,19 +145,19 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         ejse.data({
             ...{
                 l10n: {
-                    countries: this.sk.l10n.listCountries(),
-                    phrases: this.sk.l10n.getForCountry(this.sk.country)
+                    countries: this.sk.info.l10n.listCountries(),
+                    phrases: this.sk.info.l10n.getForCountry(this.sk.country)
                 }
             },
 
             ...this.viewInfo,
             ...{
                 userData: userData,
-                globalData: this.sk.globalData
+                globalData: this.sk.info.globalData
             }
         })
 
-        this._view.loadURL('file://' + this.sk.paths.superkraft + '/template.ejs')
+        this._view.loadURL('file://' + this.sk.info.paths.superkraft + '/template.ejs')
     }
 
     show(){
@@ -165,12 +166,12 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         this._view.show()
         this.closed = false
 
-        this.sk.ums.broadcast('sk_view_cmd-' + this.id, {viewID: this.id, action: 'show'})
+        this.sk.info.ums.broadcast('sk_view_cmd-' + this.id, {viewID: this.id, action: 'show'})
     }
 
     hide(){
         this.info.show = false
-        this.sk.ums.broadcast('sk_view_cmd-' + this.id, {viewID: this.id, action: 'hide'})
+        this.sk.info.ums.broadcast('sk_view_cmd-' + this.id, {viewID: this.id, action: 'hide'})
         setTimeout(()=>{
             this._view.hide()
             this.setClosed()

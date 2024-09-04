@@ -64,9 +64,13 @@ class sk_ui_l10n_selector extends sk_ui_button {
                     label: this.countries[countryCode].name,
                     countryCode: countryCode,
                     icon: this.countries[countryCode].flag + ' flag',
-                    onClick: res =>{
+                    onClick: (res, noReload, noSelectFire)=>{
+                        this.selectedItem = res
                         Cookies.set('country', res.countryCode)
-                        window.location.reload()
+                        this.icon = this.countries[res.countryCode].flag + ' flag'
+                        this.text = this.countries[res.countryCode].name
+                        if (!noReload && this.noReload) window.location.reload()
+                        if (!noSelectFire && this.onLanguageSelected) this.onLanguageSelected(res)
                     }
                 })
             }
@@ -87,6 +91,23 @@ class sk_ui_l10n_selector extends sk_ui_button {
         this.contextMenu.onItemCreated = item => {
             item.leftSide.icon.iconElement.classList.remove('icon')
             item.leftSide.icon.marginRight = 8
+            
+            if (this.onFormatItem) this.onFormatItem(item)
+                
         }
+    }
+
+    findLanguageItem(countryCode){
+        var items = this.contextMenu.items()
+
+        for (var i in items){
+            var item = items[i]
+            if (item.countryCode === countryCode) return item
+        }
+    }
+
+    selectLanguage(countryCode, noReload, noSelectFire){
+        var item = this.findLanguageItem(countryCode)
+        item.onClick(item, noReload, noSelectFire)
     }
 }

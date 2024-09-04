@@ -56,7 +56,7 @@ class sk_ui_dappTitlebar_title extends sk_ui_component {
         })
         this.label = this.add.label(_c => {
             _c.canMoveView = true
-            _c.weight = 600
+            //_c.weight = 600
         })
     }
 }
