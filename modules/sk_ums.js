@@ -56,6 +56,7 @@ module.exports = class SK_UMS {
     broadcast(eventID, data){
         var event = this.addOrGet(eventID)
         event.data = data
+        event.broadcast(data)
         this.broadcastToFrontend(eventID, data)
     }
 
@@ -65,9 +66,6 @@ module.exports = class SK_UMS {
     }
 
     broadcastToFrontend(eventID, data){
-        if (data.fromFrontend){
-            var x = 0
-        }
         this.toFE('broadcast', eventID, data)
     }
 

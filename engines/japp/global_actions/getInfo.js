@@ -2,7 +2,7 @@ module.exports = class SK_Action extends SK_RootAction {
     async exec(opt, res, view, _v){
 
         var info = {
-            os: this.sk.sysInfo.os,
+            os: this.sk.ums.broadcast,
             arch: this.sk.sysInfo.arch,
             
             actions: Object.keys(view.actions),

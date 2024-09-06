@@ -111,7 +111,7 @@ class SK_DAPP_Deeplink_win {
 
             try { 
                 var data = fs.readJSONSync(this.paths.deeplink)
-                this.sk.ums.broadcast('sk_deeplink', data)
+                this.sk.info.ums.broadcast('sk_deeplink', data)
             } catch(err) {
                 console.error('===== deeplink error: could not read deeplink file')
             }
@@ -132,7 +132,7 @@ class SK_DAPP_Deeplink_macos {
             event.preventDefault()
 
             var data =  this.opt.parent.parseData(url)
-            this.sk.ums.broadcast('sk_deeplink', data)
+            this.sk.info.ums.broadcast('sk_deeplink', data)
         })
     }
 

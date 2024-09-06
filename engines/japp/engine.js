@@ -64,7 +64,7 @@ module.exports = class SK_JUCE_Engine extends SK_RootEngine {
             app.on('window-all-closed', () => {
                 // On macOS it is common for applications and their menu bar
                 // to stay active until the user quits explicitly with Cmd + Q
-                /*if (this.sk.sysInfo.os !== 'macos'){
+                /*if (this.sk.info.sysInfo.os !== 'macos'){
                     app.exit()
                 }
                 */
@@ -136,7 +136,7 @@ module.exports = class SK_JUCE_Engine extends SK_RootEngine {
     }
 
     flog(data){
-        this.sk.ums.broadcast('sk_flog', data)
+        this.sk.info.ums.broadcast('sk_flog', data)
     }
 
 

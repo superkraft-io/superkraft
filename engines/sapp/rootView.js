@@ -142,11 +142,11 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         if (!this._view) await this.create()
         this._view.show()
         this.closed = false
-        this.sk.ums.broadcast('sk_view_cmd-' + this.id, {viewID: this.id, action: 'show'})
+        this.sk.info.ums.broadcast('sk_view_cmd-' + this.id, {viewID: this.id, action: 'show'})
     }
 
     hide(){
-        this.sk.ums.broadcast('sk_view_cmd-' + this.id, {viewID: this.id, action: 'hide'})
+        this.sk.info.ums.broadcast('sk_view_cmd-' + this.id, {viewID: this.id, action: 'hide'})
         setTimeout(()=>{
             this._view.hide()
             this.setClosed()

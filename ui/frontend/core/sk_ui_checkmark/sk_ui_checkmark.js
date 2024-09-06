@@ -24,8 +24,8 @@ class sk_ui_checkmark extends sk_ui_component {
             name: 'size',
             type: 'number',
             onSet: val => {
-                this.width = val
-                this.height = val
+                this.style.minWidth = val
+                this.style.minHeight = val
 
                 var loader = this.checkmarkBucket.loader
                 var check = this.checkmarkBucket.check
@@ -85,6 +85,7 @@ class sk_ui_checkmark extends sk_ui_component {
         //this.checkmarkBucket.check.style.borderTopColor    = this.__color
 
         this.checkmarkBucket.loader.classList.add(this.currentClasses.loaderComplete)
+        this.checkmarkBucket.check.style.opacity = 1
         this.checkmarkBucket.check.transition('scale in')
         this.isChecked = true
     }
@@ -94,16 +95,17 @@ class sk_ui_checkmark extends sk_ui_component {
         .sk_ui_checkmark_circle-loader-<id> {
             border: <borderThickness>px solid rgba(0, 0, 0, 0.2);
             border-left-color: #5cb85c;
-            animation: sk_ui_checkmark_loader-spin-<id> 1.2s infinite linear;
+           /* animation: sk_ui_checkmark_loader-spin-<id> 1.2s infinite linear;*/
             position: relative;
             display: inline-block;
             vertical-align: top;
             border-radius: 50%;
-            width: <height>px;
-            height: <height>px;
+            min-width: <height>px;
+            min-height: <height>px;
         }
          
         .sk_ui_checkmark-check-<id> {
+            opacity: 0;
             display: none;
             position: absolute;
         }

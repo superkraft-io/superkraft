@@ -10,7 +10,7 @@ module.exports = class SK_DAPP_Deeplink {
 
         this.configSchemes()
 
-        if (this.sk.sysInfo.os === 'win') this.osModule = new SK_DAPP_Deeplink_win({parent: this, sk: this.sk})
+        if (this.sk.info.sysInfo.os === 'win') this.osModule = new SK_DAPP_Deeplink_win({parent: this, sk: this.sk})
         else this.osModule = new SK_DAPP_Deeplink_macos({parent: this, sk: this.sk})
 
         this.osModule.init()
@@ -61,7 +61,7 @@ class SK_DAPP_Deeplink_win {
             tmp: this.sk.app.getPath('temp') + '\\' + this.appName + '\\'
         }
         
-        if (this.sk.sysInfo.os === 'macos') this.paths.tmp = this.paths.tmp.split('\\').join('//')
+        if (this.sk.info.sysInfo.os === 'macos') this.paths.tmp = this.paths.tmp.split('\\').join('//')
 
         if (!fs.existsSync(this.paths.tmp)) fs.mkdirSync(this.paths.tmp)
 
@@ -111,7 +111,7 @@ class SK_DAPP_Deeplink_win {
 
             try { 
                 var data = fs.readJSONSync(this.paths.deeplink)
-                this.sk.ums.broadcast('sk_deeplink', data)
+                this.sk.info.ums.broadcast('sk_deeplink', data)
             } catch(err) {
                 console.error('===== deeplink error: could not read deeplink file')
             }
@@ -132,7 +132,7 @@ class SK_DAPP_Deeplink_macos {
             event.preventDefault()
 
             var data =  this.opt.parent.parseData(url)
-            this.sk.ums.broadcast('sk_deeplink', data)
+            this.sk.info.ums.broadcast('sk_deeplink', data)
         })
     }
 

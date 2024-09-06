@@ -135,7 +135,7 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
     }
 
     flog(data){
-        this.sk.ums.broadcast('sk_flog', data)
+        this.sk.info.ums.broadcast('sk_flog', data)
     }
 
 

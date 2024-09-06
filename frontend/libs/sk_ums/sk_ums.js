@@ -42,15 +42,6 @@ class SK_UMS {
     newID(){
         this.clientIDCounter++
         return this.clientIDCounter
-        
-        /*return new Promise(async resolve => {
-            if (sk.app_type === 'wapp'){
-                this.clientIDCounter++
-                resolve(this.clientIDCounter)
-            } else {
-                resolve(await this.toBE('newID'))
-            }
-        })*/
     }
 
     on(eventID, client, cb){
