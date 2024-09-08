@@ -90,7 +90,8 @@ class sk_ui_l10n_selector extends sk_ui_button {
         
         this.contextMenu.onItemCreated = item => {
             item.leftSide.icon.iconElement.classList.remove('icon')
-            item.leftSide.icon.marginRight = 8
+            item.leftSide.marginLeft = 6
+            item.leftSide.marginRight = 8
             
             if (this.onFormatItem) this.onFormatItem(item)
                 

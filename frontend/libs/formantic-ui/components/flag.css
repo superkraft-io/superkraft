@@ -19,7 +19,7 @@ i.flag:not(.icon) {
   height: 11px;
   line-height: 11px;
   vertical-align: baseline;
-  margin: 0 0.5em 0 0;
+  /*margin: 0 0.5em 0 0;*/
   text-decoration: inherit;
   speak: none;
   -webkit-font-smoothing: antialiased;

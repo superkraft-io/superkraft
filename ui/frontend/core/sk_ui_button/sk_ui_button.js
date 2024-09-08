@@ -303,6 +303,14 @@ class sk_ui_button extends sk_ui_component {
                 if (_c.indicator) _c.indicator.animate = true
             }
 
+            if (opt.marginLeft){
+                _c.marginLeft = opt.marginLeft
+            }
+
+            if (opt.marginRight){
+                _c.marginRight = opt.marginRight
+            }
+
             if (opt.onHidden){
                 _c.onHidden = ()=>{
                     opt.onHidden()
