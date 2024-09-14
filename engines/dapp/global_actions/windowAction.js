@@ -3,7 +3,7 @@ module.exports = class SK_Action extends SK_RootAction {
         switch (opt.action) {
             case 'close':
                 if (window.info.main || opt.terminate) this.sk.engine.terminate()
-                else window.hide()
+                else window.close()//hide()
                 break;
 
             case 'minimize':

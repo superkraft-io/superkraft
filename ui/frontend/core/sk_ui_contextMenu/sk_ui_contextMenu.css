@@ -23,7 +23,7 @@
 
 .sk_ui_contextMenu_Item:not(.sk_ui_contextMenu_Item_Separator) {
     border-radius: 4px;
-    padding: 6px 4px;
+    padding: 6px 8px;
 }
 
 .sk_ui_contextMenu_Item_content > .sk_ui_label {
@@ -76,7 +76,7 @@
 
 .sk_ui_contextMenu_Item_Header > .sk_ui_contextMenu_Item_content > .sk_ui_label {
     font-size: 12px;
-    font-weight: bold;
+    /*font-weight: bold;*/
     opacity: 0.5;
 }
 
@@ -107,7 +107,7 @@
 
 .sk_ui_contextMenu_Item_hasIcon {
     width: 16px;
-    /*margin-right: 8px !important;*/
+    margin-right: 6px !important;
 }
 
 

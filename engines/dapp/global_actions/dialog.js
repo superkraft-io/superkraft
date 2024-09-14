@@ -10,7 +10,12 @@ module.exports = class SK_Action extends SK_RootAction {
         }
 
         if (opt.type === 'message'){
-            var dlgRes = await dialog.showMessageBox(opt.settings)
+            var msgOpt = {
+                ...opt.settings,
+                ...{message: opt.settings.message.split('\\n').join('\n')}
+            }
+
+            var dlgRes = await dialog.showMessageBox(msgOpt)
             res.resolve(dlgRes)
         }
     }

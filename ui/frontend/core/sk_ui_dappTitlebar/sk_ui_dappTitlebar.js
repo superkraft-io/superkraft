@@ -32,7 +32,24 @@ class sk_ui_dappTitlebar extends sk_ui_component {
 
 
         this.attributes.add({friendlyName: 'Icon', name: 'icon', type: 'string', onSet: val =>{
-            this._title.icon.url = val
+            var split = val.split('.')
+            var ext = split[split.length - 1]
+
+            var validExts = ['png', 'jpg', 'jpeg', 'webp', 'gif']
+
+            var isImg = validExts.includes(ext)
+
+            if (isImg){
+                this._title.icon = this._title.iconContainer.add.image(_c => {
+                    _c.size = 16
+                    _c.url = val
+                })
+            } else {
+                this._title.icon = this._title.iconContainer.add.icon(_c => {
+                    _c.size = 16
+                    _c.icon = val
+                })
+            }
         }})
 
         this.attributes.add({friendlyName: 'Title', name: 'title', type: 'string', onSet: val =>{
@@ -49,11 +66,10 @@ class sk_ui_dappTitlebar_title extends sk_ui_component {
         this.vertical = false
         this.canMoveView = true
 
-        this.icon = this.add.image(_c => {
-            _c.size = 16
+        this.iconContainer = this.add.component(_c => {
             _c.marginRight = 8
-            //_c.canMoveView = true
         })
+        
         this.label = this.add.label(_c => {
             _c.canMoveView = true
             //_c.weight = 600
@@ -71,7 +87,7 @@ class sk_ui_dappTitlebar_actions extends sk_ui_component {
         this.close    = this.add.fromNew(sk_ui_dappTitlebar_actions_button, _c => {
             _c.classAdd('sk_ui_dappTitlebar_actions_button_closeBtn');
             _c.icon = 'close'
-            _c.onClick = ()=>{ sk.window.close(this.parent.terminateOnClose) }
+            _c.onClick = ()=>{ sk.window.close(this.parent.terminateOnClose || false) }
         })
 
         this.maximize = this.add.fromNew(sk_ui_dappTitlebar_actions_button, _c => {

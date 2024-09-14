@@ -70,7 +70,7 @@ class SK_ContextMenu {
         this.parent.element.addEventListener('contextmenu', _e => {
             _e.stopPropagation()
             _e.preventDefault()
-            if (this.shouldIgnore(this.getElPath(_e.currentTarget))) return
+            if (this.shouldIgnore(this.parent, this.getElPath(_e.currentTarget))) return
             if (this.__button === 'right') this.handleMouseEvent(_e)
         })
 

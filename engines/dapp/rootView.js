@@ -165,6 +165,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         if (!this._view) this.create()
         this._view.show()
         this.closed = false
+        this.alreadyLoaded = false
 
         this.sk.info.ums.broadcast('sk_view_cmd-' + this.id, {viewID: this.id, action: 'show'})
     }
@@ -181,6 +182,8 @@ module.exports = class SK_RootView extends SK_RootViewCore {
     close(){
         if (!this._view) return
         this._view.close()
+        delete this._view
+        this.setClosed()
     }
 
     setClosed(){
