@@ -2,6 +2,8 @@ class sk_ui_icon extends sk_ui_component {
     constructor(opt){
         super({...opt, ...{htmlTag: 'i'}})
 
+        this.classAdd('sk_ui_icon_customColor')
+
         this.invisible = true
         
         this.__size = 16
@@ -51,7 +53,9 @@ class sk_ui_icon extends sk_ui_component {
                 this.svgEl.setAttribute('width', this.size)
                 this.svgEl.setAttribute('height', this.size)
 
-                this.svgEl.setAttribute('fill', this.color)
+                if (this.color !== 'source'){
+                    this.svgEl.setAttribute('fill', this.color)
+                }
 
                 this.style.display = 'inherit'
 
@@ -109,6 +113,9 @@ class sk_ui_icon extends sk_ui_component {
             }
         }})
         this.attributes.add({friendlyName: 'Color', name: 'color', type: 'color', onSet: val => {
+            if (val === 'source') this.classRemove('sk_ui_icon_customColor')
+            else this.classAdd('sk_ui_icon_customColor')
+
             if (this.type === 'svg'){
                 var allSubEls = this.svgEl
                 
