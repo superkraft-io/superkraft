@@ -60,7 +60,26 @@ class sk_ui_input extends sk_ui_component {
 
             this['configAs_' + val]()
         }})
-        this.attributes.add({friendlyName: 'Value', name: 'value', type: 'text', onSet: val => { this.inputBucket.input.value = val }, onGet: ()=>{ return this.input.value }})
+
+        this.attributes.add({friendlyName: 'Value', name: 'value', type: 'text', onSet: val => {
+            if (this.min !== undefined){
+                if (val < parseFloat(this.min)){
+                    this.__value = this.inputBucket.input.value
+                    return
+                }
+            }
+
+            if (this.max !== undefined){
+                if (val > parseFloat(this.max)){
+                    this.__value = this.inputBucket.input.value
+                    return
+                }
+            }
+
+            this.inputBucket.input.value = val
+        }, onGet: ()=>{ return this.input.value }})
+
+
         this.attributes.add({friendlyName: 'Read Only', name: 'readonly', type: 'bool', onSet: val => {
             this.input.removeAttribute('readonly')
             if (val) this.input.setAttribute('readonly', '')
@@ -85,8 +104,8 @@ class sk_ui_input extends sk_ui_component {
         }})
 
 
-        this.attributes.add({ friendlyName: 'Min', name: 'min', type: 'number' })
-        this.attributes.add({ friendlyName: 'Max', name: 'max', type: 'number' })
+        this.attributes.add({ friendlyName: 'Min', name: 'min', type: 'number', onSet: val => { this.input.setAttribute('min', val) } })
+        this.attributes.add({ friendlyName: 'Max', name: 'max', type: 'number', onSet: val => { this.input.setAttribute('max', val) } })
 
 
 

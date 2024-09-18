@@ -68,7 +68,7 @@ class sk_ui_modal extends sk_ui_component {
             _c.compact = true
             _c.animate = false
 
-            _c.add.iceRink(_c => {
+            this.icerink = _c.add.iceRink(_c => {
                 _c.styling += ' middle fullheight'
 
                 _c.vertical = true
@@ -77,7 +77,7 @@ class sk_ui_modal extends sk_ui_component {
                 _c.autoHeight = true
                 _c.compact = true
                 _c.scrollbarY.offset.right = 16
-                if (sk.isOnMobile) _c.scrollbar.offset.bottom = 16
+                if (sk.isOnMobile) _c.scrollbarY.offset.bottom = 16
 
                 //_c.contentWrapper.styling = ' middle'
 
