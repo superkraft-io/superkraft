@@ -69,7 +69,7 @@ class sk_ui_l10n_selector extends sk_ui_button {
                         Cookies.set('country', res.countryCode)
                         this.icon = this.countries[res.countryCode].flag + ' flag'
                         this.text = this.countries[res.countryCode].name
-                        if (!noReload && this.noReload) window.location.reload()
+                        if (!noReload && !this.noReload) window.location.reload()
                         if (!noSelectFire && this.onLanguageSelected) this.onLanguageSelected(res)
                     }
                 })
