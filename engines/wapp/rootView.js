@@ -166,7 +166,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                 
                 var lang = 'en'
                 try {
-                    lang = req.cookies.country || req.headers['accept-language'].split(',')[0].split('-')[0]
+                    lang = userData.language || req.cookies.country || req.headers['accept-language'].split(',')[0].split('-')[0]
                 } catch(err) {
                     lang = 'en'
                 }

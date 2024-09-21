@@ -66,14 +66,16 @@ class sk_ui_l10n_selector extends sk_ui_button {
                     icon: this.countries[countryCode].flag + ' flag',
                     onClick: (res, noReload, noSelectFire)=>{
                         this.selectedItem = res
-                        Cookies.set('country', res.countryCode)
+                        if (!this.ignoreCookie) Cookies.set('country', res.countryCode)
                         this.icon = this.countries[res.countryCode].flag + ' flag'
                         this.text = this.countries[res.countryCode].name
                         if (!noReload && !this.noReload) window.location.reload()
-                        if (!noSelectFire && this.onLanguageSelected) this.onLanguageSelected(res)
+                        if (!noSelectFire && this.onLanguageSelected) this.onLanguageSelected(res, noReload, noSelectFire)
                     }
                 })
             }
+
+            if (this.beforeShow) this.beforeShow(countryItemsList)
 
             return countryItemsList
         }
@@ -89,7 +91,7 @@ class sk_ui_l10n_selector extends sk_ui_button {
         })
         
         this.contextMenu.onItemCreated = item => {
-            item.leftSide.icon.iconElement.classList.remove('icon')
+            if (item.opt.icon && !item.opt.icon.split(' ').includes('icon')) item.leftSide.icon.iconElement.classList.remove('icon')
             item.leftSide.marginLeft = 6
             item.leftSide.marginRight = 8
             

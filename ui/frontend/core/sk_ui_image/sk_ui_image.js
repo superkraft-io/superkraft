@@ -33,8 +33,9 @@ class sk_ui_image extends sk_ui_component {
 
             img.onload = ()=>{
                 if (target){
-                    this.__imageWidth = img.width
-                    this.__imageHeight = img.height
+                    target.__imageWidth = img.width
+                    target.__imageHeight = img.height
+                    target.__imageRatio = img.width / img.height
                 }
                 resolve()
             }
