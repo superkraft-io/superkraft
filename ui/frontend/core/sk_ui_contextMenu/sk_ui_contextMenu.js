@@ -105,13 +105,13 @@ class SK_ContextMenu {
         this.show({_e: _e})
     }
 
-    show(opt){
+    async show(opt){
         var items = undefined
 
         
         
         if (this.__items instanceof Function){
-            items = this.__items()
+            items = await this.__items()
         } else {
             items = this.__items
         }

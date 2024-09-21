@@ -135,6 +135,7 @@ class sk_fileDrop {
         component.element.addEventListener('dragover', this.overFunc)
         component.fileDropArea = component.add.fileDrop_Area(_c => {
             _c.outline.style.borderRadius = window.getComputedStyle(component.element, null).getPropertyValue('border-radius')
+            if (component.onFileDropInitiated) component.onFileDropInitiated(component)
         })
     }
 
@@ -143,6 +144,8 @@ class sk_fileDrop {
 
         component.element.removeEventListener('dragover', this.overFunc)
         component.fileDropArea.remove()
+
+        if (component.onFileDropEnded) component.onFileDropEnded(component)
 
         if (_e.type === 'drop'){
             var path = _e.target.sk_ui_obj.getPath({elements: true})
