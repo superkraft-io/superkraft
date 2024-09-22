@@ -40,7 +40,7 @@ class sk_ui_image extends sk_ui_component {
                 resolve()
             }
 
-            img.onerror = ()=>{
+            img.onerror = res => {
                 reject()
             };
 

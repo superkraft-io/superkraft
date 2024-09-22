@@ -36,13 +36,16 @@ class sk_ui_dropdown extends sk_ui_button {
         this.contextMenu.items = this._items
     }
 
-    selectByID(id, identifier = 'id'){
-        for (var i in this._items){
-            var item = this._items[i]
+    async selectByID(id, identifier = 'id', ignoreOnSelectedFire){
+        var items = this._items
+        try { items = await this._items() } catch(err){}
+
+        for (var i in items){
+            var item = items[i]
             if (item[identifier] === id){
                 this.text = item.label
                 this.selectedItem = item
-                if (this.onItemSelected) this.onItemSelected(item)
+                if (!ignoreOnSelectedFire && this.onItemSelected) this.onItemSelected(item)
                 return
             }
         }
