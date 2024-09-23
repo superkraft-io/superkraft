@@ -120,6 +120,8 @@ class sk_ui_icon extends sk_ui_component {
                 var allSubEls = this.svgEl
                 
                 var applyToChildren = el => {
+                    if (!el) return
+
                     el.style.fill = val
 
                     var children = el.children
@@ -142,7 +144,7 @@ class sk_ui_icon extends sk_ui_component {
 
                 applyToChildren(allSubEls)
 
-                this.svgEl.style.fill = val
+                if (this.svgEl) this.svgEl.style.fill = val
             } else {
                 this.style.color = val
             }

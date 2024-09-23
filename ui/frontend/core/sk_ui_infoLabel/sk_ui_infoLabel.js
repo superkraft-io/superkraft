@@ -31,5 +31,10 @@ class sk_ui_infoLabel extends sk_ui_component {
             this._icon.size = val
             this._label.size = val
         }})
+
+        this.attributes.add({friendlyName: 'Fade On Change', name: 'fadeOnChange', type: 'bool', onSet: val => {
+            this._icon.fadeOnChange = val
+            this._label.fadeOnChange = val
+        }})
     }
 }
