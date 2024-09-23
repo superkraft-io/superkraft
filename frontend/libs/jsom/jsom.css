@@ -28,6 +28,7 @@
 
 .jsomStyle_top {
     align-items: flex-start;
+    align-content: flex-start;
 }
 
 .jsomStyle_middle {
