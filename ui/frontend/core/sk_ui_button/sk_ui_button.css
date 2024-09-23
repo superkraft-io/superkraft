@@ -87,8 +87,8 @@
     color: var(--sk_ui_text_color_full);
 }
 
-.sk_ui_button_toggled > .sk_ui_icon > .icon {
-    color: var(--sk_ui_text_color);
+.sk_ui_button_toggled > i {
+    color: var(--sk_ui_text_color_full);
 }
 
 .sk_ui_button_toggled:hover {
