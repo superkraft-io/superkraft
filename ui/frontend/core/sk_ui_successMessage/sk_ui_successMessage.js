@@ -17,7 +17,7 @@ class sk_ui_successMessage extends sk_ui_prompter {
             _c.size = 64
         })
 
-        this.message = this.promptContent.add.label(_c => {
+        this.message = this.promptContent.add.text(_c => {
             _c.styling = 'center'
             _c.style.marginTop = '18px'
             _c.wrap = true

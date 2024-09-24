@@ -178,7 +178,7 @@ module.exports = class Superkraft {
         sk.globalActions = await sk.utils.loadActions(sk.paths.globalActions)
         
 
-        if (opt.onPreStart) opt.onPreStart()
+        if (opt.onPreStart) await opt.onPreStart()
         
         await sk.engine.waitForReady()
         await sk.engine.initViews()
