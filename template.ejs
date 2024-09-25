@@ -6,6 +6,9 @@
         <link rel="icon" type="image/x-icon" href="<%= sk.routes.frontend.favIcon %>">
 
         <% if (!sk.ui.useCDN){ %>
+            <script type='application/javascript' src='<%= sk.routes.frontend.sk%>/libs/fastclick.js'></script>
+            <script type='application/javascript' src='<%= sk.routes.frontend.sk%>/libs/sortable.min.js'></script>
+
             <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui %>sk_ui_colors.css">
             <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui %>sk_ui.css">
             <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui %>sk_ui_gradients.css">
@@ -21,6 +24,11 @@
     </head>
     
     <body>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                FastClick.attach(document.body);
+            }, false);
+        </script>
         <div id="sk_ui_loadingView" class="sk_ui_component sk_ui_noSelect jsomStyle_fullwidth jsomStyle_fullheight jsomStyle_center jsomStyle_middle" style="display: flex; justify-content: center; position: absolute; width: 100%; height: 100%; z-index: 99999;">
             <div iclass="sk_ui_component sk_ui_noSelect" style="width: fit-content; color: white;">Loading...</div>
         </div>
@@ -217,7 +225,7 @@
                 sk.init().then(initAppRes => {
                     document.getElementById('sk_ui_loadingView').remove()
                     
-                    sk.app = (new sk_ui_component({parent: {element: document.body}}))
+                    sk.app = (new sk_ui_component({parent: {element: document.body}, extraOpt: {}}))
                     sk.app.setup(_c => {
                         _c.styling += ' fullwidth fullheight'
                         _c.eventBlocker = _c.add.eventBlocker()
@@ -257,7 +265,7 @@
                             sk.ums.broadcast('sk_view_cmd-' + sk.id + '_initialized', undefined, {})
                         })
 
-                        _c.body.view = new sk._view({parent: _c.body})
+                        _c.body.view = new sk._view({parent: _c.body, extraOpt: {}})
                         _c.body.children.add(_c.body.view)
 
                         <% if (sk.useComplexity){ %>

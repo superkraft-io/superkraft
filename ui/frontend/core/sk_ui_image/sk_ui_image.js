@@ -47,4 +47,12 @@ class sk_ui_image extends sk_ui_component {
             img.src = url;
         })
     }
+
+    loadFromBlob(blob){
+        const imageUrl = URL.createObjectURL(blob);
+        this.style.background = `url("${imageUrl}")`;
+        this.element.onload = () => {
+            URL.revokeObjectURL(imageUrl);
+        };
+    }
 }

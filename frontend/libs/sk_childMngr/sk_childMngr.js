@@ -2,34 +2,54 @@ class SK_ChildMngr {
     constructor(opt){
         this.opt = opt
 
-        this.children = []
+        this.__children = []
 
         this.configParent()
     }
 
+    set children(val){
+        this.__children = val
+    }
+
+    get children(){
+        var children = this.opt.parent.element.children
+
+        var list = []
+        for (var i = 0; i < children.length; i++){
+            var element = children[i]
+            var suo = element.sk_ui_obj
+            list.push(suo)
+        }
+
+        this.__children = list
+
+        return this.__children
+    }
+
     recalculateIndices(){
-        for (var i = 0; i < this.children.length; i++) this.children[i].child_idx = i
+        for (var i = 0; i < this.__children.length; i++) this.__children[i].child_idx = i
     }
 
     add(obj){
-        this.children.push(obj)
+        this.__children.push(obj)
         obj.parent = this.opt.parent
         this.recalculateIndices()
     }
 
     delete(idx){
-        this.children.splice(idx, 1)
+        this.__children.splice(idx, 1)
         this.recalculateIndices()
     }
 
     clear(){
-        for (var i = this.children.length - 1; i > -1; i--) this.children[i].remove()
+
+        for (var i = this.__children.length - 1; i > -1; i--) this.__children[i].remove()
     }
 
     configParent(){
         this.opt.parent.add = {
-            fromNew: (sk_ui_class, cb) => {
-                var obj = new sk_ui_class({parent: this.opt.parent})
+            fromNew: (sk_ui_class, cb, extraOpt = {}) => {
+                var obj = new sk_ui_class({parent: this.opt.parent, extraOpt: extraOpt})
                 this.add(obj)
                 if (cb) cb(obj)
                 return obj
@@ -51,9 +71,9 @@ class SK_ChildMngr {
     }
 
     addComponent_fullname(component){
-        this.opt.parent.add[component] = cb => {
+        this.opt.parent.add[component] = (cb, extraOpt)=>{
             try {
-                return this.addComponent_func(component, cb)
+                return this.addComponent_func(component, cb, extraOpt)
             } catch(err) {
                 var stack = err.stack
                 if (typeof cb === 'object'){
@@ -97,7 +117,7 @@ class SK_ChildMngr {
         }
     }
 
-    addComponent_func(component, cb){
+    addComponent_func(component, cb, extraOpt = {}){
         var _component = undefined
         for (var _which in sk.ui.components.lists){
             var _cList = sk.ui.components.lists[_which]
@@ -112,7 +132,7 @@ class SK_ChildMngr {
             return
         }
 
-        var _c = new _component({parent: this.opt.parent})
+        var _c = new _component({parent: this.opt.parent, extraOpt: extraOpt})
         
         this.add(_c)
 

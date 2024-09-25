@@ -1,6 +1,8 @@
 class sk_ui_component {
     constructor(opt){
         this.sk_ui_opt = opt
+
+
         this.parent = this.sk_ui_opt.parent
         this.parentClassName = Object.getPrototypeOf(this.constructor).name
 
@@ -41,6 +43,14 @@ class sk_ui_component {
         
         
 
+        try {
+            if (opt.extraOpt.onBeforeCreate) opt.extraOpt.onBeforeCreate(this)
+        } catch(err) {
+            console.error(err)
+            console.error('[sk_ui_component] Critical error!')
+        }
+
+        
         /******    Attributes    ******/
 
         if (this.constructor.name === 'sk_ui_component'){
@@ -305,16 +315,21 @@ class sk_ui_component {
             doNext()
         }})
 
+
+        this.sortableOptionsDefault = {
+            sort: true,  // sorting inside list,
+            animation: 250
+        }
+        this.sortableOptions = {}
         this.attributes.add({friendlyName: 'Sortable', name: 'sortable', type: 'bool', onSet: val => {
             if (!val) return
             
             //resource: https://github.com/SortableJS/Sortable#cdn
 
-            this.__sortableObj = new Sortable(this.element, {
-                group: val.groupID,  // or { name: "...", pull: [true, false, 'clone', array], put: [true, false, array] }
-                sort: true,  // sorting inside list,
-                animation: 150,
-                easing: "cubic-bezier(1, 0, 0, 1)",
+            this.__sortableObj = new Sortable(this.element, {...this.sortableOptionsDefault, ...this.sortableOptions, ...{
+                //group: val.groupID,  // or { name: "...", pull: [true, false, 'clone', array], put: [true, false, array] }
+                
+                //easing: "cubic-bezier(1, 0, 0, 1)",
 
                 setData: function (/** DataTransfer */dataTransfer, /** HTMLElement*/dragEl) {
                     //dataTransfer.setData('Text', dragEl.textContent); // `dataTransfer` object of HTML5 DragEvent
@@ -331,12 +346,12 @@ class sk_ui_component {
                 onStart: _e => {
                     this.__sort_oldIdx = _e.oldIndex
                     _e.item.sk_ui_obj.animate = false
-                    if (this.onSortStart) this.onSortStart(_e)
+                    if (this.onSortStart) this.onSortStart(_e, _e.item.sk_ui_obj)
                 },
             
                 onEnd: _e => {
                     _e.item.sk_ui_obj.animate = true
-                    if (this.onSortEnd) this.onSortEnd(_e)
+                    if (this.onSortEnd) this.onSortEnd(_e, _e.item.sk_ui_obj)
                 },
             
                 onAdd: _e => {
@@ -385,31 +400,7 @@ class sk_ui_component {
                     _e.newIndex // most likely why this event is used is to get the dragging element's current index
                     // same properties as onEnd
                 }
-            })
-
-            return
-
-            
-            $('#' + this.element.id).sortable({
-                placeholder: 'sk_ui_component_sortable_placeholder sk_ui_pulsate sk_ui_glow_pulse',
-                connectWith: val,
-                start: (_e, _ui)=>{
-                    _ui.item[0].sk_ui_obj.animate = false
-                    if (this.onSortStart) this.onSortStart(_e, _ui)
-                },
-
-                stop: (_e, _ui)=>{
-                    _ui.item[0].sk_ui_obj.animate = true
-                    if (this.onSortEnd) this.onSortEnd(_e, _ui)
-                }, 
-            })
-
-            try {
-                var collaborators = val.split(' ')
-                for (var i in collaborators) $('#' + this.element.id).sortable('option', 'connectWith', collaborators[i])
-            } catch(err) {
-
-            }
+            }})
         }})
 
 

@@ -61,11 +61,29 @@ class sk_ui_button extends sk_ui_component {
         } else {
             this.element.ontouchmove = _e => {
                 if (this.disabled) return
+
+                _e.stopPropagation()
+                _e.preventDefault()
+                
+                
+                var pos = sk.interactions.getPos(_e, true)
+                var diff = {x: pos.x - this.__touchStartPos.x, y: pos.y - this.__touchStartPos.y}
+                if (diff.x < 0) diff.x = 0 - diff.x
+                if (diff.y < 0) diff.y = 0 - diff.y
+
+                if (diff.x < 3 && diff.y < 3) return
+
                 if (this.onTouchMove) this.onTouchMove(_e)
+                    
                 touchDragged = true
             }
             this.element.ontouchstart = _e => {
                 if (this.disabled) return
+
+                _e.stopPropagation()
+                _e.preventDefault()
+                
+                this.__touchStartPos = sk.interactions.getPos(_e, true)
                 if (this.onTouchStart) this.onTouchStart(_e)
                 touchDragged = false
 
@@ -73,6 +91,10 @@ class sk_ui_button extends sk_ui_component {
             }
             this.element.ontouchend = _e => {
                 if (this.disabled) return
+
+                _e.stopPropagation()
+                _e.preventDefault()
+                
                 if (!touchDragged){
                     if (this.onTouchEnd) this.onTouchEnd(_e)
                     handleOnClickEvent(_e)

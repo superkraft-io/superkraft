@@ -107,7 +107,7 @@ class SK_Hint {
             return
         }
 
-        this.__hint = new sk_ui_hint({parent: sk.app, noHint: true, target: this.opt.parent})
+        this.__hint = new sk_ui_hint({parent: sk.app, noHint: true, target: this.opt.parent, extraOpt: {}})
         this.__hint.setup(_c => {
             _c.suoParent  = this.opt.parent
             _c.content    = this.__text

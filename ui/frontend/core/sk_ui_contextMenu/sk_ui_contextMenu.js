@@ -546,6 +546,7 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
             } else {
                 this.leftSide.icon = this.leftSide.iconContainer.add.icon(_c => {
                     _c.icon = this.opt.icon
+                    _c.size = 16
                 })
                 this.hasIcon = true
             }
