@@ -1269,6 +1269,8 @@ class sk_ui_movableizer_resizableizer {
         document.removeEventListener('mouseup', this.mouseUpHandler)
         document.removeEventListener('touchend', this.mouseUpHandler)
 
+        this.parent.element.removeEventListener('mousedown', this.handleMouseDown )
+        this.parent.element.removeEventListener('touchstart', this.handleMouseDown )
         
         this.parent.element.removeEventListener('mousemove', this.mouseMoveHandler)
         this.parent.element.removeEventListener('touchmove', this.mouseMoveHandler)
@@ -1300,6 +1302,8 @@ class sk_ui_movableizer {
             y: {}
         }
         this.offset = {x: 0, y: 0}
+
+        this.multiplier = {x: 1, y: 1}
 
         this.mouseUpHandler = _e => {
             _e.preventDefault()
@@ -1347,6 +1351,10 @@ class sk_ui_movableizer {
                 x: (_e.clientX || _e.touches[0].clientX) - this.mdPosGlobal.x,
                 y: (_e.clientY || _e.touches[0].clientY) - this.mdPosGlobal.y
             }
+
+
+            mousePosInSelf.x *= this.multiplier.x
+            mousePosInSelf.y *= this.multiplier.y
 
             if (!this.onStartNotified && this.onStart){
                 this.onStartNotified = true
@@ -1444,8 +1452,14 @@ class sk_ui_movableizer {
                 x: this.mdPosGlobal.x - this.parent.rect.x,
                 y: this.mdPosGlobal.y - this.parent.rect.y
             }
+
+            
            
             this.originalPos = this.parent.rect.localPos
+
+
+            this.originalPos.x *= this.multiplier.x
+            this.originalPos.y *= this.multiplier.y
     
             this.animateTmp = this.parent.animate
             
