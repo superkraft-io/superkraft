@@ -27,7 +27,6 @@ class sk_ui_pixi_canvas extends sk_ui_component {
         this.ctx = new sk_ui_pixi_canvas_ctx(this)
 
         var _resizeObserver = new ResizeObserver(_e => {
-            this.pixiApp.renderer.resize(window.innerWidth, window.innerHeight)
             if (this.onResized) this.onResized()
         })
 
