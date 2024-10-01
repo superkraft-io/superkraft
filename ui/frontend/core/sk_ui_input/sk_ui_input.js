@@ -112,6 +112,8 @@ class sk_ui_input extends sk_ui_component {
         this.input = this.inputBucket.input
         this.input.id = this.element.id + '_input'
         this.__value = ''
+
+        this.inputWrapper = this.inputBucket.inputEl
     }
 
     ensureValue(val) {

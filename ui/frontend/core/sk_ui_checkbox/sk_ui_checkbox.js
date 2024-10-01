@@ -25,7 +25,6 @@ class sk_ui_checkbox extends sk_ui_button {
 
         this._icon.fadeOnChange = true
 
-
         this.shapes_icons = {
             rectangle: 'check',
             circle: 'circle'
@@ -39,8 +38,8 @@ class sk_ui_checkbox extends sk_ui_button {
             this.__checked = val
 
             if (this.shape === 'circle') {
-                if (!val) this._icon.opacity = 0.001
-                else this._icon.opacity = 1
+                if (!val) this._icon.style.backgroundColor = ''//this._icon.opacity = 0.001
+                else this._icon.style.backgroundColor = sk.utils.cssVar('color', this.label)//this._icon.opacity = 1
                 return
             }
 
@@ -61,16 +60,14 @@ class sk_ui_checkbox extends sk_ui_button {
         }})
 
 
-        this.attributes.add({friendlyName: 'Shape', name: 'shape', type: 'bool', onSet: val => {
+        this.attributes.add({friendlyName: 'Shape', name: 'shape', type: 'bool', onSet: async val => {
             this.classAdd('sk_ui_checkbox_shape_' + val)
             if (val === 'circle') {
                 this._icon.style.borderRadius = '100%'
-                this._icon.style.backgroundColor = sk.utils.cssVar('color', this.label)
+                this.icon = 'none'
                 this._icon.style.width = '100%'
                 this._icon.style.height = '100%'
-                this.icon = 'none'
             }
-
         }})
         this.__shape = 'rectangle'
 
