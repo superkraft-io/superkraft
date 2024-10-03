@@ -6,6 +6,10 @@
     height: fit-content !important;
 }
 
+.sk_ui_icon.flag {
+    color: transparent;
+}
+
 .sk_ui_icon_customColor > svg {
     fill: var(--sk_ui_text_color);
 }

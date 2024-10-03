@@ -2,7 +2,9 @@ class sk_ui_dropdown extends sk_ui_button {
     constructor(opt){
         super(opt)
 
-        this._icon.remove()
+        this._leftIcon = this._icon
+        this._leftIcon.style.display = 'none'
+        this._leftIcon.classAdd('sk_ui_dropdown_leftIcon')
 
         this.label.text = ''
         this.label.styling = 'fill left'
@@ -10,6 +12,7 @@ class sk_ui_dropdown extends sk_ui_button {
         this.compact = true
         
         this._icon = this.add.icon(_c => {
+            _c.classAdd('sk_ui_dropdown_rightIcon')
             _c.icon = 'caret down'
         })
 
@@ -36,7 +39,7 @@ class sk_ui_dropdown extends sk_ui_button {
         this.contextMenu.items = this._items
     }
 
-    async selectByID(id, identifier = 'id', ignoreOnSelectedFire){
+    async selectByID(id, identifier = 'id', ignoreOnSelectedFire, propagate){
         var items = this._items
         try { items = await this._items() } catch(err){}
 
@@ -45,10 +48,22 @@ class sk_ui_dropdown extends sk_ui_button {
             if (item[identifier] === id){
                 this.text = item.label
                 this.selectedItem = item
-                if (!ignoreOnSelectedFire && this.onItemSelected) this.onItemSelected(item)
-                return
+                if (this.onItemSelected && propagate){
+                    this.onItemSelected(item, ignoreOnSelectedFire)
+                } else {
+                    if (!ignoreOnSelectedFire && this.onItemSelected) this.onItemSelected(item, ignoreOnSelectedFire)
+                }
+                return this.selectedItem
             }
         }
+    }
+
+    get leftIcon(){
+        if (!this.__leftIconAccesed){
+            this.__leftIconAccesed = true
+            this._leftIcon.style.display = ''
+        }
         
+        return this._leftIcon
     }
 }

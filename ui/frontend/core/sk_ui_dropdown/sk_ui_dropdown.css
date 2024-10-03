@@ -6,7 +6,11 @@
     height: 32px;
 }
 
-.sk_ui_dropdown > .sk_ui_icon {
+.sk_ui_dropdown_rightIcon {
     margin-right: 0px !important;
     margin-left: 4px !important;
+}
+
+.sk_ui_dropdown_leftIcon {
+    margin-right: 4px;
 }

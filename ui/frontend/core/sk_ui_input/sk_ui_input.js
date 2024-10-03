@@ -105,7 +105,7 @@ class sk_ui_input extends sk_ui_component {
 
 
         this.attributes.add({ friendlyName: 'Min', name: 'min', type: 'number', onSet: val => { this.input.setAttribute('min', val) } })
-        this.attributes.add({ friendlyName: 'Max', name: 'max', type: 'number', onSet: val => { this.input.setAttribute('max', val) } })
+        this.attributes.add({ friendlyName: 'Max', name: 'max', type: 'number', onSet: val => { this.input.setAttribute('maxlength', val) } })
 
 
 
