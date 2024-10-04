@@ -50,6 +50,7 @@ var sk_communicator = {
                 opt.data.b64_filenames = {}
                 for (var i = 0; i < opt.files.length; i++){
                     var file = opt.files[i]
+                    if (file === undefined) continue
                     var fileIndex = 'file' + (i+1)
                     opt.data.b64_filenames[fileIndex] = btoa(encodeURIComponent(opt.files[i].name))
                     formAdd(fileIndex, file)

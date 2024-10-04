@@ -3,3 +3,7 @@
     background-repeat: no-repeat;
     background-position: center;
 }
+
+.sk_ui_image_loader {
+    position: absolute;
+}

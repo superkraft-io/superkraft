@@ -87,7 +87,7 @@ class sk_ui_checkbox extends sk_ui_button {
                 newSize -= 2
             }
 
-            this.iconContainer.marginRight = newSize
+            this.iconContainer.style.marginRight = Math.round(newSize / 2) + 'px'
             this._icon.style.minWidth = newSize + 'px'
             this._icon.style.minHeight = newSize + 'px'
             this._icon.style.maxWidth = newSize + 'px'
@@ -95,5 +95,7 @@ class sk_ui_checkbox extends sk_ui_button {
             this._icon.style.fontSize = newSize + 'px'
             this._icon.size = newSize
         }})
+
+        this.checkboxSize = 14
     }
 }
