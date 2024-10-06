@@ -130,6 +130,7 @@ class sk_ui_component {
                 {value: 'fill'},
                 {value: 'fullwidth'},
                 {value: 'fullheight'},
+                {value: 'wrap'}
             ],
 
             onSet: val => {
@@ -464,11 +465,18 @@ class sk_ui_component {
                 this.removeAllCursors()
 
                 if (cursor){
-                    sk.app.cursorEl = sk.app.add.icon(_c => {
+                    sk.app.cursorEl = sk.app.add.component(_c => {
                         _c.classAdd('sk_ui_component_cursor')
                         _c.animate = false
                         _c.compact = true
-                        _c.icon = cursor.url
+
+                        _c.icon = _c.add.icon(_c => {
+                            _c.icon = cursor.url
+                            if (cursor.size) _c.size = cursor.size
+                        })
+
+                        _c.offset = {x: 0, y: 0}
+                        if (cursor.onCreated) cursor.onCreated(_c)
                     })
                 } else {
                     sk.app.cursorEl = sk.app.add.component(_c => {

@@ -6,22 +6,25 @@
     outline: none;
 }
 
-.sk_ui_component_spaced_horizontal > .sk_ui_component {
+.sk_ui_component_spaced_horizontal:not(.jsomStyle_wrap) > .sk_ui_component {
     margin-right: 12px;
 }
 
-
-.sk_ui_component_spaced_horizontal > .sk_ui_component:last-child {
+.sk_ui_component_spaced_horizontal:not(.jsomStyle_wrap) > .sk_ui_component:last-child {
     margin-right: 0px
 }
 
-.sk_ui_component_spaced_vertical > .sk_ui_component {
+.sk_ui_component_spaced_vertical:not(.jsomStyle_wrap) > .sk_ui_component {
     margin-bottom: 12px;
 }
 
 
 .sk_ui_component_spaced_vertical > .sk_ui_component:last-child {
     margin-bottom: 0px
+}
+
+.sk_ui_component.jsomStyle_wrap {
+    gap: 12px;
 }
 
 

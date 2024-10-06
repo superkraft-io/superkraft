@@ -25,5 +25,7 @@ class sk_ui_colorPicker extends sk_ui_component {
             this.inputBucket.clrPicker.value = val
             this.backgroundColor = val
         }})
+
+        this.clrPicker = this.inputBucket.input_clrPicker
     }
 }
