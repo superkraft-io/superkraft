@@ -58,6 +58,15 @@ class sk_ui_dropdown extends sk_ui_button {
         }
     }
 
+    set leftIcon(val){
+        if (!this.__leftIconAccesed){
+            this.__leftIconAccesed = true
+            this._leftIcon.style.display = ''
+        }
+
+        this._leftIcon.icon = val
+    }
+
     get leftIcon(){
         if (!this.__leftIconAccesed){
             this.__leftIconAccesed = true
