@@ -24,6 +24,9 @@ class sk_ui_colorPicker extends sk_ui_component {
         this.attributes.add({friendlyName: 'Color', name: 'color', type: 'color', onSet: val =>{
             this.inputBucket.clrPicker.value = val
             this.backgroundColor = val
+            if (!this.ignoreFireOnChanged){
+                if (this.onChanged) this.onChanged(this.color)
+                }
         }})
 
         this.clrPicker = this.inputBucket.input_clrPicker
