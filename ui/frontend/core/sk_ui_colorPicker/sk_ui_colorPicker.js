@@ -25,7 +25,7 @@ class sk_ui_colorPicker extends sk_ui_component {
             this.inputBucket.clrPicker.value = val
             this.backgroundColor = val
             if (!this.ignoreFireOnChanged){
-                if (this.onChanged) this.onChanged(this.color)
+                if (this.onChanged) this.onChanged(this.color, this.customOnChangedOpts)
                 }
         }})
 
