@@ -595,7 +595,7 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
 
         this.element.addEventListener('click', _e => {
             if (this.opt.items) return _e.stopPropagation()
-            this.cmParent._onItemClicked(this.opt)
+            if (!this.opt.bypassOnClick) this.cmParent._onItemClicked(this.opt)
         })
 
         this.element.addEventListener('mouseup', _e => {

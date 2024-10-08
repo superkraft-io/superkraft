@@ -34,7 +34,6 @@ class sk_ui_pixi_canvas extends sk_ui_component {
     }
 
     onBeforeRemove(){
-        console.log('destroying pixi')
         this.pixiApp.destroy()
     }
 
