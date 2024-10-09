@@ -17,10 +17,12 @@ class sk_ui_infoLabel extends sk_ui_component {
 
         this.attributes.add({friendlyName: 'Text', name: 'text', type: 'text', onSet: val => {
             this._label.text = val
+            this.__l10n = undefined
         }})
 
         this.attributes.add({friendlyName: 'L10N', name: 'l10n', type: 'text', onSet: val => {
             this._label.l10n = val
+            this.__text = this._label.text
         }})
 
         this.attributes.add({friendlyName: 'Icon', name: 'icon', type: 'text', onSet: val => {

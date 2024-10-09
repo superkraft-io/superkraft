@@ -9,9 +9,13 @@ class sk_ui_label extends sk_ui_component {
         this.styling = 'left'
 
         this.attributes.add({friendlyName: 'Text', name: 'text', type: 'text', onSet: async val => {
-            if (!this.fadeOnChange) return this.element.innerHTML = val
+            if (!this.fadeOnChange){
+                this.__l10n = undefined
+                return this.element.innerHTML = val
+            }
 
             this.hideShow_2({onHidden: async ()=>{ return new Promise(resolve => {
+                this.__l10n = undefined
                 this.element.innerHTML = val
                 resolve()
             })}})
@@ -45,6 +49,8 @@ class sk_ui_label extends sk_ui_component {
                 } else {
                     this.element.innerText = phrase
                 }
+
+                this.__text = phrase
             }
 
             if (!this.fadeOnChange) return change()

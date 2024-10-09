@@ -38,7 +38,7 @@ class sk_ui_button extends sk_ui_component {
 
             if (this.__togglable) this.toggled = !this.__toggled
 
-            if (this.onClick) this.onClick(_e)
+            if (this.onClick) this.onClick(_e, this)
 
             this.handleAction()
         }
