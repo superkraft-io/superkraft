@@ -571,10 +571,12 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
 
         
 
-        this.content.add.text(_c => {
-            _c.wrap = true
-            _c.text = this.opt.label
-        })
+        if (this.opt.label || !this.opt.icon){
+            this.content.add.text(_c => {
+                _c.wrap = true
+                _c.text = this.opt.label
+            })
+        }
 
         if (this.opt.items){
             this.rightSide.add.icon(_c => {

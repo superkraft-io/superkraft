@@ -2,5 +2,5 @@
     color: var(--sk_ui_text_color);
     /*line-height: initial;*/
     white-space: nowrap;
-    line-height: 1;
+    /*line-height: 1;*/
 }
