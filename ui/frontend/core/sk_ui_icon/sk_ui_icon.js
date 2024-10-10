@@ -32,6 +32,12 @@ class sk_ui_icon extends sk_ui_component {
                 this.classRemove('icon')
                 this.classRemove(lastIcon)
                 this.type = 'svg'
+            } else {
+                this.type = 'icon'
+                if (this.svgEl){
+                    this.svgEl.remove()
+                    delete this.svgEl
+                }
             }
 
             if (this.onChanged) this.onChanged()
@@ -52,6 +58,7 @@ class sk_ui_icon extends sk_ui_component {
                 this.svgEl = this.element.childNodes[0]
                 this.svgEl.setAttribute('width', this.size)
                 this.svgEl.setAttribute('height', this.size)
+                this.svgEl.classList.add('sk_ui_transition')
 
                 if (this.color !== 'source'){
                     this.svgEl.setAttribute('fill', this.color)
