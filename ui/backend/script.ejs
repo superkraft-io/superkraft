@@ -281,6 +281,11 @@
             
             colors: new SK_UI_Helpers_Color(),
 
+            isEmoji(char){
+                var emoji_rx = /\p{Emoji}/u
+                return emoji_rx.test(char)
+            },
+
             formatSeconds: seconds => {
                 var _s = seconds
                 var timeUnit = (_s > 1 ? sk.l10n.getPhrase('seconds') : sk.l10n.getPhrase('second') )

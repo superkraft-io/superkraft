@@ -28,6 +28,17 @@ class sk_ui_icon extends sk_ui_component {
         
         var lastIcon = ''
         this.attributes.add({hide: true, friendlyName: 'Icon', name: 'icon', type: 'icon', onSet: async val => {
+
+            if (sk.utils.isEmoji(val.toString())){
+                this.element.innerHTML = val
+                this.classRemove('icon')
+                this.classRemove(lastIcon)
+                this.element.style.fontStyle = 'unset'
+                return
+            }
+
+            this.element.innerHTML = ''
+
             if (val.indexOf('.svg') > -1){
                 this.classRemove('icon')
                 this.classRemove(lastIcon)
