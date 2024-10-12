@@ -14,6 +14,8 @@
     /*backdrop-filter: blur(10px);
     background-color: rgba(255,255,255,0.2);
     */
+
+    margin: 0px !important
 }
 
 .sk_ui_fileDrop_Area_outline {

@@ -131,10 +131,28 @@ class sk_fileDrop {
     }
 
     addFileDropArea(component){
+        var parentPostionCSSValue = sk.utils.cssVar('position', component)
+
         component.__dragOverInfo = {clientX: 1, clientY: 1}
         component.element.addEventListener('dragover', this.overFunc)
         component.fileDropArea = component.add.fileDrop_Area(_c => {
             _c.outline.style.borderRadius = window.getComputedStyle(component.element, null).getPropertyValue('border-radius')
+            
+            if (!['relative', 'absolute'].includes(parentPostionCSSValue)){
+                _c.add.text(_c => {
+                    _c.style.position = 'absolute'
+                    _c.style.width = '100%'
+                    _c.wrap = true
+                    _c.padding = 16
+                    _c.text = 'THE INTENDED FILEDROP TARGET MUST HAVE CSS POSITION SET TO "RELATIVE" OR "ABSOLUTE"'
+                    _c.color = 'red'
+                    _c.size = 32
+                    _c.frosted = true
+                })
+           
+                return
+            }
+
             if (component.onFileDropInitiated) component.onFileDropInitiated(component)
         })
     }

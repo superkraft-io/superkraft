@@ -763,6 +763,10 @@ class sk_ui_component {
         parentIceRink.scrollToChild(this, center)
     }
 
+    scrollToIfNotFullyVisible(non_sk, center){
+        if (!this.rect.localPos.isFullyVisible) this.scrollTo(non_sk, center)
+    }
+
     get __rect(){
         if (!this.__rect) this.__rect = this.getRect()
         return this.__rect
@@ -780,16 +784,30 @@ class sk_ui_component {
         }
 
         var res = this.element.getBoundingClientRect()
+        var parentRect = this.parent.element.getBoundingClientRect()
+
+        res.localPos = new (
+            class sk_ui_component_localRect {
+                constructor(){
+                    this.x = res.left - parentRect.left
+                    this.y = res.top - parentRect.top
+                }
+
+                get isFullyVisible(){
+                    if (this.x < 0) return false
+                    if (this.y < 0) return false
+                    if (this.x + res.width > parentRect.width) return false
+                    if (this.y + res.height > parentRect.height) return false
+
+                    return true
+                }
+            }
+        )
+
+
         res.inView = inViewport(res)
 
-
-
-        var parentRect = this.parent.element.getBoundingClientRect()
-        res.localPos = {
-            x: res.left - parentRect.left,
-            y: res.top - parentRect.top
-        }
-
+       
         return res
     }
     

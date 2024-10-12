@@ -46,7 +46,7 @@ class SK_UI_Helpers_Color {
         const computedColor = getComputedStyle(tempElement).color
         document.body.removeChild(tempElement)
 
-        var rgb = this.rgbToRGB(computedColor)
+        var rgb = this.rgbToRGBComponents(computedColor)
 
         return rgb
       }
@@ -69,7 +69,7 @@ class SK_UI_Helpers_Color {
         return luma;
     }
 
-    rgbToRGB(clrStr){
+    rgbToRGBComponents(clrStr){
         var rgbMatch = clrStr.match(this.rgbRegex)
         if (rgbMatch) {
             return {
@@ -82,18 +82,30 @@ class SK_UI_Helpers_Color {
         }
     }
 
+    rgbComponentsToRGB(rgba){
+        return `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a || 1})`
+    }
+
     rgbToHEX(rgb){
-        try {
-            return `#${
-            rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/)
-            .slice(1)
-            .map(n => 
-                parseInt(n, 10)
-                .toString(16)
-                .padStart(2, '0'))
-                .join('')
-            }`
-        } catch(err) { return }
+        var matchRes = rgb.match(this.rgbRegex);
+        var sliceRes = matchRes.slice(1);
+
+        var mapRes = sliceRes.map((n, index) => {
+            if (index === 3) { // Alpha value
+                // Scale alpha (between 0 and 1) to a value between 0 and 255
+                return Math.round(parseFloat(n) * 255)
+                    .toString(16)
+                    .padStart(2, '0');
+            } else {
+                // Convert RGB values directly to hex
+                return parseInt(n, 10)
+                    .toString(16)
+                    .padStart(2, '0');
+            }
+        });
+
+        var joinRes = mapRes.join('');
+        return `#${joinRes}`;
     }
 
     hexToRGB(hex, alpha){
@@ -211,32 +223,50 @@ class SK_UI_Helpers_Color {
         return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()}`;
     }
 
-    colorBrightness(color, amount) {
-        const calc = (sub1,sub2)=> Math.min(255,Math.floor(parseInt(color.substr(sub1,sub2),16)*amount)).toString(16).padStart(2,"0")
-        return `#${calc(1,2)}${calc(3,2)}${calc(5,2)}`
-    }
+    brightness(clr, amount = 1){
+        var rgba = this.rgbComponents(clr)
 
-    colorContrast(hexcolor){
-        // If a leading # is provided, remove it
-        if (hexcolor.slice(0, 1) === '#') hexcolor = hexcolor.slice(1)
-
-        // If a three-character hexcode, make six-character
-        if (hexcolor.length === 3){
-            hexcolor = hexcolor.split('').map(function (hex) {
-                return hex + hex
-            }).join('')
+        
+        var result = {
+            r: Math.round(rgba.r * amount),
+            g: Math.round(rgba.g * amount),
+            b: Math.round(rgba.b * amount),
+            a: rgba.a
         }
 
-        // Convert to RGB value
-        var r = parseInt(hexcolor.substr(0,2),16)
-        var g = parseInt(hexcolor.substr(2,2),16)
-        var b = parseInt(hexcolor.substr(4,2),16)
+        result.toRGB = ()=>{ return this.rgbComponentsToRGB(result) }
+        result.toHEX = ()=>{ return this.rgbToHEX(result) }
+        result.toHSL = ()=>{ return this.rgbToHSL(result) }
 
-        // Get YIQ ratio
-        var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000
+        return result
+    }
 
-        // Check contrast
-        return (yiq >= 128) ? 'black' : 'white'
+    contrast(clr, contrast){
+        var rgba = this.rgbComponents(clr)
+
+
+        const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+
+        const adjust = (value) => {
+            return Math.round(Math.min(255, Math.max(0, factor * (value - 128) + 128)))
+        };
+
+        var result = {
+            r: adjust(rgba.r),
+            g: adjust(rgba.g),
+            b: adjust(rgba.b),
+            a: rgba.a
+        }
+
+        result.toRGB = ()=>{ return this.rgbComponentsToRGB(result) }
+        result.toHEX = ()=>{
+            var rgbStr =this.rgbComponentsToRGB(result)
+            var hexStr = this.rgbToHEX(rgbStr)
+            return hexStr
+        }
+        result.toHSL = ()=>{ return this.rgbComponentsToRGB(rgbToHSL(result)) }
+
+        return result
     }
 
     shouldUseBlackText(color, threshold = 0.5) {
