@@ -279,7 +279,7 @@
             cssVar(varName, src){ return getComputedStyle((src ? src.element : undefined) || sk.app.element).getPropertyValue(varName) },
 
             
-            colors: new SK_UI_Helpers_Color(),
+            colors: new SK_Helpers_Color(),
 
             isEmoji(char){
                 var emoji_rx = /\p{Emoji}/u

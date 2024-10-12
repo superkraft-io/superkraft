@@ -38,6 +38,7 @@ class sk_ui_input extends sk_ui_component {
                         },
 
                         input: _e => {
+                            this.__value = this.input.value
                             if (this.onChanged) this.onChanged(this.input.value)
                         },
 

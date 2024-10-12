@@ -572,7 +572,7 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
         
 
         if (this.opt.label || !this.opt.icon){
-            this.content.add.text(_c => {
+            this.content.label = this.content.add.text(_c => {
                 _c.wrap = true
                 _c.text = this.opt.label
             })
@@ -649,6 +649,7 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
             })
         })
 
+        if (this.opt.onAfterCreated) this.opt.onAfterCreated(this)
         if (this.cmParent.onItemCreated) this.cmParent.onItemCreated(this)
     }
 

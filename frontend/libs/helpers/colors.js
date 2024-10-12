@@ -1,4 +1,4 @@
-class SK_UI_Helpers_Color {
+class SK_Helpers_Color {
     constructor(){
 
         this.hslRegex = /hsla?\((\d+),\s*(\d+)%?,\s*(\d+)%?(?:,\s*[\d.]+)?\)/

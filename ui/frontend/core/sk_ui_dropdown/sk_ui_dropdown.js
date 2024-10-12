@@ -28,6 +28,7 @@ class sk_ui_dropdown extends sk_ui_button {
 
         this.contextMenu.onItemClicked = itemData => {
             if (!this.ignoreApplyingText) this.text = itemData.label
+            if (!this.ignoreApplyingIcon && itemData.icon) this.leftIcon = itemData.icon
             this.selectedItem = itemData
             if (this.onItemClicked) this.onItemClicked(itemData)
             if (this.onItemSelected) this.onItemSelected(itemData)
