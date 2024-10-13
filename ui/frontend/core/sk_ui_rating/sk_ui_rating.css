@@ -9,12 +9,11 @@
 }
 
 .sk_ui_rating_icon_placeholderIcon {
-    color: var(--sk_ui_color_grey);
+    color: var(--sk_ui_color_grey_2);
 }
 
 .sk_ui_rating_icon_activeIcon {
     position: absolute;
-    color: rgb(255, 238, 0);
     
     opacity: 0 !important;
     transform: scale(0.5);

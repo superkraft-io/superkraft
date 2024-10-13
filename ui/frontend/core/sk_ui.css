@@ -291,3 +291,15 @@ i.icon, i.icons, i.flag {
     background-size: 20px 20px;
     background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
 }
+
+
+.sk_ui_status_ok {
+    background-color: #1f321f;
+    border: solid 1px #3da33d;
+}
+
+
+.sk_ui_status_error {
+    background-color: #1e0000;
+    border: solid 1px #9d0000;
+}

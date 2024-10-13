@@ -30,7 +30,7 @@ class SK_Helpers_Color {
         if (clrType === 'css') return this.cssToRGB(clr)
 
         try {
-            return this[clrType + 'ToRGB'](clr)
+            return this[clrType + 'ToRGBComponents'](clr)
         } catch(err) {
             throw err
         }
@@ -86,9 +86,8 @@ class SK_Helpers_Color {
         return `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a || 1})`
     }
 
-    rgbToHEX(rgb){
-        var matchRes = rgb.match(this.rgbRegex);
-        var sliceRes = matchRes.slice(1);
+    rgbComponentsToHEX(rgb){
+        var sliceRes = [rgb.r, rgb.g, rgb.b, rgb.a];
 
         var mapRes = sliceRes.map((n, index) => {
             if (index === 3) { // Alpha value
@@ -108,7 +107,7 @@ class SK_Helpers_Color {
         return `#${joinRes}`;
     }
 
-    hexToRGB(hex, alpha){
+    hexToRGBComponents(hex){
         var _hex = hex
         try {if (_hex[0] === '#') _hex = _hex.substr(1,16)} catch(err){}
 
@@ -117,7 +116,7 @@ class SK_Helpers_Color {
         const b = parseInt(_hex.slice(4, 6), 16);
         const a = parseInt(_hex.slice(6, 8), 16) / 255 || 1;
       
-        var obj = {r: r, g: g, b: b, a}
+        var obj = {r, g, b, a}
 
         return obj
     }
@@ -235,8 +234,9 @@ class SK_Helpers_Color {
         }
 
         result.toRGB = ()=>{ return this.rgbComponentsToRGB(result) }
-        result.toHEX = ()=>{ return this.rgbToHEX(result) }
+        result.toHEX = ()=>{ return this.rgbComponentsToHEX(result) }
         result.toHSL = ()=>{ return this.rgbToHSL(result) }
+        result.toRGBA = ()=>{ return this.rgbComponentsToRGB(result) }
 
         return result
     }

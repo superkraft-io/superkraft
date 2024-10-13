@@ -3,7 +3,6 @@ class sk_ui_rating extends sk_ui_component {
         super(opt)
 
         this.vertical = false
-        this.compact = true
 
 
         this.attributes.add({friendlyName: 'Icon', name: 'icon', type: 'text', default: 'star', onSet: val => {
@@ -14,11 +13,18 @@ class sk_ui_rating extends sk_ui_component {
             
         }})
 
+        this.attributes.add({friendlyName: 'Color', name: 'color', type: 'text', default: '#ffee00', onSet: val => {
+            
+        }})
+
+        
         this.attributes.add({friendlyName: 'Count', name: 'count', type: 'number', onSet: val => {
             this.children.clear()
             for (var i = 0; i < val; i++) this.add.fromNew(sk_ui_rating_icon, _c => {
                 _c.size = this.size
                 _c.icon = this.icon
+                _c.color = this.color
+                _c.marginRight = Math.round(this.size * 0.4)
                 _c.index = i
 
                 _c.onEnter = _i => {
@@ -56,15 +62,20 @@ class sk_ui_rating extends sk_ui_component {
             },
         })
 
-        this.count = 5
+        this.count = 0
     }
 
     highlightValue(val){
         if (!val){
             for (var i = 0; i < this.children.children.length; i++){
                 var item = this.children.children[i]
-                if (!item.active) item.activeIcon.classRemove('sk_ui_rating_icon_activeIcon_activated')
-                else  item.activeIcon.classAdd('sk_ui_rating_icon_activeIcon_activated')
+                if (!item.active){
+                    item.activeIcon.classRemove('sk_ui_rating_icon_activeIcon_activated')
+                    item.activeIcon.color = ''
+                } else {
+                    item.activeIcon.classAdd('sk_ui_rating_icon_activeIcon_activated')
+                    item.activeIcon.color = this.color
+                }
             }
 
             return
@@ -72,8 +83,13 @@ class sk_ui_rating extends sk_ui_component {
 
         for (var i = 0; i < this.children.children.length; i++){
             var item = this.children.children[i]
-            if (i < val) item.activeIcon.classAdd('sk_ui_rating_icon_activeIcon_activated')
-            else  item.activeIcon.classRemove('sk_ui_rating_icon_activeIcon_activated')
+            if (i < val){
+                item.activeIcon.classAdd('sk_ui_rating_icon_activeIcon_activated')
+                item.activeIcon.color = this.color
+            } else {
+                item.activeIcon.classRemove('sk_ui_rating_icon_activeIcon_activated')
+                item.activeIcon.color = ''
+            }
         }
     }
 }
@@ -97,6 +113,7 @@ class sk_ui_rating_icon extends sk_ui_component {
 
         this.attributes.add({friendlyName: 'Size', name: 'size', type: 'number', default: 14, onSet: val => {
             this.placeholderIcon.size = val
+            this.activeIcon.size = val
             this.attributes = val
             this.width = val
             this.height = val
@@ -109,7 +126,11 @@ class sk_ui_rating_icon extends sk_ui_component {
 
         this.attributes.add({friendlyName: 'Active', name: 'active', type: 'bool', default: false, onSet: val => {
             this.activeIcon.classRemove('sk_ui_rating_icon_activeIcon_activated')
-            if (val) this.activeIcon.classAdd('sk_ui_rating_icon_activeIcon_activated')
+            this.activeIcon.color = ''
+            if (val){
+                this.activeIcon.classAdd('sk_ui_rating_icon_activeIcon_activated')
+                this.activeIcon.color = this.color
+            }
         }})
 
         

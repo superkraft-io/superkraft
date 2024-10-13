@@ -48,6 +48,7 @@ class sk_ui_dropdown extends sk_ui_button {
             var item = items[i]
             if (item[identifier] === id){
                 this.text = item.label
+                if (item.icon) this.leftIcon.icon = item.icon
                 this.selectedItem = item
                 if (this.onItemSelected && propagate){
                     this.onItemSelected(item, ignoreOnSelectedFire)
