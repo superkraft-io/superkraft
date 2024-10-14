@@ -8,6 +8,8 @@ class sk_fileDrop {
         if (sk.app_type === 'dapp') elementToHandle = document
 
         elementToHandle.addEventListener('dragover', _e => {
+            if (!_e.dataTransfer.types.includes('Files')) return
+
             _e.dataTransfer.effectAllowed = "move";
             _e.preventDefault()
             _e.stopPropagation()
@@ -55,7 +57,7 @@ class sk_fileDrop {
         for (var i in path){
             var el = path[i]
             if (el.sk_ui_obj && el.sk_ui_obj.uuid === uuid) return el.sk_ui_obj
-        }
+        }   
     }
 
     notifyAll(_e, action){

@@ -156,7 +156,7 @@ class sk_ui_input extends sk_ui_component {
     }
 
     configAs_number(){
-        var accepted = '0123456789'
+        var accepted = '0123456789.,'
         var controlKeys = ['Delete', 'Backspace', 'Home', 'ArrowLeft', 'ArrowRight', 'Home', 'End']
         var destructiveKeys = ['Delete', 'Backspace']
 
@@ -194,8 +194,12 @@ class sk_ui_input extends sk_ui_component {
                 if (_e.key === '.' && this.value.indexOf('.') > -1) return _e.preventDefault()
             } else {
                 if (controlKeysUsed) {
-                    if (destructiveKeys.includes(_e.key)) return
-                    else return
+                    if (destructiveKeys.includes(_e.key)){
+                        return
+                    } else {
+                        if (!controlKeys.includes(_e.key) && !accepted.includes(_e.key)) _e.preventDefault()
+                        return
+                    }
                 }
 
                 this.ensureValue(this.__lastValue)
