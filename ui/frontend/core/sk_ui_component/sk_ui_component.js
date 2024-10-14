@@ -330,12 +330,14 @@ class sk_ui_component {
             this.__sortableObj = new Sortable(this.element, {...this.sortableOptionsDefault, ...this.sortableOptions, ...{
                
                 onStart: _e => {
+                    sk.fileDrop.bypass = true
                     this.__sort_oldIdx = _e.oldIndex
                     _e.item.sk_ui_obj.animate = false
                     if (this.onSortStart) this.onSortStart(_e, _e.item.sk_ui_obj)
                 },
             
                 onEnd: _e => {
+                    sk.fileDrop.bypass = false
                     _e.item.sk_ui_obj.animate = true
                     if (this.onSortEnd) this.onSortEnd(_e, _e.item.sk_ui_obj)
                 },

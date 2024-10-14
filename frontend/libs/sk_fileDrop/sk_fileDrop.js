@@ -5,9 +5,10 @@ class sk_fileDrop {
         this.subscribers = {}
 
         var elementToHandle = document.body
-        if (sk.app_type === 'dapp') elementToHandle = document
+        if (sk.app_type !== 'wapp') elementToHandle = document
 
         elementToHandle.addEventListener('dragover', _e => {
+            if (this.bypass) return
             if (!_e.dataTransfer.types.includes('Files')) return
 
             _e.dataTransfer.effectAllowed = "move";
@@ -38,10 +39,12 @@ class sk_fileDrop {
         }
 
         elementToHandle.addEventListener('dragleave', _e => {
+            if (this.bypass) return
             endDragDropEvent(_e, 'end')
         })
 
         elementToHandle.addEventListener('drop',_e => {
+            if (this.bypass) return
             var dt = _e.dataTransfer
             this.files = dt.files
             _e.files = this.files
