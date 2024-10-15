@@ -612,6 +612,8 @@ class sk_ui_component {
     }
     
     async remove(opt){
+        this.movres_izer.destroy()
+
         if (this.cursor) this.removeAllCursors(true)
 
         if (opt) if (opt.animation) await this.hide(opt)
@@ -1186,6 +1188,13 @@ class sk_ui_movableizer_resizableizer {
         }
     }
 
+    destroy(){
+        this.off()
+        this.mover.off()
+        this.resizer.off()
+        sk.interactions.unblock()
+    }
+
     set moveAxis(val){
         if (!val) return this.tryOff()
         this.mover.axis = val
@@ -1216,6 +1225,8 @@ class sk_ui_movableizer_resizableizer {
     tryOff(){
         if (this.moveAxis || this.resizeAxis) return
         this.off()
+        this.mover.off()
+        this.resizer.off()
     }
 
     on(){
@@ -1234,6 +1245,8 @@ class sk_ui_movableizer_resizableizer {
     }
 
     off(){
+        sk.interactions.unblock()
+
         this.active = false
 
         this.parent.element.removeEventListener('mouseup', this.mouseUpHandler)
@@ -1282,17 +1295,7 @@ class sk_ui_movableizer {
             _e.preventDefault()
             _e.stopPropagation()
 
-            this.parent.element.removeEventListener('mousemove', this.mouseMoveHandler)
-            this.parent.element.removeEventListener('touchmove', this.mouseMoveHandler)
-            
-            this.parent.element.removeEventListener('mouseup', this.mouseUpHandler)
-            this.parent.element.removeEventListener('touchend', this.mouseUpHandler)
-
-            document.removeEventListener('mousemove', this.mouseMoveHandler)
-            document.removeEventListener('touchmove', this.mouseMoveHandler)
-            
-            document.removeEventListener('mouseup', this.mouseUpHandler)
-            document.removeEventListener('touchend', this.mouseUpHandler)
+            this.off()
 
 
             this.mdPos = undefined
@@ -1450,7 +1453,21 @@ class sk_ui_movableizer {
         
     }
 
-   
+    off(){
+        sk.interactions.unblock()
+        
+        this.parent.element.removeEventListener('mousemove', this.mouseMoveHandler)
+        this.parent.element.removeEventListener('touchmove', this.mouseMoveHandler)
+        
+        this.parent.element.removeEventListener('mouseup', this.mouseUpHandler)
+        this.parent.element.removeEventListener('touchend', this.mouseUpHandler)
+
+        document.removeEventListener('mousemove', this.mouseMoveHandler)
+        document.removeEventListener('touchmove', this.mouseMoveHandler)
+        
+        document.removeEventListener('mouseup', this.mouseUpHandler)
+        document.removeEventListener('touchend', this.mouseUpHandler)
+    }
 }
 
 
@@ -1646,11 +1663,7 @@ class sk_ui_resizableizer {
 
             document.body.style.cursor = ''
 
-            document.removeEventListener('mousemove', this.mouseMoveHandler)
-            document.removeEventListener('touchmove', this.mouseMoveHandler)
-            
-            document.removeEventListener('mouseup', this.mouseUpHandler)
-            document.removeEventListener('touchend', this.mouseUpHandler)
+           this.off()
 
             if (this.onEnd) this.onEnd()
         }
@@ -1696,7 +1709,15 @@ class sk_ui_resizableizer {
     }
 
     
-
+    off(){
+        sk.interactions.unblock()
+        
+        document.removeEventListener('mousemove', this.mouseMoveHandler)
+        document.removeEventListener('touchmove', this.mouseMoveHandler)
+        
+        document.removeEventListener('mouseup', this.mouseUpHandler)
+        document.removeEventListener('touchend', this.mouseUpHandler)
+    }
 
     
 

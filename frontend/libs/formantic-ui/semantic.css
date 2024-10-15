@@ -26866,7 +26866,7 @@ a.ui.inverted.black.header.header.header:hover {
 i.icon {
   display: inline-block;
   opacity: 1;
-  margin: 0 0.25rem 0 0;
+  /*margin: 0 0.25rem 0 0;*/
   width: 1.18em;
   height: 1em;
   font-family: "icons";
