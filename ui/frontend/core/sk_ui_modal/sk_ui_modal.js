@@ -126,7 +126,7 @@ class sk_ui_modal extends sk_ui_component {
         return new Promise(async resolve => {
             if (this.onShow) this.onShow()
             //this.contentContainer.transition('scale in')
-            await this.transition('fade in')
+            await this.transition(this.opt.transition || 'fade in')
             
 
             if (this.onShown) this.onShown()
@@ -142,8 +142,8 @@ class sk_ui_modal extends sk_ui_component {
         })
     }
 
-    prompt(data){
-        this.data = data
+    prompt(opt = {}){
+        this.opt = opt
         return new Promise((resolve, reject)=>{
             this.resolve = resolve
             this.reject = reject
