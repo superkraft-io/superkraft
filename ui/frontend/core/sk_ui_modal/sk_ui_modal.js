@@ -7,6 +7,8 @@ class sk_ui_modal extends sk_ui_component {
         this.compact = true
         
 
+        this.opt = {}
+
         this.dimmer = this.add.component(_c => {
             _c.classAdd('sk_ui_modal_dimmer')
             _c.element.onclick = _e => {
