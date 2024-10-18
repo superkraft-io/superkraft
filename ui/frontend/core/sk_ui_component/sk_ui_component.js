@@ -1454,7 +1454,6 @@ class sk_ui_movableizer {
     }
 
     off(){
-        sk.interactions.unblock()
         
         this.parent.element.removeEventListener('mousemove', this.mouseMoveHandler)
         this.parent.element.removeEventListener('touchmove', this.mouseMoveHandler)
@@ -1467,6 +1466,9 @@ class sk_ui_movableizer {
         
         document.removeEventListener('mouseup', this.mouseUpHandler)
         document.removeEventListener('touchend', this.mouseUpHandler)
+
+
+        sk.interactions.unblock()
     }
 }
 
@@ -1711,7 +1713,7 @@ class sk_ui_resizableizer {
     
     off(){
         sk.interactions.unblock()
-        
+
         document.removeEventListener('mousemove', this.mouseMoveHandler)
         document.removeEventListener('touchmove', this.mouseMoveHandler)
         

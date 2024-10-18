@@ -79,6 +79,7 @@ class sk_ui_button extends sk_ui_component {
                     
                 touchDragged = true
             }
+
             this.element.ontouchstart = _e => {
                 if (this.disabled) return
 
@@ -90,7 +91,10 @@ class sk_ui_button extends sk_ui_component {
                 touchDragged = false
 
                 _e.preventDefault()
+
+                sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true})
             }
+
             this.element.ontouchend = _e => {
                 if (this.disabled) return
 

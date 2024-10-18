@@ -74,11 +74,20 @@ class SK_ContextMenu {
             if (this.__button === 'right') this.handleMouseEvent(_e)
         })
 
-        this.parent.onClick = _e => {
-            _e.stopPropagation()
-            _e.preventDefault()
-            if (this.__button === 'left') this.handleMouseEvent(_e)
+        if (!sk.isOnMobile){
+            this.parent.element.addEventListener('click', _e => {
+                _e.stopPropagation()
+                _e.preventDefault()
+                if (this.__button === 'left') this.handleMouseEvent(_e)
+            })
+        } else {
+            this.parent.element.addEventListener('touchstart', _e => {
+                _e.stopPropagation()
+                _e.preventDefault()
+                if (this.__button === 'left') this.handleMouseEvent(_e)
+            })
         }
+
 
         this.parent.element.addEventListener('mousedown', _e => {
             if (this.stopPropagation) _e.stopPropagation()
@@ -131,7 +140,7 @@ class SK_ContextMenu {
         this.menu = sk.app.add.contextMenu(_c => {
             _c.cmParent = this
             _c.items = items
-            _c.position = this.__position || {x: opt._e.clientX, y: opt._e.clientY}
+            _c.position = this.__position || sk.interactions.getPos(opt._e)
             
         })
 

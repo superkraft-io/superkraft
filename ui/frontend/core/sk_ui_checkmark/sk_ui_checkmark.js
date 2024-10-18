@@ -77,7 +77,7 @@ class sk_ui_checkmark extends sk_ui_component {
         this.size = 100
     }
 
-    check(){
+    async check(){
         this.checked = true
         
         //this.checkmarkBucket.loader.style.borderColor      = this.__color
@@ -88,6 +88,7 @@ class sk_ui_checkmark extends sk_ui_component {
         this.checkmarkBucket.check.style.opacity = 1
         this.checkmarkBucket.check.transition('scale in')
         this.isChecked = true
+        await sk.utils.sleep(250)
     }
 
     generateCSS(id, width, height){
