@@ -303,3 +303,14 @@ i.icon, i.icons, i.flag {
     background-color: #1e0000;
     border: solid 1px #9d0000;
 }
+
+.sk_ui_status_ok_important {
+    background-color: #1f321f !important;
+    border: solid 1px #3da33d !important;
+}
+
+
+.sk_ui_status_error_important {
+    background-color: #1e0000 !important;
+    border: solid 1px #9d0000 !important;
+}

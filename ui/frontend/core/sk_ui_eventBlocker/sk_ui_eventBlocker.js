@@ -42,7 +42,7 @@ class sk_ui_eventBlocker extends sk_ui_component {
     }
 
     findSenderInPath(_e){
-        var suo = _e.fromElement.sk_ui_obj
+        var suo = _e.fromElement.sk_ui_obj || _e.srcElement.sk_ui_obj
 
         
         var list = suo.getPath({elements: true})
