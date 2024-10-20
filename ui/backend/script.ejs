@@ -86,8 +86,13 @@
             warning : (msg, opt)=>{ sk.toast.do(msg, {...{class: 'warning'}, ...opt}) }
         },
 
-        openURL: url => {
-            sk.comm.main('openURL', {url: url})
+        openURL: (url, newWindow)=>{
+            if (sk.app_type !== 'wapp'){
+                sk.comm.main('openURL', {url: url})
+            } else {
+                if (!newWindow) window.location.replace(url)
+                else window.open(url, '_blank')
+            }
         },
         downloadURL: (url, filename, targetDir)=>{
             return new Promise((resolve, reject)=>{

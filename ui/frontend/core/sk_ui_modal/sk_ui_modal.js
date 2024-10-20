@@ -124,6 +124,11 @@ class sk_ui_modal extends sk_ui_component {
         })
     }
 
+    hidePropagate(){
+        try { if (this.parentModal) this.parentModal.hidePropagate() } catch(err) {}
+        try { this.hide() } catch(err) {}
+    }
+
     show(){
         return new Promise(async resolve => {
             if (this.onShow) this.onShow()

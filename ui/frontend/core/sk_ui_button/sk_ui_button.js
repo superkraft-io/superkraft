@@ -23,15 +23,8 @@ class sk_ui_button extends sk_ui_component {
         var handleOnClickEvent = async _e => {
             
 
-            if (sk.app_type !== 'wapp'){
-                if (this.goto || this.goto_){
-                    sk.comm.main('openURL', {url: this.goto || this.goto_})
-                    //this.addStatusIndicator({status: 'external'})
-                }
-            } else {
-                if (this.goto) window.location.replace(this.goto)
-                if (this.goto_) window.open(this.goto_, '_blank')
-            }
+            if (this.goto || this.goto_) sk.openURL(this.goto || this.goto_, this.goto_ !== undefined)
+            
 
             if (this.__togglable) this.toggled = !this.__toggled
 
