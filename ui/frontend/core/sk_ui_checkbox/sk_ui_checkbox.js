@@ -28,10 +28,11 @@ class sk_ui_checkbox extends sk_ui_button {
 
         this.shapes_icons = {
             rectangle: 'check',
-            circle: 'circle'
+            circle: 'circle',
+            intermediate: 'minus'
         }
 
-        this.attributes.add({friendlyName: 'Checked State', name: 'checked_state', type: 'bool', onSet: val => {
+        this.attributes.add({friendlyName: 'Checked State', name: 'checked_state', type: 'text', onSet: val => {
             /*if (val) this._icon.iconElement.classList.add('sk_ui_checkbox_on')
             else this._icon.iconElement.classList.remove('sk_ui_checkbox_on')
             */
@@ -45,6 +46,9 @@ class sk_ui_checkbox extends sk_ui_button {
             }
 
             var newIcon = this.shapes_icons[this.shape]
+            
+            if (val === 'intermediate') newIcon = this.shapes_icons.intermediate
+
             if (val) {
                 this.icon = newIcon
             } else {
