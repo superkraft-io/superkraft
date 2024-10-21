@@ -27,8 +27,9 @@ class sk_ui_colorPicker extends sk_ui_component {
         this.colorPanel.backgroundColor = '#000000ff'
         
 
-        this.element.addEventListener('click', ()=>{
+        this.element.addEventListener('click', _e => {
             this.inputBucket.clrPicker.click()
+            _e.stopPropagation()
         })
 
         this.attributes.add({friendlyName: 'Color', name: 'color', type: 'color', onSet: val =>{
