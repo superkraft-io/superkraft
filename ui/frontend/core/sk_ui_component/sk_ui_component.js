@@ -788,6 +788,7 @@ class sk_ui_component {
         }
 
         var res = this.element.getBoundingClientRect()
+        var parent = this.parent
         var parentRect = this.parent.element.getBoundingClientRect()
 
         res.localPos = new (
@@ -802,6 +803,15 @@ class sk_ui_component {
                     if (this.y < 0) return false
                     if (this.x + res.width > parentRect.width) return false
                     if (this.y + res.height > parentRect.height) return false
+
+                    return true
+                }
+
+                get isPartiallyVisible(){
+                    if (this.x - parent.element.scrollTop < 0-res.width) return false
+                    if (this.y - parent.element.scrollTop < 0-res.height) return false
+                    if (this.x - parent.element.scrollTop > parentRect.width) return false
+                    if (this.y - parent.element.scrollTop > parentRect.height) return false
 
                     return true
                 }
