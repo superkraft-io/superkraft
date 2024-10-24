@@ -719,7 +719,7 @@ class sk_ui_component {
         })
     }
     
-    hide(opt){
+    hide(opt = {}){
         return new Promise(resolve =>{
             if (!opt || (opt && !opt.animation)){
                 this.element.style.display = 'none'
@@ -732,7 +732,7 @@ class sk_ui_component {
 
             
             this.opacity = 0.01
-            this.style.transform = 'scale(0)'
+            if (!opt.noScale) this.style.transform = 'scale(0)'
 
             var doHide = ()=>{
                 if (opt.animation === 'width'){
