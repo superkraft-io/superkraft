@@ -636,8 +636,6 @@
 .ui.centered.inline.loader.active,
 .ui.centered.inline.loader.visible {
   display: block;
-  margin-left: auto;
-  margin-right: auto;
 }
 .ui.ui.ui.ui.ui.ui.loading::after,
 .ui.ui.ui.ui.ui.ui.loading .input > i.icon::after,
