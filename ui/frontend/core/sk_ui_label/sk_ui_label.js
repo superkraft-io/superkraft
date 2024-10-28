@@ -11,16 +11,29 @@ class sk_ui_label extends sk_ui_component {
         this.attributes.add({friendlyName: 'Text', name: 'text', type: 'text', onSet: async val => {
             if (!this.fadeOnChange){
                 this.__l10n = undefined
-                return this.element.innerHTML = val.split('\n').map(line =>{
-                    return '<div>' + line + '</div>'
-                }).join('')
+                
+                try {
+                    this.element.innerHTML = (!val ? '' : val.split('\n').map(line =>{
+                        return '<div>' + line + '</div>'
+                    }).join(''))
+                } catch (err) {
+                    this.element.innerHTML = val
+                }
+
+                return
             }
 
             this.hideShow_2({onHidden: async ()=>{ return new Promise(resolve => {
                 this.__l10n = undefined
-                this.element.innerHTML = val.split('\n').map(line =>{
-                    return '<div>' + line + '</div>'
-                }).join('')
+
+                try {
+                    this.element.innerHTML = (!val ? '' : val.split('\n').map(line =>{
+                        return '<div>' + line + '</div>'
+                    }).join(''))
+                } catch (err) {
+                    this.element.innerHTML = val
+                }
+
                 resolve()
             })}})
         }})
