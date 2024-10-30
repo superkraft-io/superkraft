@@ -474,6 +474,16 @@ class sk_ui_contextMenu extends sk_ui_component {
             item.leftSide.iconContainer.classAdd('sk_ui_contextMenu_Item_hasIcon')
         }
     }
+
+    async findByID(id, identifier = 'id', ignoreOnSelectedFire, propagate){
+        var items = this.sk_items
+        try { items = await this.sk_items() } catch(err){}
+
+        for (var i in items){
+            var item = items[i]
+            if (item.opt[identifier] === id) return item
+        }
+    }
 }
 
 class sk_ui_contextMenu_Item extends sk_ui_component {
@@ -605,6 +615,7 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
         
 
         this.element.addEventListener('click', _e => {
+            if (this.stop)
             if (this.opt.items) return _e.stopPropagation()
             if (!this.opt.bypassOnClick) this.cmParent._onItemClicked(this.opt)
         })

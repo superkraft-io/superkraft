@@ -45,7 +45,9 @@ module.exports = class Superkraft {
             database: opt.database,
             l10n: opt.l10n,
 
-            modules: {},
+            modules: {
+                validator: new (require(__dirname + '/modules/sk_validator.js'))()
+            },
             
             views: {},
 
