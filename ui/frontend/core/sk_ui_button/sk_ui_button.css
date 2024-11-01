@@ -20,11 +20,11 @@
     pointer-events: all;
 }
 
-.sk_ui_button_enabled:hover {
+.sk_ui_button_enabled_interactable:hover {
     background-color: var(--sk_ui_color_grey_2);
 }
 
-.sk_ui_button_enabled:active {
+.sk_ui_button_enabled_interactable:active {
     opacity: 0.5;
 }
 

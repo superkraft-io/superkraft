@@ -6,7 +6,7 @@ class sk_ui_button extends sk_ui_component {
 
         this.tabIndex = 100
 
-        this.classAdd('sk_ui_button_enabled')
+        this.classAdd('sk_ui_button_enabled sk_ui_button_enabled_interactable')
 
         this._icon = this.add.icon(_c => {
             _c.onChanged = ()=>{ if (this.onIconChanged) this.onIconChanged() }
@@ -117,6 +117,11 @@ class sk_ui_button extends sk_ui_component {
         this.attributes.add({friendlyName: 'Disabled', name: 'disabled', type: 'bool', onSet: val => {
             this.classRemove('sk_ui_button_enabled')
             if (!val) this.classAdd('sk_ui_button_enabled')
+        }})
+
+        this.attributes.add({friendlyName: 'Interactable', name: 'interactable', type: 'bool', onSet: val => {
+            this.classRemove('sk_ui_button_enabled_interactable')
+            if (val) this.classAdd('sk_ui_button_enabled_interactable')
         }})
 
 
