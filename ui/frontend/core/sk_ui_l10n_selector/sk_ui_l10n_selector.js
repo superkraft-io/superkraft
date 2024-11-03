@@ -9,7 +9,7 @@ class sk_ui_l10n_selector extends sk_ui_button {
 
         this.roundness = 8
 
-        this.onClick = (sender, _e) => {
+        this.onClick = (_e, sender)=>{
             _e.stopPropagation()
             _e.preventDefault()
             return false

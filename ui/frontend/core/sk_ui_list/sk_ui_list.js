@@ -27,39 +27,46 @@ class sk_ui_list extends sk_ui_component {
         this.list = []
 
         this.items = {
-            add: (opt, itemClass = sk_ui_listItem)=>{
-                var item = this.container.add.fromNew(itemClass, _c => {
-                    _c.info = opt
-                    _c.text = opt.label
+            add: (opt, itemClass)=>{
+                var item = this.container.add.fromNew(
+                    (!itemClass ? sk_ui_listItem : itemClass), 
+                    _c => {
+                        _c.info = opt
+                        _c.text = opt.label
 
-                    if (opt.hint) _c.hint({text: opt.hint, position: 'right center'})
+                        if (opt.hint) _c.hint({text: opt.hint, position: 'right center'})
 
-                    _c.element.addEventListener('click', ()=>{
-                        if (!this.highlightOnSelect){
+                        _c.element.addEventListener('click', ()=>{
+                            if (!this.highlightOnSelect){
+                                if (this.onItemSelected) this.onItemSelected(_c)
+                                return
+                            }
+                            
+                            this.deselectAll()
+
+                            if (this.onBeforeItemSelected) this.onBeforeItemSelected(_c) 
+
+                            _c.toggled = true
+
                             if (this.onItemSelected) this.onItemSelected(_c)
-                            return
+                        })
+
+                        _c.onIconChanged = ()=>{
+                            this.updateIconWidth()
                         }
+
                         
-                        this.deselectAll()
-
-                        if (this.onBeforeItemSelected) this.onBeforeItemSelected(_c) 
-
-                        _c.toggled = true
-
-                        if (this.onItemSelected) this.onItemSelected(_c)
-                    })
-
-                    _c.onIconChanged = ()=>{
-                        this.updateIconWidth()
                     }
-
-                    
-                })
+                )
 
                 this.list.push(item)
                 if (this.onNewItem) this.onNewItem(item)
 
-                if (opt.icon && item.icon) item.icon = opt.icon
+                if (!itemClass){
+                    if (opt.icon) item.icon = opt.icon
+                } else {
+                    if (item.icon) item.icon = opt.icon
+                }
 
                 return item
             }

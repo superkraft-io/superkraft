@@ -13,7 +13,8 @@ var sk_dialog = {
                 properties: properties,
                 filters: opt.filters,
                 buttonLabel: opt.buttonLabel,
-                message: opt.message
+                message: opt.message,
+                defaultPath: opt.defaultPath
             }
             var res = await sk.comm.main('dialog', {type: 'open', options: defOpts})
             
