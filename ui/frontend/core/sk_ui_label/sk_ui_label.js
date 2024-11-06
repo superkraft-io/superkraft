@@ -9,13 +9,19 @@ class sk_ui_label extends sk_ui_component {
         this.styling = 'left'
 
         this.attributes.add({friendlyName: 'Text', name: 'text', type: 'text', onSet: async val => {
+            this.styling = 'left'
+
             if (!this.fadeOnChange){
                 this.__l10n = undefined
                 
                 try {
                     this.element.innerHTML = (!val ? '' : val.split('\n').map(line =>{
+                        if (line === '') return '<br>'
                         return '<div>' + line + '</div>'
                     }).join(''))
+
+                    
+                    this.styling = 'top middle ttb'
                 } catch (err) {
                     this.element.innerHTML = val
                 }
@@ -28,8 +34,11 @@ class sk_ui_label extends sk_ui_component {
 
                 try {
                     this.element.innerHTML = (!val ? '' : val.split('\n').map(line =>{
+                        if (line === '') return '<br>'
                         return '<div>' + line + '</div>'
                     }).join(''))
+
+                    this.styling = 'top middle ttb'
                 } catch (err) {
                     this.element.innerHTML = val
                 }
