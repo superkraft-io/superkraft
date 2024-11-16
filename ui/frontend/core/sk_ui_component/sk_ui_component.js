@@ -99,6 +99,17 @@ class sk_ui_component {
             
             if (!val) this.classAdd('sk_ui_component_spaced' + (this.vertical ? '_vertical' : '_horizontal'))
         }})
+
+        this.attributes.add({friendlyName: 'No Select', name: 'noSelect',  type: 'bool', onSet: val => {
+            if (val){
+                this.classAdd('sk_ui_noSelect')
+                this.classRemove('sk_ui_allowSelect')
+            } else {
+                this.classRemove('sk_ui_noSelect')
+                this.classAdd('sk_ui_allowSelect')
+            }
+        }})
+        this.__noSelect = true
         
         this.__animate = true
         this.attributes.add({friendlyName: 'Animate', name: 'animate',  type: 'bool', onSet: val => {
