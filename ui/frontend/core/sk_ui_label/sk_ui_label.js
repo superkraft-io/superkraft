@@ -11,38 +11,35 @@ class sk_ui_label extends sk_ui_component {
         this.attributes.add({friendlyName: 'Text', name: 'text', type: 'text', onSet: async val => {
             this.styling = 'left'
 
-            if (!this.fadeOnChange){
+
+            var setText = () => {
                 this.__l10n = undefined
-                
+
                 try {
-                    this.element.innerHTML = (!val ? '' : val.split('\n').map(line =>{
-                        if (line === '') return '<br>'
-                        return '<div>' + line + '</div>'
-                    }).join(''))
+                    if (val.trim().split('\n').length > 1) {
+                        console.log(val)
+                        this.element.innerHTML = (!val ? '' : val.split('\n').map(line => {
+                            if (line === '') return '<br>'
+                            return '<div>' + line + '</div>'
+                        }).join(''))
 
-                    
-                    this.styling = 'top middle ttb'
+                        this.styling = 'top middle ttb'
+                    } else {
+                        console.log(val)
+                        this.element.innerText = val
+                    }
                 } catch (err) {
-                    this.element.innerHTML = val
+                    this.element.innerText = val
                 }
+            }
 
+            if (!this.fadeOnChange){
+                setText()
                 return
             }
 
             this.hideShow_2({onHidden: async ()=>{ return new Promise(resolve => {
-                this.__l10n = undefined
-
-                try {
-                    this.element.innerHTML = (!val ? '' : val.split('\n').map(line =>{
-                        if (line === '') return '<br>'
-                        return '<div>' + line + '</div>'
-                    }).join(''))
-
-                    this.styling = 'top middle ttb'
-                } catch (err) {
-                    this.element.innerHTML = val
-                }
-
+                setText()
                 resolve()
             })}})
         }})
