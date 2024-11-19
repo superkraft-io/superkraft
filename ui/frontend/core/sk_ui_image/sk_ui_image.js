@@ -10,7 +10,7 @@ class sk_ui_image extends sk_ui_component {
                     _c.classAdd('sk_ui_image_loader')
                     _c.animate = false
                 })
-            }, 1)
+            }, 100)
 
             try {
                 var _url = await sk_ui_image.validateImage(val, this)
