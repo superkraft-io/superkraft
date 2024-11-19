@@ -45,19 +45,16 @@ void SK_VB_cNA_handleParamComponentMouseEvent::handle_IPC_Msg(String msgID, Dyna
         std::unique_ptr<juce::HostProvidedContextMenu> menu = ctx->getContextMenuForParameter(param);
 
         menu.get()->showNativeMenu(Point<int>{left, top});
-
-        return;
     }
 
 
-    if (event == "mousedown") return param->beginChangeGesture();
-    if (event == "mouseup") return param->endChangeGesture();
+    if (event == "mousedown") param->beginChangeGesture();
+    if (event == "mouseup") param->endChangeGesture();
 
     if (event == "write") {
         float value = info.getProperty("value", 0);
         const auto normalisedValue = param->convertTo0to1(value);
         param->setValueNotifyingHost(normalisedValue);
-        return;
     }
 
 

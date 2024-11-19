@@ -555,7 +555,9 @@ class sk_ui_component {
         resizeObserver.observe(this.element)
         */
             
-        if (sk.onAfterComponentCreated) sk.onAfterComponentCreated(this)
+        document.dispatchEvent(new CustomEvent("sk_onAfterComponentCreated", {
+            detail: this
+        }))
     }
 
     get classHierarchy(){

@@ -82,13 +82,17 @@ class sk_ui_juce_param_component_root extends sk_ui_component {
         target.__writeValue = async (opt = {}) => {
             if (sk.juceParamMngr.onParameterWritten) sk.juceParamMngr.onParameterWritten(target, opt)
 
-            var res = await sk.nativeActions.handleParamComponentMouseEvent({
-                ...{
-                    juceParamID: target.__juceParamID,
-                    event: 'write'
-                },
-                ...opt
-            })
+            try {
+                var res = await sk.nativeActions.handleParamComponentMouseEvent({
+                    ...{
+                        juceParamID: target.__juceParamID,
+                        event: 'write'
+                    },
+                    ...opt
+                })
+            } catch (err) {
+                console.error(err)
+            }
 
             return res
         }

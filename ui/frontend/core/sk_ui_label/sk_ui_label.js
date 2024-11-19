@@ -25,7 +25,6 @@ class sk_ui_label extends sk_ui_component {
 
                         this.styling = 'top middle ttb'
                     } else {
-                        console.log(val)
                         this.element.innerText = val
                     }
                 } catch (err) {

@@ -9,8 +9,9 @@ class sk_ui_knobComponent extends sk_ui_component {
         this.isBypassed = false
 
        
-        this.bypassContainer = this.add.juce_param_component_clickable(_c => {
+        this.bypassContainer = this.add.checkbox(_c => {
             _c.classAdd('sk_ui_knobComponent_bypassContainer')
+            _c.iconContainer.style.display = 'none'
 
             _c._icon.remove()
             _c.label.remove()
@@ -32,8 +33,9 @@ class sk_ui_knobComponent extends sk_ui_component {
 
             this.bypassLED = _c.led
 
-            _c.onClick = _e => {
-                this.bypassed = !this.bypassed
+            _c.onChanged = checked => {
+                this.bypassed = checked
+
                 _c.ums.set('onBypassStates', { bypassed: this.bypassed, components: [this.componentID] })
 
                 if (this.onBypassChanged) this.onBypassChanged(this.bypassed)
