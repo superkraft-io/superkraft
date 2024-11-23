@@ -97,14 +97,22 @@ class sk_ui_progressBar extends sk_ui_component {
 
     set progress(val){
         if (val === this.__lastVal) return
-        this.__lastVal = val
+        this.__lastVal = Math.round(parseFloat(val))
             
         try {
             this.pB.animate(1/100*val)
         } catch(err) {
             this.content.style.width = val + '%'
             this.contentHidden.style.width = val + '%'
-            if (this.hintProgress) this.hintHandle.hint({text: val + '%', instaShow: true, position: 'right center', hideOnMove: false})
+
+            if (this.hintProgress){
+                this.hintHandle.hint({
+                    text: this.__lastVal + '%',
+                    instaShow: true,
+                    position: 'right center',
+                    hideOnMove: false
+                })
+            }
         }
     }
 }
