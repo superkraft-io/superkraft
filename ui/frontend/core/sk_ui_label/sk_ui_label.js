@@ -17,7 +17,6 @@ class sk_ui_label extends sk_ui_component {
 
                 try {
                     if (val.trim().split('\n').length > 1) {
-                        console.log(val)
                         this.element.innerHTML = (!val ? '' : val.split('\n').map(line => {
                             if (line === '') return '<br>'
                             return '<div>' + line + '</div>'
