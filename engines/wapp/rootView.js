@@ -14,14 +14,14 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                     sk: (this.sk.info.cdn ? this.sk.info.cdn.route + 'sk_cdn/sk_frontend' : '/sk'),
 
                     ui: this.sk.info.ui.routes.core,
-                    ui_shared: 'sk_ui_shared/',
-                    ui_global: 'sk_ui_global/',
+                    ui_shared: '/sk_ui_shared/',
+                    ui_global: '/sk_ui_global/',
 
                     
 
                     app_root: (this.sk.info.cdn ? this.sk.info.cdn.route + 'sk_cdn/app_frontend/' : '/'),
                     app: (this.sk.info.cdn ? this.sk.info.cdn.route + 'sk_cdn/app_frontend/' : '/'),
-                    global: (this.sk.info.cdn ? this.sk.info.cdn.route + 'sk_cdn/app_global/' : '/global'),
+                    global: (this.sk.info.cdn ? this.sk.info.cdn.route + 'sk_cdn/app_global/' : '/sk_ui_global/'),
 
                     complexity: '/complexity/',
 

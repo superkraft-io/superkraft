@@ -1,6 +1,6 @@
 .sk_ui_label {
     color: var(--sk_ui_text_color);
-    line-height: initial;
+    /* line-height: initial; */
     white-space: nowrap;
     /*line-height: 1;*/
 }

@@ -27,8 +27,8 @@
         <% } %>
 
         <% for (var i = 0; i < sk.ui.components.global.length; i++){ %>
-            <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui_global %><%= sk.ui.components.global[i].path %>sk_ui_<%= sk.ui.components.global[i].name %>.css">
-                                            <script src="<%= sk.routes.frontend.ui_global %><%= sk.ui.components.global[i].path %>sk_ui_<%= sk.ui.components.global[i].name %>.js"></script>
+            <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui_global %>sk_ui/<%= sk.ui.components.global[i].path %>sk_ui_<%= sk.ui.components.global[i].name %>.css">
+                                            <script src="<%= sk.routes.frontend.ui_global %>sk_ui/<%= sk.ui.components.global[i].path %>sk_ui_<%= sk.ui.components.global[i].name %>.js"></script>
     <%      }
         } else {
     %>
