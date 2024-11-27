@@ -560,6 +560,8 @@ class sk_ui_component {
         }))
     }
 
+    get root_url(){ return this.constructor.root_url }
+
     get classHierarchy(){
         var _classHierarchy = []
         var checkNextParent = current => {
