@@ -49,7 +49,7 @@ var sk_ui_juce_sk_ui_onAfterCreate = function(_c){
 async function waitForSK() {
     return new Promise(resolve => {
         var timer = setInterval(() => {
-            if (!sk) return
+            if (!window.sk) return
             clearInterval(timer)
             resolve()
         }, 1)
