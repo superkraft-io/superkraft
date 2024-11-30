@@ -21,7 +21,8 @@ class sk_ui_progressBar extends sk_ui_component {
         return {
             circle: opt => {
                 this.__pbType = 'circle'
-                var defOpt = {duration: 200, color: 'grey', thickness: 8}
+                var defOpt = this.__defOpt || { duration: 200, color: 'grey', thickness: 8 }
+                if (this.__color) defOpt.color = this.__color
                 defOpt = { ...defOpt, ...opt }
                 this.__defOpt = defOpt
 
@@ -32,6 +33,8 @@ class sk_ui_progressBar extends sk_ui_component {
                         duration: defOpt.duration
                     }, ...defOpt
                 })
+
+                if (this.__lastVal) this.pB.animate(1 / 100 * this.__lastVal)
 
                 return this
             },

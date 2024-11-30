@@ -131,6 +131,10 @@ class sk_ui_juce_param_component_draggable extends sk_ui_juce_param_component_ro
 
         var normalizedValue = Number((await this.__readValue()).value)
 
+        if (this.__lastReadValue === normalizedValue) return
+
+        this.__lastReadValue = normalizedValue
+
         this.value = sk.utils.map(normalizedValue, 0, 1, this.valueRange.min, this.valueRange.max)
 
         this.__sk_ui_juce_param_component_draggable_blockWrite = false
