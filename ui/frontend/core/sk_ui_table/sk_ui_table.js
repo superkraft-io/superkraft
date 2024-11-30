@@ -1,86 +1,69 @@
 class sk_ui_table extends sk_ui_component {
     constructor(opt){
         super(opt)
-        
 
-        this.element.remove()
 
-        this.bucket = JSOM.parse({
-            root: parent.element,
-            tree: {
-                table_table: {}
-            }
+        this.header = this.add.fromNew(sk_ui_table_header)
+
+        this.container = this.add.component(_c => {
+            _c.styling += ' fullwidth fill'
+            _c.compact = true
         })
-
-        this.element = this.bucket.table
-        this.style = this.element.style
-        this.uuid = this.uuid
-
-        this.styling = 'ttb'
     }
 
-    newRow(cb){
-        var _c = this.add.fromNew(sk_ui_tableRow)
-        if (cb) cb(_c)
-        return _c
+    update(){
+        this.rows.update()
     }
 
-    /*onNewColumn(sender){
-        var retCol = undefined
+    configure(obj){
+
+        this.container.children.clear()
         
-        for (var i = 0; i < this.children.length; i++){
-            var _row = this.children[i]
-            var _c = _row.add.fromNew(sk_ui_tableColumn)
-            if (_row.uuid === sender.uuid) retCol = _c
+        for (var i in obj.rows){
+            var row = obj.rows[i]
+            this.container.add.fromNew(sk_ui_table_row, _c => {
+                _c.add.fromNew(sk_ui_table_column)
+            })
         }
 
-        return _c
-    }*/
-}
+        this.update()
 
-class sk_ui_tableRow extends sk_ui_component {
-    constructor(opt){
-        super(opt)
-
-        this.element.remove()
-        
-        var rowBucket = JSOM.parse({
-            root: this.parent.element,
-            tree: {tr_tr: {}}
-        })
-
-        this.element = rowBucket.tr
-        this.style = this.element.style
-        this.uuid = this.uuid
-
-        this.styling = 'fullwidth'
-
-        this.classAdd('sk_ui_tableRow')
+        return this.rows
     }
 
-    newColumn(cb){
-        //var _c = this.parent.onNewColumn(this)
-        
-        var _c = this.add.fromNew(sk_ui_tableColumn)
-            
-        if (cb) cb(_c)
-        return _c
+    get rows(){
+        //for (var i in this.container.)
     }
 }
 
-class sk_ui_tableColumn extends sk_ui_component {
+class sk_ui_table_header extends sk_ui_component {
     constructor(opt){
         super(opt)
 
-        this.element.remove()
+    }
 
-        var rowBucket = JSOM.parse({
-            root: this.parent.element,
-            tree: {td_td: {}}
-        })
+    get columns(){
 
-        this.element = rowBucket.td
-        this.style = this.element.style
-        this.uuid = this.uuid
+    }
+}
+
+class sk_ui_table_row extends sk_ui_component {
+    constructor(opt){
+        super(opt)
+
+        this.columns = new sk_ui_table_columns()
+    }
+
+    addColumn(opt){
+        this.parent.add.fromNew(sk_ui_table_row)
+    }
+
+    get columns(){ return this.container.children.children }
+}
+
+
+class sk_ui_table_column extends sk_ui_component {
+    constructor(opt){
+        super(opt)
     }
 }
