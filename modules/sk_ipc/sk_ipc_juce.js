@@ -1,4 +1,4 @@
-module.exports = module.exports = class SK_IPC {
+module.exports =  class SK_IPC {
     constructor(opt) {
         if (!opt.source || opt.source.toString().trim().length === 0) throw "IPC SOURCE ID MUST BE DEFINED!!!"
 

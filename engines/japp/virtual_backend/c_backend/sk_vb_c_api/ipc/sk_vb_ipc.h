@@ -49,7 +49,7 @@ class SK_IPC {
 public:
     static inline const String OK = "{}";
     static inline const String Error(String error) {
-        return "{\"error\"" + error + "\"}";
+        return "{\"error\": \"" + error + "\"}";
     };
 
     SK_VirtualBackend* vbe;
