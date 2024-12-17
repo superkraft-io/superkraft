@@ -1,7 +1,7 @@
 #pragma once
 #include <JuceHeader.h>
 
-#include "handleParamComponentMouseEvent/sk_vb_cNA_handleParamComponentMouseEvent.h"
+#include "handleParamMouseEvent/sk_vb_cNA_handleParamMouseEvent.h"
 
 #include "../../../../../../../../../sk_nativeActions/sk_nativeActions.h"
 

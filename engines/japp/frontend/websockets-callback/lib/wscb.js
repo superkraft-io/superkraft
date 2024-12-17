@@ -38,7 +38,7 @@ class WebSockets_Callback{
                     })
                 }
             }
-
+ 
             this.sendData = msg => {
                 var data = {
                     msgID: msg.puid,

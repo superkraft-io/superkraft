@@ -1,7 +1,7 @@
 #pragma once
 #include <JuceHeader.h>
 
-#include "SK_vb_cNA_handleParamComponentMouseEvent.h"
+#include "sk_vb_cNA_handleParamMouseEvent.h"
 
 #include "../../../../../sk_vbe/sk_vbe.hxx"
 #include "../src/Editor.hxx"
