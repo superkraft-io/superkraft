@@ -43,7 +43,6 @@ module.exports =  class SK_IPC {
             })
         })
         */
-
     }
 
     sendRaw(cmd, data) {

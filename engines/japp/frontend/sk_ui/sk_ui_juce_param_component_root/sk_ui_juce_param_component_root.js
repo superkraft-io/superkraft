@@ -98,7 +98,6 @@ class sk_ui_juce_param_component_root extends sk_ui_component {
         }
 
         target.__readValue = async (opt = {}) => {
-
             var res = await sk.nativeActions.handleParamComponentMouseEvent({
                 ...{
                     juceParamID: target.__juceParamID,
@@ -106,7 +105,6 @@ class sk_ui_juce_param_component_root extends sk_ui_component {
                 },
                 ...opt
             })
-
             if (sk.juceParamMngr.onParameterRead) sk.juceParamMngr.onParameterRead(target, opt, res)
 
             return res

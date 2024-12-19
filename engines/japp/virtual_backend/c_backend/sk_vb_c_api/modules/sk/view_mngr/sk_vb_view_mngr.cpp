@@ -124,6 +124,12 @@ void SK_VB_View_Mngr::createView(String msgID, var obj, String& responseData) {
                     DynamicObject* obj = object.getDynamicObject();
                     vbe->sk_c_api->ipc->handle_IPC_Msg(obj);
                 })
+
+                .withEventListener("ipc_test", [this](const auto& object) {
+                    //DynamicObject* obj = object.getDynamicObject();
+
+                    //findViewByID("first_view")->print_eventListeners_count();
+                })
         });
 
         view->vbe = vbe;
@@ -169,12 +175,12 @@ void SK_VB_View_Mngr::createView(String msgID, var obj, String& responseData) {
             //view->toBack();
         }
         
-        juce::Timer::callAfterDelay(3000, [this, view]() {
+        /*juce::Timer::callAfterDelay(3000, [this, view]() {
             return;
             auto view = findViewByID("first_view");
             //view->setAlpha(1.0f);
             resizeViews(vbe->editor->getWidth(), vbe->editor->getHeight());
-        });
+        });*/
     }
 
 

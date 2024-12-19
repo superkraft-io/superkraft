@@ -76,6 +76,7 @@ module.exports = class Superkraft {
         global.sk_ipc = this.ipc
         window.sk_ipc = this.ipc
 
+
         try {
             this.application = require('application')
             await this.application.init()
@@ -84,6 +85,7 @@ module.exports = class Superkraft {
         }
 
         global.sk_fs = new (require(__dirname + '/modules/sk_fs/sk_fs.js'))({ sk: this, app_type: opt.type })
+
 
         /****************/
         
@@ -143,7 +145,7 @@ module.exports = class Superkraft {
         })
         await sk.ui.refresh()
 
-        
+
         /****************/
         
         if (opt.config) sk.config = JSON.parse(await sk_fs.promises.readFile(opt.config))
@@ -169,7 +171,7 @@ module.exports = class Superkraft {
         global.SK_RootView = require(__dirname + '/engines/' + opt.type + '/rootView.js')
         
        
-        
+
 
         if (opt.useComplexity) sk.complexity.init()
 

@@ -81,7 +81,6 @@ var start_app = async () => {
 
     if (appMain && appMain.preSKInit) appMain.preSKInit(opt)
 
-
     var __superkraft = require('/superkraft/sk_superkraft.js')
     
     var sk_start = ()=>{
