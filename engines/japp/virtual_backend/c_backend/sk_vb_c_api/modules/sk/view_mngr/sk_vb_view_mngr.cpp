@@ -1,5 +1,10 @@
 #pragma once
 
+#include <WebView2.h>
+#include <wrl.h> // For Microsoft::WRL::ComPtr
+
+
+
 #include "sk_vb_view_mngr.h"
 
 #include "sk_vb_view/sk_vb_view.hxx"
@@ -113,27 +118,23 @@ void SK_VB_View_Mngr::createView(String msgID, var obj, String& responseData) {
                 )
                 .withNativeIntegrationEnabled()
                 .withResourceProvider([this](const String& url) {
+                    std::optional<juce::WebBrowserComponent::Resource> res;
+
                     String viewID = url.replace("/sk_vfs/sk_project/views/", "");
                     viewID = viewID.substring(0, viewID.indexOf("/"));
 
                     auto view = findViewByID("first_view");
-                    auto res = vbe->sk_c_api->router.lookUpResource(url, "first_view");
+                    res = vbe->sk_c_api->router.lookUpResource(url, "first_view");
+
                     return res;
                 })
                 .withEventListener("sk.ipc", [this](const auto& object) {
                     DynamicObject* obj = object.getDynamicObject();
                     vbe->sk_c_api->ipc->handle_IPC_Msg(obj);
                 })
-
-                .withEventListener("ipc_test", [this](const auto& object) {
-                    //DynamicObject* obj = object.getDynamicObject();
-
-                    //findViewByID("first_view")->print_eventListeners_count();
-                })
         });
 
         view->vbe = vbe;
-
 
         views.push_back(view);
 

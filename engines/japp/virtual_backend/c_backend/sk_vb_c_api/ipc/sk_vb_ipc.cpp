@@ -67,17 +67,19 @@ void SK_IPC::handle_IPC_Msg(DynamicObject *obj) {
 
     if (responseData == "ignore") return;
 
-    auto msg = SK_IPC_Msg(
-        "response",
-        obj->getProperty("msgID"),
-        obj->getProperty("source"),
-        obj->getProperty("target"),
-        responseData
-    );
-
-    String responsePacket = msg.stringifyAsResponse();
+    
 
     if (source == "sk_be"){
+        auto msg = SK_IPC_Msg(
+            "response",
+            obj->getProperty("msgID"),
+            obj->getProperty("source"),
+            obj->getProperty("target"),
+            responseData
+        );
+
+        String responsePacket = msg.stringifyAsResponse();
+
         //respond to virtual backend
         vbe->emitEventIfBrowserIsVisible("sk.ipc", String(responsePacket));
     }
