@@ -1,0 +1,45 @@
+<script src="<%= sk.routes.frontend.engine %>/frontend/websockets-callback/lib/wscb.js"></script>
+
+<script type="module">
+    sk.juceParamMngr = new sk_ui_juceParamManager()
+
+    class SK_SAPP_FE_Initializer {
+        constructor(){
+        }
+
+        async init(){
+            await this.config_SK_JUCE_View_Core()
+            await this.configApp()
+            await this.configWSCB()
+        }
+
+        async config_SK_JUCE_View_Core(){
+            await import('/superkraft/engines/japp/virtual_backend/web_frontend/sk_juce_api/core.js')
+            await import('/superkraft/engines/japp/virtual_backend/web_frontend/sk_juce_api/module.js')
+            await import('/superkraft/engines/japp/virtual_backend/web_frontend/sk_juce_api/modules/node/path.js')
+
+            sk_juce_api.initModules('/superkraft/engines/japp/virtual_backend/web_frontend/sk_juce_api')
+
+            window.sk.ipc = new (require('/superkraft/modules/sk_ipc/sk_ipc.js'))({ sk: window.sk, source: sk.id })
+        }
+
+        async configApp(){
+            window.application = require('application')
+        }
+
+        async configWSCB(){
+            await sk.utils.awaitSomething(()=>{
+                if (window.WebSockets_Callback) return true
+            })
+
+            window.wscb = new WebSockets_Callback({sk: sk, asJUCE: true, asClient: true})
+        }
+    }
+
+
+    sk.engineInitFunc = async ()=>{
+        sk.sapp = new SK_SAPP_FE_Initializer()
+        await sk.sapp.init()
+    }
+    
+</script>

@@ -1,6 +1,6 @@
 const fs = require('fs')
 
-var _electron =  require('electron')
+var _electron = require('electron')
 const { app } = _electron
 
 var _os = require('os')

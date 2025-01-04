@@ -1,0 +1,37 @@
+.sk_ui_knobComponent {
+    position: relative;
+    padding: 0px 64px;
+}
+
+
+.sk_ui_knobComponent_bypassContainer {
+    position: absolute;
+    left: 10px;
+    top: 0px;
+    cursor: pointer;
+    padding: 0px;
+    overflow: unset;
+}
+
+.sk_ui_knobComponent_bypassContainer:hover {
+    background-color: unset;
+}
+
+.sk_ui_knobComponent_leftLabel {
+    position: absolute;
+    top: 140px;
+    left: -25px;
+    width: 95px;
+    direction: rtl;
+}
+
+.sk_ui_knobComponent_rightLabel {
+    position: absolute;
+    left: 185px;
+    right: 0px;
+    top: 140px;
+}
+
+.sk_ui_knobComponent_bottomLabel {
+    font-size: 18px;
+}

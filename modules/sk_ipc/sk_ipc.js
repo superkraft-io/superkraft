@@ -4,7 +4,8 @@ module.exports = class SK_IPC {
 
         var app_type = (this.sk.app_type ? this.sk.app_type : this.sk.info.type)
 
-        if (app_type === 'japp') this.ipc = new (require('./sk_ipc_juce.js'))({parent: this, source: opt.source})
+        if (app_type === 'japp') this.ipc = new (require('./sk_ipc_juce.js'))({ parent: this, source: opt.source })
+        if (app_type === 'iPlug2') this.ipc = new (require('./sk_ipc_iPlug2.js'))({ parent: this, source: opt.source })
     }
 
     on(eventID, cb){
