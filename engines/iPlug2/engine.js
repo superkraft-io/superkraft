@@ -1,3 +1,5 @@
+console.log('iplug2 engine')
+
 var app = new (require('./modules/sk_japp_electron/sk_japp_electron_app.js'))()
 var _os = require('os')
 

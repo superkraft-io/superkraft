@@ -113,6 +113,7 @@ module.exports = class Superkraft {
         global.SK_RootEngine = require(__dirname + '/sk_rootEngine.js')
         sk.engine = new (require(__dirname + '/engines/' + opt.type + '/engine.js'))({ sk: this })
         try {
+            /*
             //configure native actions if the engine provides any
             var nativeActionsList = (await window.sk_ipc.ipc.request('sk:nativeActions', { func: 'listActions' })).actions
             sk.nativeActions = {}
@@ -124,7 +125,7 @@ module.exports = class Superkraft {
             }
 
             for (var i in nativeActionsList) configAction(nativeActionsList[i])
-
+            */
         } catch (err) {
         }
 

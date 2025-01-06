@@ -1,4 +1,4 @@
-
+var viewMngr = require('viewMngr')
 
 module.exports = class SK_JAPP_View {
     constructor(parent){
@@ -55,13 +55,13 @@ module.exports = class SK_JAPP_View {
     /*******/
 
     static async createView(opt) {
-        var res = await sk.ipc.ipc.request('sk:viewMngr', { action: 'createView', info: opt })
+        var res = await viewMngr.create(opt)
 
     }
 
     set backgroundColor(clr) {
         this.__bgClr = clr
-        sk.ipc.ipc.request('sk:viewMngr', { action: 'setBgClr', clr: clr }).then(() => { })
+        viewMngr.setBgClr({ color: clr }).then(() => { })
     }
 
     get backgroundColor() { return this.__bgClr }
