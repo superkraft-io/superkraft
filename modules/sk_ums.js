@@ -7,26 +7,19 @@ module.exports = class SK_UMS {
 
 
         opt.app.whenReady().then(() => {
-            this.sk.wscb.on('sk_ums', (msg, rW)=>{
+            sk_api.ipc.on('sk.ums', (msg, rW)=>{
                 if (msg.sk_ums_empty) msg = undefined
                 
                 if (msg.action === 'newID'){
                     rW({id: this.newID()})
-                }
-                
-                if (msg.action === 'broadcast'){
+                } else if (msg.action === 'broadcast'){
                     this.handleFromFrontend(msg.eventID, msg.data)
                     rW({})
-                }
-
-
-                if (msg.action === 'setEventData'){
+                } else if (msg.action === 'setEventData'){
                     var event = this.addOrGet(msg.eventID)
                     event.data = msg.data
                     rW({})
-                }
-
-                if (msg.action === 'getEventData'){
+                } else f (msg.action === 'getEventData'){
                     var data = undefined
                     var event = this.events[msg.eventID]
                     if (event) data = event.data
@@ -38,7 +31,7 @@ module.exports = class SK_UMS {
 
     toFE(action, eventID, data){
         return new Promise(resolve => {
-            this.sk.wscb.send({cmd: 'sk_ums', action: action, eventID: eventID, data: data}, res => {
+            sk_api.ipc.request('sk.ums', {action: action, eventID: eventID, data: data}, res => {
                 resolve(res)
             })
         })

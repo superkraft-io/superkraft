@@ -1,0 +1,31 @@
+<script src="<%= sk.routes.frontend.engine %>/frontend/websockets-callback/lib/wscb.js"></script>
+
+<script type="module">
+    sk.vst_ParamMngr = new sk_ui_vstParamManager()
+
+    class SK_SAPP_FE_Initializer {
+        constructor(){
+        }
+
+        async init(){
+            await sk_api.initModules()
+
+            window.application = require('application')
+
+
+            //await and init wscb
+            await sk.utils.awaitSomething(()=>{
+                if (window.WebSockets_Callback) return true
+            })
+
+            window.wscb = new WebSockets_Callback({sk: sk, as_iPlug2: true, asClient: true})
+        }
+    }
+
+
+    sk.engineInitFunc = async ()=>{
+        sk.sapp = new SK_SAPP_FE_Initializer()
+        await sk.sapp.init()
+    }
+    
+</script>
