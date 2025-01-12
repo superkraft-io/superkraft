@@ -118,8 +118,8 @@ module.exports = class SKXX_Engine extends SK_RootEngine {
     }
 
     on(cmd, cb){
-        sk_api.ipc.on(cmd, async (msg, rW) => {
-            cb(msg, rW)
+        sk_api.ipc.on(cmd, async (msg, rW)=>{
+            return await cb(msg, rW)
         })
     }
 

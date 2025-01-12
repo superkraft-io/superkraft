@@ -38,6 +38,6 @@ module.exports = class SKXX_Electron_App {
     }
 
     getVersion() {
-        return sk.staticInfo.application.version
+        return sk_api.staticInfo.application.version
     }
 }

@@ -19,7 +19,7 @@ module.exports = class SK_UMS {
                     var event = this.addOrGet(msg.eventID)
                     event.data = msg.data
                     rW({})
-                } else f (msg.action === 'getEventData'){
+                } else if (msg.action === 'getEventData'){
                     var data = undefined
                     var event = this.events[msg.eventID]
                     if (event) data = event.data
