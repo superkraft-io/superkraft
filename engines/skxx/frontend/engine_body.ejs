@@ -5,9 +5,11 @@
 
     class SK_SAPP_FE_Initializer {
         constructor(){
+            sk_api.setID(sk.id)
         }
 
         async init(){
+            //await sk.utils.sleep(7000)
             await sk_api.initModules()
 
             window.application = require('application')

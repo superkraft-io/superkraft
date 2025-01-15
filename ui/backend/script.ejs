@@ -170,6 +170,8 @@
             return new Promise(async (resolve, reject)=>{
                 await sk.awaitWSCB()
 
+                //await sk.utils.sleep(5000);
+				
                 var res = await sk.comm.main('getInfo')
                 if (!sk.isOnMobile) sk.os = res.os
                 sk.arch    = res.arch
