@@ -168,10 +168,6 @@
 
         init: ()=>{
             return new Promise(async (resolve, reject)=>{
-                await sk.awaitWSCB()
-
-                //await sk.utils.sleep(5000);
-				
                 var res = await sk.comm.main('getInfo')
                 if (!sk.isOnMobile) sk.os = res.os
                 sk.arch    = res.arch
@@ -188,8 +184,8 @@
 					
                     var configAction = (action, targetBackend)=>{
 			            targetList[action] = async opt => {
-                            if (!window.sk.ipc || targetBackend === 'jsbe') return sk.comm.view(action, opt)
-							else return await window.sk.ipc.ipc.request('sk:nativeActions', {...{func: action}, ...opt})
+                            if (targetBackend === 'jsbe') return sk.comm.view(action, opt)
+							else return await sk_api.ipc.request('sk.nativeActions', {...{func: action}, ...opt})
                         }
 			        }
 

@@ -12,15 +12,15 @@
             //await sk.utils.sleep(7000)
             await sk_api.initModules()
 
-            window.application = require('application')
+            sk.nativeActions = sk_api.nativeActions
 
+            window.application = require('application')
 
             //await and init wscb
             await sk.utils.awaitSomething(()=>{
                 if (window.WebSockets_Callback) return true
             })
 
-            window.wscb = new WebSockets_Callback({sk: sk, as_iPlug2: true, asClient: true})
         }
     }
 

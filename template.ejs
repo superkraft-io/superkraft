@@ -29,9 +29,7 @@
                 FastClick.attach(document.body);
             }, false);
         </script>
-        <div id="sk_ui_loadingView" class="sk_ui_component sk_ui_noSelect jsomStyle_fullwidth jsomStyle_fullheight jsomStyle_center jsomStyle_middle" style="display: flex; justify-content: center; position: absolute; width: 100%; height: 100%; z-index: 99999;">
-            <div iclass="sk_ui_component sk_ui_noSelect" style="width: fit-content; color: white;">Loading...</div>
-        </div>
+
         
         <head>
             <% if (sk.routes.frontend.mobile){ %>
@@ -178,8 +176,6 @@
 
 
             var startSKFE = async ()=>{
-                await sk.awaitWSCB()
-
                 sk.ums = new SK_UMS()
                 sk.commands = new SK_Commands()
 
@@ -226,8 +222,6 @@
                 }
 
                 sk.init().then(initAppRes => {
-                    document.getElementById('sk_ui_loadingView').remove()
-                    
                     sk.app = (new sk_ui_component({parent: {element: document.body}, extraOpt: {}}))
                     sk.app.setup(_c => {
                         _c.styling += ' fullwidth fullheight'
