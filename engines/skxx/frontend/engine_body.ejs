@@ -16,11 +16,7 @@
 
             window.application = require('application')
 
-            //await and init wscb
-            await sk.utils.awaitSomething(()=>{
-                if (window.WebSockets_Callback) return true
-            })
-
+            sk.engineInitialized = true
         }
     }
 

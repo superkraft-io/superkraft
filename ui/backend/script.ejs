@@ -1,6 +1,7 @@
 <script>
     sk = {
         app_type: "<%= app_type %>",
+		engineInitialized: false,
         isOnMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent), 
         browser: ()=>{
             let userAgent = navigator.userAgent;
@@ -158,16 +159,18 @@
             })
         },
 
-        awaitWSCB: ()=>{
+        awaitEngineInitialization: ()=>{
             return sk.utils.awaitSomething(()=>{
                 if (sk.app_type === 'wapp') return true
-                if (!window.wscb) return
+                if (!sk.engineInitialized) return
                 return true
             })
         },
 
         init: ()=>{
             return new Promise(async (resolve, reject)=>{
+			    await sk.awaitEngineInitialization()
+				
                 var res = await sk.comm.main('getInfo')
                 if (!sk.isOnMobile) sk.os = res.os
                 sk.arch    = res.arch

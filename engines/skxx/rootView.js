@@ -50,7 +50,6 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             
 
             this.viewInfo = await this._init(opt)
-            this.viewInfo.sk.nativeActions = await this.sk.info.engine.nativeActionsLoader.listNativeActions()
 
             this.index = 5 + this.sk.viewList.indexOf(opt.id)
             var defOpts = {

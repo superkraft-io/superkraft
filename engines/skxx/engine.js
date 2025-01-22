@@ -43,25 +43,6 @@ module.exports = class SKXX_Engine extends SK_RootEngine {
             await app.__init__()
 
 
-            this.nativeActionsLoader = new (require('./modules/skxx_nativeActionsLoader.js'))()
-            this.nativeActionsLoader.sk = this.sk
-
-            
-            
-            //var wscb = new (require(__dirname + '/modules/sk_sapp_wscb_wrapper'))({
-            /*var wscb = new (require(__dirname + '/frontend/websockets-callback/lib/wscb.js'))({
-                sk: this.sk,
-                'as_SK++': true,
-                asClient: true,
-                onUnexpectedMessage: msg => {
-                    if (msg.cmd === 'terminate') app.quit()
-                }
-            })
-            wscb.test()
-            this.sk.wscb = wscb
-            */
-
-
             this.initPosts()
 
 
@@ -181,7 +162,7 @@ module.exports = class SKXX_Engine extends SK_RootEngine {
         try {
             await sk_fs.promises.access(this.sk.opt.postsRoot)
         } catch(err) {
-            return console.error(`[ ERROR: SAPP ENGINE ] initPosts(): posts folder path has been defined but post folder does not exist`)
+            return console.error(`[ ERROR: SK++ ENGINE ] initPosts(): posts folder path has been defined but post folder does not exist`)
         }
 
         var postsFolder = this.sk.opt.postsRoot

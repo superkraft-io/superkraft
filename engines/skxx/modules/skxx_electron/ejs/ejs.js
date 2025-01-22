@@ -22,8 +22,13 @@ window.EJS_defs = {
 EJS_defs._OPTS_PASSABLE_WITH_DATA_EXPRESS = EJS_defs._OPTS_PASSABLE_WITH_DATA.concat('cache')
 
 
-
-var fileLoader = fs.promises.readFile;
+var fileLoader = async (path) => {
+    try {
+        return await fs.promises.readFile(path)
+    } catch (err) {
+        return '';
+    }
+};
 
 module.exports = class EJS {
     constructor(){
