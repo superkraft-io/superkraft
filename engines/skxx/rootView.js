@@ -1,6 +1,123 @@
 var SKXX_Electron_Window = require(__dirname + '/modules/skxx_electron/skxx_electron_window.js')
 
+var BrowserWindow_defOpt = this.defOpt = {
+    //SK Added features
+    "oldStyle": false, //== [OK] ==//
 
+    //ElectronJS compatible features
+    "width": 800, //== [OK] ==//
+    "height": 600, //== [OK] ==//
+    "x": 0, //== [OK] ==//
+    "y": 0, //== [OK] ==//
+    "center": true, //== [OK] ==//
+    "minWidth": 0, //== [OK] ==//
+    "minHeight": 0, //== [OK] ==//
+    "maxWidth": Infinity, //== [OK] ==//
+    "maxHeight": Infinity, //== [OK] ==//
+    "resizable": true, //== [OK] ==//
+    "movable": true, //== [OK] ==//
+    "minimizable": true, //== [OK] ==//
+    "maximizable": true, //== [OK] ==//
+    "closable": true, //== [OK] ==//
+    "alwaysOnTop": false, //== [OK] ==//
+    "skipTaskbar": false, //== [OK] ==//
+    "show": true, //== [OK] ==//
+    "frame": true, //== [OK] ==//
+    "title": "My SK++ Proton Window", //== [OK] ==//
+    "backgroundColor": "#FFFFFF", //== [OK] ==//
+    "transparent": false, //== [OK] ==//
+    "thickFrame": true, // Windows exclusive //== [OK] ==//
+    "opacity": 1.0, //== [OK] ==//
+    "kiosk": false, //== [OK] ==//
+
+    "fullscreenable": true, //== [OK] ==//
+    "fullscreen": false, //== [OK] ==//
+
+
+
+    "icon": null,
+    "useContentSize": false,
+    "focusable": true,
+    "parent": null,
+    "modal": false,
+    "disableAutoHideCursor": false,
+    "autoHideMenuBar": false,
+    "type": "normal",
+    "paintWhenInitiallyHidden": true,
+
+
+    "hasShadow": true,//Seems to do nothing on Windows 11
+    "darkTheme": false, //Seems to do nothing on Windows 11
+    "throttleWhenBackground": true, //not documented?
+
+
+
+    "acceptFirstMouse": false, //macos only
+    "enableLargerThanScreen": false, //macos only
+    "simpleFullscreen": false, // macOS exclusive
+    "titleBarStyle": "default", // macOS exclusive (options: 'default', 'hidden', 'hiddenInset', 'customButtonsOnHover')
+    "zoomToPageWidth": false, // macOS exclusive
+    "tabbingIdentifier": null, // macOS exclusive
+    "trafficLightPosition": { "x": 10, "y": 10 }, // macOS exclusive (controls the position of the traffic light buttons in frameless windows)
+    "vibrancy": "none", // macOS exclusive (options: 'appearance-based', 'light', 'dark', 'titlebar', 'selection', 'menu', 'popover', 'sidebar', 'medium-light', 'ultra-dark')
+    "roundedCorners": true, // macOS exclusive
+    "hiddenInMissionControl": false, // macOS exclusive
+
+    "webPreferences": {
+        "devTools": true,
+        "nodeIntegration": false,
+        "nodeIntegrationInWorker": false,
+        "nodeIntegrationInSubFrames": false,
+        "preload": null,
+        "sandbox": false,
+        "session": null,
+        "partition": null,
+        "zoomFactor": 1.0,
+        "javascript": true,
+        "webSecurity": true,
+        "allowRunningInsecureContent": false,
+        "images": true,
+        "imageAnimationPolicy": "animate",
+        "textAreasAreResizable": true,
+        "webgl": true,
+        "plugins": false,
+        "experimentalFeatures": false,
+        "scrollBounce": false, // macOS exclusive
+        "enableBlinkFeatures": "",
+        "disableBlinkFeatures": "",
+        "defaultFontFamily": {
+            "standard": "Times New Roman",
+            "serif": "Times New Roman",
+            "sansSerif": "Arial",
+            "monospace": "Courier New",
+            "cursive": "Script",
+            "fantasy": "Impact",
+            "math": "Latin Modern Math"
+        },
+        "defaultFontSize": 16,
+        "defaultMonospaceFontSize": 13,
+        "minimumFontSize": 0,
+        "defaultEncoding": "ISO-8859-1",
+        "backgroundThrottling": true,
+        "offscreen": false,
+        "useSharedTexture": false,
+        "contextIsolation": true,
+        "webviewTag": false,
+        "additionalArguments": [],
+        "safeDialogs": false,
+        "safeDialogsMessage": null,
+        "disableDialogs": false,
+        "navigateOnDragDrop": false,
+        "autoplayPolicy": "no-user-gesture-required",
+        "disableHtmlFullscreenWindowResize": false,
+        "accessibleTitle": "",
+        "spellcheck": true,
+        "enableWebSQL": true,
+        "v8CacheOptions": "code",
+        "enablePreferredSizeMode": false,
+        "paintWhenInitiallyHidden": true
+    },
+}
 module.exports = class SK_RootView extends SK_RootViewCore {
     constructor(opt){
         super(opt)
@@ -70,8 +187,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                 frameless: true,
                 headless: false
             }
-            defOpts = {...defOpts, ...this.info}
-            delete defOpts.show
+            defOpts = { ...BrowserWindow_defOpt, ...defOpts, ...this.info}
 
             this.defOpts = defOpts
 
