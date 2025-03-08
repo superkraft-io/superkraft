@@ -1,17 +1,23 @@
 console.log('SK++ engine')
 
-var app = new (require('./modules/skxx_electron/skxx_electron_app.js'))()
+//var app = new (require('./modules/skxx_electron/skxx_electron_app.js'))()
+var { app } = require('proton')
 var _os = require('os')
+
+window.ejs_skxx = new (require(__dirname + '/modules/ejs_skxx/ejs_skxx.js'))()
 
 module.exports = class SKXX_Engine extends SK_RootEngine {
     constructor(opt){
         super(opt)
+        console.log('------------- SKXX_Engine constructor')
 
         this.ui = {
             root: 'sk_param_component_root'
         }
 
         this.getSysInfo()
+
+        window.ejs_skxx.init()
     }
 
     getSysInfo(){
@@ -32,15 +38,11 @@ module.exports = class SKXX_Engine extends SK_RootEngine {
     }
 
     init(){
+        console.log('------------- SKXX_Engine init')
         return new Promise(async resolve => {
-            this.__init()
-
             this.sk.info._os = _os
             this.sk.info.app = app
             this.app = app
-
-
-            await app.__init__()
 
 
             this.initPosts()
@@ -75,27 +77,17 @@ module.exports = class SKXX_Engine extends SK_RootEngine {
                 this.sk.online = res.data
             })
 
-            setTimeout(()=>{
-                app.setAppReady()
-            }, 200)
-
             resolve()
         })
     }
 
-    waitForReady(){
-        return new Promise(resolve => {
-            if (app.__appIsReady) return resolve()
-            
-            app.on('ready', async ()=>{
-                //this.deeplink = new (require('./modules/sk_dapp_deeplink.js'))({sk: this.sk})
-                this.sk.country = app.getLocale().split('-')[0]
+    async waitForReady(){
+        await app.whenReady()
+        
+        //this.deeplink = new (require('./modules/sk_dapp_deeplink.js'))({sk: this.sk})
+        this.sk.country = app.getLocale().split('-')[0]
 
-                if (this.sk.onAppReady) await this.sk.onAppReady()
-
-                resolve()
-            })
-        })   
+        if (this.sk.onAppReady) await this.sk.onAppReady()
     }
 
     on(cmd, cb){

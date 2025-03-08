@@ -8,7 +8,7 @@ module.exports = class EJS_SKXX {
         }
     }
 
-    async init(){
+    init(){
         window.ejs = new (require(__dirname + '/ejs.js'))
         window.EJS_Template = require(__dirname + '/ejs_template.js')
         window.ejs_utils = new (require(__dirname + '/ejs_utils.js'))

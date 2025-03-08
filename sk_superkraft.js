@@ -77,13 +77,6 @@ module.exports = class Superkraft {
         window.sk_ipc = this.ipc
 
 
-        try {
-            this.application = require('application')
-            await this.application.init()
-        } catch (err) {
-            console.error(err)
-        }
-
         global.sk_fs = new (require(__dirname + '/modules/sk_fs/sk_fs.js'))({ sk: this, app_type: opt.type })
 
 
