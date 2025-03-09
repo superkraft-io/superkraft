@@ -1,6 +1,7 @@
 console.log('--------- rootView')
 
 const { BrowserWindow } = require('proton')
+var viewMngr = require('viewMngr')
 
 module.exports = class SK_RootView extends SK_RootViewCore {
     constructor(opt){
@@ -86,10 +87,10 @@ module.exports = class SK_RootView extends SK_RootViewCore {
     }
 
     async create(){
-        this._view = new BrowserWindow(this.defOpts)
+        //this._view = new BrowserWindow(this.defOpts)
         
 
-        this._view.on('ready-to-show', ()=>{
+        /*this._view.on('ready-to-show', ()=>{
             //this.ipc = this._view.webContents
         })
 
@@ -107,6 +108,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
 
         if (this.onAfterCreated) this.onAfterCreated({view: this._view})
+        */
 
         this.reload()
 
@@ -149,10 +151,13 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         var ejsData = await ejs_skxx.protocolListener({ url: templateURL })
 
         var vfsViewPath = 'sk_vfs' + this.routes.frontend.view + 'view.html'
-        console.log(vfsViewPath)
         await fs.promises.writeFile(vfsViewPath, ejsData)
 
-        this._view.loadURL('/sk:view/' + this.defOpts.id, this.defOpts)
+        //this._view.loadURL('/sk:view/' + this.defOpts.id, this.defOpts)
+
+        var viewOpts = {...BrowserWindow.getDefOpts(), ...this.defOpts}
+        this._view = viewOpts
+        await viewMngr.create(viewOpts)
     }
 
     async show(){
