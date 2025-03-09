@@ -176,7 +176,7 @@
                 var res = await sk_api.ipc.request('test', {key: 'value'}, null, {target: 'sk:test'})
                 console.log(res)
                 
-await sk.utils.sleep(20000)
+                //await sk.utils.sleep(20000)
 
                 var res = await sk.comm.main('getInfo')
                 if (!sk.isOnMobile) sk.os = res.os

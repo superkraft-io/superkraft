@@ -1,16 +1,13 @@
 console.log('--------- rootView')
 
 const { BrowserWindow } = require('proton')
-var viewMngr = require('viewMngr')
 
 module.exports = class SK_RootView extends SK_RootViewCore {
     constructor(opt){
         super(opt)
-        console.log('------------- constructor')
     }
     
     init(opt){
-        console.log('------------- init')
         return new Promise(async resolve => {
             
             
@@ -87,10 +84,10 @@ module.exports = class SK_RootView extends SK_RootViewCore {
     }
 
     async create(){
-        //this._view = new BrowserWindow(this.defOpts)
+        this._view = new BrowserWindow(this.defOpts)
         
 
-        /*this._view.on('ready-to-show', ()=>{
+        this._view.on('ready-to-show', ()=>{
             //this.ipc = this._view.webContents
         })
 
@@ -108,7 +105,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
 
         if (this.onAfterCreated) this.onAfterCreated({view: this._view})
-        */
+        
 
         this.reload()
 
@@ -118,7 +115,6 @@ module.exports = class SK_RootView extends SK_RootViewCore {
     }
 
     async reload() {
-        console.log('------------- RELOAD')
         var userData = {}
         if (this.onForwardUserData) {
             try {
@@ -142,8 +138,6 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                 globalData: this.sk.info.globalData
             }
         }
-        
-        console.log('------------- EJS SKXX')
 
         var templateURL = this.sk.info.paths.superkraft + 'template.ejs'
 
@@ -153,11 +147,8 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         var vfsViewPath = 'sk_vfs' + this.routes.frontend.view + 'view.html'
         await fs.promises.writeFile(vfsViewPath, ejsData)
 
-        //this._view.loadURL('/sk:view/' + this.defOpts.id, this.defOpts)
-
         var viewOpts = {...BrowserWindow.getDefOpts(), ...this.defOpts}
         this._view = viewOpts
-        await viewMngr.create(viewOpts)
     }
 
     async show(){
