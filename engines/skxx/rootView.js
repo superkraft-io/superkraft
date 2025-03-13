@@ -148,6 +148,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         await fs.promises.writeFile(vfsViewPath, ejsData)
 
         var viewOpts = {...BrowserWindow.getDefOpts(), ...this.defOpts}
+        this._view.loadURL('/sk:view/' + this.viewInfo.id)
         this._view = viewOpts
     }
 
