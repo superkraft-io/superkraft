@@ -3,6 +3,10 @@ class SK_UMS {
         this.events = {}
         this.clientIDCounter = -1
 
+        sk_api.waitForWndReady().then(()=>{ init() })
+    }
+
+    init(){
         if (sk.app_type !== 'wapp'){
             this.init_BE_events()
             //wscb.on('sk_ums', (msg, rW)=>{

@@ -365,7 +365,11 @@
                 sk.tweens.start()
             }
 
-            startSKFE()
+
+            sk_api.waitForWndReady().then(()=>{
+                startSKFE()
+            })
+            
         </script>
 
 
