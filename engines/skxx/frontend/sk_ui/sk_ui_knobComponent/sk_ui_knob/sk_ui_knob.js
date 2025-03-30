@@ -1,4 +1,4 @@
-class sk_ui_knob extends sk_ui_1_vst_param_component_draggable {
+class sk_ui_knob extends sk_ui_component {
     constructor(opt) {
         super(opt)
 

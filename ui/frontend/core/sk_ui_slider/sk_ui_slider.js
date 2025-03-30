@@ -189,6 +189,10 @@ class sk_ui_slider extends sk_ui_component {
         }})
 
         this.attributes.add({friendlyName: 'Center Origin', name: 'centerOrigin', type: 'bool'})
+
+        onPluginParamIDSet = ()=>{
+            //...
+        }
     }
 
     setValue(val){

@@ -2,7 +2,7 @@ console.log('openURL')
 
 module.exports = class SK_Action extends SK_RootAction {
     async exec(opt, res, view, _v, srcOpt, validationRes) {
-        var req = require('electron')
+        var req = require('proton')
         var shell = req.shell
         var path = opt.url
 

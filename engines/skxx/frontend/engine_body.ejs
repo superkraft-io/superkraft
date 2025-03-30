@@ -1,29 +1,10 @@
-<script src="<%= sk.routes.frontend.engine %>/frontend/websockets-callback/lib/wscb.js"></script>
+<script src="<%= sk.routes.frontend.engine %>/frontend/sk_dawPluginMngr.js"></script>
 
 <script type="module">
-    sk.vst_ParamMngr = new sk_ui_vstParamManager()
-
-    class SK_SAPP_FE_Initializer {
-        constructor(){
-            sk_api.setID(sk.id)
-        }
-
-        async init(){
-            //await sk.utils.sleep(7000)
-            await sk_api.initModules()
-
-            sk.nativeActions = sk_api.nativeActions
-
-            window.application = require('application')
-
-            sk.engineInitialized = true
-        }
-    }
-
+    sk.dawPluginMngr = new sk_ui_dawPluginMngr()
 
     sk.engineInitFunc = async ()=>{
-        sk.sapp = new SK_SAPP_FE_Initializer()
-        await sk.sapp.init()
+        await sk_api.initModules()
+        sk.engineInitialized = true
     }
-    
 </script>

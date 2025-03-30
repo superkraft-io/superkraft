@@ -8,7 +8,7 @@ class sk_ui_vu_meter extends sk_ui_component {
 
 
         this.leftSignal = this.add.fromNew(sk_ui_vu_meter_signal, _c => {
-            _c.vstParamID = 'Input Volume'
+            _c.pluginParamID = 'Input Volume'
 
             _c.label.text = 'INPUT'
 
@@ -24,7 +24,7 @@ class sk_ui_vu_meter extends sk_ui_component {
 
 
         this.rightSignal = this.add.fromNew(sk_ui_vu_meter_signal, _c => {
-            _c.vstParamID = 'Output Volume'
+            _c.pluginParamID = 'Output Volume'
 
             _c.label.text = 'OUTPUT'
             _c.channels.gainSlider.cursorSide = 'right'

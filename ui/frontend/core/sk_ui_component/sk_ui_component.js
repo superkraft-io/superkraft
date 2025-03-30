@@ -521,6 +521,20 @@ class sk_ui_component {
 
         /********/
 
+        //Plugin stuff
+        
+        this.attributes.add({friendlyName: 'Plugin Param ID', name: 'pluginParamID', type: 'text', onSet: val => {
+            sk.sk_ui_pluginParamMngr(val, this)
+            if (this.onPluginParamIDSet) this.onPluginParamIDSet(this)
+        }})
+
+        this.attributes.add({friendlyName: 'Plugin Param Type', name: 'pluginParamType', type: 'text', onSet: val => {
+            if (val === 'draggable') sk_ui_dawPluginMngr.configDraggableEvents(this)
+        }})
+
+
+        /********/
+
         sk.ui.components.uuid_counter++
         this.uuid = 'sk_ui_id_' + sk.ui.components.uuid_counter
 
