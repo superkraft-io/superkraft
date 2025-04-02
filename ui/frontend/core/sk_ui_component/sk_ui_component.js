@@ -524,14 +524,12 @@ class sk_ui_component {
         //Plugin stuff
         
         this.attributes.add({friendlyName: 'Plugin Param ID', name: 'pluginParamID', type: 'text', onSet: val => {
-            sk.sk_ui_pluginParamMngr(val, this)
-            if (this.onPluginParamIDSet) this.onPluginParamIDSet(this)
+            sk.dawPluginMngr.add(val, this)
+            if (this.pluginParamType === 'draggable') sk_dawPluginMngr.configDraggableEvents(this)
+            if (this.dawPluginParamInfo.onPluginParamIDSet) this.dawPluginParamInfo.onPluginParamIDSet(this)
         }})
 
-        this.attributes.add({friendlyName: 'Plugin Param Type', name: 'pluginParamType', type: 'text', onSet: val => {
-            if (val === 'draggable') sk_ui_dawPluginMngr.configDraggableEvents(this)
-        }})
-
+        this.attributes.add({friendlyName: 'Plugin Param Type', name: 'pluginParamType', type: 'text'})
 
         /********/
 

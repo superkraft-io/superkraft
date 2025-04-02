@@ -1,10 +1,12 @@
 <script src="<%= sk.routes.frontend.engine %>/frontend/sk_dawPluginMngr.js"></script>
 
 <script type="module">
-    sk.dawPluginMngr = new sk_ui_dawPluginMngr()
 
     sk.engineInitFunc = async ()=>{
+        sk.dawPluginMngr = new sk_dawPluginMngr()
+
         await sk_api.initModules()
+        sk.nativeActions = sk_api.nativeActions
         sk.engineInitialized = true
     }
 </script>

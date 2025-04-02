@@ -3,7 +3,7 @@ class SK_UMS {
         this.events = {}
         this.clientIDCounter = -1
 
-        sk_api.waitForWndReady().then(()=>{ init() })
+        sk_api.waitForWndReady().then(()=>{ this.init() })
     }
 
     init(){

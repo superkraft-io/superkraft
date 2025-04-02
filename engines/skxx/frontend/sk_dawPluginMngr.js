@@ -1,4 +1,4 @@
-class sk_ui_dawPluginMngr {
+class sk_dawPluginMngr {
     constructor() {
         this.components = {}
 
@@ -7,14 +7,14 @@ class sk_ui_dawPluginMngr {
 
     add(pluginParamID, component) {
         this.components[pluginParamID] = component
-        configRootEvents(component)
+        sk_dawPluginMngr.configRootEvents(component)
     }
 
     startReadMonitor() {
         var step = async _ts => {
             for (var i in this.components) {
                 var component = this.components[i]
-                if (component.dawPluginParamInfo.readValue) component.dawPluginParamInfo.readValue()
+                component.dawPluginParamInfo.readValue()
             }
 
             window.requestAnimationFrame(step)
@@ -106,6 +106,8 @@ class sk_ui_dawPluginMngr {
         }
 
         target.dawPluginParamInfo.readValue = async (opt = {}) => {
+            console.log('reading value for ' + target.__pluginParamID)
+                
             if (target.dawPluginParamInfo.busyReading || !sk.acceptReadingParameters) return
 
             target.dawPluginParamInfo.busyReading = true
@@ -132,7 +134,7 @@ class sk_ui_dawPluginMngr {
 
 
     static configDraggableEvents(target){
-        if (!target.dawPluginParamInfo) sk_ui_dawPluginMngr.configRootEvents(target)
+        if (!target.dawPluginParamInfo) sk_dawPluginMngr.configRootEvents(target)
 
         target.dawPluginParamInfo.dragSensitivity = 0.5
 
@@ -245,8 +247,8 @@ class sk_ui_dawPluginMngr {
     }
 
 
-    static configDraggableEvents(target){
-        if (!target.dawPluginParamInfo) sk_ui_dawPluginMngr.configRootEvents(target)
+    static configTogglableEvents(target){
+        if (!target.dawPluginParamInfo) sk_dawPluginMngr.configRootEvents(target)
         
 
         target.dawPluginParamInfo.readValue_root = target.dawPluginParamInfo.readValue

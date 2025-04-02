@@ -7,7 +7,7 @@ class sk_ui_slider extends sk_ui_component {
         this.vertical = false
         this.compact = true
 
-        
+        this.pluginParamType = 'draggable'
         
         
         var height = 12
