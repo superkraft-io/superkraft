@@ -525,7 +525,10 @@ class sk_ui_component {
         
         this.attributes.add({friendlyName: 'Plugin Param ID', name: 'pluginParamID', type: 'text', onSet: val => {
             sk.dawPluginMngr.add(val, this)
+            
             if (this.pluginParamType === 'draggable') sk_dawPluginMngr.configDraggableEvents(this)
+            else if (this.pluginParamType === 'togglable') sk_dawPluginMngr.configTogglableEvents(this)
+
             if (this.dawPluginParamInfo.onPluginParamIDSet) this.dawPluginParamInfo.onPluginParamIDSet(this)
         }})
 

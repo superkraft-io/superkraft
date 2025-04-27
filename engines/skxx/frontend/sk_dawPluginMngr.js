@@ -12,6 +12,8 @@ class sk_dawPluginMngr {
 
     startReadMonitor() {
         var step = async _ts => {
+            //await sk.utils.sleep()
+            
             for (var i in this.components) {
                 var component = this.components[i]
                 component.dawPluginParamInfo.readValue()
@@ -54,12 +56,18 @@ class sk_dawPluginMngr {
         })
 
         var mouseUpHandler = async _e => {
+            //console.log('mouseup', target.pluginParamID)
+
+
+            target.dawPluginParamInfo.busyChanging = false
+
             if (target.disabled) return
 
             if (target.dawPluginParamInfo.onMouseUp) target.dawPluginParamInfo.onMouseUp(_e)
 
             _e.preventDefault()
             _e.stopPropagation()
+            
 
             delete target.dawPluginParamInfo.mdPos
 
@@ -69,6 +77,10 @@ class sk_dawPluginMngr {
         }
 
         target.element.addEventListener('mousedown', async _e => {
+            //console.log('mousedown', target.pluginParamID)
+
+
+            target.dawPluginParamInfo.busyChanging = true
 
             if (_e.target.tagName.toLowerCase() !== 'input') {
                 _e.preventDefault()
@@ -87,10 +99,18 @@ class sk_dawPluginMngr {
 
         
 
-        target.__pluginParam_writeValue = async (opt = {}) => {
-            if (sk.pluginParamMngr.onParameterWritten) sk.pluginParamMngr.onParameterWritten(target, opt)
+        target.dawPluginParamInfo.writeValue = async (opt = {}) => {
+            target.dawPluginParamInfo.busyWriting = true
+
+            if (target.pluginParamValueType === 'binary'){
+                var mappedValue = (opt.value === true ? 1 : 0)
+                opt.value = mappedValue
+            }
+
+            if (sk.dawPluginMngr.onParameterWritten) sk.dawPluginMngr.onParameterWritten(target, opt)
 
             try {
+                //console.log(opt.value)
                 var res = await sk.nativeActions.handlePluginParamMouseEvent({
                     ...{
                         pluginParamID: target.__pluginParamID,
@@ -102,34 +122,61 @@ class sk_dawPluginMngr {
                 console.error(err)
             }
 
+
+            target.dawPluginParamInfo.busyWriting = false
+
             return res
         }
 
         target.dawPluginParamInfo.readValue = async (opt = {}) => {
-            console.log('reading value for ' + target.__pluginParamID)
+            if (target.dawPluginParamInfo.busyWriting || target.dawPluginParamInfo.busyChanging) return
+            
+            //console.log('reading value for ' + target.__pluginParamID)
                 
-            if (target.dawPluginParamInfo.busyReading || !sk.acceptReadingParameters) return
+            if (target.dawPluginParamInfo.busyReading) return
 
             target.dawPluginParamInfo.busyReading = true
 
-            var res = await sk.nativeActions.handlePluginParamMouseEvent({
-                ...{
-                    pluginParamID: target.__pluginParamID,
-                    event: 'read'
-                },
-                ...opt
-            })
-            if (sk.pluginParamMngr.onParameterRead) sk.pluginParamMngr.onParameterRead(target, opt, res)
+            try {
+                var res = await sk.nativeActions.handlePluginParamMouseEvent({
+                    ...{
+                        pluginParamID: target.__pluginParamID,
+                        event: 'read'
+                    },
+                    ...opt
+                })
+
+                if (target.pluginParamValueType === 'binary'){
+                    var mappedValue = (res.value === 1 ? true : false)
+                    res.value = mappedValue
+                }
+
+                if (!target.dawPluginParamInfo.busyWriting || !target.dawPluginParamInfo.busyChanging){
+                    if (sk.dawPluginMngr.onParameterRead) sk.dawPluginMngr.onParameterRead(target, opt, res)
+
+                    var hasSetter = Object.getOwnPropertyDescriptor(target, 'value')['set']
+                    if (hasSetter){
+                        if (target.value !== res.value) target.value = res.value
+                    } else {
+                        if (!target.dawPluginParamInfo.noValueSetterNotified){
+                            target.dawPluginParamInfo.noValueSetterNotified = true
+                            console.error('[SK DAW Plugin Parameter - ERROR] No setter named "value" for the SK UI component that represents the parameter ID "' + target.__pluginParamID + '"')
+                        }
+                    }
+                }
+            } catch(err) {
+                //...
+            }
 
             target.dawPluginParamInfo.busyReading = false
 
             return res
         }
 
-        target.setValueFromExternalSource = value => {
+        /*target.setValueFromExternalSource = value => {
             target.value = value
             target.dawPluginParamInfo.applyValue()
-        }
+        }*/
     }
 
 
@@ -144,7 +191,7 @@ class sk_dawPluginMngr {
         target.dawPluginParamInfo.invertY = true
 
         var mouseMoveHandler = async _e => {
-            if (!target.dawPluginParamInfo.mdPos) return
+            if (!target.dawPluginParamInfo.mdPos || target.ownerHandlesDragAction) return
 
             sk.interactions.block()
 
@@ -187,7 +234,9 @@ class sk_dawPluginMngr {
         }
 
 
-        target.__sk_ui_plugin_param_component_root_mouseDownEvent = _e => {
+        target.dawPluginParamInfo.__draggable_mouseDownHandler = _e => {
+            //console.log('mousedown DRAGGABLE')
+
             target.dawPluginParamInfo.last_mdValue = 0
             target.dawPluginParamInfo.mdValue = target.value
 
@@ -198,7 +247,9 @@ class sk_dawPluginMngr {
             if (target.onMouseDown) target.onMouseDown()
         }
 
-        target.__sk_ui_plugin_param_component_root_mouseUp = _e => {
+        target.dawPluginParamInfo.__draggable_mouseUpHandler = _e => {
+            //console.log('mouseup DRAGGABLE')
+
             sk.interactions.unblock()
 
             delete target.dawPluginParamInfo.manuallyChanging
@@ -206,6 +257,9 @@ class sk_dawPluginMngr {
 
             if (target.onMouseUp) target.onMouseUp()
         }
+
+        target.element.addEventListener('mousedown', target.dawPluginParamInfo.__draggable_mouseDownHandler)
+        document.addEventListener('mouseup', target.dawPluginParamInfo.__draggable_mouseUpHandler)
 
         target.element.addEventListener('wheel', _e => {
             target.value += (sk.os === 'win' ? 0 - _e.deltaY : _e.deltaY) / (_e.shiftKey ? 100 : 10)
@@ -230,33 +284,44 @@ class sk_dawPluginMngr {
         target.dawPluginParamInfo.readValue_root = target.dawPluginParamInfo.readValue
         
         target.dawPluginParamInfo.readValue = async ()=>{
-            if (target.manuallyChanging || target.__busyReading) return
+            if (target.dawPluginParamInfo.manuallyChanging || target.dawPluginParamInfo.busyReading){
+                //console.log('BLOCKED READING')
+                return
+            }
     
-            target.blockWrite = true
+
+            //console.log('target.dawPluginParamInfo.manuallyChanging = ' + target.dawPluginParamInfo.manuallyChanging)
+            //console.log('target.dawPluginParamInfo.busyReading = ' + target.dawPluginParamInfo.busyReading)
+
+            target.dawPluginParamInfo.blockWrite = true
     
-            var normalizedValue = Number((await target.dawPluginParamInfo.readValue_root()).value)
+            var value = Number((await target.dawPluginParamInfo.readValue_root()).value)
     
-            if (target.dawPluginParamInfo.lastReadValue === normalizedValue) return
-    
-            target.dawPluginParamInfo.lastReadValue = normalizedValue
-    
-            target.value = sk.utils.map(normalizedValue, 0, 1, target.dawPluginParamInfo.valueRange.min, target.dawPluginParamInfo.valueRange.max)
-    
+            target.dawPluginParamInfo.busyReading = true
+
+            if (target.dawPluginParamInfo.lastReadValue !== value){
+                target.dawPluginParamInfo.lastReadValue = value
+                target.value = value
+            }
+            
             target.dawPluginParamInfo.blockWrite = false
+            target.dawPluginParamInfo.busyReading = false
         }
     }
 
 
     static configTogglableEvents(target){
+        return
+
         if (!target.dawPluginParamInfo) sk_dawPluginMngr.configRootEvents(target)
         
 
         target.dawPluginParamInfo.readValue_root = target.dawPluginParamInfo.readValue
 
         target.dawPluginParamInfo.readValue = async function(){
-            if (target.busyReading) return
+            if (target.dawPluginParamInfo.busyReading) return
     
-            var value = (await target.dawPluginParamInfo.readValue()).value
+            var value = (await target.dawPluginParamInfo.readValue_root()).value
     
             try { value = value.toLowerCase() } catch (err) { }
     

@@ -38,6 +38,9 @@ class sk_ui_switch extends sk_ui_component {
                 this.spacer.styling = ''
                 this.classRemove('sk_ui_switch_highlighted')
 
+
+                if (this.dawPluginParamInfo && !this.dawPluginParamInfo.busyReading) this.dawPluginParamInfo.writeValue({value: val})
+
                 if (val){
                     this.spacer.styling = 'fill'
                     this.classAdd('sk_ui_switch_highlighted')
@@ -69,6 +72,14 @@ class sk_ui_switch extends sk_ui_component {
                 this.handle.style.borderRadius = val + 'px'
                 this.handle.style.width = val - 4 + 'px'
             }
+        })
+
+        this.attributes.add({
+            friendlyName: 'Value',
+            name: 'value',
+            type: 'bool',
+            onSet: val => { this.toggled = val },
+            onGet: ()=>{ return this.toggled}
         })
     }
 }

@@ -1,14 +1,16 @@
+console.log('sk_ui_slider.js loaded')
+
 class sk_ui_slider extends sk_ui_component {
     constructor(opt){
         super(opt)
 
-        this.styling += 'fullwidth'
+        this.style.width = '100%'
         
         this.vertical = false
         this.compact = true
 
         this.pluginParamType = 'draggable'
-        
+        this.ownerHandlesDragAction = true
         
         var height = 12
         this.style.height = height*2
@@ -31,9 +33,16 @@ class sk_ui_slider extends sk_ui_component {
 
 
         var mouseUpHandler = _e => {
+            console.log('mouseup SLIDER')
+
+
             sk.interactions.unblock()
-            _e.preventDefault()
-            _e.stopPropagation()
+
+            if (!this.dawPluginParamInfo){
+                _e.preventDefault()
+                _e.stopPropagation()
+            }
+            
             this.mdPos = undefined
             this.thumb.animate = true
             this.lineColorBar.animate = true
@@ -105,6 +114,9 @@ class sk_ui_slider extends sk_ui_component {
 
 
         var handleMouseDown = _e => {
+            console.log('mousedown SLIDER')
+
+
             this.hasMoved = false
             this.thumb.animate = false
             this.lineColorBar.animate = false
@@ -189,10 +201,6 @@ class sk_ui_slider extends sk_ui_component {
         }})
 
         this.attributes.add({friendlyName: 'Center Origin', name: 'centerOrigin', type: 'bool'})
-
-        onPluginParamIDSet = ()=>{
-            //...
-        }
     }
 
     setValue(val){
@@ -221,6 +229,11 @@ class sk_ui_slider extends sk_ui_component {
 
         
 
+
+        if (this.dawPluginParamInfo && !this.dawPluginParamInfo.busyReading){
+            if (!this.dawPluginParamInfo.blockWrite) this.dawPluginParamInfo.writeValue({value: newVal})
+            
+        }
 
         if (!this.smooth){
             var snapSize = (!this.vertical ? this.rect.width : this.rect.height) / (this.max - this.min)
