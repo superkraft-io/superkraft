@@ -85,7 +85,7 @@ class sk_ui_button extends sk_ui_component {
 
                 _e.preventDefault()
 
-                sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true})
+                sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true, toBE: false})
             }
 
             this.element.ontouchend = _e => {

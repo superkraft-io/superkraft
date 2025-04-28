@@ -13,7 +13,7 @@ class SK_UI_Tweens {
             tween.step({fromGlobalStepper: true})
         }
 
-        sk.ums.broadcast('sk_ui_tween_step', undefined, {toBE: false})
+        //sk.ums.broadcast('sk_ui_tween_step', undefined, {toBE: false})
     }
 
     start(){

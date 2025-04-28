@@ -1,7 +1,7 @@
 .sk_ui_slider {
     position: relative;
     height: fit-content;
-    height: 14px;
+    min-height: 14px;
 }
 
 .sk_ui_slider_line {

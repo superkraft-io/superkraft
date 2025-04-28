@@ -25,11 +25,33 @@ class sk_dawPluginMngr {
         window.requestAnimationFrame(step)
     }
 
+    async readAllParameters(){
+        var list = []
+
+        for (var i in this.components){
+            var component = list[i]
+            var paramID = component.pluginParamID
+            list.push(paramID)
+        }
+
+        try {
+            var res = await sk.nativeActions.handlePluginParamMouseEvent({
+                parameters: list
+            })
+
+
+        } catch(err) {
+            var x = 0
+        }
+    }
+
 
 
     static configRootEvents(target) {
         target.dawPluginParamInfo = {
-            applyValue: ()=>{ target.dawPluginParamInfo.writeValue({ value: target.__value }) }
+            applyValue: ()=>{
+                target.dawPluginParamInfo.writeValue({ value: target.__value })
+            }
         }
         
         target.element.addEventListener('contextmenu', async _e => {
@@ -100,6 +122,9 @@ class sk_dawPluginMngr {
         
 
         target.dawPluginParamInfo.writeValue = async (opt = {}) => {
+            if (target.dawPluginParamInfo.blockWrite) return;
+            target.dawPluginParamInfo.blockWrite = true
+
             target.dawPluginParamInfo.busyWriting = true
 
             if (target.pluginParamValueType === 'binary'){
@@ -124,6 +149,9 @@ class sk_dawPluginMngr {
 
 
             target.dawPluginParamInfo.busyWriting = false
+
+           
+            target.dawPluginParamInfo.blockWrite = false
 
             return res
         }
@@ -165,7 +193,7 @@ class sk_dawPluginMngr {
                     }
                 }
             } catch(err) {
-                //...
+                var x = 0
             }
 
             target.dawPluginParamInfo.busyReading = false

@@ -4,6 +4,8 @@ class sk_ui_slider extends sk_ui_component {
     constructor(opt){
         super(opt)
 
+        this.tmpIdx = 0
+
         this.style.width = '100%'
         
         this.vertical = false
@@ -230,10 +232,7 @@ class sk_ui_slider extends sk_ui_component {
         
 
 
-        if (this.dawPluginParamInfo && !this.dawPluginParamInfo.busyReading){
-            if (!this.dawPluginParamInfo.blockWrite) this.dawPluginParamInfo.writeValue({value: newVal})
-            
-        }
+     
 
         if (!this.smooth){
             var snapSize = (!this.vertical ? this.rect.width : this.rect.height) / (this.max - this.min)
@@ -250,6 +249,15 @@ class sk_ui_slider extends sk_ui_component {
         if (mappedPos < minPos) mappedPos = minPos
         if (mappedPos > maxPos) mappedPos = maxPos
 
+        newVal = sk.utils.map(mappedPos, 0 + halfThumbSize, this.rect.width - halfThumbSize, this.min, this.max)
+        
+        if (this.dawPluginParamInfo && !this.dawPluginParamInfo.busyReading){
+            this.tmpIdx++
+            console.log(this.tmpIdx)
+            if (!this.dawPluginParamInfo.blockWrite){
+                this.dawPluginParamInfo.writeValue({value: newVal})
+            }
+        }
 
         this.thumb.style[(!this.vertical ? 'left' : 'top')] = mappedPos - halfThumbSize + 'px'
         this.lineColorBar.style[(!this.vertical ? 'width' : 'height')] = mappedPos + 'px'

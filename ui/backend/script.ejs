@@ -37,8 +37,8 @@
 		nativeActions: {},
 
         interactions: {
-            block: ()=>{ sk.ums.broadcast('sk_ui_block_userInteractons', undefined, {block: true}) },
-            unblock: ()=>{ sk.ums.broadcast('sk_ui_block_userInteractons', undefined, {block: false}) },
+            block: ()=>{ sk.ums.broadcast('sk_ui_block_userInteractons', undefined, {block: true, toBE: false}) },
+            unblock: ()=>{ sk.ums.broadcast('sk_ui_block_userInteractons', undefined, {block: false, toBE: false}) },
 			isBlocked: ()=>{ return sk.app.eventBlocker.style.display === '' },
 			
             getPos: (_e, local, parentRect)=>{

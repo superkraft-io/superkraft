@@ -34,6 +34,7 @@ class SK_UMS {
     /**************/
 
     toBE(action, eventID, data){
+        console.log('toBE ', action, eventID, data)
         return new Promise(resolve => {
             var _data = data || {sk_ums_empty: true}
             _data = JSON.parse(JSON.stringify(_data))
