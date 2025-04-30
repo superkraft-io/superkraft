@@ -76,7 +76,6 @@ class sk_ui_list extends sk_ui_component {
 
 
         this.attributes.add({friendlyName: 'Value', name: 'value', type: 'text', onSet: val => {
-            console.log(val)
             this.selectItem({idx: val})
         }})
     }
@@ -123,7 +122,7 @@ class sk_ui_list extends sk_ui_component {
     selectItem(opt){
         var item = opt.item
         if (opt.key && opt.value) item = this.findItemByInfo(opt.key, opt.value)
-        if (opt.idx) item = this.list[opt.idx]
+        if (opt.idx !== undefined) item = this.list[opt.idx]
 
         if (!item) throw 'Could not find item'
 
