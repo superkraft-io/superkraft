@@ -4,8 +4,6 @@ class sk_ui_slider extends sk_ui_component {
     constructor(opt){
         super(opt)
 
-        this.tmpIdx = 0
-
         this.style.width = '100%'
         
         this.vertical = false
@@ -252,8 +250,6 @@ class sk_ui_slider extends sk_ui_component {
         newVal = sk.utils.map(mappedPos, 0 + halfThumbSize, this.rect.width - halfThumbSize, this.min, this.max)
         
         if (this.dawPluginParamInfo && !this.dawPluginParamInfo.busyReading){
-            this.tmpIdx++
-            console.log(this.tmpIdx)
             if (!this.dawPluginParamInfo.blockWrite){
                 this.dawPluginParamInfo.writeValue({value: newVal})
             }
