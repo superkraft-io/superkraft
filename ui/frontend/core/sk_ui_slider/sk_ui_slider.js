@@ -114,6 +114,8 @@ class sk_ui_slider extends sk_ui_component {
 
 
         var handleMouseDown = _e => {
+            if (_e.button !== 0) return
+
             console.log('mousedown SLIDER')
 
 
