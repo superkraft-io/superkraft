@@ -33,7 +33,7 @@ class sk_ui_pixi_canvas extends sk_ui_component {
             // Resize the renderer
             this.pixiApp.renderer.resize(width, height);
 
-            if (this.onResized) this.onResized()
+            if (this.onResized) this.onResized({width: width, height:height})
         })
 
         _resizeObserver.observe(this.element)

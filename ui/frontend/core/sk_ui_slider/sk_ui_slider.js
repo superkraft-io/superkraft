@@ -1,8 +1,6 @@
 class sk_ui_slider extends sk_ui_component {
     constructor(opt){
         super(opt)
-
-        this.styling += 'fullwidth'
         
         this.vertical = false
         this.compact = true
