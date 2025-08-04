@@ -11,8 +11,8 @@ class sk_ui_pixi_canvas extends sk_ui_component {
             view: this.element,
             transparent: true,
             resizeTo: this.element,
-            width: rect.width,
-            height: rect.height,
+            width: rect.width / window.devicePixelRatio,
+            height: rect.height / window.devicePixelRatio,
             antialias: true,
             resolution: window.devicePixelRatio,
             backgroundColor: 'transparent'
@@ -27,17 +27,19 @@ class sk_ui_pixi_canvas extends sk_ui_component {
         this.ctx = new sk_ui_pixi_canvas_ctx(this)
 
         var _resizeObserver = new ResizeObserver(_e => {
+    
             const style = getComputedStyle(this.element);
-            const borderW = parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth);
-            const borderH = parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth);
-
-            const width = Math.floor(this.rect.width - borderW)
-            const height = Math.floor(this.rect.height - borderH)
-            
+            const borderW = (parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth)) / window.devicePixelRatio;
+            const borderH = (parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth)) / window.devicePixelRatio;
+   
+            const width = Math.floor((this.rect.width - borderW) / window.devicePixelRatio)
+            const height = Math.floor((this.rect.height - borderH) / window.devicePixelRatio)
+            console.log(width + 'x' + height)
+     
             // Resize the renderer
             this.pixiApp.renderer.resize(width, height);
-            
-            if (this.onResized) this.onResized({width: width, height:height})
+             
+            if (this.onResized) this.onResized({width: width, height: height})
         })
 
         _resizeObserver.observe(this.element)
