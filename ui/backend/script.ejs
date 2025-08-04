@@ -266,6 +266,7 @@
             wrapNum: (max, val, includeWrapCount)=>{
                 var wrapCount = Math.floor(val / max)
                 var res = val >= 0 ? val % max : (val % max + max) % max
+                if (wrapCount === -0) wrapCount = 0
                 return (!includeWrapCount ? res: {wrapCount: wrapCount, result: res})
             },
             calcSnap: opt => {

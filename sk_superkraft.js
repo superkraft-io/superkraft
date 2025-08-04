@@ -81,7 +81,7 @@ module.exports = class Superkraft {
             this.application = require('application')
             await this.application.init()
         } catch (err) {
-            console.error(err)
+            //console.error(err)
         }
 
         global.sk_fs = new (require(__dirname + '/modules/sk_fs/sk_fs.js'))({ sk: this, app_type: opt.type })
@@ -112,6 +112,8 @@ module.exports = class Superkraft {
 
         global.SK_RootEngine = require(__dirname + '/sk_rootEngine.js')
         sk.engine = new (require(__dirname + '/engines/' + opt.type + '/engine.js'))({ sk: this })
+        
+        if (opt.onPostEngineCreated) await opt.onPostEngineCreated(this)
         try {
             //configure native actions if the engine provides any
             var nativeActionsList = (await window.sk_ipc.ipc.request('sk:nativeActions', { func: 'listActions' })).actions
@@ -182,7 +184,7 @@ module.exports = class Superkraft {
         sk.globalActions = await sk.utils.loadActions(sk.paths.globalActions)
         
 
-        if (opt.onPreStart) await opt.onPreStart()
+        if (opt.onPreStart) await opt.onPreStart(this)
         
         await sk.engine.waitForReady()
         await sk.engine.initViews()
