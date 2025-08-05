@@ -34,7 +34,6 @@ class sk_ui_pixi_canvas extends sk_ui_component {
    
             const width = Math.floor((this.rect.width - borderW) / window.devicePixelRatio)
             const height = Math.floor((this.rect.height - borderH) / window.devicePixelRatio)
-            console.log(width + 'x' + height)
      
             // Resize the renderer
             this.pixiApp.renderer.resize(width, height);
