@@ -24,4 +24,5 @@
 .sk_ui_group_container {
     overflow: hidden;
     padding: 6px;
+    width: 100%;
 }

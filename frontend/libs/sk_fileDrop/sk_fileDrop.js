@@ -156,6 +156,20 @@ class sk_fileDrop {
                 })
            
                 return
+            } else {
+                if (component.onFileDrop.customize){
+                    component.onFileDrop.customize(_c)
+                } else {
+                    _c.add.text(_c => {
+                        _c.style.position = 'absolute'
+                        _c.wrap = true
+                        _c.padding = 16
+                        _c.text = component.onFileDrop.text || 'Drop files here'
+                        _c.size = 32
+                        _c.roundness = 12
+                        _c.frosted = true
+                    })
+                }
             }
 
             if (component.onFileDropInitiated) component.onFileDropInitiated(component)
