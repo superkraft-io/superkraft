@@ -115,6 +115,13 @@
     background-size: 400% 400%;
     animation: 15s ease 0s infinite normal none running sk_ui_gradient_green;
 }
+
+.sk_ui_gradient_green_dark_1 {
+    color: rgb(255, 255, 255);
+    background: linear-gradient(-45deg, rgb(143, 190, 0), rgb(43, 172, 0), rgb(0, 188, 75), rgb(0, 192, 122));
+    background-size: 400% 400%;
+    animation: 15s ease 0s infinite normal none running sk_ui_gradient_green;
+}
   
 @keyframes sk_ui_gradient_green {
     0% { background-position: 0% 50%; }

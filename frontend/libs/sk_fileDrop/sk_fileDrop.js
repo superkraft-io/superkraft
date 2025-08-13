@@ -43,14 +43,76 @@ class sk_fileDrop {
             endDragDropEvent(_e, 'end')
         })
 
-        elementToHandle.addEventListener('drop',_e => {
-            if (this.bypass) return
-            var dt = _e.dataTransfer
-            this.files = dt.files
-            _e.files = this.files
-            endDragDropEvent(_e, 'drop')
-        }, false)
+        elementToHandle.addEventListener('drop', async _e => {
+            if (this.bypass) return;
+
+            _e.preventDefault();
+
+            const dt = _e.dataTransfer;
+            this.files = []//dt.files; // Basic FileList for compatibility
+
+            if (dt.items) {
+                for (const item of dt.items) {
+                    if (item.kind === 'file') {
+                        if ('getAsFileSystemHandle' in item) {
+                            // Modern File System Access API
+                            const handle = await item.getAsFileSystemHandle();
+                            await this.processHandle(handle, this.files);
+                        } else if ('webkitGetAsEntry' in item) {
+                            // Older Chrome/Safari API
+                            const entry = item.webkitGetAsEntry();
+                            await this.processEntry(entry, this.files);
+                        } else {
+                            // Fallback: plain file
+                            const file = item.getAsFile();
+                            this.list.push(file)
+                            //console.log(`File: ${file.name}`);
+                        }
+                    }
+                }
+            }
+
+            _e.files = this.files; // Keep same behavior as before
+
+            endDragDropEvent(_e, 'drop');
+        }, false);
     }
+
+    async processHandle(handle, list) {
+        if (handle.kind === 'file') {
+            const file = await handle.getFile();
+            list.push(file)
+        } else if (handle.kind === 'directory') {
+            for await (const entry of handle.values()) {
+                await this.processHandle(entry, list); // recursion
+            }
+        }
+    }
+
+    async processEntry(entry, list) {
+        if (entry.isFile) {
+            entry.file(file => {
+                console.log(`File: ${file.name} (Path: ${entry.fullPath})`);
+                list.push(file)
+            });
+        } else if (entry.isDirectory) {
+            const reader = entry.createReader();
+            const readEntries = async () => {
+                const entries = await new Promise(resolve => reader.readEntries(resolve));
+                for (const subEntry of entries) {
+                    await this.processEntry(subEntry, list);
+                }
+                if (entries.length > 0) {
+                    await readEntries();
+                }
+            };
+            await readEntries();
+        }
+    }
+
+
+
+
 
     subscribe(component){ this.subscribers[component.uuid] = component }
     unsubscribe(component){ delete this.subscribers[component.uuid] }

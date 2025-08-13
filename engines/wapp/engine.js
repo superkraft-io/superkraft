@@ -29,6 +29,8 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
             app.get(this.express.json())
             
             app.use(fileUpload({
+                useTempFiles: true,
+                tempFileDir: '/tmp/', 
                 createParentPath: true
             }))
 
