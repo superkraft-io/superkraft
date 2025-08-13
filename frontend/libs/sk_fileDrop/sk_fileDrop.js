@@ -49,24 +49,29 @@ class sk_fileDrop {
             _e.preventDefault();
 
             const dt = _e.dataTransfer;
-            this.files = []//dt.files; // Basic FileList for compatibility
 
-            if (dt.items) {
-                for (const item of dt.items) {
-                    if (item.kind === 'file') {
-                        if ('getAsFileSystemHandle' in item) {
-                            // Modern File System Access API
-                            const handle = await item.getAsFileSystemHandle();
-                            await this.processHandle(handle, this.files);
-                        } else if ('webkitGetAsEntry' in item) {
-                            // Older Chrome/Safari API
-                            const entry = item.webkitGetAsEntry();
-                            await this.processEntry(entry, this.files);
-                        } else {
-                            // Fallback: plain file
-                            const file = item.getAsFile();
-                            this.list.push(file)
-                            //console.log(`File: ${file.name}`);
+            if (dt.files.length > 1){
+                this.files = dt.files
+            } else {
+                this.files = []
+
+                if (dt.items) {
+                    for (const item of dt.items) {
+                        if (item.kind === 'file') {
+                            if ('getAsFileSystemHandle' in item) {
+                                // Modern File System Access API
+                                const handle = await item.getAsFileSystemHandle();
+                                await this.processHandle(handle, this.files);
+                            } else if ('webkitGetAsEntry' in item) {
+                                // Older Chrome/Safari API
+                                const entry = item.webkitGetAsEntry();
+                                await this.processEntry(entry, this.files);
+                            } else {
+                                // Fallback: plain file
+                                const file = item.getAsFile();
+                                this.list.push(file)
+                                //console.log(`File: ${file.name}`);
+                            }
                         }
                     }
                 }
