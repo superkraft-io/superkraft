@@ -171,10 +171,10 @@ class sk_ui_button extends sk_ui_component {
             this.toggleState = val
             if (this.onToggled) this.onToggled(this.toggled)
 
-            if (this.radioList){
-                for (var i in this.radioList.items){
-                    if (this.radioList.items[i].uuid !== this.uuid) this.radioList.items[i].toggleState = false
-                    else this.radioList.onToggled(this)
+            if (this.radioGroup){
+                for (var i in this.radioGroup.items){
+                    if (this.radioGroup.items[i].uuid !== this.uuid) this.radioGroup.items[i].toggleState = false
+                    else this.radioGroup.onSelected(this)
                 }
             }
         }})
