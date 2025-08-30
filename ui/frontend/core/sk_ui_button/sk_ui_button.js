@@ -170,6 +170,13 @@ class sk_ui_button extends sk_ui_component {
         this.attributes.add({friendlyName: 'Toggled', name: 'toggled', type: 'bool', onSet: val => {
             this.toggleState = val
             if (this.onToggled) this.onToggled(this.toggled)
+
+            if (this.radioList){
+                for (var i in this.radioList.items){
+                    if (this.radioList.items[i].uuid !== this.uuid) this.radioList.items[i].toggleState = false
+                    else this.radioList.onToggled(this)
+                }
+            }
         }})
 
         this.attributes.add({friendlyName: 'Toggle Class', name: 'toggleClass', type: 'text', onSet: val => {

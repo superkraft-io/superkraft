@@ -9,7 +9,7 @@ class sk_ui_label extends sk_ui_component {
         this.styling = 'left'
 
         this.attributes.add({friendlyName: 'Text', name: 'text', type: 'text', onSet: async val => {
-            this.styling = 'left'
+            //this.styling = 'left'
 
 
             var setText = () => {

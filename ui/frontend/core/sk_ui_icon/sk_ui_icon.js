@@ -29,13 +29,7 @@ class sk_ui_icon extends sk_ui_component {
         var lastIcon = ''
         this.attributes.add({hide: true, friendlyName: 'Icon', name: 'icon', type: 'icon', onSet: async val => {
 
-            if (sk.utils.isEmoji(val.toString())){
-                this.element.innerHTML = val
-                this.classRemove('icon')
-                this.classRemove(lastIcon)
-                this.element.style.fontStyle = 'unset'
-                return
-            }
+           
 
             this.element.innerHTML = ''
 
@@ -44,6 +38,14 @@ class sk_ui_icon extends sk_ui_component {
                 this.classRemove(lastIcon)
                 this.type = 'svg'
             } else {
+                 if (sk.utils.isEmoji(val.toString())){
+                    this.element.innerHTML = val
+                    this.classRemove('icon')
+                    this.classRemove(lastIcon)
+                    this.element.style.fontStyle = 'unset'
+                    return
+                }
+
                 this.type = 'icon'
                 if (this.svgEl){
                     this.svgEl.remove()
@@ -72,12 +74,12 @@ class sk_ui_icon extends sk_ui_component {
                 this.svgEl.classList.add('sk_ui_transition')
 
                 if (this.color !== 'source'){
-                    this.svgEl.setAttribute('fill', this.color)
+                    if (!this.noFill) this.svgEl.setAttribute('fill', this.color)
                 }
 
                 this.style.display = 'inherit'
 
-                if (this.__svg_color) this.color = this.__svg_color
+                if (!this.noFill) if (this.__svg_color) this.color = this.__svg_color
             }
 
             //for (var i = this.iconElement.classList.length; i > -1; i--) if (this.iconElement.classList[i] !== 'transition') this.iconElement.classList.remove(this.iconElement.classList[i])
@@ -130,6 +132,15 @@ class sk_ui_icon extends sk_ui_component {
                 this.svgEl.setAttribute('height', val)
             }
         }})
+
+        this.attributes.add({friendlyName: 'No fill', name: 'noFill', type: 'bool', onSet: val => {
+            this.icon = this.icon
+            if (val){
+                this.style.color = 'unset'
+                this.classRemove('sk_ui_icon_customColor')
+            }
+        }})
+
         this.attributes.add({friendlyName: 'Color', name: 'color', type: 'color', onSet: val => {
             if (val === 'source') this.classRemove('sk_ui_icon_customColor')
             else this.classAdd('sk_ui_icon_customColor')
@@ -160,11 +171,13 @@ class sk_ui_icon extends sk_ui_component {
                     this.__color = undefined
                 }
 
-                applyToChildren(allSubEls)
+                if (!this.noFill){
+                    applyToChildren(allSubEls)
 
-                if (this.svgEl) this.svgEl.style.fill = val
+                    if (this.svgEl) this.svgEl.style.fill = val
+                }
             } else {
-                this.style.color = val
+                if (!this.noFill)  this.style.color = val
             }
         }})
 

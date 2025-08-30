@@ -12,6 +12,7 @@ class sk_ui_group extends sk_ui_component {
             _c.compact = true
 
             this._header = _c.add.label(_c => {
+                _c.styling += ' fill'
                 _c.classAdd('sk_ui_group_header')
             })
         })
@@ -22,7 +23,10 @@ class sk_ui_group extends sk_ui_component {
             _c.classAdd('sk_ui_group_container')
         })
 
-        this.attributes.add({friendlyName: 'Header', name: 'header', type: 'text', onSet: val => { this._header.text = val }})
+        this.attributes.add({friendlyName: 'Header', name: 'header', type: 'text', onSet: val => {
+            this._header.text = val
+        }})
+        
         this.attributes.add({friendlyName: 'Clear', name: 'clear', type: 'bool', onSet: val => { this['class' + (val ? 'Remove' : 'Add')]('sk_ui_group_opaque') }})
     }
 }
