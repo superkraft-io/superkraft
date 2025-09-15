@@ -2,21 +2,22 @@
 
 }
 
-.sk_ui_infinite_list_placeholderItem {
-    background-color: var(--sk_ui_color_very_dark_grey_2);
-    position: absolute;
-    overflow: hidden;
-    margin-bottom: 1px !important;
-    border: solid 1px red;
-}
-
-.sk_ui_infinite_list_placeholderItem_animated::after {
-    content: '';
+.sk_ui_infinite_list_placeholderPanel {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.sk_ui_infinite_list_placeholderRow {
+    background-color: var(--sk_ui_color_very_dark_grey_2);
+    overflow: hidden;
+}
+
+.sk_ui_infinite_list_placeholderRow_animated {
     background: linear-gradient(110deg, transparent 25%, rgba(66, 66, 66, 0.5) 50%, transparent 75%);
     background-size: 200% 100%;
     animation: sk_ui_infinite_list_placeholder_shimmer 1.5s infinite;

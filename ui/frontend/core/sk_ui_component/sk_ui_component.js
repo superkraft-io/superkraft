@@ -627,6 +627,10 @@ class sk_ui_component {
         target.element.before(this.element)
     }
 
+    moveAfter(target){
+        target.element.after(this.element)
+    }
+
 
     removeAllCursors(showNativeCursor){
         var allCursors = document.querySelectorAll('.sk_ui_component_cursor')

@@ -164,6 +164,7 @@ class sk_ui_iceRink extends sk_ui_component {
                 _c.animate = false
 
                 
+                this.rootAdd = this.add
                 this.add = _c.add
 
                 _c.last_pos = {x: 0, y: 0}
@@ -184,13 +185,33 @@ class sk_ui_iceRink extends sk_ui_component {
                         this.scrollbarY_native.element.scrollTop = 0-val.y
                     }
 
-                    
-
                     _c.style.transform = `translate(${Math.floor(val.x || 0)}px, ${Math.floor(val.y || 0)}px)` + (this.additionalTransformation || '')
-
-
                     
-                    if (this.onScroll) this.onScroll({x: val.x, y: val.y, fromInstant: val.fromInstant || this.instant})
+                    var bottomPos = this.content.rect.height + val.y - this.contentWrapper.rect.height
+                    var rightPos = this.content.rect.width + val.x - this.contentWrapper.rect.width
+
+                    var isOverscrolling = {x: false, y: false}
+
+                    if (bottomPos < 0) isOverscrolling.y = 'bottom'
+                    if (val.y > 0) isOverscrolling.y = 'top'
+                    
+                    if (rightPos < 0) isOverscrolling.x = 'right'
+                    if (val.x > 0) isOverscrolling.x = 'left'
+
+
+                    //console.log(`x: ${val.x} | y: ${val.y} | bottom: ${bottomPos} | right: ${rightPos}`)
+                    //console.log(isOverscrolling)
+
+                    isOverscrolling.any = (isOverscrolling.x || isOverscrolling.y)
+
+                    if (this.onScroll) this.onScroll({
+                        x: val.x,
+                        y: val.y,
+                        bottom: bottomPos,
+                        right: rightPos,
+                        fromInstant: val.fromInstant || this.instant,
+                        isOverscrolling: isOverscrolling
+                    })
                 }
             })
             
