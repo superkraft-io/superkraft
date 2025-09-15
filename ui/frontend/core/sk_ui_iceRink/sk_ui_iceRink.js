@@ -168,40 +168,7 @@ class sk_ui_iceRink extends sk_ui_component {
 
                 _c.last_pos = {x: 0, y: 0}
 
-                var observer = new ResizeObserver(()=>{
-                    var cRect = _c.rect
-                   
-                    //account for padding and margin
-                    var getCSSVal = prop => {
-                        var val = 0
-                        try { val = parseFloat(getComputedStyle(_c.element).getPropertyValue(prop)) } catch(err) {}
-                        return  val
-                    }
-
-
-                    if (this.axis.indexOf('x') > -1){
-                        cRect.width += getCSSVal('padding-left') + getCSSVal('padding-right')
-                        this.scrollbarX_native.fakeContent.style.minWidth = cRect.width + 'px'
-                        this.content.storedWidth = cRect.width
-                        this.scrollerX.contentSize = cRect.width
-                        this.scrollbarX.updateDimensions()
-                        this.scrollbarX_wrapper.updatePosition(this.contentWrapper.rect)
-                    }
-
-
-                    if (this.axis.indexOf('y') > -1){
-                        cRect.height += getCSSVal('padding-top') + getCSSVal('padding-bottom')
-                        this.scrollbarY_native.fakeContent.style.minHeight = cRect.height + 'px'
-                        this.content.storedHeight = cRect.height
-                        this.scrollerY.contentSize = cRect.height
-                        this.scrollbarY.updateDimensions()
-                        this.scrollbarY_wrapper.updatePosition(this.contentWrapper.rect)
-                    }
                 
-                    if (this.autoWidth) this.contentWrapper.style.width = cRect.width + 'px'
-                    if (this.autoHeight) this.contentWrapper.style.height = cRect.height + 'px'
-                    
-                }).observe(_c.element)
 
 
 
@@ -228,7 +195,52 @@ class sk_ui_iceRink extends sk_ui_component {
             })
             
 
+            this.doObserveOnce = async ()=>{
+                if (this.busyObserving) return
+                this.busyObserving = true
+                
+                
+                var cRect = this.content.rect
+                
+                //account for padding and margin
+                var getCSSVal = prop => {
+                    var val = 0
+                    try { val = parseFloat(getComputedStyle(this.content.element).getPropertyValue(prop)) } catch(err) {}
+                    return  val
+                }
+
+
+                if (this.axis.indexOf('x') > -1){
+                    cRect.width += getCSSVal('padding-left') + getCSSVal('padding-right')
+                    this.scrollbarX_native.fakeContent.style.minWidth = cRect.width + 'px'
+                    this.content.storedWidth = cRect.width
+                    this.scrollerX.contentSize = cRect.width
+                    this.scrollbarX.updateDimensions()
+                    this.scrollbarX_wrapper.updatePosition(this.contentWrapper.rect)
+                }
+
+
+                if (this.axis.indexOf('y') > -1){
+                    cRect.height += getCSSVal('padding-top') + getCSSVal('padding-bottom')
+                    this.scrollbarY_native.fakeContent.style.minHeight = cRect.height + 'px'
+                    this.content.storedHeight = cRect.height
+                    this.scrollerY.contentSize = cRect.height
+                    this.scrollbarY.updateDimensions()
+                    this.scrollbarY_wrapper.updatePosition(this.contentWrapper.rect)
+                }
             
+                if (this.autoWidth) this.contentWrapper.style.width = cRect.width + 'px'
+                if (this.autoHeight) this.contentWrapper.style.height = cRect.height + 'px'
+             
+
+                if (this.onResized) this.onResized()
+
+                this.busyObserving = false
+            }
+            
+
+
+
 
             _c.element.addEventListener('wheel', this.onWheel)
 
@@ -798,6 +810,15 @@ class sk_ui_iceRink extends sk_ui_component {
         })
 
         this.__includedComponents = []
+
+
+        var contentWrapperObserver = new ResizeObserver(()=>{
+            this.doObserveOnce()
+        }).observe(this.contentWrapper.element)
+
+        var contentObserver = new ResizeObserver(()=>{
+            this.doObserveOnce()
+        }).observe(this.content.element)
     }
 
     scrollToChild(component, center){

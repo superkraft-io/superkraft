@@ -17,11 +17,67 @@ class sk_ui_component {
         
         
 
-        var tree = {}
-        var htmlTag = opt.htmlTag  || 'div'
+        if (!opt.extraOpt.ignoreElement){
+            this.initElement()
+        }
 
+        
+        
+
+        
+
+
+
+
+
+
+
+
+
+        /********/
+
+        sk.ui.components.uuid_counter++
+        this.uuid = 'sk_ui_id_' + sk.ui.components.uuid_counter
+
+        if (this.onFileDrop) sk.fileDrop.subscribe(this)
+
+
+
+        this.classAdd(this.classHierarchy.join(' '))
+        this.classAdd('sk_ui_cannotMoveView')
+
+        this.styling = 'center middle'
+        this.vertical = true
+
+
+        this.contextMenu = new SK_ContextMenu({parent: this})
+        this.ums = new SK_UMS_Client()
+        if (!opt.noHint) this._hint = new SK_Hint({parent: this})
+
+            
+        /********/
+
+        //continue construction. used by plugins to extend capabilities
+        if (this.__sk_ui_continue_constructor__) this.__sk_ui_continue_constructor__(opt)
+
+
+
+        /*
+        const resizeObserver = new ResizeObserver((entries) => {
+            this.__rect = this.getRect()
+        })
+
+        resizeObserver.observe(this.element)
+        */
+            
+        document.dispatchEvent(new CustomEvent("sk_onAfterComponentCreated", {
+            detail: this
+        }))
+    }
+
+    initElement(withExistingElement){
+        
         var _classes = ['sk_ui_component', 'sk_ui_noSelect', 'sk_ui_transition', 'sk_ui_os_' + sk.os, 'sk_ui_' + sk.browser()]
-
         if (sk.isOnMobile){
             _classes.push('sk_ui_isOnMobile')
             if (sk.mobile.isStandalone) _classes.push('sk_ui_isMobileStandalone sk_ui_mobile_noScroll')
@@ -29,22 +85,27 @@ class sk_ui_component {
             _classes.push(sk.mobile.getDeviceClasses())
         }
         
-        tree[htmlTag + '_element'] = { class: _classes.join(' '), styling: 'c' }
-        this.bucket = JSOM.parse({root: this.parent.element, tree: tree})
+        if (!withExistingElement){
+            var tree = {}
+            var htmlTag = this.sk_ui_opt.htmlTag  || 'div'
+            
+            tree[htmlTag + '_element'] = { class: _classes.join(' '), styling: 'c' }
+            this.bucket = JSOM.parse({root: this.parent.element, tree: tree})
+        } else {
+            withExistingElement.classList.add(..._classes)
+        }
+    
 
-        
-
-        this.element = this.bucket.element
+    
+        this.element = withExistingElement || this.bucket.element
         this.element.sk_ui_obj = this
         this.style = this.element.style
 
         this.transition = this.element.transition
 
-        
-        
 
         try {
-            if (opt.extraOpt.onBeforeCreate) opt.extraOpt.onBeforeCreate(this)
+            if (this.sk_ui_opt.extraOpt.onBeforeCreate) opt.extraOpt.onBeforeCreate(this)
         } catch(err) {
             console.error(err)
             console.error('[sk_ui_component] Critical error!')
@@ -510,54 +571,6 @@ class sk_ui_component {
                 document.addEventListener('mousemove', this.cursorEvents.onMove)
             }
         }})
-
-
-
-
-
-
-
-
-
-        /********/
-
-        sk.ui.components.uuid_counter++
-        this.uuid = 'sk_ui_id_' + sk.ui.components.uuid_counter
-
-        if (this.onFileDrop) sk.fileDrop.subscribe(this)
-
-
-
-        this.classAdd(this.classHierarchy.join(' '))
-        this.classAdd('sk_ui_cannotMoveView')
-
-        this.styling = 'center middle'
-        this.vertical = true
-
-
-        this.contextMenu = new SK_ContextMenu({parent: this})
-        this.ums = new SK_UMS_Client()
-        if (!opt.noHint) this._hint = new SK_Hint({parent: this})
-
-            
-        /********/
-
-        //continue construction. used by plugins to extend capabilities
-        if (this.__sk_ui_continue_constructor__) this.__sk_ui_continue_constructor__(opt)
-
-
-
-        /*
-        const resizeObserver = new ResizeObserver((entries) => {
-            this.__rect = this.getRect()
-        })
-
-        resizeObserver.observe(this.element)
-        */
-            
-        document.dispatchEvent(new CustomEvent("sk_onAfterComponentCreated", {
-            detail: this
-        }))
     }
 
     get root_url(){ return this.constructor.root_url }
