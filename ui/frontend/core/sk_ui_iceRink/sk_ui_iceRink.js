@@ -5,7 +5,7 @@ class sk_ui_iceRink extends sk_ui_component {
         this.vertical = false
         this.compact = true
 
-
+        this.lastPos = {x: 0, y: 0}
         
         var wheelMS = Date.now()
         var wheelInertia = {x: 0, y: 0}
@@ -134,13 +134,17 @@ class sk_ui_iceRink extends sk_ui_component {
             _c.updatePosition = contentWrapperRect => {
                 if (this.scrollbarY.decoupled && this.onWrapperResized) return this.onWrapperResized(contentWrapperRect)
         
-                var top = contentWrapperRect.top - this.parent.rect.top + this.scrollbarY.offset.top
+                var top = contentWrapperRect.localPos.top - this.parent.rect.top + this.scrollbarY.offset.top
                 _c.style.top = top + 'px'
 
                 if (this.scrollbarY.decoupled){
                     _c.style.right = (this.scrollbarY.decoupled === 'outside' ? '-10px' : '0px')
                 } else {
-                    _c.style.left = this.content.rect.left + (this.content.storedWidth - _c.rect.width + this.scrollbarY.offset.right) + 'px'
+                    //_c.style.left = this.content.rect.left + (this.content.storedWidth - _c.rect.width + this.scrollbarY.offset.right) + 'px'
+                    //_c.style.left = '500px'
+                    //console.log(this.content.rect.left)
+                    // console.log(this.content.rect.width)
+                    _c.style.left = (this.content.rect.width - _c.rect.width)+ this.scrollbarY.offset.right + 'px'
                 }
                 _c.style.height = (contentWrapperRect.height - this.scrollbarY.offset.bottom - this.scrollbarY.offset.top) + 'px'
             }
@@ -202,6 +206,23 @@ class sk_ui_iceRink extends sk_ui_component {
                     //console.log(`x: ${val.x} | y: ${val.y} | bottom: ${bottomPos} | right: ${rightPos}`)
                     //console.log(isOverscrolling)
 
+                    var diff = {
+                        x: val.x - this.lastPos.x,
+                        y: val.y - this.lastPos.y
+                    }
+
+                    var directions = {
+                        x: 0,
+                        y: 0
+                    }
+
+                    if (diff.x < 0) directions.x = -1
+                    if (diff.x > 0) directions.x = 1
+
+                    if (diff.y < 0) directions.y = 1
+                    if (diff.y > 0) directions.y = -1
+                    
+
                     isOverscrolling.any = (isOverscrolling.x || isOverscrolling.y)
 
                     if (this.onScroll) this.onScroll({
@@ -210,8 +231,12 @@ class sk_ui_iceRink extends sk_ui_component {
                         bottom: bottomPos,
                         right: rightPos,
                         fromInstant: val.fromInstant || this.instant,
-                        isOverscrolling: isOverscrolling
+                        isOverscrolling: isOverscrolling,
+                        directions: directions
                     })
+
+                    this.lastPos.x = val.x
+                    this.lastPos.y = val.y
                 }
             })
             
