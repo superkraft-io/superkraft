@@ -4,13 +4,21 @@ var sk_dialog = {
             var resolved = false
 
             var input = document.createElement('input')
-            input.setAttribute('type', 'file')
-            input.style.display = 'none'
+            input.type = 'file';
+            Object.assign(input.style, {
+                position: 'fixed',
+                left: '-9999px',
+                top: '-9999px',
+                width: '0',
+                height: '0',
+                opacity: '0',
+                pointerEvents: 'none',
+            });
 
             var attrs = {
                 webkitdirectory: '',
                 directory: '',
-                accepts: opt.filters,
+                accept: opt.filters,
                 multiple: ''
             }
 
@@ -19,11 +27,13 @@ var sk_dialog = {
                 delete attrs.directory
             }
 
-            if (!opt.filters) delete attrs.accepts
+            if (!opt.filters) delete attrs.accept
             if (!opt.multiple) delete attrs.multiple
                 
             for (var key in attrs) input.setAttribute(key, attrs[key])
             
+
+            document.body.appendChild(input);
 
             var removeInput = ()=>{
                 try { document.body.removeChild(input) } catch(err) {}
@@ -40,11 +50,7 @@ var sk_dialog = {
                 removeInput()
             }
 
-            var cancelListener = async ()=>{
-                await sk.utils.sleep(1000)
-                
-                if (input.files.length > 0) return doResolve()
-                
+            var cancelListener = async (sender)=>{
                 reject()
                 removeInput()
             }
@@ -53,10 +59,8 @@ var sk_dialog = {
                 doResolve()
             }
 
-            window.addEventListener('focus', cancelListener, { once: true })
-            window.addEventListener('touchend', cancelListener, { once: true })
+            input.addEventListener('cancel', ()=>{ cancelListener('cancel') }, { once: true });
 
-            
             input.click()
         })
     },
