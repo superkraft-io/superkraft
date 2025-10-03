@@ -67,6 +67,8 @@
 
         menus: [],
 
+        windowHandler: new SK_WindowHandler(),
+        
         toast: {
             do: (_msg, opt = {})=>{
                 var defOpt = {
@@ -168,8 +170,13 @@
 
         init: ()=>{
             return new Promise(async (resolve, reject)=>{
+<<<<<<< Updated upstream
                 await sk.awaitWSCB()
 
+=======
+			    await sk.awaitEngineInitialization()
+				
+>>>>>>> Stashed changes
                 var res = await sk.comm.main('getInfo')
                 if (!sk.isOnMobile) sk.os = res.os
                 sk.arch    = res.arch

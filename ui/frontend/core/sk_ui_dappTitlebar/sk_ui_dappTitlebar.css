@@ -1,5 +1,5 @@
 .sk_ui_dappTitlebar {
-    height: 28px;
+    min-height: 28px;
     margin-bottom: 0px !important;
     position: relative;
     z-index: 99999;

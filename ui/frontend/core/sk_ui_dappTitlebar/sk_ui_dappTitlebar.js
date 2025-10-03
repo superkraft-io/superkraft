@@ -2,6 +2,8 @@ class sk_ui_dappTitlebar extends sk_ui_component {
     constructor(opt){
         super(opt)
 
+        this.classAdd('sk_window_drag')
+
         this.styling += ' fullwidth'
 
         this.vertical = 'none'
