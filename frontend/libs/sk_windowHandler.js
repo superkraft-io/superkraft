@@ -78,6 +78,10 @@ class SK_WindowHandler {
         _c.element.addEventListener('mousedown', (e) => {
             if (e.button !== 0) return; // only left click
 
+            if (e.target.closest('button, a, input, textarea, select, [contenteditable="true"], [data-no-drag]')) {
+                return;
+            }
+            
             console.log('start dragging window');
             sk_api.window.beginMoveWindow()
         })
