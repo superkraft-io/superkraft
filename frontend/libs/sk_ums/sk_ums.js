@@ -3,9 +3,14 @@ class SK_UMS {
         this.events = {}
         this.clientIDCounter = -1
 
+        sk_api.waitForWndReady().then(()=>{ this.init() })
+    }
+
+    init(){
         if (sk.app_type !== 'wapp'){
             this.init_BE_events()
-            wscb.on('sk_ums', (msg, rW)=>{
+            //wscb.on('sk_ums', (msg, rW)=>{
+            sk_api.ipc.on('sk.ums', (msg, rW)=>{
                 if (msg.action === 'broadcast'){
                     this.broadcastToFrontend(msg.eventID, undefined, msg.data, true)
                 }
@@ -29,11 +34,20 @@ class SK_UMS {
     /**************/
 
     toBE(action, eventID, data){
+        //console.log('toBE ', action, eventID, data)
         return new Promise(resolve => {
             var _data = data || {sk_ums_empty: true}
             _data = JSON.parse(JSON.stringify(_data))
             
-            wscb.send({cmd: 'sk_ums', action: action, eventID: eventID, data: _data}, res => {
+            /*wscb.send({cmd: 'sk_ums', action: action, eventID: eventID, data: _data}, res => {
+                resolve(res)
+            })*/
+
+            sk_api.ipc.request('sk.ums', {
+                action: action,
+                eventID: eventID,
+                data: _data
+            }, res => {
                 resolve(res)
             })
         })

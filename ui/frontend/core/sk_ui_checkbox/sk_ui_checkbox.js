@@ -4,6 +4,8 @@ class sk_ui_checkbox extends sk_ui_button {
 
         this.styling = 'left middle'
         
+        this.pluginParamType = 'togglable'
+        this.pluginParamValueType = 'binary'
 
         this.label.wrap = true
 
@@ -37,6 +39,9 @@ class sk_ui_checkbox extends sk_ui_button {
             else this._icon.iconElement.classList.remove('sk_ui_checkbox_on')
             */
 
+
+            if (this.dawPluginParamInfo && !this.dawPluginParamInfo.busyReading) this.dawPluginParamInfo.writeValue({value: val})
+
             this.__checked = val
 
             if (this.shape === 'circle') {
@@ -63,6 +68,14 @@ class sk_ui_checkbox extends sk_ui_button {
             
             if (this.onChanged) this.onChanged(val)
         }})
+
+        this.attributes.add({
+            friendlyName: 'Value',
+            name: 'value',
+            type: 'bool',
+            onSet: val => { this.checked = val },
+            onGet: ()=>{ return this.checked_state}
+        })
 
 
         this.attributes.add({friendlyName: 'Shape', name: 'shape', type: 'bool', onSet: async val => {

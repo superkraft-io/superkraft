@@ -5,6 +5,7 @@ if (global.window._sk_app_type === 'wapp' || global.window._sk_app_type === 'dap
 } else {
     if (global.window._sk_app_type === 'japp') whichModule = require(__dirname + '/sk_fs_juce.js')
     else if (global.window._sk_app_type === 'sapp') whichModule = require(__dirname + '/sk_fs_ssc.js')
+    else if (global.window._sk_app_type === 'skxx') whichModule = require(__dirname + '/sk_fs_skxx.js')
 }
 
 module.exports = whichModule

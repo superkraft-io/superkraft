@@ -9,7 +9,7 @@ class sk_ui_switch extends sk_ui_component {
         this.styling = 'left middle'
 
         this.style.width = Math.round(size*1.75) + 'px'
-        this.style.height = size + 'px'
+        this.style.minHeight = size + 'px'
         this.style.padding = '2px'
         this.style.borderRadius = size + 'px'
         this.style.backgroundColor = '#3c3c3c'
@@ -37,6 +37,9 @@ class sk_ui_switch extends sk_ui_component {
             onSet: val => {
                 this.spacer.styling = ''
                 this.classRemove('sk_ui_switch_highlighted')
+
+
+                if (this.dawPluginParamInfo && !this.dawPluginParamInfo.busyReading) this.dawPluginParamInfo.writeValue({value: val})
 
                 if (val){
                     this.spacer.styling = 'fill'
@@ -69,6 +72,14 @@ class sk_ui_switch extends sk_ui_component {
                 this.handle.style.borderRadius = val + 'px'
                 this.handle.style.width = val - 4 + 'px'
             }
+        })
+
+        this.attributes.add({
+            friendlyName: 'Value',
+            name: 'value',
+            type: 'bool',
+            onSet: val => { this.toggled = val },
+            onGet: ()=>{ return this.toggled}
         })
     }
 }

@@ -37,18 +37,7 @@ class sk_ui_list extends sk_ui_component {
                         if (opt.hint) _c.hint({text: opt.hint, position: 'right center'})
 
                         _c.element.addEventListener('click', ()=>{
-                            if (!this.highlightOnSelect){
-                                if (this.onItemSelected) this.onItemSelected(_c)
-                                return
-                            }
-                            
-                            this.deselectAll()
-
-                            if (this.onBeforeItemSelected) this.onBeforeItemSelected(_c) 
-
-                            _c.toggled = true
-
-                            if (this.onItemSelected) this.onItemSelected(_c)
+                            this.selectItem({item: _c})
                         })
 
                         _c.onIconChanged = ()=>{
@@ -60,6 +49,8 @@ class sk_ui_list extends sk_ui_component {
                 )
 
                 this.list.push(item)
+                item.idx = this.list.length - 1
+
                 if (this.onNewItem) this.onNewItem(item)
 
                 if (!itemClass){
@@ -81,6 +72,12 @@ class sk_ui_list extends sk_ui_component {
         }})
 
         this.attributes.add({friendlyName: 'Highlight On Select', name: 'highlightOnSelect', type: 'bool'})
+
+
+
+        this.attributes.add({friendlyName: 'Value', name: 'value', type: 'text', onSet: val => {
+            this.selectItem({idx: val})
+        }})
     }
 
     updateIconWidth(){
@@ -121,4 +118,26 @@ class sk_ui_list extends sk_ui_component {
             if (item.info[key] === value) return item
         }
     }
+
+    selectItem(opt){
+        var item = opt.item
+        if (opt.key && opt.value) item = this.findItemByInfo(opt.key, opt.value)
+        if (opt.idx !== undefined) item = this.list[opt.idx]
+
+        if (!item) throw 'Could not find item'
+
+        if (!this.highlightOnSelect){
+            if (this.onItemSelected) this.onItemSelected(item)
+            return
+        }
+        
+        this.deselectAll()
+
+        if (this.onBeforeItemSelected) this.onBeforeItemSelected(item) 
+
+        item.toggled = true
+
+        if (this.onItemSelected) this.onItemSelected(item)
+    }
+
 }

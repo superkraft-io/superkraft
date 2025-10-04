@@ -1,0 +1,8 @@
+ <script type="module">
+
+    sk.engineInitFunc = async ()=>{
+        await sk_api.initModules()
+        sk.nativeActions = sk_api.nativeActions
+        sk.engineInitialized = true
+    }
+</script>

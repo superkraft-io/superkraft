@@ -115,6 +115,7 @@ module.exports = class Superkraft {
         
         if (opt.onPostEngineCreated) await opt.onPostEngineCreated(this)
         try {
+            /*
             //configure native actions if the engine provides any
             var nativeActionsList = (await window.sk_ipc.ipc.request('sk:nativeActions', { func: 'listActions' })).actions
             sk.nativeActions = {}
@@ -126,7 +127,7 @@ module.exports = class Superkraft {
             }
 
             for (var i in nativeActionsList) configAction(nativeActionsList[i])
-
+            */
         } catch (err) {
         }
 
@@ -150,7 +151,10 @@ module.exports = class Superkraft {
 
         /****************/
         
-        if (opt.config) sk.config = JSON.parse(await sk_fs.promises.readFile(opt.config))
+        if (opt.config){
+            var configData = await sk_fs.promises.readFile(opt.config)
+            sk.config = JSON.parse(configData)
+        }
 
         /****************/
         global.SK_Root_POST = require(sk.paths.sk_modules + 'sk_root_POST.js')

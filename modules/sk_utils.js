@@ -1,4 +1,4 @@
-module.exports = class SK_Window {
+module.exports = class SK_Utils {
     constructor(opt){
         this.sk = opt.sk
     }
@@ -61,7 +61,9 @@ module.exports = class SK_Window {
             
             //_sw.end()
             
-            rW(res)
+
+            if (rW) rW(res)
+            else return res
         })
     }
 
