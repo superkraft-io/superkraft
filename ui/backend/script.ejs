@@ -172,18 +172,7 @@
         init: ()=>{
             return new Promise(async (resolve, reject)=>{
 			    await sk.awaitEngineInitialization()
-				
                 
-                
-                var res = await sk_api.ipc.request('test', {key: 'value'}, null, {target: 'sk:test'})
-                console.log(res)
-                
-                //await sk.utils.sleep(20000)
-
-=======
-			    await sk.awaitEngineInitialization()
-				
->>>>>>> Stashed changes
                 var res = await sk.comm.main('getInfo')
                 if (!sk.isOnMobile) sk.os = res.os
                 sk.arch    = res.arch

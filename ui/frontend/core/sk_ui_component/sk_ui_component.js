@@ -20,59 +20,6 @@ class sk_ui_component {
         if (!opt.extraOpt.ignoreElement){
             this.initElement()
         }
-
-        
-        
-
-        
-
-
-
-
-
-
-
-
-
-        /********/
-
-        sk.ui.components.uuid_counter++
-        this.uuid = 'sk_ui_id_' + sk.ui.components.uuid_counter
-
-        if (this.onFileDrop) sk.fileDrop.subscribe(this)
-
-
-
-        this.classAdd(this.classHierarchy.join(' '))
-        this.classAdd('sk_ui_cannotMoveView')
-
-        this.styling = 'center middle'
-        this.vertical = true
-
-
-        this.contextMenu = new SK_ContextMenu({parent: this})
-        this.ums = new SK_UMS_Client()
-        if (!opt.noHint) this._hint = new SK_Hint({parent: this})
-
-            
-        /********/
-
-        //continue construction. used by plugins to extend capabilities
-        if (this.__sk_ui_continue_constructor__) this.__sk_ui_continue_constructor__(opt)
-
-
-
-        /*
-        const resizeObserver = new ResizeObserver((entries) => {
-            this.__rect = this.getRect()
-        })
-
-        resizeObserver.observe(this.element)
-        */
-            
-        document.dispatchEvent(new CustomEvent("sk_onAfterComponentCreated", {
-            detail: this
-        }))
     }
 
     initElement(withExistingElement){
@@ -613,13 +560,13 @@ class sk_ui_component {
 
         this.contextMenu = new SK_ContextMenu({parent: this})
         this.ums = new SK_UMS_Client()
-        if (!opt.noHint) this._hint = new SK_Hint({parent: this})
+        if (!this.sk_ui_opt.noHint) this._hint = new SK_Hint({parent: this})
 
             
         /********/
 
         //continue construction. used by plugins to extend capabilities
-        if (this.__sk_ui_continue_constructor__) this.__sk_ui_continue_constructor__(opt)
+        if (this.__sk_ui_continue_constructor__) this.__sk_ui_continue_constructor__(this.sk_ui_opt)
 
 
 
