@@ -1,0 +1,157 @@
+.sk_ui_titlebar {
+    min-height: 28px;
+    margin-bottom: 0px !important;
+    position: relative;
+    z-index: 99999;
+    background-color: var(--sk_ui_color_very_dark_grey);
+}
+
+
+.sk_ui_titlebar_actions {
+    position: absolute;
+}
+
+.sk_ui_titlebar_actions > .sk_ui_titlebar_actions_button {
+    margin: 0px;
+}
+
+.sk_ui_titlebar_actions_windows {
+    right: 0px;
+}
+
+
+.sk_ui_titlebar_actions_macos {
+    left: 0px;
+}
+
+
+
+
+
+
+
+
+/****  sk_ui_titlebar_actions_button  ****/
+
+.sk_ui_titlebar_actions_button {
+    padding: 0px;
+}
+
+
+
+
+/****  windows  ****/
+
+.sk_ui_titlebar_title.sk_ui_os_windows {
+    position: absolute;
+    left: 6px;
+}
+
+.sk_ui_titlebar_actions_button_windows {
+    width: 42px;
+    margin-right: 0px !important;
+}
+
+.sk_ui_titlebar_actions_button_windows > .sk_ui_icon {
+    font-size: 12px;
+}
+
+.sk_ui_titlebar_actions_button_windows:active {
+    opacity: 0.5;
+}
+
+.sk_ui_titlebar_actions_button_windows:hover {
+    background-color: var(--sk_ui_color_dark_grey);
+}
+
+
+.sk_ui_titlebar_actions_button_windows:hover > .sk_ui_icon {
+    color: white;
+}
+
+.sk_ui_titlebar_actions_button_windows.sk_ui_titlebar_actions_button_closeBtn:hover {
+    background-color: rgb(241, 36, 0);
+}
+
+
+/****  macos  ****/
+
+:root {
+    --sk_ui_titlebar_color_button_close_macos    : rgb(236, 106, 84);
+    --sk_ui_titlebar_color_button_minimize_macos : rgb(244, 191, 79);
+    --sk_ui_titlebar_color_button_maximize_macos : rgb(97, 197, 83);
+}
+
+.sk_ui_titlebar_actions_macos {
+    left: 8px;
+}
+
+.sk_ui_titlebar_actions_macos > .sk_ui_titlebar_actions_button {
+    margin-right: 8px;
+}
+
+.sk_ui_titlebar_actions_macos:last-child {
+    margin-right: 0px;
+}
+
+.sk_ui_titlebar_actions_button_macos {
+    border-radius: 10px;
+    width: 12px;
+    height: 12px;
+    padding: 0px !important;
+    
+}
+
+.sk_ui_titlebar_actions_button_macos:hover {
+    background-color: inherit !important;
+}
+
+.sk_ui_titlebar_actions_button_macos > .sk_ui_icon {
+    font-size: 10px;
+    opacity: 0;
+    color: black;
+    margin-top: 1px !important;
+    min-width: 10px !important;
+    min-height: 10px !important;
+}
+.sk_ui_titlebar_actions_macos:hover > .sk_ui_titlebar_actions_button_macos > .sk_ui_icon {
+    opacity: 0.5;
+}
+.sk_ui_titlebar_actions_button_macos:active {
+    opacity: 1 !important;
+    filter: brightness(1.4);
+}
+
+.sk_ui_titlebar_actions_button_macos_maximize > .sk_ui_icon  {
+    transform: rotate(-45deg);
+}
+
+.sk_ui_titlebar_actions_button_macos_minimize > .sk_ui_icon  {
+    font-size: 8px;
+    min-height: 4px !important;
+}
+
+.sk_ui_titlebar_actions_button_macos_close {
+    background-color: var(--sk_ui_titlebar_color_button_close_mac);
+}
+
+.sk_ui_titlebar_actions_button_macos_minimize {
+    background-color: var(--sk_ui_titlebar_color_button_minimize_mac);
+}
+
+.sk_ui_titlebar_actions_button_macos_maximize {
+    background-color: var(--sk_ui_titlebar_color_button_maximize_mac);
+}
+
+
+.sk_ui_titlebar_actions_button_macos_close:hover {
+    background-color: var(--sk_ui_titlebar_color_button_close_mac) !important;
+}
+
+.sk_ui_titlebar_actions_button_macos_minimize:hover {
+    background-color: var(--sk_ui_titlebar_color_button_minimize_mac) !important;
+}
+
+.sk_ui_titlebar_actions_button_macos_maximize:hover {
+    background-color: var(--sk_ui_titlebar_color_button_maximize_mac) !important;
+}
