@@ -1,5 +1,3 @@
-console.log('sk_ui_slider.js loaded')
-
 class sk_ui_slider extends sk_ui_component {
     constructor(opt){
         super(opt)

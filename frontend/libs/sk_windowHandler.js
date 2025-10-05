@@ -1,8 +1,3 @@
-console.log('sk_windowHandler loaded');
-
-
-console.log('sk_windowHandler loaded');
-
 class SK_WindowHandler {
     constructor() {
         this.draggableElements = {}
@@ -82,7 +77,6 @@ class SK_WindowHandler {
                 return;
             }
             
-            console.log('start dragging window');
             sk_api.window.beginMoveWindow()
         })
     }
