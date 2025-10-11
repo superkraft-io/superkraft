@@ -1,8 +1,12 @@
+console.log('sk_ui_slider')
+
 class sk_ui_slider extends sk_ui_component {
     constructor(opt){
         super(opt)
 
         this.style.width = '100%'
+
+        this.dawPluginParamType = 'slider'
         
         this.vertical = false
         this.compact = true
@@ -30,20 +34,11 @@ class sk_ui_slider extends sk_ui_component {
         })
 
 
-        var mouseUpHandler = _e => {
-            console.log('mouseup SLIDER')
-
-
+        var mouseUpHandler = async _e => {
             sk.interactions.unblock()
-
-            if (!this.dawPluginParamInfo){
-                _e.preventDefault()
-                _e.stopPropagation()
-            }
             
             this.mdPos = undefined
-            this.thumb.animate = true
-            this.lineColorBar.animate = true
+            this.bypassTween = false
             this.hasMoved = false
 
             if (this.onChangedEnd) this.onChangedEnd(this.value)
@@ -59,6 +54,7 @@ class sk_ui_slider extends sk_ui_component {
             document.removeEventListener('touchmove', mouseMoveHandler)
 
             document.removeEventListener('mouseup', mouseUpHandler)
+
         }
 
         var mouseMoveHandler = _e => {
@@ -111,17 +107,12 @@ class sk_ui_slider extends sk_ui_component {
 
 
 
-        var handleMouseDown = _e => {
+        var handleMouseDown = async _e => {
             if (_e.button !== 0) return
 
-            console.log('mousedown SLIDER')
-
-
             this.hasMoved = false
-            this.thumb.animate = false
-            this.lineColorBar.animate = false
+            this.bypassTween = true
 
-            
             _e.preventDefault()
             _e.stopPropagation()
             
@@ -147,7 +138,6 @@ class sk_ui_slider extends sk_ui_component {
             
             document.addEventListener('mousemove', mouseMoveHandler)
             document.addEventListener('touchmove', mouseMoveHandler)
-
         }
 
         this.element.addEventListener('mousedown', handleMouseDown)
@@ -157,8 +147,14 @@ class sk_ui_slider extends sk_ui_component {
             _e.preventDefault()
             _e.stopPropagation()
 
+            if (this.__dawPluginParamCancelCheck){
+                if (this.__dawPluginParamCancelCheck()) return
+            }
+            
             this.__value = this.defaultValue
+            this.pluginParamIsTouching = true
             this.setValue(this.defaultValue)
+            this.pluginParamIsTouching = true
 
             if (this.onChangedEnd) this.onChangedEnd(this.value)
         })
@@ -175,8 +171,13 @@ class sk_ui_slider extends sk_ui_component {
         this.attributes.add({friendlyName: 'Labeled', name: 'labeled', type: 'bool', onSet: val => { /*this.sliderBucket.sliderEl.classList.remove('labeled'); if (val) this.sliderBucket.sliderEl.classList.add('labeled');*/ }})
         this.attributes.add({friendlyName: 'Ticked', name: 'ticked', type: 'bool', onSet: val => { /*this.sliderBucket.sliderEl.classList.remove('ticked'); if (val) this.sliderBucket.sliderEl.classList.add('ticked');*/ }})
         this.attributes.add({friendlyName: 'Smooth', name: 'smooth', type: 'bool', onSet: val => {
-            this.thumb.classAdd('sk_ui_slider_thumb_smooth')
-            this.lineColorBar.classAdd('sk_ui_slider_line_colorBar_smooth')
+            /*if (val){
+                this.thumb.classAdd('sk_ui_slider_thumb_smooth')
+                this.lineColorBar.classAdd('sk_ui_slider_line_colorBar_smooth')
+            } else {
+                this.thumb.classremove('sk_ui_slider_thumb_smooth')
+                this.lineColorBar.classremove('sk_ui_slider_line_colorBar_smooth')
+            }*/
         }})
         this.__smooth = true
 
@@ -201,6 +202,44 @@ class sk_ui_slider extends sk_ui_component {
         }})
 
         this.attributes.add({friendlyName: 'Center Origin', name: 'centerOrigin', type: 'bool'})
+
+       
+        this.tween = new SK_Tween({
+            speed: 20,
+            onChanged: res => {
+                if (this.bypassTween && this.smooth) return
+                this.updatePos(res.current)
+            }
+        })
+
+
+         if (opt.extraOpt){
+            var initVals = opt.extraOpt
+            if (initVals.step) this.step = initVals.step
+            if (initVals.min) this.min = initVals.min
+            if (initVals.max) this.max = initVals.max
+            if (initVals.default) this.defaultValue = initVals.default
+            if (initVals.value){
+                this.value = initVals.value
+            } else {
+                if (initVals.default) this.value = initVals.default
+                else this.value = this.min
+            }
+        }
+    }
+
+    updatePos(pos){
+        if (this.bypassTween){
+            this.tween.last = pos
+            this.tween.current = pos
+        }
+
+        this.thumb.style[(!this.vertical ? 'left' : 'top')] = pos - this.halfThumbSize + 'px'
+        this.lineColorBar.style[(!this.vertical ? 'width' : 'height')] = pos + 'px'
+
+        if (this.onChanged) this.onChanged(pos)
+
+        this.__lastPos = pos
     }
 
     setValue(val){
@@ -216,15 +255,15 @@ class sk_ui_slider extends sk_ui_component {
 
         
         if (!this.vertical){
-            var halfThumbSize = thumbRect.width / 2
+            this.halfThumbSize = thumbRect.width / 2
             var maxSize = thisRect.width
         } else {
-            var halfThumbSize = thumbRect.height / 2
+            this.halfThumbSize = thumbRect.height / 2
             var maxSize = thisRect.height
         }
 
-        var minPos = (this.centerOrigin ? 0 : halfThumbSize)
-        var maxPos = maxSize - (this.centerOrigin ? 0 : halfThumbSize)
+        var minPos = (this.centerOrigin ? 0 : this.halfThumbSize)
+        var maxPos = maxSize - (this.centerOrigin ? 0 : this.halfThumbSize)
         var mappedPos = sk.utils.map(newVal, this.min, this.max, minPos, maxPos)
 
         
@@ -247,19 +286,17 @@ class sk_ui_slider extends sk_ui_component {
         if (mappedPos < minPos) mappedPos = minPos
         if (mappedPos > maxPos) mappedPos = maxPos
 
-        newVal = sk.utils.map(mappedPos, 0 + halfThumbSize, this.rect.width - halfThumbSize, this.min, this.max)
+        newVal = sk.utils.map(mappedPos, 0 + this.halfThumbSize, this.rect.width - this.halfThumbSize, this.min, this.max)
         
-        if (this.dawPluginParamInfo && !this.dawPluginParamInfo.busyReading){
-            if (!this.dawPluginParamInfo.blockWrite){
-                this.dawPluginParamInfo.writeValue({value: newVal})
-            }
+        if (!this.smooth){
+            this.updatePos(mappedPos)
+        } else {
+            if (this.bypassTween && this.smooth) this.updatePos(mappedPos)
+            else this.tween.to(mappedPos)
         }
 
-        this.thumb.style[(!this.vertical ? 'left' : 'top')] = mappedPos - halfThumbSize + 'px'
-        this.lineColorBar.style[(!this.vertical ? 'width' : 'height')] = mappedPos + 'px'
-
-        if (this.onChanged) this.onChanged(newVal)
-
-        this.__lastPos = mappedPos
+        if (this.pluginParamIsTouching){
+            if (this.__dawPluginWriteParamValue) this.__dawPluginWriteParamValue(newVal)
+        }
     }
 }

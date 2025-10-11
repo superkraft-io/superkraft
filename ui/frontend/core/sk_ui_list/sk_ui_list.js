@@ -119,7 +119,7 @@ class sk_ui_list extends sk_ui_component {
         }
     }
 
-    selectItem(opt){
+    async selectItem(opt){
         var item = opt.item
         if (opt.key && opt.value) item = this.findItemByInfo(opt.key, opt.value)
         if (opt.idx !== undefined) item = this.list[opt.idx]
@@ -128,6 +128,8 @@ class sk_ui_list extends sk_ui_component {
 
         if (!this.highlightOnSelect){
             if (this.onItemSelected) this.onItemSelected(item)
+
+           
             return
         }
         
@@ -138,6 +140,11 @@ class sk_ui_list extends sk_ui_component {
         item.toggled = true
 
         if (this.onItemSelected) this.onItemSelected(item)
+
+        if (this.__dawPluginParamID){
+            var paramIdx = item.idx
+            await this.__dawPluginWriteParamValue(paramIdx)
+        }
     }
 
 }

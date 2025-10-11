@@ -3,9 +3,6 @@ class sk_ui_checkbox extends sk_ui_button {
         super(opt)
 
         this.styling = 'left middle'
-        
-        this.pluginParamType = 'togglable'
-        this.pluginParamValueType = 'binary'
 
         this.label.wrap = true
 
@@ -40,7 +37,9 @@ class sk_ui_checkbox extends sk_ui_button {
             */
 
 
-            if (this.dawPluginParamInfo && !this.dawPluginParamInfo.busyReading) this.dawPluginParamInfo.writeValue({value: val})
+            if (this.__dawPluginWriteParamValue){
+                this.__dawPluginWriteParamValue(val)
+            }
 
             this.__checked = val
 

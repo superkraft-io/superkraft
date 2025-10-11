@@ -14,7 +14,7 @@ class SK_WindowHandler {
         this.obs = new MutationObserver(muts => {
             for (const m of muts) {
                 if (m.type === 'attributes') {
-                    this.recheck(m.target, m.attributeName, m.oldValue);
+                    //this.recheck(m.target, m.attributeName, m.oldValue);
                 } else if (m.type === 'childList') {
                     for (const n of m.addedNodes){
                         this.handleDraggableElementAdded(n)
@@ -63,7 +63,6 @@ class SK_WindowHandler {
     handleDraggableElementRemoved(el){
         if (!this.checkIfDraggable(el)) return
 
-        console.log('removed draggable element', el);
         delete this.draggableElements[el.id]
     }
 

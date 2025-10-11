@@ -531,13 +531,39 @@ class sk_ui_component {
 
         //Plugin stuff
         
-        this.attributes.add({friendlyName: 'Plugin Param ID', name: 'pluginParamID', type: 'text', onSet: val => {
+        this.attributes.add({friendlyName: 'DAW plugin Param ID', name: 'dawPluginParamID', type: 'text', onSet: val => {
+            if (!sk_api.pluginMngr) return console.error('[SK] Plugin manager not present. You are probably not running this app as a plugin.')
+
             sk_api.pluginMngr.add(val, this)
             
-            if (this.pluginParamType === 'draggable') sk_dawPluginMngr.configDraggableEvents(this)
-            else if (this.pluginParamType === 'togglable') sk_dawPluginMngr.configTogglableEvents(this)
+            this.element.addEventListener('mousedown', async _e => {
+                if (_e.button !== 0) return
 
-            if (this.dawPluginParamInfo.onPluginParamIDSet) this.dawPluginParamInfo.onPluginParamIDSet(this)
+                if (sk_api.pluginMngr.currentTouchedParam && sk_api.pluginMngr.currentTouchedParam.uuid !== this.uuid){
+                    delete sk_api.pluginMngr.currentTouchedParam.dawPluginParamMouseDownRes
+                    await sk.nativeActions.handlePluginParamMouseEvent({ dawPluginParamID: sk_api.pluginMngr.currentTouchedParam.__dawPluginParamID, event: 'mouseup' })
+                }
+
+                sk_api.pluginMngr.currentTouchedParam = this
+
+                this.pluginParamIsTouching = true
+                if (this.dawPluginParamID){
+                    this.dawPluginParamMouseDownRes = await sk.nativeActions.handlePluginParamMouseEvent({ dawPluginParamID: this.__dawPluginParamID, event: 'mousedown' })
+                }
+                console.log('param mousedown')
+            })
+
+
+            var mouseUpHandler = async _e => {
+                this.pluginParamIsTouching = false
+                if (this.dawPluginParamID && this.dawPluginParamInfo.type !== 'boolean' && this.dawPluginParamInfo.type !== 'list'){
+                    await sk.nativeActions.handlePluginParamMouseEvent({ dawPluginParamID: this.__dawPluginParamID, event: 'mouseup' })
+                }
+                console.log('param mouseup')
+            }
+            
+            document.addEventListener('mouseup', mouseUpHandler)
+
         }})
 
         this.attributes.add({friendlyName: 'Plugin Param Type', name: 'pluginParamType', type: 'text'})

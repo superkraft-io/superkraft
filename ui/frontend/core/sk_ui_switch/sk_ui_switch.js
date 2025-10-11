@@ -38,9 +38,8 @@ class sk_ui_switch extends sk_ui_component {
                 this.spacer.styling = ''
                 this.classRemove('sk_ui_switch_highlighted')
 
-
-                if (this.dawPluginParamInfo && !this.dawPluginParamInfo.busyReading) this.dawPluginParamInfo.writeValue({value: val})
-
+                if (this.__dawPluginWriteParamValue) this.__dawPluginWriteParamValue(val)
+            
                 if (val){
                     this.spacer.styling = 'fill'
                     this.classAdd('sk_ui_switch_highlighted')
@@ -81,5 +80,9 @@ class sk_ui_switch extends sk_ui_component {
             onSet: val => { this.toggled = val },
             onGet: ()=>{ return this.toggled}
         })
+    }
+
+    set value(val){
+        this.toggled = val
     }
 }
