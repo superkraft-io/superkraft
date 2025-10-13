@@ -102,6 +102,17 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         this._view.on('session-end' , ()=>{ this.setClosed() })
         //this._view.on('hide'        , ()=>{ this.setClosed() })
 
+        this._view.on('closed', ()=>{ 
+            console.log('closed')
+        })
+
+        this._view.on('maximize', ()=>{ 
+            console.log('maximize')
+        })
+
+        this._view.on('minimize', ()=>{ 
+            console.log('minimize')
+        })
 
 
         if (this.onAfterCreated) this.onAfterCreated({view: this._view})

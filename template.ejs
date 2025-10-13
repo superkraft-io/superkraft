@@ -25,6 +25,10 @@
     
     <body>
         <script>
+            window.addEventListener('error', e => {
+                console.warn('Script error from:', e.filename, 'line:', e.lineno, 'col:', e.colno, e.message);
+            });
+            
             document.addEventListener('DOMContentLoaded', function() {
                 FastClick.attach(document.body);
             }, false);

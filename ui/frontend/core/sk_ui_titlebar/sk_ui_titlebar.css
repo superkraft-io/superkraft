@@ -99,6 +99,7 @@
     width: 12px;
     height: 12px;
     padding: 0px !important;
+    margin-right: 8px !important;
     
 }
 
@@ -122,8 +123,17 @@
     filter: brightness(1.4);
 }
 
-.sk_ui_titlebar_actions_button_macos_maximize > .sk_ui_icon  {
+.sk_ui_titlebar_actions_button_macos_maximize_arrow_container {
+    position: relative;
     transform: rotate(-45deg);
+    opacity: 0;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+}
+.sk_ui_titlebar_actions_macos:hover > .sk_ui_titlebar_actions_button_macos > .sk_ui_titlebar_actions_button_macos_maximize_arrow_container {
+    opacity: 0.5;
 }
 
 .sk_ui_titlebar_actions_button_macos_minimize > .sk_ui_icon  {
@@ -132,26 +142,29 @@
 }
 
 .sk_ui_titlebar_actions_button_macos_close {
-    background-color: var(--sk_ui_titlebar_color_button_close_mac);
+    background-color: var(--sk_ui_titlebar_color_button_close_macos);
+}
+.sk_ui_titlebar_actions_button_macos_close > .sk_ui_icon {
+    margin-top: -1px !important;
 }
 
 .sk_ui_titlebar_actions_button_macos_minimize {
-    background-color: var(--sk_ui_titlebar_color_button_minimize_mac);
+    background-color: var(--sk_ui_titlebar_color_button_minimize_macos);
 }
 
 .sk_ui_titlebar_actions_button_macos_maximize {
-    background-color: var(--sk_ui_titlebar_color_button_maximize_mac);
+    background-color: var(--sk_ui_titlebar_color_button_maximize_macos);
 }
 
 
 .sk_ui_titlebar_actions_button_macos_close:hover {
-    background-color: var(--sk_ui_titlebar_color_button_close_mac) !important;
+    background-color: var(--sk_ui_titlebar_color_button_close_macos) !important;
 }
 
 .sk_ui_titlebar_actions_button_macos_minimize:hover {
-    background-color: var(--sk_ui_titlebar_color_button_minimize_mac) !important;
+    background-color: var(--sk_ui_titlebar_color_button_minimize_macos) !important;
 }
 
 .sk_ui_titlebar_actions_button_macos_maximize:hover {
-    background-color: var(--sk_ui_titlebar_color_button_maximize_mac) !important;
+    background-color: var(--sk_ui_titlebar_color_button_maximize_macos) !important;
 }

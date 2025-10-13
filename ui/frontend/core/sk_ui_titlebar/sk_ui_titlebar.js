@@ -56,6 +56,22 @@ class sk_ui_titlebar extends sk_ui_component {
         this.attributes.add({friendlyName: 'Title', name: 'title', type: 'string', onSet: val =>{
             this._title.label.text = val
         }})
+
+        sk_api.window.on('maximize', _e => {
+            if (this._actions.maximize.handleMaximized) this._actions.maximize.handleMaximized()
+        })
+
+        sk_api.window.on('enter-full-screen', _e => {
+            if (this._actions.maximize.handleMaximized) this._actions.maximize.handleMaximized()
+        })
+
+        sk_api.window.on('unmaximize', _e => {
+            if (this._actions.maximize.handleUnmaximized) this._actions.maximize.handleUnmaximized()
+        })
+
+        sk_api.window.on('leave-full-screen', _e => {
+            if (this._actions.maximize.handleUnmaximized) this._actions.maximize.handleUnmaximized()
+        })
     }
 }
 
@@ -96,7 +112,8 @@ class sk_ui_titlebar_actions extends sk_ui_component {
         this.maximize = this.add.fromNew(sk_ui_titlebar_actions_button, _c => {
             _c.classAdd('sk_ui_titlebar_actions_button_maximizeBtn')
             _c.onClick = ()=>{
-                sk_api.window.maximize()
+                if (!sk_api.window.isMaximized() && !sk_api.window.isFullScreen()) sk_api.window.maximize()
+                else sk_api.window.unmaximize()
             }
         })
 
@@ -132,9 +149,48 @@ class sk_ui_titlebar_actions extends sk_ui_component {
 
     configureFor_macos(){
         this.minimize.moveBefore(this.maximize)
-        this.maximize.icon = 'sort'
+        
+        this.maximize._icon.remove()
+        
+        this.maximize.add.component(_c => {
+            _c.classAdd('sk_ui_titlebar_actions_button_macos_maximize_arrow_container')
+            _c.compact = true
+
+            this.maximize.arrow_top_left = _c.add.component(_c => {
+                _c.style.width = 0
+                _c.style.height = 0
+                _c.style.borderLeft = '3px solid transparent'
+                _c.style.borderRight = '3px solid transparent'
+                _c.style.borderBottom = '3px solid black'
+                
+                _c.marginBottom = 2
+            })
+
+            this.maximize.arrow_bottom_right = _c.add.component(_c => {
+                _c.style.width = 0
+                _c.style.height = 0
+                _c.style.borderLeft = '3px solid transparent'
+                _c.style.borderRight = '3px solid transparent'
+                _c.style.borderTop = '3px solid black'
+            })
+        })
+
+        this.maximize.handleMaximized = ()=>{
+            this.maximize.arrow_top_left.style.transform = 'rotate(180deg)'
+            this.maximize.arrow_bottom_right.style.transform = 'rotate(180deg)'
+            this.maximize.arrow_top_left.marginBottom = 0.001
+        }
+
+        this.maximize.handleUnmaximized = ()=>{
+            this.maximize.arrow_top_left.style.transform = ''
+            this.maximize.arrow_bottom_right.style.transform = ''
+            this.maximize.arrow_top_left.marginBottom = 2
+        }
+
         this.minimize.icon = 'minus'
     }
+
+
 }
 
 class sk_ui_titlebar_actions_button extends sk_ui_button {
