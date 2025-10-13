@@ -143,8 +143,15 @@ class sk_ui_titlebar_actions extends sk_ui_component {
     configureFor_windows(){
         this.minimize.moveBefore(this.close)
         this.maximize.moveBefore(this.close)
-
         this.maximize.icon = 'square outline'
+
+         this.maximize.handleMaximized = ()=>{
+            this.maximize.icon = 'window restore outline'
+        }
+
+        this.maximize.handleUnmaximized = ()=>{
+            this.maximize.icon = 'square outline'
+        }
     }
 
     configureFor_macos(){
