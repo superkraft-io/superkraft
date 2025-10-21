@@ -536,8 +536,23 @@ class sk_ui_component {
 
             sk_api.pluginMngr.add(val, this)
             
+            var mouseUpHandler = async _e => {
+                document.removeEventListener('mouseup', mouseUpHandler)
+                
+                delete this.dawPluginParamIsTouching
+                this.dawPluginParamIsTouchingUpTime = Date.now()
+
+                if (this.dawPluginParamID && this.dawPluginParamInfo.type !== 'boolean' && this.dawPluginParamInfo.type !== 'list'){
+                    await sk.nativeActions.handlePluginParamMouseEvent({ dawPluginParamID: this.__dawPluginParamID, event: 'mouseup' })
+                }
+            }
+            
+
             this.element.addEventListener('mousedown', async _e => {
                 if (_e.button !== 0) return
+
+
+                document.addEventListener('mouseup', mouseUpHandler)
 
                 if (sk_api.pluginMngr.currentTouchedParam && sk_api.pluginMngr.currentTouchedParam.uuid !== this.uuid){
                     delete sk_api.pluginMngr.currentTouchedParam.dawPluginParamMouseDownRes
@@ -546,23 +561,16 @@ class sk_ui_component {
 
                 sk_api.pluginMngr.currentTouchedParam = this
 
-                this.pluginParamIsTouching = true
+                this.dawPluginParamIsTouching = Date.now()
+                delete this.dawPluginParamIsTouchingUpTime
+
                 if (this.dawPluginParamID){
                     this.dawPluginParamMouseDownRes = await sk.nativeActions.handlePluginParamMouseEvent({ dawPluginParamID: this.__dawPluginParamID, event: 'mousedown' })
                 }
-                console.log('param mousedown')
             })
 
 
-            var mouseUpHandler = async _e => {
-                this.pluginParamIsTouching = false
-                if (this.dawPluginParamID && this.dawPluginParamInfo.type !== 'boolean' && this.dawPluginParamInfo.type !== 'list'){
-                    await sk.nativeActions.handlePluginParamMouseEvent({ dawPluginParamID: this.__dawPluginParamID, event: 'mouseup' })
-                }
-                console.log('param mouseup')
-            }
             
-            document.addEventListener('mouseup', mouseUpHandler)
 
         }})
 

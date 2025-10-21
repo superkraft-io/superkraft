@@ -152,9 +152,9 @@ class sk_ui_slider extends sk_ui_component {
             }
             
             this.__value = this.defaultValue
-            this.pluginParamIsTouching = true
+            this.dawPluginParamIsTouching = true
             this.setValue(this.defaultValue)
-            this.pluginParamIsTouching = true
+            this.dawPluginParamIsTouching = true
 
             if (this.onChangedEnd) this.onChangedEnd(this.value)
         })
@@ -295,7 +295,7 @@ class sk_ui_slider extends sk_ui_component {
             else this.tween.to(mappedPos)
         }
 
-        if (this.pluginParamIsTouching){
+        if (this.dawPluginParamIsTouching){
             if (this.__dawPluginWriteParamValue) this.__dawPluginWriteParamValue(newVal)
         }
     }
