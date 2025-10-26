@@ -6,11 +6,12 @@ class sk_ui_draggable_component extends sk_ui_component {
 
         this.valueRange = { min: 0, max: 100 }
         this.defaultValue = 0
+        this.__value = 0
 
         this.invertY = true
 
         var mouseMoveHandler = async _e => {
-            if (!this.__sk_ui_draggable_component_mdValue) return
+            if (this.__mdValue === undefined) return
 
             sk.interactions.block()
 
@@ -25,20 +26,20 @@ class sk_ui_draggable_component extends sk_ui_component {
             if (_e.shiftKey) {
                 if (!this.shiftPressed) {
                     this.shiftPressed = true
-                    this.__sk_ui_draggable_component_mdValue = pos
-                    this.__sk_ui_draggable_component_mdValue = this.value
+                    this.mdPos = pos
+                    this.__mdValue = this.value
                 }
             } else {
                 if (this.shiftPressed) {
-                    this.__sk_ui_draggable_component_mdValue = pos
-                    this.__sk_ui_draggable_component_mdValue = this.value
+                    this.mdPos = pos
+                    this.__mdValue = this.value
                     delete this.shiftPressed
                 }
             }
 
             var diff = {
-                x: pos.x - this.__sk_ui_draggable_component_mdValue.x,
-                y: pos.y - this.__sk_ui_draggable_component_mdValue.y
+                x: pos.x - this.mdPos.x,
+                y: pos.y - this.mdPos.y
             }
 
             if (this.invertX) diff.x = 0 - diff.x
@@ -47,29 +48,35 @@ class sk_ui_draggable_component extends sk_ui_component {
             var newVal = diff.y * this.dragSensitivity
             if (this.shiftPressed) newVal = newVal * 0.2
 
-            this.value = this.__sk_ui_draggable_component_mdValue + newVal
-            this.applyValue()
+            this.value = this.__mdValue + newVal
+
+            if (this.dawPluginParamIsTouching){
+                if (this.__dawPluginWriteParamValue) this.__dawPluginWriteParamValue(this.value)
+            }
         }
 
 
-        this.element.addEventListener('mouseDown', _e => {
-            this.__last_mdValue = 0
-            this.__sk_ui_draggable_component_mdValue = this.value
-
-            this.__sk_ui_draggable_component_manuallyChanging = true
-
-            document.addEventListener('mousemove', mouseMoveHandler)
-
-            if (this.onMouseDown) this.onMouseDown()
-        })
-
-        this.element.addEventListener('mouseUp', _e => {
+       var mouseUpHandler = _e => {
             sk.interactions.unblock()
 
             delete this.__sk_ui_draggable_component_manuallyChanging
             document.removeEventListener('mousemove', mouseMoveHandler)
 
             if (this.onMouseUp) this.onMouseUp()
+       }
+
+
+         this.element.addEventListener('mousedown', _e => {
+            this.__last_mdValue = 0
+            this.mdPos = sk.interactions.getPos(_e)
+            this.__mdValue = this.value
+
+            this.__sk_ui_draggable_component_manuallyChanging = true
+
+            document.addEventListener('mousemove', mouseMoveHandler)
+            document.addEventListener('mouseup', mouseUpHandler)
+
+            if (this.onMouseDown) this.onMouseDown()
         })
 
         this.element.addEventListener('wheel', _e => {
@@ -93,9 +100,6 @@ class sk_ui_draggable_component extends sk_ui_component {
         })
     }
 
-    applyValue() {
-        this.writeValue({ value: this.__value })
-    }
 
     set value(val) {
         this.__value = val
@@ -120,10 +124,6 @@ class sk_ui_draggable_component extends sk_ui_component {
         if (this.onUpdate) this.onUpdate(val)
     }
 
-    async writeValue(opt) {
-        return this.__writeValue(opt)
-    }
-
     async readValue() {
         if (this.__sk_ui_draggable_component_manuallyChanging || this.__busyReading) return
 
@@ -138,10 +138,5 @@ class sk_ui_draggable_component extends sk_ui_component {
         this.value = sk.utils.map(normalizedValue, 0, 1, this.valueRange.min, this.valueRange.max)
 
         this.__sk_ui_draggable_component_blockWrite = false
-    }
-
-    setValueFromExternalSource(value) {
-        this.value = value
-        this.applyValue()
     }
 }

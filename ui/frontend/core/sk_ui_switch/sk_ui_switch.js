@@ -26,7 +26,6 @@ class sk_ui_switch extends sk_ui_component {
 
         this.element.onclick = async ()=>{
             this.toggled = !this.toggled
-            if (this.onChanged) this.onChanged(this.toggled)
         }
 
         this.attributes.add({
@@ -44,6 +43,9 @@ class sk_ui_switch extends sk_ui_component {
                     this.spacer.styling = 'fill'
                     this.classAdd('sk_ui_switch_highlighted')
                 }
+
+                
+                if (this.onChanged) this.onChanged(val)
             }
         })
 

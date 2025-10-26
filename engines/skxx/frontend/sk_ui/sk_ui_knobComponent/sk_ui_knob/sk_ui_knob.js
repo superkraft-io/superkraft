@@ -7,8 +7,6 @@ class sk_ui_knob extends sk_ui_draggable_component {
 
         this.compact = true
 
-
-        
         this.angleRange = { min: 0, max: 270 }
 
         this.__progressbarOffset = 10
@@ -122,12 +120,7 @@ class sk_ui_knob extends sk_ui_draggable_component {
 
 
         const resizeObserver = new ResizeObserver((entries) => {
-            this.progressBar.size = this.rect.width + this.__progressbarOffset
-
-            this.progressBarPlaceholder.size = this.rect.width + this.__progressbarOffset
-
-            this.ticksCanvas.draw()
-            this.knobTicksCanvas.draw()
+           this.__redraw()
         })
 
         resizeObserver.observe(this.element)
@@ -139,6 +132,19 @@ class sk_ui_knob extends sk_ui_draggable_component {
         this.angleOffset = -135
 
         this.initiated = true
+
+        setTimeout(()=>{
+            this.value = this.value
+        }, 10)
+    }
+
+    __redraw(){
+         this.progressBar.size = this.rect.width + this.__progressbarOffset
+
+        this.progressBarPlaceholder.size = this.rect.width + this.__progressbarOffset
+
+        this.ticksCanvas.draw()
+        this.knobTicksCanvas.draw()
     }
 
     set angleOffset(val) {
@@ -155,7 +161,7 @@ class sk_ui_knob extends sk_ui_draggable_component {
     }
     
 
-    onUpdate(value) {
+    doUodate(value) {
         if (!this.initiated) return
 
         this.valueInput.value = (this.formatValueLabel ? this.formatValueLabel(value) : value)
@@ -223,6 +229,20 @@ class sk_ui_knob extends sk_ui_draggable_component {
         this.progressBar.color = val
         this.innerGlow.color = val
         this.outerGlow.color = val
+    }
+
+    set value(val){
+        var _val = val
+        if (_val > this.valueRange.max) _val = this.valueRange.max
+        if (_val < this.valueRange.min) _val = this.valueRange.min
+            
+        this.__value = _val
+
+        this.doUodate(_val)
+    }
+
+    get value(){
+        return this.__value
     }
 }
 
