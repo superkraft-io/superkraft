@@ -1,4 +1,4 @@
-class sk_ui_knob extends sk_ui_component {
+class sk_ui_knob extends sk_ui_draggable_component {
     constructor(opt) {
         super(opt)
 
