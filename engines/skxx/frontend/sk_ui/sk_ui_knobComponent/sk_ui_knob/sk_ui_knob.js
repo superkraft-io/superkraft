@@ -39,8 +39,13 @@ class sk_ui_knob extends sk_ui_draggable_component {
 
         this.ticksCanvas = this.add.fromNew(sk_ui_knob_ticks)
 
-        this.knobTicksCanvas = this.add.fromNew(sk_ui_knob_knobTicks, _c => {
+        this.knobTicksCanvasContainer = this.add.component(_c => {
+            _c.classAdd('sk_ui_knob_knobTicksContainer')
             _c.animate = false
+            
+            this.knobTicksCanvas = _c.add.fromNew(sk_ui_knob_knobTicks, _c => {
+                _c.animate = false
+            })
         })
 
         this.cursor = 'pointer'
@@ -134,7 +139,8 @@ class sk_ui_knob extends sk_ui_draggable_component {
         this.initiated = true
 
         setTimeout(()=>{
-            this.value = this.value
+            //this.__redraw()
+            //this.value = this.value
         }, 10)
     }
 
@@ -185,7 +191,7 @@ class sk_ui_knob extends sk_ui_draggable_component {
 
         this.innerGlow.angle = angle - 135
         this.outerGlow.angle = angle - 135
-        this.knobTicksCanvas.style.transform = `rotate(${angle}deg)`;
+        this.knobTicksCanvasContainer.style.transform = `rotate(${angle}deg)`;
 
         if (this.onChanged) this.onChanged(value)
     }

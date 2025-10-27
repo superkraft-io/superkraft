@@ -59,7 +59,6 @@ class sk_ui_draggable_component extends sk_ui_component {
        var mouseUpHandler = _e => {
             sk.interactions.unblock()
 
-            delete this.__sk_ui_draggable_component_manuallyChanging
             document.removeEventListener('mousemove', mouseMoveHandler)
 
             if (this.onMouseUp) this.onMouseUp()
@@ -71,8 +70,6 @@ class sk_ui_draggable_component extends sk_ui_component {
             this.mdPos = sk.interactions.getPos(_e)
             this.__mdValue = this.value
 
-            this.__sk_ui_draggable_component_manuallyChanging = true
-
             document.addEventListener('mousemove', mouseMoveHandler)
             document.addEventListener('mouseup', mouseUpHandler)
 
@@ -81,13 +78,19 @@ class sk_ui_draggable_component extends sk_ui_component {
 
         this.element.addEventListener('wheel', _e => {
             this.value += (sk.os === 'win' ? 0 - _e.deltaY : _e.deltaY) / (_e.shiftKey ? 100 : 10)
-            this.applyValue()
+
+            this.dawPluginParamIsTouching = true
+            if (this.__dawPluginWriteParamValue) this.__dawPluginWriteParamValue(this.value)
+            this.dawPluginParamIsTouching = false
         })
 
         this.element.addEventListener('keydown', _e => {
             if (_e.code === 'ArrowUp' || _e.code === 'ArrowRight') this.value += (_e.shiftKey ? 1 : 5)
             else if (_e.code === 'ArrowDown' || _e.code === 'ArrowLeft') this.value -= (_e.shiftKey ? 1 : 5)
-            this.applyValue()
+
+            this.dawPluginParamIsTouching = true
+            if (this.__dawPluginWriteParamValue) this.__dawPluginWriteParamValue(this.value)
+            this.dawPluginParamIsTouching = false
         })
 
         this.element.addEventListener('dblclick', _e => {
@@ -95,8 +98,10 @@ class sk_ui_draggable_component extends sk_ui_component {
             _e.stopPropagation()
 
             this.value = this.defaultValue
-
-            this.applyValue()
+            
+            this.dawPluginParamIsTouching = true
+            if (this.__dawPluginWriteParamValue) this.__dawPluginWriteParamValue(this.value)
+            this.dawPluginParamIsTouching = false
         })
     }
 
@@ -122,21 +127,5 @@ class sk_ui_draggable_component extends sk_ui_component {
     set rangeMaximum(val) {
         this.valueRange.max = val
         if (this.onUpdate) this.onUpdate(val)
-    }
-
-    async readValue() {
-        if (this.__sk_ui_draggable_component_manuallyChanging || this.__busyReading) return
-
-        this.__sk_ui_draggable_component_blockWrite = true
-
-        var normalizedValue = Number((await this.__readValue()).value)
-
-        if (this.__lastReadValue === normalizedValue) return
-
-        this.__lastReadValue = normalizedValue
-
-        this.value = sk.utils.map(normalizedValue, 0, 1, this.valueRange.min, this.valueRange.max)
-
-        this.__sk_ui_draggable_component_blockWrite = false
     }
 }

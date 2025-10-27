@@ -77,7 +77,7 @@ class sk_ui_vu_meter_signal extends sk_ui_component {
     }
 }
 
-class sk_ui_vu_meter_signal_channels extends sk_ui_1_vst_param_component_draggable {
+class sk_ui_vu_meter_signal_channels extends sk_ui_draggable_component {
     constructor(opt) {
         super(opt)
 
