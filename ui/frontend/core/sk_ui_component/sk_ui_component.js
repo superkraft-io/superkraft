@@ -508,14 +508,16 @@ class sk_ui_component {
                 return
             }
             
-            if (sk.cursors[val] || val === '_'){
-                //sk.app.eventBlocker.onCursorCreated = this.onCursorCreated
-                //sk.app.eventBlocker.style.cursor = 'none'
-                sk.app.eventBlocker.setCursorFor(this)
+            if (sk.cursors){
+                if (sk.cursors[val] || val === '_'){
+                    //sk.app.eventBlocker.onCursorCreated = this.onCursorCreated
+                    //sk.app.eventBlocker.style.cursor = 'none'
+                    sk.app.eventBlocker.setCursorFor(this)
 
-                this.element.addEventListener('mouseenter', this.cursorEvents.onEnter)
-                this.element.addEventListener('mouseleave', this.cursorEvents.onLeave)
-                document.addEventListener('mousemove', this.cursorEvents.onMove)
+                    this.element.addEventListener('mouseenter', this.cursorEvents.onEnter)
+                    this.element.addEventListener('mouseleave', this.cursorEvents.onLeave)
+                    document.addEventListener('mousemove', this.cursorEvents.onMove)
+                }
             }
         }})
 
