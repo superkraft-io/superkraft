@@ -370,6 +370,14 @@
                 sk.tweens.start()
             }
 
+            if (sk.app_type === 'wapp'){
+                window.sk_api = {}
+                sk_api.waitForWndReady = ()=>{
+                    return new Promise(resolve => {
+                        resolve()
+                    })
+                }
+            }
 
             sk_api.waitForWndReady().then(()=>{
                 startSKFE()
