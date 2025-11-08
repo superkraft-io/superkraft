@@ -73,7 +73,7 @@ class sk_ui_button extends sk_ui_component {
                 touchDragged = true
             }
 
-            this.element.ontouchstart = _e => {
+            this.element.addEventListener('touchstart', _e => {
                 if (this.disabled) return
 
                 _e.stopPropagation()
@@ -86,9 +86,9 @@ class sk_ui_button extends sk_ui_component {
                 _e.preventDefault()
 
                 sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true, toBE: false})
-            }
+            })
 
-            this.element.ontouchend = _e => {
+            this.element.addEventListener('touchend', _e => {
                 if (this.disabled) return
 
                 _e.stopPropagation()
@@ -98,7 +98,7 @@ class sk_ui_button extends sk_ui_component {
                     if (this.onTouchEnd) this.onTouchEnd(_e)
                     handleOnClickEvent(_e)
                 }
-            }
+            })
         }
 
         this.element.onmouseenter = _e => {

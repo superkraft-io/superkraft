@@ -108,7 +108,7 @@ class sk_ui_slider extends sk_ui_component {
 
 
         var handleMouseDown = async _e => {
-            if (_e.button !== 0) return
+            if (_e.touches.length === 0 && _e.button !== 0) return
 
             this.hasMoved = false
             this.bypassTween = true
@@ -214,17 +214,19 @@ class sk_ui_slider extends sk_ui_component {
 
 
          if (opt.extraOpt){
-            var initVals = opt.extraOpt
-            if (initVals.step) this.step = initVals.step
-            if (initVals.min) this.min = initVals.min
-            if (initVals.max) this.max = initVals.max
-            if (initVals.default) this.defaultValue = initVals.default
-            if (initVals.value){
-                this.value = initVals.value
-            } else {
-                if (initVals.default) this.value = initVals.default
-                else this.value = this.min
-            }
+            setTimeout(()=>{
+                var initVals = opt.extraOpt
+                if (initVals.step    !== undefined) this.step = initVals.step
+                if (initVals.min     !== undefined) this.min = initVals.min
+                if (initVals.max     !== undefined) this.max = initVals.max
+                if (initVals.default !== undefined) this.defaultValue = initVals.default
+                if (initVals.value   !== undefined){
+                    this.value = initVals.value
+                } else {
+                    if (initVals.default) this.value = initVals.default
+                    else this.value = this.min
+                }
+            }, 100)
         }
     }
 

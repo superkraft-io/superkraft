@@ -554,6 +554,62 @@
     <% for (var i = 0; i < sk.ui.components.global.length; i++){ %>
         sk_ui_<%= sk.ui.components.global[i].name %>.root_url = "<%= sk.routes.frontend.ui_global %>sk_ui/<%= sk.ui.components.global[i].path %>"
     <% } %>
+
+
+
+
+
+    sk.__eventListenerPatcher = {}
+
+    sk.__eventListenerPatcher.add = EventTarget.prototype.addEventListener;
+    sk.__eventListenerPatcher.remove = EventTarget.prototype.removeEventListener;
+
+    EventTarget.prototype.addEventListener = function (type, listener, options) {
+        if (!this.eventListeners) this.eventListeners = new WeakMap();
+
+        if (typeof listener === 'function' || listener && typeof listener.handleEvent === 'function') {
+                let list = this.eventListeners.get(this);
+                if (!list) {
+                list = [];
+                this.eventListeners.set(this, list);
+            }
+            list.push({ type, listener, options });
+        }
+        return sk.__eventListenerPatcher.add.call(this, type, listener, options);
+    };
+
+    EventTarget.prototype.removeEventListener = function (type, listener, options) {
+        if (!this.eventListeners) return
+
+        const list = this.eventListeners.get(this);
+        if (list) {
+            for (let i = list.length - 1; i >= 0; --i) {
+                if (list[i].type === type && list[i].listener === listener) list.splice(i, 1);
+            }
+            if (list.length === 0) this.eventListeners.delete(this);
+        }
+        return sk.__eventListenerPatcher.remove.call(this, type, listener, options);
+    };
+
+    EventTarget.prototype.hasEventListener = function (type, listener, options) {
+        if (!this.eventListeners) return
+
+        const list = this.eventListeners.get(this);
+        if (!list) return false;
+        return !!list.find(l => !type || l.type === type);
+    };
+
+    // helper: returns array of {type, listener, options} or empty array
+    sk.__eventListenerPatcher.getListenersFor = el => {
+        return this.eventListeners.get(el) || [];
+    }
+
+    // helper: boolean check
+    sk.__eventListenerPatcher.hasListener = (el, type)=>{
+        const list = this.eventListeners.get(el);
+        if (!list) return false;
+        return !!list.find(l => !type || l.type === type);
+    }
 </script>
 
 <script src="<%= sk.routes.frontend.sk%>/libs/sk_viewController/sk_viewController.js"></script>

@@ -72,11 +72,11 @@
 
     --sk_ui_color_scrollbar: transparent;
     --sk_ui_color_scrollbar_track: var(--sk_ui_color_very_dark_grey_2);
-    --sk_ui_color_scrollbar_thumb: var(--sk_ui_color_grey);
+    --sk_ui_color_scrollbar_handle: var(--sk_ui_color_grey);
 
     --sk_ui_scrollbar_width: 8px;
     --sk_ui_scrollbar_track_radius: 8px;
-    --sk_ui_scrollbar_thumb_radius: 8px;
+    --sk_ui_scrollbar_handle_radius: 8px;
 }
 
 .sk_ui_color_blue {

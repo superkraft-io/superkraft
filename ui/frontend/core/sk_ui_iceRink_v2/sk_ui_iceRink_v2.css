@@ -1,0 +1,31 @@
+.sk_ui_iceRink_v2 {
+    position: relative;
+
+    border: solid 1px rgb(184, 184, 184);
+    
+    width: 500px;
+    height: 500px;
+}
+
+.sk_ui_iceRink_v2_contentWrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.sk_ui_iceRink_v2_content {
+    position: absolute;
+
+    width: 140%;
+
+
+    background-image: 
+    linear-gradient(45deg, #cccccc22 25%, transparent 25%),
+    linear-gradient(135deg, #cccccc22 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #cccccc22 75%),
+    linear-gradient(135deg, transparent 75%, #cccccc22 75%);
+    background-size: 100px 100px; /* Size of each square */
+    background-position: 0 0, 50px 0, 50px -50px, 0px 50px; /* Positioning to create the pattern */
+    background-color: #2c2c2c; /* Base color for the other squares */
+}

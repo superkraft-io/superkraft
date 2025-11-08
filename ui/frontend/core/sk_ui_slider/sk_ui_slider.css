@@ -7,7 +7,7 @@
 .sk_ui_slider_line {
     width: 100%;
     background-color: black;
-    min-height: 3px;
+    min-height: 6px;
     border-radius: 3px;
     position: relative;
     overflow: hidden;

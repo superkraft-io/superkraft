@@ -834,15 +834,15 @@ class sk_ui_component {
 
     getParentIceRink(){
         if (!this.parent.classHas) return
-        return (this.parent.classHas('sk_ui_iceRink') ? this.parent : this.parent.getParentIceRink())
+        return (this.parent.classHas('sk_ui_iceRink_v2') ? this.parent : this.parent.getParentIceRink())
     }
 
-    scrollTo(non_sk, center){
+    scrollTo(non_sk, center, instant){
         var parentIceRink = this.getParentIceRink()
 
         if (!parentIceRink || non_sk) return this.element.scrollIntoView({behavior: "smooth"})
 
-        parentIceRink.scrollToChild(this, center)
+        parentIceRink.scrollToChild(this, center, instant)
     }
 
     scrollToIfNotFullyVisible(non_sk, center){
@@ -1186,13 +1186,13 @@ class sk_ui_movableizer_resizableizer {
         
         this.mover = new sk_ui_movableizer(opt)
         this.mover.coreParent = this
-        this.mover.onStart = res => { if (this.onStartMoving) this.onStartMoving(res) }
-        this.mover.onEnd = ()=>{ if (this.onEndMoving) this.onEndMoving() }
+        this.mover.onBegin  = res => { if (this.onBeginMoving) this.onBeginMoving(res) }
+        this.mover.onEnd    = res => { if (this.onEndMoving) this.onEndMoving(res) }
         this.mover.onMoving = res => { if (this.onMoving) this.onMoving(res) }
 
         this.resizer = new sk_ui_resizableizer(opt)
         this.resizer.coreParent = this
-        this.resizer.onStart = ()=>{ if (this.onStartResizing) this.onStartResizing() }
+        this.resizer.onBegin = ()=>{ if (this.onBeginResizing) this.onBeginResizing() }
         this.resizer.onEnd = ()=>{ if (this.onEndResizing) this.onEndResizing() }
         this.resizer.onResizing = res => { if (this.onResizing) this.onResizing(res) }
         this.resizer.onResizingSnappingBegin = ()=>{ if (this.onResizingSnappingBegin) this.onResizingSnappingBegin() }
@@ -1394,7 +1394,11 @@ class sk_ui_movableizer {
             
             this.parent.pointerEvents = 'true'
     
-            if (this.onStartNotified && this.onEnd) this.onEnd(_e)
+            if (this.onBeginNotified && this.onEnd){
+                this.onEnd({
+                    event: _e
+                })
+            }
 
             sk.interactions.unblock()
         }
@@ -1420,9 +1424,9 @@ class sk_ui_movableizer {
             mousePosInSelf.x *= this.multiplier.x
             mousePosInSelf.y *= this.multiplier.y
 
-            if (!this.onStartNotified && this.onStart){
-                this.onStartNotified = true
-                this.onStart({
+            if (!this.onBeginNotified && this.onBegin){
+                this.onBeginNotified = true
+                this.onBegin({
                     event: _e,
                     position: this.mdPos,
                 })
@@ -1506,7 +1510,7 @@ class sk_ui_movableizer {
 
             sk.interactions.block()
 
-            this.onStartNotified = false
+            this.onBeginNotified = false
             this.mdPosGlobal = {
                 x: (_e.clientX || _e.touches[0].clientX),
                 y: (_e.clientY || _e.touches[0].clientY)
@@ -1841,7 +1845,7 @@ class sk_ui_resizableizer {
         document.addEventListener('mouseup', this.mouseUpHandler)
         document.addEventListener('touchend', this.mouseUpHandler)
     
-        if (this.onStart) this.onStart()
+        if (this.onBegin) this.onBegin()
     }
 
     trackMouseLeave(enabled){

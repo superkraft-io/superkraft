@@ -10,6 +10,7 @@ class sk_ui_switch extends sk_ui_component {
 
         this.style.width = Math.round(size*1.75) + 'px'
         this.style.minHeight = size + 'px'
+        this.style.height = size + 'px'
         this.style.padding = '2px'
         this.style.borderRadius = size + 'px'
         this.style.backgroundColor = '#3c3c3c'
@@ -67,6 +68,7 @@ class sk_ui_switch extends sk_ui_component {
             onSet: val => {
                 this.style.width = Math.round(val * 1.75) + 'px'
                 this.style.height = val + 'px'
+                this.style.minHeight = val + 'px'
                 this.style.padding = '2px'
                 this.style.borderRadius = val + 'px'
 

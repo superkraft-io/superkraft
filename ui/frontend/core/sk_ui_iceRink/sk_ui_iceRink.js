@@ -81,7 +81,12 @@ class sk_ui_iceRink extends sk_ui_component {
             _c.updatePosition = contentWrapperRect => {
                 if (this.scrollbarX.decoupled && this.onWrapperResized) return this.onWrapperResized(contentWrapperRect)
         
-                var left = contentWrapperRect.left - this.parent.rect.left + this.scrollbarX.offset.left
+                /*var parentRect = this.parent.rect
+                if (!parentRect.left) parentRect = this.rect
+                var left = contentWrapperRect.left - parentRect.left + this.scrollbarX.offset.left
+                */
+
+                var left = this.rect.left + this.rect.width + this.content.rect.left + this.content.rect.width
                 _c.style.left = left + 'px'
 
                 if (this.scrollbarX.decoupled){
@@ -134,7 +139,7 @@ class sk_ui_iceRink extends sk_ui_component {
             _c.updatePosition = contentWrapperRect => {
                 if (this.scrollbarY.decoupled && this.onWrapperResized) return this.onWrapperResized(contentWrapperRect)
         
-                var top = contentWrapperRect.localPos.top - this.parent.rect.top + this.scrollbarY.offset.top
+                var top = contentWrapperRect.localPos.y - this.parent.rect.top + this.scrollbarY.offset.top
                 _c.style.top = top + 'px'
 
                 if (this.scrollbarY.decoupled){
@@ -512,7 +517,7 @@ class sk_ui_iceRink extends sk_ui_component {
                 this.scrollerX.containerSize = this.rect.width
                 this.scrollbarX.updateDimensions()
                 this.scrollbarX_wrapper.updatePosition(this.contentWrapper.rect)
-                try { if (this.element.rect.width >= cRect.width) this.scrollX = 0 } catch(err) {}
+                try { if (this.rect.width >= cRect.width) this.scrollX = 0 } catch(err) {}
             }
 
             if (this.axis.indexOf('y') > -1){
@@ -520,7 +525,7 @@ class sk_ui_iceRink extends sk_ui_component {
                 this.scrollerY.containerSize = this.rect.height
                 this.scrollbarY.updateDimensions()
                 this.scrollbarY_wrapper.updatePosition(this.contentWrapper.rect)
-                try { if (this.element.rect.height >= cRect.height) this.scrollY = 0 } catch(err) {}
+                try { if (this.rect.height >= cRect.height) this.scrollY = 0 } catch(err) {}
             }
 
         }).observe(this.element)

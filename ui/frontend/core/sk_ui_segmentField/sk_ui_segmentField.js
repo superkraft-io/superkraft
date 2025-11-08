@@ -6,8 +6,8 @@ class sk_ui_segmentField extends sk_ui_component {
 
         this._header = this.add.label(_c => {
             _c.text = 'Field'
-            _c.weight = 700
-            _c.size = 12
+            _c.weight = 400
+            _c.marginBottom = 2
         })
     }
 
