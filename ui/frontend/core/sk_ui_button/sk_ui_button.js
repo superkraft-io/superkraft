@@ -57,8 +57,8 @@ class sk_ui_button extends sk_ui_component {
             this.element.ontouchmove = _e => {
                 if (this.disabled) return
 
-                _e.stopPropagation()
-                _e.preventDefault()
+                //_e.stopPropagation()
+                //_e.preventDefault()
                 
                 
                 var pos = sk.interactions.getPos(_e, true)
@@ -76,8 +76,8 @@ class sk_ui_button extends sk_ui_component {
             this.element.addEventListener('touchstart', _e => {
                 if (this.disabled) return
 
-                _e.stopPropagation()
-                _e.preventDefault()
+                //_e.stopPropagation()
+                //_e.preventDefault()
                 
                 this.__touchStartPos = sk.interactions.getPos(_e, true)
                 if (this.onTouchStart) this.onTouchStart(_e)
@@ -91,8 +91,8 @@ class sk_ui_button extends sk_ui_component {
             this.element.addEventListener('touchend', _e => {
                 if (this.disabled) return
 
-                _e.stopPropagation()
-                _e.preventDefault()
+                //_e.stopPropagation()
+                //_e.preventDefault()
                 
                 if (!touchDragged){
                     if (this.onTouchEnd) this.onTouchEnd(_e)

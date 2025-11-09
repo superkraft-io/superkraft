@@ -68,6 +68,20 @@ class sk_ui_component {
         }
 
 
+        this.attributes.add({friendlyName: 'Visible', name: 'visible', type: 'bool',
+            onSet: val => {
+                alert('Cannot set visibility of a component using this attribute.')
+            },
+
+            onGet: val => {
+                const style = window.getComputedStyle(this.element);
+                const isFlat = this.element.offsetWidth <= 0 || this.element.offsetHeight <= 0;
+                const isTransparent = style.opacity === '0';
+                const isHiddenByVisibility = style.visibility === 'hidden';
+                return !isFlat && !isTransparent && !isHiddenByVisibility;
+            }
+        })
+
         this.attributes.add({
             friendlyName: 'Disabled',
             name: 'disabled',
@@ -119,11 +133,11 @@ class sk_ui_component {
         }})
         this.__noSelect = true
         
-        this.__animate = true
         this.attributes.add({friendlyName: 'Animate', name: 'animate',  type: 'bool', onSet: val => {
             this.classRemove('sk_ui_transition')
             if (val) this.classAdd('sk_ui_transition')
         }})
+        this.__animate = true
 
         this.attributes.add({friendlyName: 'ID', name: 'uuid',  type: 'text', onSet: val => {
             this.classRemove(this.element.id)

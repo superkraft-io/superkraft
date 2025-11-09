@@ -1,910 +1,295 @@
 class sk_ui_iceRink extends sk_ui_component {
     constructor(opt){
         super(opt)
-
-        this.vertical = false
+        this.styling = 'left top ttb'
         this.compact = true
-
-        this.lastPos = {x: 0, y: 0}
         
-        var wheelMS = Date.now()
-        var wheelInertia = {x: 0, y: 0}
-        this.onWheel = _e => {
-            if (this.getParentIceRink()){
-                _e.preventDefault()
-                _e.stopPropagation()
-            }
-
-            //if (this.scrollbarY_native.element.scrollTop + _e.deltaY < this.content.storedHeight && this.content.storedHeight === 0) return
-
-            //_e.preventDefault()
-            //_e.stopPropagation()
-
-            this.scrollerX.dictator = 'wheel_or_touchpad'
-            this.scrollerY.dictator = 'wheel_or_touchpad'
-
-            var factor = 0.3
-
-            wheelInertia.x += _e.deltaX * factor
-            wheelInertia.y += _e.deltaY * factor
-            
-            var msDiff = Date.now() - wheelMS
-            if (msDiff > 50){
-                this.scrollerX.setInertia(wheelInertia.x, true)
-                this.scrollerY.setInertia(wheelInertia.y, true)
-                wheelMS = Date.now()
-                wheelInertia.x = 0
-                wheelInertia.y = 0
-            }
-
-            
-            this.tweenX.stop()
-            this.tweenY.stop()
-        }
-        
-        this.scrollbarX_wrapper = this.add.component(_c => {
-            _c.styling = 'top left'
-            _c.animate = false
-            _c.compact = true
-            _c.classAdd('sk_ui_iceRink_scrollbarWrapper sk_ui_iceRink_scrollbarWrapper_x')
-
-            this.scrollbarX_native = _c.add.component(_c => {
-                _c.styling = 'top left'
-                _c.classAdd('sk_ui_iceRink_native_scrollbar sk_ui_iceRink_native_scrollbar_x')
-                _c.animate = false
-                _c.fakeContent = _c.add.component(_c => {
-                    _c.classAdd('sk_ui_iceRink_native_scrollbar_fakeContent')
-                    _c.animate = false
-                })
-
-                _c.element.addEventListener('scroll', _e => {
-                    if (!_c.dragging) return
-                    var scrollPos = _c.fakeContent.rect.left - _c.rect.left
-                    this.scrollerX.value = scrollPos
-                })
-
-                
-                _c.element.addEventListener('mousedown', _e => {
-                    _c.dragging = true
-                    this.scrollerX.stop()
-                })
-
-                _c.element.addEventListener('mouseup', _e => {
-                    _c.dragging = false
-                    this.scrollerX.start()
-                })
-
-                
-                _c.element.addEventListener('wheel', this.onWheel)
-            })
-
-            _c.updatePosition = contentWrapperRect => {
-                if (this.scrollbarX.decoupled && this.onWrapperResized) return this.onWrapperResized(contentWrapperRect)
-        
-                /*var parentRect = this.parent.rect
-                if (!parentRect.left) parentRect = this.rect
-                var left = contentWrapperRect.left - parentRect.left + this.scrollbarX.offset.left
-                */
-
-                var left = this.rect.left + this.rect.width + this.content.rect.left + this.content.rect.width
-                _c.style.left = left + 'px'
-
-                if (this.scrollbarX.decoupled){
-                    _c.style.bottom = (this.scrollbarX.decoupled === 'outside' ? '-10px' : '0px')
-                } else {
-                    _c.style.top = this.content.rect.top + (this.content.storedHeight - _c.rect.height + this.scrollbarX.offset.bottom) + 'px'
-                }
-                _c.style.width = (contentWrapperRect.width - this.scrollbarX.offset.right - this.scrollbarX.offset.left) + 'px'
-            }
-        })
-
-
-
-        this.scrollbarY_wrapper = this.add.component(_c => {
-            _c.styling = 'top left'
-            _c.animate = false
-            _c.compact = true
-            _c.classAdd('sk_ui_iceRink_scrollbarWrapper sk_ui_iceRink_scrollbarWrapper_y')
-
-            this.scrollbarY_native = _c.add.component(_c => {
-                _c.styling = 'top left'
-                _c.classAdd('sk_ui_iceRink_native_scrollbar sk_ui_iceRink_native_scrollbar_y')
-                _c.animate = false
-                _c.fakeContent = _c.add.component(_c => {
-                    _c.classAdd('sk_ui_iceRink_native_scrollbar_fakeContent')
-                    _c.animate = false
-                })
-
-                _c.element.addEventListener('scroll', _e => {
-                    if (!_c.dragging) return
-                    var scrollPos = _c.fakeContent.rect.top - _c.rect.top
-                    this.scrollerY.value = scrollPos
-                })
-
-                
-                _c.element.addEventListener('mousedown', _e => {
-                    _c.dragging = true
-                    this.scrollerY.stop()
-                })
-
-                _c.element.addEventListener('mouseup', _e => {
-                    _c.dragging = false
-                    this.scrollerY.start()
-                })
-
-                
-                _c.element.addEventListener('wheel', this.onWheel)
-            })
-
-            _c.updatePosition = contentWrapperRect => {
-                if (this.scrollbarY.decoupled && this.onWrapperResized) return this.onWrapperResized(contentWrapperRect)
-        
-                var top = contentWrapperRect.localPos.y - this.parent.rect.top + this.scrollbarY.offset.top
-                _c.style.top = top + 'px'
-
-                if (this.scrollbarY.decoupled){
-                    _c.style.right = (this.scrollbarY.decoupled === 'outside' ? '-10px' : '0px')
-                } else {
-                    //_c.style.left = this.content.rect.left + (this.content.storedWidth - _c.rect.width + this.scrollbarY.offset.right) + 'px'
-                    //_c.style.left = '500px'
-                    //console.log(this.content.rect.left)
-                    // console.log(this.content.rect.width)
-                    _c.style.left = (this.content.rect.width - _c.rect.width)+ this.scrollbarY.offset.right + 'px'
-                }
-                _c.style.height = (contentWrapperRect.height - this.scrollbarY.offset.bottom - this.scrollbarY.offset.top) + 'px'
-            }
-        })
-
-
-
-
+        this.__includedComponents = []
 
         this.contentWrapper = this.add.component(_c => {
             _c.classAdd('sk_ui_iceRink_contentWrapper')
-            _c.styling = 'top center fullwidth fullheight'
-            _c.moveBefore(this.scrollbarX_wrapper)
-            _c.compact = true
-
-
+            _c.styling = 'left top ttb'
+            
             this.content = _c.add.component(_c => {
                 _c.classAdd('sk_ui_iceRink_content')
-                
-                _c.styling = 'top center'
                 _c.animate = false
 
+                /*var count = 50
+                var btns = []
+                for (var i=0; i < count; i++){
+                    btns.push(_c.add.button(_c => {
+                        _c.idx = i
+                        _c.text = (i + 1) + ' -> ' + (count - i)
+                        _c.style.marginLeft = sk.utils.map(i, 0, count, -75, 75) + '%'
+                        _c.onClick = () => {
+                            //_c.scrollTo()
+
+                            this.scrollX = 0-_c.rect.localPos.x
+                            //this.scrollY = 0-52*_c.idx
+                        }
+
+                        //_c.disabled = true
+                    }))
+                }*/
+            })
+        })
+            
+        
+        this.scrollPos = {x: 0, y: 0}
+        
+        this.scroller = new SK_Rubberband()
+        var scroller = this.scroller
+
+        scroller.allowScrollX = true;
+        scroller.allowScrollY = true;
+
+        scroller.onPositionCalculated = (x, y) => {
+            this.scrollPos = {x: x, y: y}
+        }
+
+
+        this.handleMouseWheel =  _e => {
+            scroller.handleWheelEvent(_e.deltaX, _e.deltaY)
+        }
+
+        this.element.addEventListener('wheel', this.handleMouseWheel)
+
+        
+        this.handleMouseMove = _e => {
+            sk.interactions.block()
+            var pos = sk.interactions.getPos(_e, true, this.rect)
+            scroller.updatePosition(pos.x, pos.y)
+        }
+
+        this.handleMouseUp = _e => {
+            sk.interactions.unblock()
+            scroller.endDrag()
+            window.removeEventListener('mousemove', this.handleMouseMove)
+            window.removeEventListener('mouseup', this.handleMouseUp)
+            window.removeEventListener('touchend', this.handleMouseUp)
+        }
+
+
+
+        this.handleMouseDown = _e => {
+            var isLeftButton = false
+            if (_e.button !== undefined && _e.button === 0) isLeftButton = true
+            if (_e.touches !== undefined && _e.touches.length === 1) isLeftButton = true
+
+            if (!isLeftButton) return
+
+            var sk_ui_component = _e.target.closest('.sk_ui_component')
+            var suo = sk_ui_component.sk_ui_obj
+            if (suo){
+                var isDisabled = suo.disabled
+                if (suo.preventParentDrag) return
+            }
+
+            //ensure that we can't trigger drag scrolling from a UI component that already listens to mouse events
+            var mdEvs = _e.target.hasEventListener('mousedown')
+            var tsEvs = _e.target.hasEventListener('touchstart')
+            var cEvs = _e.target.hasEventListener('click')
+            var pdEvs = _e.target.hasEventListener('pointerdown')
+            var peCss = sk.utils.cssVar('pointer-events')
+            if (mdEvs || tsEvs || cEvs || pdEvs){
+                //if (!isDisabled && peCss !== 'none' && _e.target.id !== this.uuid && _e.target.id !== this.content.uuid) return
+            }
+            
+
+
+            var pos = sk.interactions.getPos(_e, true, this.rect)
+
+            this.scroller.vel = { x: 0, y: 0 };
+
+            scroller.startDrag(pos.x, pos.y)
+
+            window.addEventListener('mousemove', this.handleMouseMove);
+            window.addEventListener('mouseup', this.handleMouseUp);
+
+            window.addEventListener('touchmove', this.handleMouseMove);
+            window.addEventListener('touchend', this.handleMouseUp);
+        }
+        // In your mouse/touch events:
+        this.element.addEventListener('mousedown', this.handleMouseDown);
+        //this.element.addEventListener('pointerdown', this.handleMouseDown);
+        this.element.addEventListener('touchstart', this.handleMouseDown);
+        
+
+        this.scrollbars = {
+            x: this.add.iceRink_scrollbar(_c => {
+                _c.onBeginScrolling = ()=>{
+                    this.scroller.tweenX.speed = 10000
+                }
+
+                _c.onScrolling = pos => {
+                    var mapped = sk.utils.map(pos, 0, 1, 0, this.scroller.contentWidth - this.scroller.viewportWidth)
+                    this.scrollTo(0-mapped, null)
+                }
                 
-                this.rootAdd = this.add
-                this.add = _c.add
+                _c.onEndScrolling = ()=>{
+                    this.scroller.tweenX.speed = 10
+                }
+            }),
 
-                _c.last_pos = {x: 0, y: 0}
+            y: this.add.iceRink_scrollbar(_c => {
+                _c.vertical = true
 
+                _c.onBeginScrolling = ()=>{
+                    this.scroller.tweenY.speed = 10000
+                }
                 
+                _c.onScrolling = pos => {
+                    var mapped = sk.utils.map(pos, 0, 1, 0, this.scroller.contentHeight - this.scroller.viewportHeight)
+                    this.scrollTo(null, 0-mapped)
+                }
 
-
-
-
-                this.setContentPos = val => {
-                    if (val.x){
-                        this.preRubberbandPos.x = val.x
-                        this.scrollbarY_native.element.scrollLeft = 0-val.x
-                    }
-
-                    if (val.y){
-                        this.preRubberbandPos.y = val.y
-                        this.scrollbarY_native.element.scrollTop = 0-val.y
-                    }
-
-                    _c.style.transform = `translate(${Math.floor(val.x || 0)}px, ${Math.floor(val.y || 0)}px)` + (this.additionalTransformation || '')
-                    
-                    var bottomPos = this.content.rect.height + val.y - this.contentWrapper.rect.height
-                    var rightPos = this.content.rect.width + val.x - this.contentWrapper.rect.width
-
-                    var isOverscrolling = {x: false, y: false}
-
-                    if (bottomPos < 0) isOverscrolling.y = 'bottom'
-                    if (val.y > 0) isOverscrolling.y = 'top'
-                    
-                    if (rightPos < 0) isOverscrolling.x = 'right'
-                    if (val.x > 0) isOverscrolling.x = 'left'
-
-
-                    //console.log(`x: ${val.x} | y: ${val.y} | bottom: ${bottomPos} | right: ${rightPos}`)
-                    //console.log(isOverscrolling)
-
-                    var diff = {
-                        x: val.x - this.lastPos.x,
-                        y: val.y - this.lastPos.y
-                    }
-
-                    var directions = {
-                        x: 0,
-                        y: 0
-                    }
-
-                    if (diff.x < 0) directions.x = -1
-                    if (diff.x > 0) directions.x = 1
-
-                    if (diff.y < 0) directions.y = 1
-                    if (diff.y > 0) directions.y = -1
-                    
-
-                    isOverscrolling.any = (isOverscrolling.x || isOverscrolling.y)
-
-                    if (this.onScroll) this.onScroll({
-                        x: val.x,
-                        y: val.y,
-                        bottom: bottomPos,
-                        right: rightPos,
-                        fromInstant: val.fromInstant || this.instant,
-                        isOverscrolling: isOverscrolling,
-                        directions: directions
-                    })
-
-                    this.lastPos.x = val.x
-                    this.lastPos.y = val.y
+                _c.onEndScrolling = ()=>{
+                    this.scroller.tweenY.speed = 10
                 }
             })
-            
-
-            this.doObserveOnce = async ()=>{
-                if (this.busyObserving) return
-                this.busyObserving = true
-                
-                
-                var cRect = this.content.rect
-                
-                //account for padding and margin
-                var getCSSVal = prop => {
-                    var val = 0
-                    try { val = parseFloat(getComputedStyle(this.content.element).getPropertyValue(prop)) } catch(err) {}
-                    return  val
-                }
-
-
-                if (this.axis.indexOf('x') > -1){
-                    cRect.width += getCSSVal('padding-left') + getCSSVal('padding-right')
-                    this.scrollbarX_native.fakeContent.style.minWidth = cRect.width + 'px'
-                    this.content.storedWidth = cRect.width
-                    this.scrollerX.contentSize = cRect.width
-                    this.scrollbarX.updateDimensions()
-                    this.scrollbarX_wrapper.updatePosition(this.contentWrapper.rect)
-                }
-
-
-                if (this.axis.indexOf('y') > -1){
-                    cRect.height += getCSSVal('padding-top') + getCSSVal('padding-bottom')
-                    this.scrollbarY_native.fakeContent.style.minHeight = cRect.height + 'px'
-                    this.content.storedHeight = cRect.height
-                    this.scrollerY.contentSize = cRect.height
-                    this.scrollbarY.updateDimensions()
-                    this.scrollbarY_wrapper.updatePosition(this.contentWrapper.rect)
-                }
-            
-                if (this.autoWidth) this.contentWrapper.style.width = cRect.width + 'px'
-                if (this.autoHeight) this.contentWrapper.style.height = cRect.height + 'px'
-             
-
-                if (this.onResized) this.onResized()
-
-                this.busyObserving = false
-            }
-            
-
-
-
-
-            _c.element.addEventListener('wheel', this.onWheel)
-
-
-
-
-            
-            let pos = { top: 0, left: 0, x: 0, y: 0 };
-
-            
-            var direction = {x: '', y: ''}
-            var movPos = {x: 0, y: 0}
-            var currPos = undefined
-            var velocity = {x: '', y: ''}
-          
-            var resetVelocityTimer = {
-                x: undefined,
-                y: undefined
-            }
-
-            var lastMS = Date.now()
-            var calcVelocity = ()=>{
-                velocity.x = currPos.x - movPos.x
-                velocity.y = currPos.y - movPos.y
-
-                clearTimeout(resetVelocityTimer.x)
-                clearTimeout(resetVelocityTimer.x)
-
-                var delay = {
-                    x: (velocity.x > 0 ? velocity.x : 0-velocity.x),
-                    y: (velocity.y > 0 ? velocity.y : 0-velocity.y)
-                }
-                //delay = Math.round(delay/4)
-                delay = {
-                    x: Math.round(25),
-                    y: Math.round(25)
-                }
-                
-                resetVelocityTimer.x = setTimeout(()=>{ velocity.x = 0 }, delay.x)
-                resetVelocityTimer.y = setTimeout(()=>{ velocity.y = 0 }, delay.y)
-            }
-
-
-
-            const mouseMoveHandler = _e => {
-                _e.preventDefault()
-                _e.stopPropagation()
-
-                var x = (_e.clientX || _e.touches[0].clientX)
-                var y = (_e.clientY || _e.touches[0].clientY)
-                const dx = x - pos.x
-                const dy = y - pos.y
-
-                
-                var delta = {
-                    x: (dx < 0 ? 0-dx : dx),
-                    y: (dy < 0 ? 0-dy : dy)
-                }
-                if (delta.x < 3 && delta.y < 3) return 
-
-
-                if (delta.x > 10 || delta.y > 10 ){
-                    sk.interactions.block()
-                }
-
-
-                if (dx >= 0) direction.x = 'right'
-                else direction.x = 'left'
-
-                if (dy >= 0) direction.y = 'down'
-                else direction.y = 'up'
-
-                movPos = {x: x, y: y}
-                if (!currPos) currPos = {x: x, y: y}
-
-                var msDiff = Date.now() - lastMS
-                if (msDiff > 300){
-                    lastMS = Date.now()
-                    currPos = {x: x, y: y}
-                    
-                }
-
-                calcVelocity()
-                
-                
-                if (this.axis.indexOf('x') > -1 && !this.disable_x){
-                    var x = this.content.last_pos.x + dx
-                    this.scrollerX.value = x
-                    this.tweenX.current = x
-                }
-                if (this.axis.indexOf('y') > -1 && !this.disable_y){
-                    var y = this.content.last_pos.y + dy
-                    this.scrollerY.value = y
-                    this.tweenY.current = y
-                }
-            }
-
-            const mouseUpHandler = _e => {
-                //console.log('icerink MOUSE UP')
-                //_e.preventDefault()
-                //_e.stopPropagation()
-                
-                pos = undefined
-
-                sk.interactions.unblock()
-
-                //this.content.style.pointerEvents = ''
-
-                _c.element.removeEventListener('mousemove', mouseMoveHandler)
-                document.removeEventListener('mousemove', mouseMoveHandler)
-
-                _c.element.removeEventListener('mouseup', mouseUpHandler)
-                document.removeEventListener('mouseup', mouseUpHandler)
-
-
-                _c.element.removeEventListener('touchmove', mouseMoveHandler)
-                document.removeEventListener('touchmove', mouseMoveHandler)
-
-                _c.element.removeEventListener('touchend', mouseUpHandler)
-                document.removeEventListener('touchend', mouseUpHandler)
-            
-
-                this.__includedComponents.forEach(_c => {
-                    _c.element.removeEventListener('mousemove', mouseMoveHandler)
-                    _c.element.removeEventListener('mouseup', mouseUpHandler)
-                    _c.element.removeEventListener('touchmove', mouseMoveHandler)
-                    _c.element.removeEventListener('touchend', mouseUpHandler)
-                })
-
-                _c.element.style.cursor = ''
-                _c.element.style.removeProperty('user-select')
-
-                if (this.axis.indexOf('x') > -1 && !this.disable_x){
-                    if (velocity.x !== 0) this.scrollerX.inertia = velocity.x
-                    this.scrollerX.value = this.preRubberbandPos.x
-                    this.scrollerX.start()
-                }
-
-                if (this.axis.indexOf('y') > -1 && !this.disable_y){
-                    if (velocity.y !== 0) this.scrollerY.inertia = velocity.y
-                    this.scrollerY.value = this.preRubberbandPos.y
-                    this.scrollerY.start()
-                }
-            }
-
-
-
-            this.mouseDownHandler = _e => {
-
-                if (this.disable_x && this.disable_y) return
-                if (this.disable_x && this.axis === 'x') return
-                if (this.disable_y && this.axis === 'y') return
-                
-                var firstInPath = this.getPath({target: _e.target})[0]
-                var firstInPat_suo = firstInPath.sk_ui_obj || {blockIceRink: false}
-                if (firstInPath.tagName.toLowerCase() === 'input' || firstInPat_suo.blockIceRink) return
-
-                if (this.getParentIceRink()){
-                    _e.preventDefault()
-                    _e.stopPropagation()
-                }
-
-                this.scrollerX.dictator = 'mouse_or_finger'
-                this.scrollerY.dictator = 'mouse_or_finger'
-
-                pos = {
-                    left: this.scrollbarY_native.element.scrollLeft,
-                    top: this.scrollbarY_native.element.scrollTop,
-                    x: (_e.clientX || _e.touches[0].clientX),
-                    y: (_e.clientY || _e.touches[0].clientY),
-                }
-
-                _c.element.addEventListener('mousemove', mouseMoveHandler)
-                document.addEventListener('mousemove', mouseMoveHandler)
-
-                
-                _c.element.addEventListener('mouseup', mouseUpHandler)
-                document.addEventListener('mouseup', mouseUpHandler)
-
-
-                _c.element.addEventListener('touchmove', mouseMoveHandler)
-                //document.addEventListener('touchmove', mouseUpHandler)
-
-                _c.element.addEventListener('touchend', mouseUpHandler)
-                document.addEventListener('touchend', mouseUpHandler)
-                
-
-                this.__includedComponents.forEach(_c => {
-                    _c.element.addEventListener('mousemove', mouseMoveHandler)
-                    _c.element.addEventListener('mouseup', mouseUpHandler)
-                    _c.element.addEventListener('touchmove', mouseMoveHandler)
-                    _c.element.addEventListener('touchend', mouseUpHandler)
-                })
-
-
-                if (this.axis.indexOf('x') > -1){
-                    this.scrollerX.stop()
-                    this.content.last_pos.x = this.scrollerX.__value
-                }
-                
-                if (this.axis.indexOf('y') > -1){
-                    this.scrollerY.stop()
-                    this.content.last_pos.y = this.scrollerY.__value
-                }
-
-                if (!this.canScroll) return
-                _c.element.style.cursor = 'grabbing'
-                _c.element.style.userSelect = 'none'
-            }
-
-            _c.element.addEventListener('mousedown', this.mouseDownHandler)
-            _c.element.addEventListener('touchstart', this.mouseDownHandler)
-        })
-
-        var observer = new ResizeObserver(()=>{
-            var cRect = this.content.rect
-            
-            this.content.storedWidth = this.rect.width
-            this.content.storedHeight = this.rect.height
-
-            if (this.axis.indexOf('x') > -1){
-                this.scrollbarX_native.fakeContent.style.minWidth = cRect.width + 'px'
-                this.scrollerX.containerSize = this.rect.width
-                this.scrollbarX.updateDimensions()
-                this.scrollbarX_wrapper.updatePosition(this.contentWrapper.rect)
-                try { if (this.rect.width >= cRect.width) this.scrollX = 0 } catch(err) {}
-            }
-
-            if (this.axis.indexOf('y') > -1){
-                this.scrollbarY_native.fakeContent.style.minHeight = cRect.height + 'px'
-                this.scrollerY.containerSize = this.rect.height
-                this.scrollbarY.updateDimensions()
-                this.scrollbarY_wrapper.updatePosition(this.contentWrapper.rect)
-                try { if (this.rect.height >= cRect.height) this.scrollY = 0 } catch(err) {}
-            }
-
-        }).observe(this.element)
-
-
-        this.scrollbarX = this.scrollbarX_wrapper.add.fromNew(sk_ui_iceRink_scrollbar, _c => {
-            _c.orientation = 'horizontal'
-            _c.wrapper = this.contentWrapper
-            _c.content = this.content
-
-            _c.onWheel = _e => {
-                //this.scrollbarY_native.element.scrollTop += _e.deltaY
-            }
-
-            _c.onShow = ()=>{
-                if (this.hideHandleX) return
-
-                this.scrollbarX_wrapper.style.height = (sk.isOnMobile ? '4px' : 'var(--sk_ui_scrollbar_width)')
-                this.scrollbarX_wrapper.style.opacity = 1
-                this.canScroll = true
-            }
-
-            _c.onHide = (canScroll = false)=>{
-                this.scrollbarX_wrapper.style.height = '0px'
-                this.scrollbarX_wrapper.style.opacity = 0
-                this.canScroll = canScroll
-            }
-
-            _c.onDecoupled = decoupled => {
-                if (decoupled && !this.hideHandleX){
-                    this.scrollbarX_wrapper.style.top = ''
-                    this.scrollbarX_wrapper.style.bottom = (decoupled === 'outside' ? '-10px' : '0px')
-                } else {
-                    this.scrollbarX_wrapper.style.bottom = ''
-                }
-            }
-        })
-
-
-        this.scrollbarY = this.scrollbarY_wrapper.add.fromNew(sk_ui_iceRink_scrollbar, _c => {
-            _c.wrapper = this.contentWrapper
-            _c.content = this.content
-            _c.onWheel = _e => {
-                //this.scrollbarY_native.element.scrollTop += _e.deltaY
-            }
-
-            _c.onShow = ()=>{
-                if (this.hideHandleY) return
-
-                this.scrollbarY_wrapper.style.width = (sk.isOnMobile ? '4px' : 'var(--sk_ui_scrollbar_width)')
-                this.scrollbarY_wrapper.style.opacity = 1
-                this.canScroll = true
-            }
-
-            _c.onHide = (canScroll = false)=>{
-                this.scrollbarY_wrapper.style.width = '0px'
-                this.scrollbarY_wrapper.style.opacity = 0
-                this.canScroll = canScroll
-            }
-
-            _c.onDecoupled = decoupled => {
-                if (decoupled && !this.hideHandleY){
-                    this.scrollbarY_wrapper.style.left = ''
-                    this.scrollbarY_wrapper.style.right = (decoupled === 'outside' ? '-10px' : '0px')
-                } else {
-                    this.scrollbarY_wrapper.style.right = ''
-                }
-            }
-        })
-
-
-        /****/
-        
-        
-        var updateHandleLeftPos = val => {
-            var diff = this.content.rect.width - this.contentWrapper.rect.width
-            var scrollPercent = val / diff
-            
-            this.scrollbarX.setLeft(scrollPercent)
-
         }
 
 
-        var updateHandleTopPos = val => {
-            var diff = this.content.rect.height - this.contentWrapper.rect.height
-            var scrollPercent = val / diff
-            
-            this.scrollbarY.setTop(scrollPercent)
-        }
+        requestAnimationFrame(() => this._tick())
 
-
-
-
-        /*******/
-
-
-        this.tweenX = new SK_Tween({
-            speed: 10,
-            onChanged: res => {
-                this.scrollerX.value = res.current
-            }
-        })
-
-        this.tweenY = new SK_Tween({
-            speed: 10,
-            onChanged: res => {
-                this.scrollerY.value = res.current
-            }
-        })
-
-
-        this.lastScrollValue = {x: 0, y: 0}
-        var lastOverscrollVal = {x: 0, y: 0}
-        this.preRubberbandPos = {x: 0, y: 0}
-
-        this.scrollerX = new sk_scroller({parent: this,
-            orientation: 'horizontal',
-
-            onStep: ()=>{
-                this.tweenX.step()
-            },
-
-            onStop: ()=>{
-                this.tweenX.stop()
-            },
-
-            onChanged: res => {
-                if (this.ignoreScrollingChanges) return
-
-                if (this.maxOverscrollX !== undefined){
-                    if (res > 0) res = 0
-                    if (res < 0-this.content.rect.width + this.rect.width) res = 0-this.content.rect.width + this.rect.width
-                }
-               
-                if (this.content.rect.width <  this.contentWrapper.rect.width) res = 0
-                
-                if (this.lastScrollValue.x === res) return
-                this.lastScrollValue.x = res
-
-
-                
-                
-                if (this.onOverscroll){
-                    var diff = this.content.storedWidth - this.storedWidth
-
-                    var overscrolls = {
-                        top: 0-res,
-                        bottom: 0-(diff - res)
-                    }
-
-                    var overscroll = 0
-                    if (overscrolls.left > 0) overscroll = overscrolls.left
-                    
-                    if (overscroll !== lastOverscrollVal.x) this.onOverscroll(overscroll)
-                    lastOverscrollVal.x = overscroll
-                }
-
-
-                if (res === -0) res = 0
-
-
-
-                this.setContentPos({x: res})
-                updateHandleLeftPos(0-res)
-            }
-        })
-
-
-        this.scrollerY = new sk_scroller({parent: this,
-            onStep: ()=>{
-                this.tweenY.step()
-            },
-
-            onStop: ()=>{
-                this.tweenY.stop()
-            },
-
-            onChanged: res => {
-                if (this.ignoreScrollingChanges) return
-                
-                if (this.maxOverscrollY !== undefined){
-                    if (res > 0) res = 0
-                    if (res < 0-this.content.rect.height + this.rect.height) res = 0-this.content.rect.height + this.rect.height
-                }
-
-                if (this.content.rect.height < this.contentWrapper.rect.height) res = 0
-
-                if (this.lastScrollValue.y === res) return
-                this.lastScrollValue.y = res
-
-
-                
-                
-                if (this.onOverscroll){
-                    var diff = this.content.storedHeight - this.storedHeight
-
-                    var overscrolls = {
-                        top: 0-res,
-                        bottom: 0-(diff - res)
-                    }
-
-                    var overscroll = 0
-                    if (overscrolls.top > 0) overscroll = overscrolls.top
-                    //if (overscrolls.top < 0 && overscrolls.bottom < 0) overscroll = overscrolls.bottom
-                    if (overscroll !== lastOverscrollVal.y) this.onOverscroll(overscroll)
-                    lastOverscrollVal.y = overscroll
-                }
-                
-                this.setContentPos({y: res})
-                updateHandleTopPos(0-res)
-            }
-        })
-
-
-        
-        this.attributes.add({friendlyName: 'Instant', name: 'instant', type: 'bool', onSet: val => {
-            this.setContentPos({x: this.tweenX.current, y: this.tweenY.current, fromInstant: true})
-            updateHandleLeftPos(0-this.tweenX.current)
-            updateHandleTopPos(0-this.tweenY.current)
-        }})
 
         this.attributes.add({friendlyName: 'Hide Overflow', name: 'hideOverflow', type: 'bool', onSet: val => {
-            this.contentWrapper.style.overflow = (val ? 'hidden' : '')
+            if (val) this.content.style.overflow = 'unset'
+            else this.content.style.overflow = ''
         }})
 
+        this.hideOverflow = true
 
-
-        
-        this.ums.on('sk_ui_tween_step', res => {
-            this.scrollerX.step()
-            this.scrollerY.step()
-        })
-
-
-        this.axis = 'xy'
-
-
-        this.attributes.add({friendlyName: 'Disable X', name: 'disable_x', type: 'bool', onSet: val => {
-        
+        this.attributes.add({friendlyName: 'Instant', name: 'instant', type: 'bool', onSet: val => {
+            if (val) this.scrollTo(this.scrollPos.x, this.scrollPos.y, true)
         }})
-        this.attributes.add({friendlyName: 'Max Overscroll X', name: 'maxOverscrollX', type: 'number'})
-        
-        this.attributes.add({friendlyName: 'Hide handle X', name: 'hideHandleX', type: 'bool', onSet: val => {
-            if (!val) return
-            this.scrollbarX_wrapper.style.height = '0px'
-            this.scrollbarX_wrapper.style.opacity = 0
-            this.scrollbarY_wrapper.style.display = 'none'
-        }})
-
-        this.attributes.add({friendlyName: 'Auto Width', name: 'autoWidth', type: 'bool', onSet: val => {
-            this.contentWrapper.styling = `top center ${(!val ? 'fullwidth' : '')} ${(!this.autoHeight ? 'fullheight' : '')}`
-        }})
-        this.autoWidth = true
-
-
-        
-
-
-        this.attributes.add({friendlyName: 'Disable Y', name: 'disable_y', type: 'bool', onSet: val => {
-        
-        }})
-        this.attributes.add({friendlyName: 'Max Overscroll Y', name: 'maxOverscrollY', type: 'number'})
-
-        this.attributes.add({friendlyName: 'Hide handle Y', name: 'hideHandleY', type: 'bool', onSet: val => {
-            if (!val) return
-            this.scrollbarY_wrapper.style.width = '0px'
-            this.scrollbarY_wrapper.style.opacity = 0
-            this.scrollbarY_wrapper.style.display = 'none'
-        }})
-
-     
-        this.attributes.add({friendlyName: 'Auto Height', name: 'autoHeight', type: 'bool', onSet: val => {
-            this.contentWrapper.styling = `top center ${(!this.autoWidth ? 'center' : '')} ${(!val ? 'fullheight' : '')}`
-        }})
-
-
-
+        this.__instant = false
 
         this.attributes.add({friendlyName: 'Scroll X', name: 'scrollX', type: 'number',
-            onSet: val => {
-                this.content.last_pos.x = val
-                this.tweenX.last = val
-                this.tweenX.current = val
-                this.scrollerX.value = val
-                this.lastScrollValue.x = val
-                this.preRubberbandPos.x = val
-
-                if (this.instant){
-                    
-                    if (this.maxOverscrollX !== undefined){
-                        if (val > 0) val = 0
-                        if (val < 0-this.content.rect.width + this.rect.width) val = 0-this.content.rect.width + this.rect.width
-                    }
-
-                    this.scrollerX.value = val
-                    this.setContentPos({x: val})
-                    updateHandleLeftPos(0-val)
-                    return 
-                }
-                
-                this.tweenX.to(val)
-            },
-
-            onGet: ()=>{
-                return this.scrollerX.value
-                //return this.tweenX.current
-            }
+            onSet: val => { this.scrollTo(val, null, !this.instant) },
+            onGet: ()=>{ return this.scrollPos.x }
         })
 
         this.attributes.add({friendlyName: 'Scroll Y', name: 'scrollY', type: 'number',
-            onSet: val => {
-                if (this.instant){
-                    
-                    if (this.maxOverscrollY !== undefined){
-                        if (val > 0) val = 0
-                        if (val < 0-this.content.rect.height + this.rect.height) val = 0-this.content.rect.height + this.rect.height
-                    }
-                
-                    this.scrollerY.value = val
-                    this.tweenY.current = val
-                    this.setContentPos({y: val})
-                    updateHandleLeftPos(0-val)
-                    return 
-                }
-                this.tweenY.current = this.preRubberbandPos.y
-                this.tweenY.to(val)
-            },
-
-            onGet: ()=>{
-                return this.scrollerY.value
-                //return this.tweenY.current
-            }
+            onSet: val => { this.scrollTo(null, val, !this.instant) },
+            onGet: ()=>{ return this.scrollPos.x }
         })
 
-        this.__includedComponents = []
+        this.attributes.add({friendlyName: 'Max Overscroll X', name: 'maxOverscrollX', type: 'number',
+            onSet: val => { this.scroller.overshootX = val },
+            onGet: ()=>{ return this.scroller.overshootX }
+        })
+
+         this.attributes.add({friendlyName: 'Max Overscroll Y', name: 'maxOverscrollY', type: 'number',
+            onSet: val => { this.scroller.overshootY = val },
+            onGet: ()=>{ return this.scroller.overshootY }
+        })
 
 
-        var contentWrapperObserver = new ResizeObserver(()=>{
-            this.doObserveOnce()
-        }).observe(this.contentWrapper.element)
+        //Notify deprecated functions and attributes
+        
 
-        var contentObserver = new ResizeObserver(()=>{
-            this.doObserveOnce()
-        }).observe(this.content.element)
+
+        this.attributes.add({friendlyName: 'Disable X', name: 'disable_x', type: 'bool',
+            onSet: val => { this.__notifyDeprecatedAttr('disable_x') },
+            onGet: ()=>{ this.__notifyDeprecatedAttr('disable_x') }
+        })
+        
+        
+        this.attributes.add({friendlyName: 'Hide handle X', name: 'hideHandleX', type: 'bool',
+            onSet: val => { this.__notifyDeprecatedAttr('hideHandleX') },
+            onGet: ()=>{ this.__notifyDeprecatedAttr('hideHandleX') }
+        })
+
+        this.attributes.add({friendlyName: 'Auto Width', name: 'autoWidth', type: 'bool',
+            onSet: val => { this.__notifyDeprecatedAttr('autoWidth') },
+            onGet: ()=>{ this.__notifyDeprecatedAttr('autoWidth') }
+        })
+
+
+        this.attributes.add({friendlyName: 'Disable Y', name: 'disable_y', type: 'bool',
+            onSet: val => { this.__notifyDeprecatedAttr('disable_y') },
+            onGet: ()=>{ this.__notifyDeprecatedAttr('disable_y') }
+        })
+        
+
+        this.attributes.add({friendlyName: 'Hide handle Y', name: 'hideHandleY', type: 'bool', 
+            onSet: val => { this.__notifyDeprecatedAttr('hideHandleY') },
+            onGet: ()=>{ this.__notifyDeprecatedAttr('hideHandleY') }
+        })
+
+     
+        this.attributes.add({friendlyName: 'Auto Height', name: 'autoHeight', type: 'bool', 
+            onSet: val => { this.__notifyDeprecatedAttr('autoHeight') },
+            onGet: ()=>{ this.__notifyDeprecatedAttr('autoHeight') }
+        })
     }
 
-    scrollToChild(component, center){
+    __notifyDeprecated(name, msg, isFunc){
+        var msg = `Deprecated ${(isFunc ? 'function' : 'attribute')} ${name} . ${(msg ? msg : '')}.`
+        alert(msg)
+        throw msg
+    }
+
+    __notifyDeprecatedAttr(name, msg){
+        this.__notifyDeprecated(name, msg)
+    }
+
+    __notifyDeprecatedFunc(name, msg){
+        this.__notifyDeprecated(name, msg, true)
+    }
+
+    _tick(){
+        this.scroller.updateSize(this.contentWrapper.rect.width, this.contentWrapper.rect.height, this.content.rect.width, this.content.rect.height);
+
+       
+        this.content.style.left = this.scrollPos.x + 'px'
+        this.content.style.top = this.scrollPos.y + 'px'
+
+        //this.content.style.transform = `translate(${this.scrollPos.x}px, ${this.scrollPos.y}px)`
+
+        this.scrollbars.x.position = sk.utils.map(0-this.scrollPos.x, 0, this.scroller.contentWidth - this.scroller.viewportWidth, 0, 1)
+        this.scrollbars.y.position = sk.utils.map(0-this.scrollPos.y, 0, this.scroller.contentHeight - this.scroller.viewportHeight, 0, 1)
+
+        
+        this.scrollbars.x.updateHandleSize(this.scroller.contentWidth)
+        this.scrollbars.y.updateHandleSize(this.scroller.contentHeight)
+        
+        if (this.scroller.contentWidth <= this.scroller.viewportWidth) this.hideScrollbar('x')
+        else this.showScrollbar('x')
+
+        if (this.scroller.contentHeight <= this.scroller.viewportHeight) this.hideScrollbar('y')
+        else this.showScrollbar('y')
+
+
+        requestAnimationFrame(() => this._tick())
+    }
+
+
+    scrollToChild(child, center = true, animate = true){
         var offset = {x: 0, y: 0}
 
         if (center) offset = {
-            x: this.contentWrapper.rect.width / 2 - component.rect.width / 2,
-            y: this.contentWrapper.rect.height / 2 - component.rect.height / 2
+            x: this.rect.width / 2 - child.rect.width / 2,
+            y: this.rect.height / 2 - child.rect.height / 2
         }
 
-        var doAxis = axis => {
-            var axisUC = axis.toUpperCase()
-            
-            this['last' + axisUC + 'Pos'] = this['scroller' + axisUC].value
-            this['tween' + axisUC].current = this['last' + axisUC + 'Pos']
-            var cRect = component.rect
-            var newVal = 0-((0-this['last' + axisUC + 'Pos']) + cRect.localPos[axis]) + offset[axis]
-            this['tween' + axisUC].to(newVal)
+        var childPos = {
+            x: child.rect.localPos.x - offset.x,
+            y: child.rect.localPos.y - offset.y,
         }
-        
-        doAxis('x')
-        doAxis('y')
+
+        this.scroller.scrollTo(0-childPos.x, 0-childPos.y, animate)
     }
 
-    scrollTo(val){
-        this.tweenY.current = this.preRubberbandPos.y
-        this.tweenY.to(val)
+    scrollTo(x, y, animate = true, usePercent = false){
+        var _animate = animate
+        if (this.instant) _animate = false
+
+        this.scroller.scrollTo(x, y, _animate, usePercent)
     }
 
     includeComponent(component){
-        /*component.element.removeEventListener('wheel', component.onWheel)
-        component.element.removeEventListener('mousedown', component.mouseDownHandler)
-        component.element.removeEventListener('touchstart', component.mouseDownHandler)
-        */
-
         this.__includedComponents.push(component)
         
         component.element.addEventListener('wheel', this.onWheel)
@@ -912,335 +297,41 @@ class sk_ui_iceRink extends sk_ui_component {
         component.element.addEventListener('touchstart', this.mouseDownHandler)
     }
 
-    set debug(val){
-        this.__debug = true
-        this.scrollerY.__debug = true
-    }
-}
+    showScrollbar(axis){
+        var scrollbar = this.scrollbars[axis]
+        var isVisible = scrollbar.visible
+        if (isVisible) return
 
-class sk_ui_iceRink_scrollbar extends sk_ui_component {
-    constructor(opt){
-        super(opt)
+        this.scrollbars[axis].show()
 
-        
-        this.styling = 'top left'
-        this.animate = false
-
-        this.width = 0
-        this.height = 0
-        this.backgroundColor = (sk.isOnMobile ? '' : 'var(--sk_ui_color_scrollbar_track)')
-
-        this.offset = {
-            left: 0,
-            top: 0,
-            right: 0,
-            bottom: 0
-        }
-
-        this.handle = this.add.component(_c => {
-            _c.classAdd('sk_ui_iceRink_scrollbar_handle')
-            _c.animate = false
-        })
-
-        this.element.addEventListener('wheel', _e => {
-            this.onWheel(_e)
-        })
-
-
-        this.getSizeDiff = (a, b)=>{
-            var tRect = a.rect
-            var cRect = b.rect
-
-            if (this.orientation === 'horizontal'){
-                if (tRect.width < cRect.width) return tRect.width / cRect.width
-            } else {
-                if (tRect.height < cRect.height) return tRect.height / cRect.height
-            }
-
-            return 1
-        }
-
-        this.attributes.add({friendlyName: 'Decoupled', name: 'decoupled', type: 'bool', onSet: val => {
-            if (this.onDecoupled) this.onDecoupled(val)
-        }})
-
-        this.attributes.add({friendlyName: 'Hidden', name: 'hidden', type: 'bool', onSet: val => {
-            this.style.display = (val ? 'none' : '')
-        }})
-
-        this.orientation = 'vertical'
-    }
-
-
-    set orientation(val){
-        this.__orientation = val
-        
-        this.handle.classRemove('sk_ui_iceRink_scrollbar_handle_x')
-        this.handle.classRemove('sk_ui_iceRink_scrollbar_handle_y')
-
-        this.handle.classAdd('sk_ui_iceRink_scrollbar_handle_' + (val === 'vertical' ? 'y' : 'x'))
-    }
-
-    get orientation(){ return this.__orientation }
-
-    
-    setLeft(val){
-        var thisWidth = this.rect.width
-        var handleWidth = this.handle.rect.width
-
-        var diff = thisWidth - handleWidth
-
-        var left = diff * val
-
-        this.left = left
-
-        
-        
-        if (left < 0) left = 0
-        if (left > diff) left = diff
-
-        this.handle.style.left = left + 'px'
-
-        this.updateDimensions()
-    }
-
-
-    setTop(val){
-        var thisHeight = this.rect.height
-        var handleHeight = this.handle.rect.height
-
-        var diff = thisHeight - handleHeight
-
-        var top = diff * val
-
-        this.top = top
-
-        
-        
-        if (top < 0) top = 0
-        if (top > diff) top = diff
-
-        this.handle.style.top = top + 'px'
-
-        this.updateDimensions()
-    }
-
-    updateDimensions(){
-        this['updateDimensionsFor_' + this.__orientation]()
-    }
-
-
-    updateDimensionsFor_horizontal(){
-        var widthRatio = this.getSizeDiff(this.wrapper, this.content)
-
-        var handleSize = 100 * widthRatio
-
-
-
-        
-        var diff = this.rect.width - this.handle.rect.width
-        var distanceFromRight = 0 - (diff - this.left)
-
-        var factor = 7
-        var overscrolls = {
-            top: this.left / factor,
-            bottom: 0-(distanceFromRight / factor)
-        }
-
-        var overscroll = 0
-        if (this.left < 0) overscroll = overscrolls.left
-        if (distanceFromRight > 0) overscroll = overscrolls.right
-
-        this.handle.style.width = handleSize + overscroll + '%'
-
-        if (!this.hidden){
-            if (handleSize === 100) this.onHide()
-            else this.onShow()
-        }
-    }
-
-    updateDimensionsFor_vertical(){
-        var heightRatio = this.getSizeDiff(this.wrapper, this.content)
-        if (heightRatio === 0) return
-
-        var handleSize = 100 * heightRatio
-
-
-
-        
-        var diff = this.rect.height - this.handle.rect.height
-        var distanceFromBottom = 0 - (diff - this.top)
-
-        var factor = 7
-        var overscrolls = {
-            top: this.top / factor,
-            bottom: 0-(distanceFromBottom / factor)
-        }
-
-        var overscroll = 0
-        if (this.top < 0) overscroll = overscrolls.top
-        if (distanceFromBottom > 0) overscroll = overscrolls.bottom
-
-        this.handle.style.height = handleSize + overscroll + '%'
-
-        if (handleSize === 100) this.onHide()
-        else this.onShow()
-    }
-}
-
-class sk_scroller {
-    constructor(opt){
-        this.opt = opt
-
-        this.orientation = opt.orientation || 'vertical'
-        if (this.orientation !== 'horizontal' && this.orientation !== 'vertical') console.error('Invalid orientation: ' + opt.orientation)
-
-        this.__inertia = 0
-        this.__friction = 1
-
-        this.__value = 0
-
-        this.__run = true
-        this.springConstant = 0.5
-
-        /*
-        var step = async _ts => {
-            if (this.__run){
-                //await sk.utils.sleep(100)
-                this.step()
-            }
+        if (this.scrollbars.x.visible && this.scrollbars.y.visible){
+            this.scrollbars.x.style.width = 'calc(100% - 12px)'
+            this.scrollbars.y.style.height = 'calc(100% - 12px)'
             
-            if (this.opt.onStep) this.opt.onStep()
-
-            window.requestAnimationFrame(step)
+            this.contentWrapper.style.width = 'calc(100% - 12px)'
+            this.contentWrapper.style.height = 'calc(100% - 12px)'
         }
-        window.requestAnimationFrame(step)
-        */
-
     }
 
-    calcRubberband(opt){
-        return (1.0 - (1.0 / ((opt.distanceFromEdge * this.springConstant / opt.containerSize) + 1.0))) * opt.containerSize
-    }
+    hideScrollbar(axis){
+        var scrollbar = this.scrollbars[axis]
+        var isVisible = scrollbar.visible
 
-    set value(val){
-        this.__value = val
-        this.step()
-    }
+        var rect = scrollbar.rect
 
-    get value(){
-        return this.__value
-    }
-
-    setInertia(val, noAdd){
-        var formattedVal = (val < 0 ? 0-val : val)
+        if (!isVisible) return
         
-        var direction = (this.orientation === 'vertical' ? 'up' : 'left')
-        if (val < 0) direction = (this.orientation === 'vertical' ? 'down' : 'right')
+        this.scrollbars[axis].hide()
 
-        if (this.__direction !== direction) this.__inertia = formattedVal
-        else { 
-            if (noAdd) this.__inertia = formattedVal
-            else this.__inertia += formattedVal
+        this.scrollbars.x.style.width = ''
+        this.scrollbars.y.style.height = ''
+
+        if (!this.scrollbars.x.visible){
+            this.contentWrapper.style.height = ''
         }
 
-        if (this.__inertia > 700) this.__inertia = 700
-
-        this.__direction = direction
-        
-
-    }
-
-    set inertia(val){
-        this.setInertia(val)
-    }
-
-    debug(obj){
-        if (!this.__debug) return
-        console.log(obj)
-    }
-
-
-
-    step(){
-        this.__inertia -= this.__friction
-        if (this.__inertia < 0){
-            this.__inertia = 0
+        if (!this.scrollbars.y.visible){
+            this.contentWrapper.style.width = ''
         }
-
-        var diff = this.contentSize - this.containerSize
-
-        
-        
-
-        if (diff > 0){
-            var factoredInertia = this.__inertia*0.2
-            if (this.__direction === (this.orientation === 'vertical' ? 'down' : 'right')) this.__value += factoredInertia
-            else this.__value -= factoredInertia
-            
-            if (!this.ignoreRubberbanding) this.tryApplyRubberbanding()
-        } else {
-            this.__value = 0
-        }
-
-        
-        if (this.opt.onChanged) this.opt.onChanged(this.__value)
-    }
-
-    start(){
-        this.__run = true
-    }
-
-    stop(){
-        this.__run = false
-        this.__inertia = 0
-        if (this.opt.onStop) this.opt.onStop()
-    }
-
-
-    tryApplyRubberbanding(){
-        var val = this.__value
-
-        
-
-        var diff = this.contentSize - this.containerSize
-        
-        var distanceFromEdge = 0 - (diff + val)
-        if (val < 0 && distanceFromEdge < 0){
-            this.isRubberbanding = false
-            return 0
-        } else {
-            this.isRubberbanding = true
-            this.__inertia -= 100
-        }
-
-        
-        
-
-        if (val > 0){
-            this.isRubberbanding = true
-            this.rubberbandingDirection = (this.orientation === 'vertical' ? 'down' : 'right')
-
-            if (this.dictator === 'mouse_or_finger') this.rubberBandDistance = this.calcRubberband({distanceFromEdge: val, containerSize: this.containerSize})
-            else this.rubberBandDistance = 0
-            
-            val = this.rubberBandDistance
-        }
-
-
-
-        if (distanceFromEdge > 0){
-            this.isRubberbanding = true
-            this.rubberbandingDirection = (this.orientation === 'vertical' ? 'up' : 'left')
-
-            if (this.dictator === 'mouse_or_finger') this.rubberBandDistance = this.calcRubberband({distanceFromEdge: distanceFromEdge, containerSize: this.containerSize})
-            else this.rubberBandDistance = 0
-
-            val = (0-diff) + (0-this.rubberBandDistance)
-        }
-
-        
-        
-        this.__value = Math.round(val)
     }
 }

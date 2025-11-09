@@ -206,6 +206,7 @@ class sk_ui_slider extends sk_ui_component {
        
         this.tween = new SK_Tween({
             speed: 20,
+            easing: 'outQuint',
             onChanged: res => {
                 if (this.bypassTween && this.smooth) return
                 this.updatePos(res.current)

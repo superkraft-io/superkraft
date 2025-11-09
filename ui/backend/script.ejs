@@ -463,6 +463,12 @@
                 getNext(_el)
 
                 return path
+            },
+
+           isValidEmail(email) {
+                if (typeof email !== 'string' || email.trim() === '') return false;
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+                return emailRegex.test(email);
             }
         },
 

@@ -57,6 +57,7 @@ class sk_ui_icon extends sk_ui_component {
 
             if (this.type === 'svg'){
                 //this.element.setAttribute('src', val)
+                this.svgLoading = true
 
                 var response = await fetch(val)
                 let text = await response.text();
@@ -122,12 +123,14 @@ class sk_ui_icon extends sk_ui_component {
         
         this.attributes.add({friendlyName: 'Fade On Change', name: 'fadeOnChange', type: 'bool'})
 
-        this.attributes.add({friendlyName: 'Size', name: 'size', type: 'number', units: {min: 10, max: 50}, onSet: val => {
+        this.attributes.add({friendlyName: 'Size', name: 'size', type: 'number', units: {min: 10, max: 50}, onSet: async val => {
             this.iconElement.style.fontSize  = val + 'px'
             this.iconElement.style.minWidth  = val + 'px'
             this.iconElement.style.minHeight = val + 'px'
 
-            if (this.type === 'svg' && this.svgEl){
+            if (this.type === 'svg'){
+                if (this.svgLoading) await this.awaitSVGLoaded()
+                
                 this.svgEl.setAttribute('width', val)
                 this.svgEl.setAttribute('height', val)
             }
@@ -186,5 +189,16 @@ class sk_ui_icon extends sk_ui_component {
             if (val === false) return
             this.classAdd('sk_ui_spin' + (val === true ? '' : '_' + val))
         }})
+    }
+
+    awaitSVGLoaded(){
+        return new Promise(resolve => {
+            var timer = setInterval(()=>{
+                if (this.svgEl){
+                    clearInterval(timer)
+                    resolve()
+                }
+            })
+        })
     }
 }

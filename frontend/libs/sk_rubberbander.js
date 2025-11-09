@@ -126,7 +126,7 @@ class SK_Rubberband {
             if (this.tweenX.current > maxX || this.tweenX.current < minX) {
                 this.beginSnapBackX();
             } else if (Math.abs(this.velX) > 0.5) {
-                this.beginInertiaX(this.velX);
+                if (Date.now() - this.lastSetMS < 50) this.beginInertiaX(this.velX);
             }
         } else {
             this.beginSnapBackX();
@@ -139,7 +139,7 @@ class SK_Rubberband {
             if (this.tweenY.current > maxY || this.tweenY.current < minY) {
                 this.beginSnapBackY();
             } else if (Math.abs(this.velY) > 0.5) {
-                this.beginInertiaY(this.velY);
+                if (Date.now() - this.lastSetMS < 50) this.beginInertiaY(this.velY);
             }
         } else {
             this.beginSnapBackY();
@@ -149,6 +149,8 @@ class SK_Rubberband {
 
 
     updatePosition(x, y) {
+        this.lastSetMS = Date.now()
+
         let newX = this.canScrollX ? x : this.tweenX.current;
         let newY = this.canScrollY ? y : this.tweenY.current;
 
