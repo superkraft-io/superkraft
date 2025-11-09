@@ -848,7 +848,7 @@ class sk_ui_component {
 
     getParentIceRink(){
         if (!this.parent.classHas) return
-        return (this.parent.classHas('sk_ui_iceRink_v2') ? this.parent : this.parent.getParentIceRink())
+        return (this.parent.classHas('sk_ui_iceRink') ? this.parent : this.parent.getParentIceRink())
     }
 
     scrollTo(non_sk, center, instant){

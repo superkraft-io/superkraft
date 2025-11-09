@@ -3,6 +3,8 @@ class sk_ui_iceRink extends sk_ui_component {
         super(opt)
         this.styling = 'left top ttb'
         this.compact = true
+
+        this.blockIceRink = true
         
         this.__includedComponents = []
 
@@ -49,6 +51,11 @@ class sk_ui_iceRink extends sk_ui_component {
 
 
         this.handleMouseWheel =  _e => {
+            if (this.getParentIceRink()){
+                _e.preventDefault()
+                _e.stopPropagation()
+            }
+
             scroller.handleWheelEvent(_e.deltaX, _e.deltaY)
         }
 
@@ -66,12 +73,19 @@ class sk_ui_iceRink extends sk_ui_component {
             scroller.endDrag()
             window.removeEventListener('mousemove', this.handleMouseMove)
             window.removeEventListener('mouseup', this.handleMouseUp)
+            
+            window.removeEventListener('touchmove', this.handleMouseMove);
             window.removeEventListener('touchend', this.handleMouseUp)
         }
 
 
 
         this.handleMouseDown = _e => {
+            if (this.getParentIceRink()){
+                _e.preventDefault()
+                _e.stopPropagation()
+            }
+
             var isLeftButton = false
             if (_e.button !== undefined && _e.button === 0) isLeftButton = true
             if (_e.touches !== undefined && _e.touches.length === 1) isLeftButton = true
@@ -82,7 +96,7 @@ class sk_ui_iceRink extends sk_ui_component {
             var suo = sk_ui_component.sk_ui_obj
             if (suo){
                 var isDisabled = suo.disabled
-                if (suo.preventParentDrag) return
+                if (suo.blockIceRink) return
             }
 
             //ensure that we can't trigger drag scrolling from a UI component that already listens to mouse events
@@ -154,9 +168,17 @@ class sk_ui_iceRink extends sk_ui_component {
 
 
         this.attributes.add({friendlyName: 'Hide Overflow', name: 'hideOverflow', type: 'bool', onSet: val => {
-            if (val) this.content.style.overflow = 'unset'
-            else this.content.style.overflow = ''
+            if (val){
+                this.style.overflow = ''
+                this.contentWrapper.style.overflow = ''
+                this.content.style.overflow = ''
+            } else {                
+                this.style.overflow = 'unset'
+                this.contentWrapper.style.overflow = 'unset'
+                this.content.style.overflow = 'unset'
+            }
         }})
+        this.__hideOverflow = true
 
         this.hideOverflow = true
 
@@ -305,11 +327,11 @@ class sk_ui_iceRink extends sk_ui_component {
         this.scrollbars[axis].show()
 
         if (this.scrollbars.x.visible && this.scrollbars.y.visible){
-            this.scrollbars.x.style.width = 'calc(100% - 12px)'
-            this.scrollbars.y.style.height = 'calc(100% - 12px)'
+            if (!this.scrollbars.x.hidden) this.scrollbars.x.style.width = 'calc(100% - 12px)'
+            if (!this.scrollbars.y.hidden) this.scrollbars.y.style.height = 'calc(100% - 12px)'
             
-            this.contentWrapper.style.width = 'calc(100% - 12px)'
-            this.contentWrapper.style.height = 'calc(100% - 12px)'
+            if (!this.scrollbars.x.hidden) this.contentWrapper.style.width = 'calc(100% - 12px)'
+            if (!this.scrollbars.y.hidden) this.contentWrapper.style.height = 'calc(100% - 12px)'
         }
     }
 

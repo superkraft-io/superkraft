@@ -74,6 +74,8 @@ class sk_ui_iceRink_scrollbar extends sk_ui_component {
     }
 
     show(){
+        if (this.hidden) return
+        
         if (this.vertical === true){
             this.style.width = ''
         } else {
