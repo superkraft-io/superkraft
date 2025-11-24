@@ -343,8 +343,8 @@ class SK_Rubberband {
         const minY = this.viewportHeight - this.contentHeight;
         const maxY = 0;
 
-        let targetX = x || this.tweenX.current;
-        let targetY = y || this.tweenY.current;
+        let targetX = (x !== null ? x : this.tweenX.current);
+        let targetY = (y !== null ? y : this.tweenY.current);
 
         if (usePercent) {
             // Convert percentages (0-1) into pixel positions
@@ -356,12 +356,15 @@ class SK_Rubberband {
         targetX = Math.max(Math.min(targetX, maxX), minX);
         targetY = Math.max(Math.min(targetY, maxY), minY);
 
+
         if (animate) {
             if (this.canScrollX) this.tweenX.to(targetX);
             if (this.canScrollY) this.tweenY.to(targetY);
         } else {
             if (this.canScrollX) this.tweenX.current = targetX;
             if (this.canScrollY) this.tweenY.current = targetY;
+            
+
             this.onPositionCalculated(this.tweenX.current, this.tweenY.current);
         }
     }

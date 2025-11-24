@@ -106,7 +106,7 @@ class sk_ui_slider extends sk_ui_component {
 
 
         var handleMouseDown = async _e => {
-            if (_e.touches.length === 0 && _e.button !== 0) return
+            if (!_e.touches && _e.button !== 0) return
 
             this.hasMoved = false
             this.bypassTween = true

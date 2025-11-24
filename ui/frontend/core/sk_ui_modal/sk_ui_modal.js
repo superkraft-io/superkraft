@@ -71,24 +71,20 @@ class sk_ui_modal extends sk_ui_component {
             _c.animate = false
 
             this.icerink = _c.add.iceRink(_c => {
-                _c.styling += ' middle fullheight'
-
                 _c.vertical = true
                 _c.axis = 'y'
-                _c.scrollerY.scrollbar = true
-                _c.autoHeight = true
+                //_c.scrollerY.scrollbar = true
+                _c.autoSize = true
                 _c.compact = true
-                _c.scrollbarY.offset.right = 16
+                //_c.scrollbarY.offset.right = 16
                 if (sk.isOnMobile) _c.scrollbarY.offset.bottom = 16
 
                 //_c.contentWrapper.styling = ' middle'
 
                 _c.content.setup(_c => {
-                    _c.styling += ' ttb'
-                    _c.vertical = true
                     if (sk.isOnMobile && !sk.mobile.homeButton) _c.paddingBottom = 32
 
-                    _c.style.width = 'fit-content'
+                    //_c.style.width = 'fit-content'
 
                     
                 })

@@ -4,6 +4,7 @@ class sk_ui_iceRink_scrollbar extends sk_ui_component {
 
         this.styling = 'left top ttb'
         this.animate = false
+        setTimeout(()=>{ this.animate = true }, 1)
 
         
         this.style.width = '0px'

@@ -82,8 +82,11 @@ class SK_ContextMenu {
             })
         } else {
             this.parent.element.addEventListener('touchstart', _e => {
-                _e.stopPropagation()
-                _e.preventDefault()
+                 if (!this.parent.getParentIceRink()){
+                    _e.preventDefault()
+                    _e.stopPropagation()
+                }
+
                 if (this.__button === 'left') this.handleMouseEvent(_e)
             })
         }

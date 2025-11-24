@@ -1,7 +1,7 @@
 
 .sk_ui_gradient_default {
     color: #fff;
-    background: linear-gradient(-45deg, #23d5ab, #23a6d5, #e73c7e, #ee7752);
+    background: linear-gradient(-45deg, #00ffc3, #00bcff, #ff0062, #ff3c00);;
     background-size: 400% 400%!important;
     animation: sk_ui_gradient_default 15s ease infinite;
 }
