@@ -77,7 +77,7 @@ class sk_ui_modal extends sk_ui_component {
                 _c.autoSize = true
                 _c.compact = true
                 //_c.scrollbarY.offset.right = 16
-                if (sk.isOnMobile) _c.scrollbarY.offset.bottom = 16
+                //if (sk.isOnMobile) _c.scrollbarY.offset.bottom = 16
 
                 //_c.contentWrapper.styling = ' middle'
 

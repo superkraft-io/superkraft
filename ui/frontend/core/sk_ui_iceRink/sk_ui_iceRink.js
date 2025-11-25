@@ -87,7 +87,6 @@ class sk_ui_iceRink extends sk_ui_component {
         this.mouseMovedFromElement_firstFiresCounter = 0
         
         this.handleMouseMoveFromElement = _e => {
-            console.log('move')
             var pos = sk.interactions.getPos(_e, true, this.rect)
             var diff = {
                 x: pos.x - this.mdPos.x,
@@ -163,7 +162,7 @@ class sk_ui_iceRink extends sk_ui_component {
             window.addEventListener('mouseup', this.handleMouseUp);
             window.addEventListener('touchend', this.handleMouseUp);
         }
-        
+
         // In your mouse/touch events:
         this.element.addEventListener('mousedown', this.handleMouseDown);
         //this.element.addEventListener('pointerdown', this.handleMouseDown);
