@@ -147,6 +147,7 @@ class sk_ui_modal extends sk_ui_component {
 
     prompt(opt = {}){
         this.opt = opt
+        this.data = opt.data
         return new Promise((resolve, reject)=>{
             this.resolve = resolve
             this.reject = reject
