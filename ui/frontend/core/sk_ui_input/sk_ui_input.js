@@ -96,6 +96,16 @@ class sk_ui_input extends sk_ui_component {
             this.input.removeAttribute('autocomplete')
             this.input.name = val
         }})
+
+        this.attributes.add({friendlyName: 'Autocomplete', name: 'autocomplete', type: 'bool', onSet: val => {
+            var attr = 'off'
+            if (val === true) attr = 'on'
+            else if (val === false) attr = 'off'
+            else attr = val
+            
+            this.input.setAttribute('autocomplete', attr)
+        }})
+
         
 
         this.attributes.add({friendlyName: 'Color', name: 'color', type: 'text', onSet: val => {

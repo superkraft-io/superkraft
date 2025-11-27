@@ -1,0 +1,23 @@
+.sk_ui_loader {
+    width: 24px;
+    height: 24px;
+}
+
+.sk_ui_loader_shape {
+    border-radius: 100%;
+
+    background: conic-gradient(
+        /* Red color fill, starting at the top (0deg) and filling up to the specified percentage */
+        var(--color) 0 calc(var(--percent) * 3.6deg), 
+        
+        /* Make the remainder of the circle completely transparent */
+        transparent calc(var(--percent) * 3.6deg) 360deg 
+    );
+    
+    /* 2. Create the Hollow Center (The "Donut" Effect) */
+    mask: radial-gradient(
+        farthest-side, 
+        transparent calc(100% - var(--thickness)), /* Inner hollow area, e.g., 10px thick ring */
+        white calc(100% - var(--thickness)) 
+    );
+}

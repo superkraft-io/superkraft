@@ -2,8 +2,17 @@ class sk_ui_loader extends sk_ui_component {
     constructor(opt){
         super(opt)
 
-        this.classAdd('ui active centered inline loader')
-        this.element.style.color = 'white'
+        //this.classAdd('ui active centered inline loader')
+        //this.element.style.color = 'white'
+
+        this.shape = this.add.component(_c => {
+            _c.classAdd('sk_ui_loader_shape sk_ui_spin')
+            _c.styling += ' fullwidth fullheight'
+            _c.element.style.setProperty('--color', 'white')
+            _c.element.style.setProperty('--percent', '30')
+            _c.element.style.setProperty('--thickness', '2px')
+            _c.rotating = true
+        })
 
         this.styling = 'left'
 
@@ -13,100 +22,37 @@ class sk_ui_loader extends sk_ui_component {
         }})
 
         this.attributes.add({friendlyName: 'Color', name: 'color', type: 'text', onSet: val => {
-            var colors = 'primary secondary red orange yellow olive green teal blue violet purple pink brown grey black'
-            
-            this.classRemove(colors)
-            this.element.style.color = ''
+            this.shape.element.style.setProperty('--color', val)
+        }})
 
-            if (colors.indexOf(val)) this.classAdd(val)
-            else this.element.style.color = val
+        this.attributes.add({friendlyName: 'Percent', name: 'percent', type: 'number', onSet: val => {
+            this.shape.element.style.setProperty('--percent', val)
+        }})
+
+        this.attributes.add({friendlyName: 'Thickness', name: 'thickness', type: 'number', onSet: val => {
+            this.shape.element.style.setProperty('--thickness', val + 'px')
         }})
 
         this.attributes.add({friendlyName: 'Size', name: 'size', type: 'number', onSet: val => {
-            //this.classRemove('mini tiny small medium large big huge massive')
-
-            /*var sizes = {
-                undefined: 32,
-                mini    : 14,
-                tiny    : 16,
-                small   : ,
-                medium  : ,
-                large   : ,
-                big     : ,
-                huge    : ,
-                massive :
-            }*/
-
-            if (this.currentStyleElement) this.currentStyleElement.remove()
-
-            var style = document.createElement('style')
-            style.type = 'text/css'
-            style.innerHTML = this.generateCSS(this.uuid, val, val)
-            this.currentStyleElement = document.getElementsByTagName('head')[0].appendChild(style)
-
-            this.classRemove(this.currentClass)
-            this.currentClass = 'loader_' + this.uuid
-            this.classAdd(this.currentClass)
+            this.style.minWidth = val + 'px'
+            this.style.minHeight = val + 'px'
         }})
 
         this.attributes.add({friendlyName: 'Inverted', name: 'inverted', type: 'bool', onSet: val => {
-            this.classRemove('inverted')
-            if (val) this.classAdd('inverted')
+            throw new Error('Deprecated')
         }})
 
         this.attributes.add({friendlyName: 'Indeterminate', name: 'indeterminate', type: 'bool', onSet: val => {
-            this.classRemove('indeterminate')
-            if (val) this.classAdd('indeterminate')
+            throw new Error('Deprecated')
         }})
 
         this.attributes.add({friendlyName: 'Double', name: 'double', type: 'bool', onSet: val => {
-            this.classRemove('double')
-            if (val) this.classAdd('double')
+            throw new Error('Deprecated')
         }})
 
         this.attributes.add({friendlyName: 'Elastic', name: 'elastic', type: 'bool', onSet: val => {
-            this.classRemove('elastic')
-            if (val) this.classAdd('elastic')
+            throw new Error('Deprecated')
         }})
     }
 
-
-    generateCSS(id, width, height){
-        var css =  `
-        .ui.loader_<id> {
-            width: <width>px !important;
-            height: <height>px !important;
-            font-size: <fontSize>px;
-        }
-
-
-        .ui.loader_<id>:before {
-            width: <width>px !important;
-            height: <height>px !important;
-            margin: 0 0 0 -<offset>px !important;
-            border: <thickness>px solid rgba(0, 0, 0, 0.1) !important;
-        }
-
-        .ui.loader_<id>:after {
-            width: <width>px !important;
-            height: <height>px !important;
-            margin: 0 0 0 -<offset>px !important;
-            /*border: <thickness>px solid #767676 !important;*/
-        }
-        `
-
-        var borderThickness = (width/32)
-        if (borderThickness < 2) borderThickness = 2
-
-        var adaptedCSS = css
-        .split('<id>')          .join(id)
-        .split('<width>')       .join(width)
-        .split('<height>')      .join(height)
-        .split('<offset>')      .join(width/2)
-        .split('<thickness>')   .join(borderThickness)
-        .split('<fontSize>')   .join(width/2)
-
-        return adaptedCSS
-
-    }
 }
