@@ -15,6 +15,7 @@
             <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui %>sk_ui_shadows.css">
             
             <% if (sk.routes.frontend.engine){ %>
+                <%- include(sk.routes.frontend.engine + '/frontend/engine_body.ejs') %>
                 <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.engine %>/frontend/engine_style.css">
             <% } %>
             
@@ -250,7 +251,7 @@
                         _c.styling = 'ttb'
 
                         if (sk.app_type !== 'wapp' && !sk.noTitle){
-                            _c.titlebar = _c.add.dappTitlebar(_c => {
+                            _c.titlebar = _c.add.titlebar(_c => {
                                 _c.os    = sk.os
                                 _c.title = sk.title
                                 _c.icon  = sk.paths.icon

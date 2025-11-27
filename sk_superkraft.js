@@ -204,7 +204,7 @@ module.exports = class Superkraft {
 
         if (sk.engine.start) await sk.engine.start()
         
-        if (opt.onReady) opt.onReady()
+        if (opt.onReady) opt.onReady(this)
     }
 }
 
