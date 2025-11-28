@@ -90,7 +90,7 @@ class SK_UMS {
         this.toBE('broadcast', eventID, data)
     }
 
-    getdata(eventID){
+    getData(eventID){
         var event = this.events[eventID]
         if (!event) return
         return event.data

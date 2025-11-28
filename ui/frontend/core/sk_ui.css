@@ -314,3 +314,9 @@ i.icon, i.icons, i.flag {
     background-color: #1e0000 !important;
     border: solid 1px #9d0000 !important;
 }
+
+
+
+.sk_window_drag {
+    -webkit-app-region: drag;
+}

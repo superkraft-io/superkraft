@@ -111,8 +111,11 @@ class sk_ui_titlebar_actions extends sk_ui_component {
 
         this.maximize = this.add.fromNew(sk_ui_titlebar_actions_button, _c => {
             _c.classAdd('sk_ui_titlebar_actions_button_maximizeBtn')
-            _c.onClick = ()=>{
-                if (!sk_api.window.isMaximized() && !sk_api.window.isFullScreen()) sk_api.window.maximize()
+            _c.onClick = async ()=>{
+                var isMaximized = await sk_api.window.isMaximized()
+                var isFullscreen = await sk_api.window.isFullScreen()
+
+                if (!isMaximized && !isFullscreen) sk_api.window.maximize()
                 else sk_api.window.unmaximize()
             }
         })

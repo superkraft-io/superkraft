@@ -87,7 +87,9 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
         if (this.defOpts.ignoreMouseEvents) this._view.setIgnoreMouseEvents(true)
 
-        this._view.on('ready-to-show', ()=>{
+        this._view.on('ready-to-show', res => {
+            if (!this._view) return
+            
             this.ipc =  this._view.webContents
         })
 
@@ -99,8 +101,13 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             this.reload()
         })
 
-        this._view.on('closed'      , ()=>{ this.setClosed() })
-        this._view.on('session-end' , ()=>{ this.setClosed() })
+        this._view.on('closed'      , ()=>{
+            this.setClosed()
+        })
+
+        this._view.on('session-end' , ()=>{
+            this.setClosed()
+        })
         //this._view.on('hide'        , ()=>{ this.setClosed() })
 
 
@@ -181,7 +188,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
     close(){
         if (!this._view) return
-        this._view.close()
+        this._view.destroy()
         delete this._view
         this.setClosed()
     }

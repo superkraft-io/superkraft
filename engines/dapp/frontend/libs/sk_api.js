@@ -34,6 +34,36 @@ class SK_API_Window {
             ...payload
         }, cb)
     }
+
+    close(){
+        sk.comm.main('windowAction', {action: 'close'})
+    }
+    
+    minimize(){
+        sk.comm.main('windowAction', {action: 'minimize'})
+    }
+
+    maximize(){
+        sk.comm.main('windowAction', {action: 'maximize'})
+    }
+
+    maximize(){
+        sk.comm.main('windowAction', {action: 'maximize'})
+    }
+
+    unmaximize(){
+        sk.comm.main('windowAction', {action: 'unmaximize'})
+    }
+
+    async isMaximized(){
+        return (await sk.comm.main('windowAction', {action: 'isMaximized'})).isMaximized
+        
+    }
+
+    
+    async isFullScreen(){
+        return (await sk.comm.main('windowAction', {action: 'isFullscreen'})).isFullscreen
+    }
 }
 
 

@@ -36,6 +36,9 @@ class sk_ui_loader extends sk_ui_component {
         this.attributes.add({friendlyName: 'Size', name: 'size', type: 'number', onSet: val => {
             this.style.minWidth = val + 'px'
             this.style.minHeight = val + 'px'
+
+            this.style.maxWidth = val + 'px'
+            this.style.maxHeight = val + 'px'
         }})
 
         this.attributes.add({friendlyName: 'Inverted', name: 'inverted', type: 'bool', onSet: val => {

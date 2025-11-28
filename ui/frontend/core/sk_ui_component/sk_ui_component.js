@@ -70,7 +70,7 @@ class sk_ui_component {
 
         this.attributes.add({friendlyName: 'Visible', name: 'visible', type: 'bool',
             onSet: val => {
-                alert('Cannot set visibility of a component using this attribute.')
+                this.style.display = (val ? '' : 'none')
             },
 
             onGet: val => {

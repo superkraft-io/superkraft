@@ -25,10 +25,22 @@ module.exports = class SK_Action extends SK_RootAction {
                 }
                 break;
 
+            case 'unmaximize':
+                wnd.unmaximize()
+                break;
+
             case 'reload':
                 window.reload()
                 break;
         
+            case 'isMaximized':
+                res.resolve({isMaximized: wnd.isMaximized()})
+                break;
+
+            case 'isfullscreen':
+                res.resolve({isFullscreen: wnd.isFullscreen()})
+                break;
+
             default:
                 try {
                     this.sk.views[opt.view][opt.action]()
