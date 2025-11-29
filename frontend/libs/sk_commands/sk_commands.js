@@ -12,7 +12,7 @@ class SK_Commands {
 
     __captureKeyboardEvents(){
         document.addEventListener('keydown', _e => {
-
+            // ... (existing code for target and suo checks)
             var target = _e.target
             if (target.nodeName === 'INPUT') return
             var suo = target.sk_ui_obj
@@ -20,17 +20,32 @@ class SK_Commands {
 
             var capturedShortcut = []
             if (_e.ctrlKey) capturedShortcut.push('ctrl')
-            if (_e.metaKey === '') capturedShortcut.push('cmd')
+            if (_e.metaKey === '') capturedShortcut.push('cmd') // Note: metaKey is usually a boolean, check context if this is intentional
             if (_e.altKey) capturedShortcut.push('alt')
             if (_e.shiftKey) capturedShortcut.push('shift')
 
-            var key = _e.key.toLowerCase()
-            var ignoreKeys = ['control', 'meta', 'alt', 'shift']
-            if (!ignoreKeys.includes(key)) capturedShortcut.push(key)
+            // --- Start of modifications for function keys ---
+            var key = _e.key
             
-            
+            // Check if the key is a function key (F1 through F12 or more)
+            var isFunctionKey = key.startsWith('F') && key.length > 1 && !isNaN(parseInt(key.substring(1)))
 
+            var ignoreKeys = ['control', 'meta', 'alt', 'shift']
             
+            if (!ignoreKeys.includes(key.toLowerCase())) {
+                // Convert to lowercase *after* checking ignoreKeys, 
+                // but keep the function key capitalization logic for clarity if needed, 
+                // though to match your existing logic, we'll just use lowercased key.
+                
+                // For function keys, keep them as 'f1', 'f2', etc.
+                // For other keys, apply the existing lowercase logic.
+                
+                capturedShortcut.push(key.toLowerCase())
+            }
+            // --- End of modifications ---
+            
+            // ... (existing code for fixLastChar and loop)
+
             var fixLastChar = ()=>{
                 var replacements = {
                     '_': '-',
@@ -41,15 +56,16 @@ class SK_Commands {
                 var lastChar = capturedShortcut[capturedShortcut.length - 1]
                 var replacement = replacements[lastChar]
 
+                // We must skip replacement for function keys like 'f1'
+                if (isFunctionKey) return 
+
                 if (replacement) capturedShortcut[capturedShortcut.length - 1] = replacement
             }
 
             fixLastChar()
-
-
-
-            //var shortcut =  arr.join('+')
             
+            // ... (rest of the command comparison loop)
+
             for (var cmdName in this.commands){
                 var cmd = this.commands[cmdName]
                 if (!cmd.shortcut) continue

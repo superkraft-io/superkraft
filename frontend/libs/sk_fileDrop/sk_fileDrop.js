@@ -50,7 +50,7 @@ class sk_fileDrop {
 
             const dt = _e.dataTransfer;
 
-            if (dt.files.length > 1){
+            if (dt.files.length > 0){
                 this.files = dt.files
             } else {
                 this.files = []
@@ -227,15 +227,17 @@ class sk_fileDrop {
                 if (component.onFileDrop.customize){
                     component.onFileDrop.customize(_c)
                 } else {
-                    _c.add.text(_c => {
-                        _c.style.position = 'absolute'
-                        _c.wrap = true
-                        _c.padding = 16
-                        _c.text = component.onFileDrop.text || 'Drop files here'
-                        _c.size = 32
-                        _c.roundness = 12
-                        _c.frosted = true
-                    })
+                    if (!component.onFileDrop.noDefaultMessage){
+                        _c.add.text(_c => {
+                            _c.style.position = 'absolute'
+                            _c.wrap = true
+                            _c.padding = 16
+                            _c.text = component.onFileDrop.text || 'Drop files here'
+                            _c.size = 32
+                            _c.roundness = 12
+                            _c.frosted = true
+                        })
+                    }
                 }
             }
 

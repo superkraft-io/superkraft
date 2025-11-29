@@ -99,7 +99,7 @@ class sk_ui_slider extends sk_ui_component {
                 sk.interactions.block()
             }
             
-            if (this.onChanged) this.onChanged(this.__value)
+            //if (this.onChanged) this.onChanged(this.__value)
         }
 
 
@@ -225,6 +225,8 @@ class sk_ui_slider extends sk_ui_component {
                     if (initVals.default) this.value = initVals.default
                     else this.value = this.min
                 }
+
+                this.setValue(this.value)
             }, 100)
         }
     }
@@ -238,7 +240,8 @@ class sk_ui_slider extends sk_ui_component {
         this.thumb.style[(!this.vertical ? 'left' : 'top')] = pos - this.halfThumbSize + 'px'
         this.lineColorBar.style[(!this.vertical ? 'width' : 'height')] = pos + 'px'
 
-        if (this.onChanged) this.onChanged(pos)
+        var val = sk.utils.map(pos, 0 + this.halfThumbSize, (!this.vertical ? this.rect.width : this.rect.height) - this.halfThumbSize, this.min, this.max)
+        if (this.onChanged) this.onChanged(val)
 
         this.__lastPos = pos
     }
