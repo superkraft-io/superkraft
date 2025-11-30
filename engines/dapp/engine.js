@@ -28,10 +28,40 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
             os: os,
             arch: arch
         }
+    }
 
+    async startOnlineMonitoring(){
+        var busy = false
+
+        var doOnce = async ()=>{
+            sk.online = await sk.info.utils.checkInternetDNS()
+            sk.info.ums.broadcast('isOnline', undefined, sk.online)
+        }
+
+        var waitForUMS = ()=>{
+            return new Promise(resolve => {
+                var check = setInterval(()=>{
+                    if (sk.info.ums){
+                        clearInterval(check)
+                        resolve()
+                    }
+                }, 1000)
+            })
+        }
+    
+        await waitForUMS()
+
+        setInterval(async()=>{
+            if (busy) return
+            busy = true
+            await doOnce()
+            busy = false
+        }, 3000)
     }
 
     init(){
+        this.startOnlineMonitoring()
+
         return new Promise(resolve => {
             this.sk._os = _os
             this.sk.app = app
@@ -96,17 +126,11 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
             
 
             this.sk.info.ums = new (require('../../modules/sk_ums.js'))({sk: this.sk, app: app})
-            
-            this.sk.online = false
-            this.sk.info.ums.on('isOnline', res => {
-                this.sk.online = res.data
-            })
-
-
-            
+                        
 
             resolve()
         })
+
     }
 
     async waitForReady(){
@@ -152,8 +176,8 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
 
 
     onViewsInitialized(){
-        for (var i in this.sk.views){
-            var view = this.sk.views[i]
+        for (var i in this.sk.info.views){
+            var view = this.sk.info.views[i]
             view.onClosed = ()=>{ this.onViewClosed() }
         }
     }

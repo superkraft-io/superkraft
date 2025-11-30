@@ -37,8 +37,38 @@ module.exports = class SKXX_Engine extends SK_RootEngine {
 
     }
 
+    async startOnlineMonitoring(){
+        var busy = false
+
+        var doOnce = async ()=>{
+            sk.online = await sk.info.utils.checkInternetDNS()
+            sk.info.ums.broadcast('isOnline', undefined, sk.online)
+        }
+
+        var waitForUMS = ()=>{
+            return new Promise(resolve => {
+                var check = setInterval(()=>{
+                    if (sk.info.ums){
+                        clearInterval(check)
+                        resolve()
+                    }
+                }, 1000)
+            })
+        }
+    
+        await waitForUMS()
+
+        setInterval(async()=>{
+            if (busy) return
+            busy = true
+            await doOnce()
+            busy = false
+        }, 5000)
+    }
+
     init(){
-        console.log('------------- SKXX_Engine init')
+        this.startOnlineMonitoring()
+        
         return new Promise(async resolve => {
             this.sk.info._os = _os
             this.sk.info.app = app

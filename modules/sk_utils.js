@@ -67,4 +67,18 @@ module.exports = class SK_Utils {
         })
     }
 
+    checkInternetDNS(){
+        return new Promise((resolve) => {
+            const dns = require('dns');
+            
+            dns.lookup('google.com', (err) => {
+
+                if (err && err.code === 'ENOTFOUND') {
+                    resolve(false);
+                } else {
+                    resolve(true);
+                }
+            });
+        });
+    }
 }

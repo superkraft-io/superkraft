@@ -321,17 +321,6 @@
                     document.body.onresize = event => {
                         if (!sk.window.resizing) sk.window.maximize(true)
                     }
-
-                    function updateOnlineStatus () {
-                        sk.online = navigator.onLine
-                        //sk.online = false
-                        //sk.comm.main('setOnlineStatus', {online: sk.online})
-                        sk.ums.broadcast('isOnline', undefined, sk.online)
-                    }
-                
-                    window.addEventListener('online'  , ()=>{ updateOnlineStatus() })
-                    window.addEventListener('offline' , ()=>{ updateOnlineStatus() })
-                    updateOnlineStatus()
                 }
                 
 
