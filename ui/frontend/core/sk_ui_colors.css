@@ -51,7 +51,7 @@
     --sk_ui_color_red: rgb(238, 0, 0);
 
 
-    --sk_ui_text_color: var(--sk_ui_color_slightly_white);
+    --sk_ui_text_color: white;
     --sk_ui_text_color_full: white;
 
 

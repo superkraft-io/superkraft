@@ -71,6 +71,23 @@
         windowHandler: new SK_WindowHandler(),
         
         toast: {
+            
+            /*do: (_msg, opt = {})=>{
+                sk.app.add.component(_c => {
+                    _c.backgroundColor = opt.color || 'var(--sk_ui_color_grey)'
+                    _c.style.position = 'absolute'
+                    _c.style.top = ''
+                    if (opt.onCustomize) opt.onCustomize(_c)
+                    else {
+                        _c.add.label(_c => {
+                            _c.text = _msg
+                        })
+                    }
+
+                    _c.
+                })
+            },*/
+
             do: (_msg, opt = {})=>{
                 var defOpt = {
                     ...{
