@@ -149,11 +149,6 @@ class sk_fileDrop {
 
 
     overFunc(_e){
-        
-
-            console.log(_e.dataTransfer.files)
-            console.log(JSON.parse(JSON.stringify(_e.dataTransfer.files)))
-
         var posChanged = (a,b)=>{
             var pA = {
                 x: (a.clientX || a.touches[0].clientX),
