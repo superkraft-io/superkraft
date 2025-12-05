@@ -37,13 +37,13 @@ class sk_ui_knob extends sk_ui_draggable_component {
         ]
 
 
-        this.ticksCanvas = this.add.fromNew(sk_ui_knob_ticks)
+        this.ticksCanvas = this.add.fromClass(sk_ui_knob_ticks)
 
         this.knobTicksCanvasContainer = this.add.component(_c => {
             _c.classAdd('sk_ui_knob_knobTicksContainer')
             _c.animate = false
             
-            this.knobTicksCanvas = _c.add.fromNew(sk_ui_knob_knobTicks, _c => {
+            this.knobTicksCanvas = _c.add.fromClass(sk_ui_knob_knobTicks, _c => {
                 _c.animate = false
             })
         })
@@ -62,10 +62,10 @@ class sk_ui_knob extends sk_ui_draggable_component {
 
 
 
-        this.innerGlow = this.add.fromNew(sk_ui_knob_innerGlow, _c => {
+        this.innerGlow = this.add.fromClass(sk_ui_knob_innerGlow, _c => {
             _c.animate = false
         })
-        this.outerGlow = this.add.fromNew(sk_ui_knob_outerGlow, _c => {
+        this.outerGlow = this.add.fromClass(sk_ui_knob_outerGlow, _c => {
             _c.animate = false
         })
 

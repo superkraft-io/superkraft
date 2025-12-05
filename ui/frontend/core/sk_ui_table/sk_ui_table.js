@@ -3,7 +3,7 @@ class sk_ui_table extends sk_ui_component {
         super(opt)
 
 
-        this.header = this.add.fromNew(sk_ui_table_header)
+        this.header = this.add.fromClass(sk_ui_table_header)
 
         this.container = this.add.component(_c => {
             _c.styling += ' fullwidth fill'
@@ -21,8 +21,8 @@ class sk_ui_table extends sk_ui_component {
         
         for (var i in obj.rows){
             var row = obj.rows[i]
-            this.container.add.fromNew(sk_ui_table_row, _c => {
-                _c.add.fromNew(sk_ui_table_column)
+            this.container.add.fromClass(sk_ui_table_row, _c => {
+                _c.add.fromClass(sk_ui_table_column)
             })
         }
 
@@ -55,7 +55,7 @@ class sk_ui_table_row extends sk_ui_component {
     }
 
     addColumn(opt){
-        this.parent.add.fromNew(sk_ui_table_row)
+        this.parent.add.fromClass(sk_ui_table_row)
     }
 
     get columns(){ return this.container.children.children }

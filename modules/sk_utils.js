@@ -18,8 +18,9 @@ module.exports = class SK_Utils {
             return actions
         } catch(err) {
             console.error('Could not load actions at ' + srcPath)
-            console.error(err)
-            console.error('======================')
+            //console.error('Could not load actions at ' + srcPath)
+            //console.error(err)
+            //console.error('======================')
         }
 
         return {}

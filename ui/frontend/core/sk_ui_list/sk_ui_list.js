@@ -28,7 +28,7 @@ class sk_ui_list extends sk_ui_component {
 
         this.items = {
             add: (opt, itemClass)=>{
-                var item = this.container.add.fromNew(
+                var item = this.container.add.fromClass(
                     (!itemClass ? sk_ui_listItem : itemClass), 
                     _c => {
                         _c.info = opt

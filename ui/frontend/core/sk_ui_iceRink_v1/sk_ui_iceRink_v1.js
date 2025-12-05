@@ -535,7 +535,7 @@ class sk_ui_iceRink_v1 extends sk_ui_component {
         }).observe(this.element)
 
 
-        this.scrollbarX = this.scrollbarX_wrapper.add.fromNew(sk_ui_iceRink_v1_scrollbar, _c => {
+        this.scrollbarX = this.scrollbarX_wrapper.add.fromClass(sk_ui_iceRink_v1_scrollbar, _c => {
             _c.orientation = 'horizontal'
             _c.wrapper = this.contentWrapper
             _c.content = this.content
@@ -569,7 +569,7 @@ class sk_ui_iceRink_v1 extends sk_ui_component {
         })
 
 
-        this.scrollbarY = this.scrollbarY_wrapper.add.fromNew(sk_ui_iceRink_v1_scrollbar, _c => {
+        this.scrollbarY = this.scrollbarY_wrapper.add.fromClass(sk_ui_iceRink_v1_scrollbar, _c => {
             _c.wrapper = this.contentWrapper
             _c.content = this.content
             _c.onWheel = _e => {

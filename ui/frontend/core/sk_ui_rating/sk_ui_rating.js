@@ -20,7 +20,7 @@ class sk_ui_rating extends sk_ui_component {
         
         this.attributes.add({friendlyName: 'Count', name: 'count', type: 'number', onSet: val => {
             this.children.clear()
-            for (var i = 0; i < val; i++) this.add.fromNew(sk_ui_rating_icon, _c => {
+            for (var i = 0; i < val; i++) this.add.fromClass(sk_ui_rating_icon, _c => {
                 _c.size = this.size
                 _c.icon = this.icon
                 _c.color = this.color

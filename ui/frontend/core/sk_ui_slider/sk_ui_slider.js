@@ -220,13 +220,11 @@ class sk_ui_slider extends sk_ui_component {
                 if (initVals.max     !== undefined) this.max = initVals.max
                 if (initVals.default !== undefined) this.defaultValue = initVals.default
                 if (initVals.value   !== undefined){
-                    this.value = initVals.value
+                    this.setValue(initVals.value)
                 } else {
-                    if (initVals.default) this.value = initVals.default
-                    else this.value = this.min
+                    if (initVals.default) this.setValue(initVals.default)
+                    else this.setValue(this.min)
                 }
-
-                this.setValue(this.value)
             }, 100)
         }
     }

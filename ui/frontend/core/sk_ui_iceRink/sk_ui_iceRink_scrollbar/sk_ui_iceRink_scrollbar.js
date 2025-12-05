@@ -14,7 +14,7 @@ class sk_ui_iceRink_scrollbar extends sk_ui_component {
             _c.classAdd('sk_ui_iceRink_scrollbar_handleContainer')
             _c.styling = 'left top ttb'
             
-            this.handle = _c.add.fromNew(sk_ui_iceRink_scrollbar_handle, _c => {
+            this.handle = _c.add.fromClass(sk_ui_iceRink_scrollbar_handle, _c => {
                 _c.onMoving = res => {
                     var scrollbarLength = (this.vertical ? this.rect.height : this.rect.width)
                     var handleLength = (this.vertical ? this.handle.rect.height : this.handle.rect.width)

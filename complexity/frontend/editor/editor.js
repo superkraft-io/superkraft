@@ -98,11 +98,11 @@ class sk_ui_complexity_editor {
                 })
             })
             
-            this.objectTree = _c.add.fromNew(sk_ui_complexity_objectTree)
+            this.objectTree = _c.add.fromClass(sk_ui_complexity_objectTree)
 
-            this.stylingEditor = _c.add.fromNew(sk_ui_complexity_stylingEditor)
+            this.stylingEditor = _c.add.fromClass(sk_ui_complexity_stylingEditor)
 
-            this.attributeEditor = _c.add.fromNew(sk_ui_complexity_attributeEditor,
+            this.attributeEditor = _c.add.fromClass(sk_ui_complexity_attributeEditor,
                 _c => {
                     _c.onShowIcons = object => {
                         this.iconList.style.display = ''
@@ -111,7 +111,7 @@ class sk_ui_complexity_editor {
                 }
             )
 
-            this.iconList = _c.add.fromNew(sk_ui_complexity_iconList, _c => { _c.style.display = 'none' })
+            this.iconList = _c.add.fromClass(sk_ui_complexity_iconList, _c => { _c.style.display = 'none' })
 
             _c.disableComplexity(true, true)
 

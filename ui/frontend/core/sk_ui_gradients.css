@@ -85,6 +85,26 @@
 }
 
 
+.sk_ui_gradient_grey_dark {
+    color: rgb(255, 255, 255);
+    background: linear-gradient(-45deg, rgb(107, 107, 107), rgb(46, 46, 46), rgb(92, 92, 92), rgb(24, 24, 24));
+    background-size: 400% 400%;
+    animation: 15s ease 0s infinite normal none running sk_ui_gradient_grey_dark;
+}
+  
+@keyframes sk_ui_gradient_grey_dark {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@-moz-keyframes sk_ui_gradient_grey_dark {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+
 
 
 .sk_ui_gradient_purple {
@@ -156,6 +176,26 @@
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
+
+.sk_ui_gradient_red_dark {
+    color: rgb(255, 255, 255);
+    background: linear-gradient(-45deg, rgb(153, 0, 64), rgb(114, 0, 0), rgb(167, 39, 0), rgb(128, 0, 0));
+    background-size: 400% 400%;
+    animation: 15s ease 0s infinite normal none running sk_ui_gradient_red;
+}
+  
+@keyframes sk_ui_gradient_red {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@-moz-keyframes sk_ui_gradient_red {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
 
 
 

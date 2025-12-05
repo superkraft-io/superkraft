@@ -15,7 +15,9 @@
     background-color: rgba(255,255,255,0.2);
     */
 
-    margin: 0px !important
+    margin: 0px !important;
+
+    pointer-events: none;
 }
 
 .sk_ui_fileDrop_Area_outline {

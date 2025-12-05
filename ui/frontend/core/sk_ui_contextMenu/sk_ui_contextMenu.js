@@ -447,7 +447,7 @@ class sk_ui_contextMenu extends sk_ui_component {
         for (var i in this.__items){
             var item = this.__items[i]
             this.sk_items.push(
-                this.add.fromNew(sk_ui_contextMenu_Item, _c => {
+                this.add.fromClass(sk_ui_contextMenu_Item, _c => {
                     _c.cmParent = this.cmParent
                     _c.parentMenu = this
                     _c.config(item)
@@ -609,7 +609,7 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
         
 
         if (this.opt.shortcut && !this.opt.items){
-            this.rightSide.add.fromNew(sk_ui_contextMenu_shortcut, _c => {
+            this.rightSide.add.fromClass(sk_ui_contextMenu_shortcut, _c => {
                 _c.setCombination(this.opt.shortcut)
                 //if (this.parent.widestItem < _c.rect.width) this.parent.widestItem = _c.rect.width
             })

@@ -7,7 +7,7 @@ class sk_ui_vu_meter extends sk_ui_component {
         this.vertical = false
 
 
-        this.leftSignal = this.add.fromNew(sk_ui_vu_meter_signal, _c => {
+        this.leftSignal = this.add.fromClass(sk_ui_vu_meter_signal, _c => {
             _c.pluginParamID = 'Input Volume'
 
             _c.label.text = 'INPUT'
@@ -23,7 +23,7 @@ class sk_ui_vu_meter extends sk_ui_component {
         })
 
 
-        this.rightSignal = this.add.fromNew(sk_ui_vu_meter_signal, _c => {
+        this.rightSignal = this.add.fromClass(sk_ui_vu_meter_signal, _c => {
             _c.pluginParamID = 'Output Volume'
 
             _c.label.text = 'OUTPUT'
@@ -39,7 +39,7 @@ class sk_ui_vu_meter extends sk_ui_component {
             }
         })
 
-        this.add.fromNew(sk_ui_vu_meter_dbLabels)
+        this.add.fromClass(sk_ui_vu_meter_dbLabels)
     }
 }
 
@@ -68,7 +68,7 @@ class sk_ui_vu_meter_signal extends sk_ui_component {
         })
 
 
-        this.channels = this.add.fromNew(sk_ui_vu_meter_signal_channels)
+        this.channels = this.add.fromClass(sk_ui_vu_meter_signal_channels)
 
         this.label = this.add.label(_c => {
             _c.classAdd('sk_ui_vu_meter_signal_label')
@@ -92,13 +92,13 @@ class sk_ui_vu_meter_signal_channels extends sk_ui_draggable_component {
 
         this.channels = {}
 
-        this.channels.left = this.add.fromNew(sk_ui_vu_meter_signal_channel, _c => {
+        this.channels.left = this.add.fromClass(sk_ui_vu_meter_signal_channel, _c => {
             _c.marginRight = 4
         })
 
-        this.channels.right = this.add.fromNew(sk_ui_vu_meter_signal_channel)
+        this.channels.right = this.add.fromClass(sk_ui_vu_meter_signal_channel)
 
-        this.gainSlider = this.add.fromNew(sk_ui_vu_meter_gain_slider, _c => {
+        this.gainSlider = this.add.fromClass(sk_ui_vu_meter_gain_slider, _c => {
 
         })
 
@@ -261,7 +261,7 @@ class sk_ui_vu_meter_signal_channel extends sk_ui_component {
             })
         })
 
-        this.peakHoldHandle = this.add.fromNew(sk_ui_vu_meter_peakHoldHandle)
+        this.peakHoldHandle = this.add.fromClass(sk_ui_vu_meter_peakHoldHandle)
 
         this.value = 0
     }

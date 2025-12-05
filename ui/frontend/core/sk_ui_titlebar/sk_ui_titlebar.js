@@ -15,8 +15,8 @@ class sk_ui_titlebar extends sk_ui_component {
             this.classAdd('sk_ui_titlebar_' + os)
 
             
-            this._actions = this.add.fromNew(sk_ui_titlebar_actions, _c => _c.configureForOS(os))
-            this._title   = this.add.fromNew(sk_ui_titlebar_title)
+            this._actions = this.add.fromClass(sk_ui_titlebar_actions, _c => _c.configureForOS(os))
+            this._title   = this.add.fromClass(sk_ui_titlebar_title)
         }})
 
         this.attributes.add({friendlyName: 'Closable', name: 'closable', type: 'bool', onSet: val =>{
@@ -101,7 +101,7 @@ class sk_ui_titlebar_actions extends sk_ui_component {
         this.styling += ' fullheight'
         this.vertical = false
 
-        this.close    = this.add.fromNew(sk_ui_titlebar_actions_button, _c => {
+        this.close    = this.add.fromClass(sk_ui_titlebar_actions_button, _c => {
             _c.classAdd('sk_ui_titlebar_actions_button_closeBtn');
             _c.icon = 'close'
             _c.onClick = ()=>{
@@ -109,7 +109,7 @@ class sk_ui_titlebar_actions extends sk_ui_component {
             }
         })
 
-        this.maximize = this.add.fromNew(sk_ui_titlebar_actions_button, _c => {
+        this.maximize = this.add.fromClass(sk_ui_titlebar_actions_button, _c => {
             _c.classAdd('sk_ui_titlebar_actions_button_maximizeBtn')
             _c.onClick = async ()=>{
                 var isMaximized = await sk_api.window.isMaximized()
@@ -120,7 +120,7 @@ class sk_ui_titlebar_actions extends sk_ui_component {
             }
         })
 
-        this.minimize = this.add.fromNew(sk_ui_titlebar_actions_button, _c => {
+        this.minimize = this.add.fromClass(sk_ui_titlebar_actions_button, _c => {
             _c.classAdd('sk_ui_titlebar_actions_button_minimizeBtn');
             _c.icon = 'window minimize outline'
             _c.onClick = ()=>{

@@ -87,7 +87,7 @@ class SK_Tween {
     }
     */
 
-    get easings() {
+    static get easings() {
         return {
             // Linear
             linear(t, b, c, d) { return c * t / d + b; },
@@ -222,7 +222,7 @@ class SK_Tween {
 
         var step = (1000 - this._steps) / 1000
         
-        var easingFunc = this.easings[this.easing]
+        var easingFunc = SK_Tween.easings[this.easing]
         if (!easingFunc){
             //check if function is a string or a function
             if (typeof this.easing === 'function'){

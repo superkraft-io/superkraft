@@ -97,7 +97,6 @@ class sk_fileDrop {
     async processEntry(entry, list) {
         if (entry.isFile) {
             entry.file(file => {
-                console.log(`File: ${file.name} (Path: ${entry.fullPath})`);
                 list.push(file)
             });
         } else if (entry.isDirectory) {
@@ -150,6 +149,11 @@ class sk_fileDrop {
 
 
     overFunc(_e){
+        
+
+            console.log(_e.dataTransfer.files)
+            console.log(JSON.parse(JSON.stringify(_e.dataTransfer.files)))
+
         var posChanged = (a,b)=>{
             var pA = {
                 x: (a.clientX || a.touches[0].clientX),
@@ -180,7 +184,7 @@ class sk_fileDrop {
             suo.fileDropStartNotified = true
             suo.fileDropEndNotified = true
             suo.element.addEventListener('dragleave', sk.fileDrop.leaveFunc)
-            suo.onFileDrop.cb({action: 'start', files: sk.fileDrop.files})
+            suo.onFileDrop.cb({action: 'start', files: _e.dataTransfer.files, items: _e.dataTransfer.items})
             if (suo.onMouseEnter) suo.onMouseEnter(_e)
 
             return
@@ -189,6 +193,44 @@ class sk_fileDrop {
     
     leaveFunc(_e){
         var path = _e.target.sk_ui_obj.getPath({elements: true})
+
+        var listUpUntilFileDropArea = []
+        for (var i in path){
+            var item = path[i]
+            var suo = item.sk_ui_obj
+
+            listUpUntilFileDropArea.push(item)
+            
+            if (suo.onFileDrop) break
+        }
+
+
+        var lastItem = listUpUntilFileDropArea[listUpUntilFileDropArea.length-1]
+        if (lastItem.id !== _e.target.id) return
+
+        var shouldNotifyLeave = false
+
+        for (var i in listUpUntilFileDropArea){
+            var item = listUpUntilFileDropArea[i]
+
+            var ponterEvents = window.getComputedStyle(suo.element, 'pointer-events').pointerEvents
+            if (ponterEvents === 'none') return
+
+            shouldNotifyLeave = true
+            break
+        }
+
+        var suo = lastItem.sk_ui_obj
+        suo.onFileDrop.cb({action: 'end', files: sk.fileDrop.files})
+        suo.element.removeEventListener('dragleave', sk.fileDrop.leaveFunc)
+        delete suo.fileDropStartNotified
+        if (suo.onMouseLeave) suo.onMouseLeave(_e)
+
+        return
+
+
+            
+        //old
         for (var i in path){
             var item = path[i]
             var suo = item.sk_ui_obj
@@ -241,7 +283,7 @@ class sk_fileDrop {
                 }
             }
 
-            if (component.onFileDropInitiated) component.onFileDropInitiated(component)
+            if (component.onFileDropInitiated) component.onFileDropInitiated(_c)
         })
     }
 
@@ -281,9 +323,11 @@ class sk_fileDrop {
         this.outlineAnimatorTimer = setInterval(()=>{
             this.outlineOpacity = (this.outlineAnimatorReverse ? this.outlineOpacity-stepping : this.outlineOpacity+stepping)
             for (var i in this.subscribers){
-                if (this.subscribers[i].onFileDrop.hidden) continue
-                this.subscribers[i].fileDropArea.outline.style.borderColor = `rgba(255,255,255,${this.outlineOpacity})`
+                var subscriber = this.subscribers[i]
+                if (subscriber.onFileDrop.hidden) continue
+                subscriber.fileDropArea.outline.style.borderColor = `rgba(255,255,255,${this.outlineOpacity})`
             }
+
             if (!firstRun && this.outlineOpacity < min){
                 this.outlineAnimatorReverse = false
                 this.outlineOpacity = min

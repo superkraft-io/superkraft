@@ -185,8 +185,13 @@ module.exports = class Superkraft {
         sk.actions = await sk.utils.loadActions([__dirname, 'engines', opt.type, 'global_actions'].join('/') + '/')
         sk.utils.captureActions('root', sk.actions)
 
-        sk.globalActions = await sk.utils.loadActions(sk.paths.globalActions)
-        
+        try {
+            sk.globalActions = await sk.utils.loadActions(sk.paths.globalActions)
+        } catch(err) {
+            console.error('Could not load global actions from ' + sk.paths.globalActions)
+            console.error(err)
+            process.exit(1)
+        }
 
         if (opt.onPreStart) await opt.onPreStart(this)
         

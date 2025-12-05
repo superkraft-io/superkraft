@@ -28,7 +28,7 @@ class sk_ui_infinite_list extends sk_ui_iceRink {
         this.fetchDelay = 100
 
         this.placeholderClass = sk_ui_infinite_list_placeholderRow
-        this.placeholderContainer = this.rootAdd.fromNew(sk_ui_infinite_list_placeholderContainer)
+        this.placeholderContainer = this.rootAdd.fromClass(sk_ui_infinite_list_placeholderContainer)
 
         this.onResized = ()=>{
             this.placeholderContainer.update()
@@ -117,7 +117,7 @@ class sk_ui_infinite_list extends sk_ui_iceRink {
         var placeholder = this.placeholderContainer.findPlaceholderForIdx(info.idx)
         if (placeholder) placeholder.style.visibility = 'hidden'
         
-        return this.add.fromNew(classRef, _c => {
+        return this.add.fromClass(classRef, _c => {
             delete this.placeholderContainer.busyFetching[info.idx]
 
             _c.style.position = 'absolute'
@@ -264,7 +264,7 @@ class sk_ui_infinite_list_placeholderContainer extends sk_ui_component {
                 //this.clrIdx++
                 //if (this.clrIdx >= this.colors.length) this.clrIdx = 0
 
-                var row = this.add.fromNew(this.parent.placeholderClass)
+                var row = this.add.fromClass(this.parent.placeholderClass)
                 //row.label.text = this.children.children.length - 1
                 //row.backgroundColor = this.colors[this.clrIdx]
             }

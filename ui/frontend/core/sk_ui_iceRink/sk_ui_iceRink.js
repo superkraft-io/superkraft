@@ -71,7 +71,13 @@ class sk_ui_iceRink extends sk_ui_component {
                 _e.stopPropagation()
             }
 
-            scroller.handleWheelEvent(_e.deltaX, _e.deltaY)
+            var deltaX = _e.deltaX
+            var deltaY = _e.deltaY
+
+            if (this.onCustomScrollDeltaX) deltaX = this.onCustomScrollDeltaX(_e)
+            if (this.onCustomScrollDeltaY) deltaY = this.onCustomScrollDeltaY(_e)
+
+            scroller.handleWheelEvent(deltaX, deltaY)
         }
 
         this.element.addEventListener('wheel', this.handleMouseWheel)
@@ -402,9 +408,9 @@ class sk_ui_iceRink extends sk_ui_component {
     includeComponent(component){
         this.__includedComponents.push(component)
         
-        component.element.addEventListener('wheel', this.onWheel)
-        component.element.addEventListener('mousedown', this.mouseDownHandler)
-        component.element.addEventListener('touchstart', this.mouseDownHandler)
+        component.element.addEventListener('wheel', this.handleMouseWheel)
+        component.element.addEventListener('mousedown', this.handleMouseDown)
+        component.element.addEventListener('touchstart', this.handleMouseDown)
     }
 
     showScrollbar(axis){

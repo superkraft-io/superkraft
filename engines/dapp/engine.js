@@ -35,7 +35,9 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
 
         var doOnce = async ()=>{
             sk.online = await sk.info.utils.checkInternetDNS()
+            if (sk.online === sk.__lastOnlineStatus) return
             sk.info.ums.broadcast('isOnline', undefined, sk.online)
+            sk.__lastOnlineStatus = sk.online
         }
 
         var waitForUMS = ()=>{

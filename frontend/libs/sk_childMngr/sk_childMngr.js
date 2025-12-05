@@ -48,7 +48,7 @@ class SK_ChildMngr {
 
     configParent(){
         this.opt.parent.add = {
-            fromNew: (sk_ui_class, cb, extraOpt = {}) => {
+            fromClass: (sk_ui_class, cb, extraOpt = {}) => {
                 var obj = new sk_ui_class({parent: this.opt.parent, extraOpt: extraOpt})
                 this.add(obj)
                 if (cb) cb(obj)
