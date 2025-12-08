@@ -324,7 +324,7 @@
                 }
                 
 
-                var skOnDocumentClicked = _e => {
+                sk.skOnDocumentClicked = _e => {
                     var open_contextMenus = document.querySelectorAll('.sk_ui_contextMenu')
 
                     if (open_contextMenus.length === 0) return
@@ -344,8 +344,8 @@
 
                 }
 
-                if (!sk.isOnMobile) document.addEventListener('click', _e => { skOnDocumentClicked(_e) })
-                else document.addEventListener('touchend', _e => { skOnDocumentClicked(_e) })
+                if (!sk.isOnMobile) document.addEventListener('click', _e => { sk.skOnDocumentClicked(_e) })
+                else document.addEventListener('touchend', _e => { sk.skOnDocumentClicked(_e) })
 
                 document.addEventListener('keydown', _e => {
                     if (_e.which === 27) return sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true})
@@ -364,6 +364,8 @@
             }
 
             if (sk.app_type === 'wapp'){
+                if (sk.globalData && sk.globalData.paths && !sk.globalData.paths.site) sk.globalData.paths.site = ''
+
                 window.sk_api = {}
                 sk_api.waitForWndReady = ()=>{
                     return new Promise(resolve => {

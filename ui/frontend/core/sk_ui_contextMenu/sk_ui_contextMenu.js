@@ -339,8 +339,12 @@ class sk_ui_contextMenu extends sk_ui_component {
     }
 
     close(opt){
+        console.log('closing menu')
+
         this.closeOpt = opt
-        if (this.parentItem) this.parentItem.classRemove('sk_ui_contextMenu_Item_submenuExpanded')
+        if (this.parentItem){
+            this.parentItem.classRemove('sk_ui_contextMenu_Item_submenuExpanded')
+        }
         this.closeSubmenus()
         this.remove()
     }
@@ -399,6 +403,8 @@ class sk_ui_contextMenu extends sk_ui_component {
     }
 
     show(opt = {}){
+        console.log('showing menu')
+
         return new Promise(async resolve => {
 
             if (this.parentItem) this.parentItem.classAdd('sk_ui_contextMenu_Item_submenuExpanded')
@@ -650,7 +656,7 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
         this.element.addEventListener('mouseenter', _e => {
             this.parentMenu.closeSubmenus({ignore: this.submenuID})
             if (!this.opt.items) return
-            if (this.submenu || this.submenuID) return
+            if (this.submenu) return
 
             var rect = this.rect
 
@@ -666,6 +672,7 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
                 _c.items = this.opt.items
                 _c.position = {x: rect.left + rect.width, y: rect.top - 6}
                 
+                clearTimeout(this.showTimer)
                 this.showTimer = setTimeout(()=>{
                     _c.show()
                 }, 150)

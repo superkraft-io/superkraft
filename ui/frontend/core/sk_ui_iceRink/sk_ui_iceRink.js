@@ -127,6 +127,8 @@ class sk_ui_iceRink extends sk_ui_component {
 
 
         this.handleMouseDown = _e => {
+            sk.skOnDocumentClicked(_e)
+            
             if (this.getParentIceRink()){
                 _e.preventDefault()
                 _e.stopPropagation()
