@@ -59,6 +59,8 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
             await doOnce()
             busy = false
         }, 3000)
+
+        doOnce()
     }
 
     init(){

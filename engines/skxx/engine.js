@@ -63,7 +63,9 @@ module.exports = class SKXX_Engine extends SK_RootEngine {
             busy = true
             await doOnce()
             busy = false
-        }, 5000)
+        }, 3000)
+
+        doOnce()
     }
 
     init(){
