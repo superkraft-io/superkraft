@@ -257,6 +257,19 @@ class sk_ui_button extends sk_ui_component {
 
         this.vertical = false
     }
+
+    static configForPreview(){
+        return {
+            label: 'Button',
+            config: _c => {
+                return _c.add.button(_c => {
+                    _c.style.width = '200px'
+                    _c.text = 'Button'
+                    _c.icon = 'info circle'
+                })
+            }
+        }
+    }
     
     action(actionName, data = {}){
         return new Promise((resolve, reject)=>{

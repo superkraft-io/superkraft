@@ -199,4 +199,16 @@ class sk_ui_checkmark extends sk_ui_component {
         return adaptedCSS
 
     }
+
+    static configForPreview(){
+        return {
+            label: 'Checkmark',
+            config: _c => {
+                return _c.add.checkmark(_c => {
+                    _c.size = 20
+                    _c.check()
+                })
+            }
+        }
+    }
 }

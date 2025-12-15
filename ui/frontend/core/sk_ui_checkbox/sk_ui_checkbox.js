@@ -116,4 +116,14 @@ class sk_ui_checkbox extends sk_ui_button {
 
         this.checkboxSize = 14
     }
+
+    static configForPreview(){
+        return {
+            label: 'Checkbox',
+            config: _c => {
+                return _c.add.checkbox(_c => {
+                })
+            }
+        }
+    }
 }

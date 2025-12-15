@@ -43,4 +43,15 @@ class sk_ui_colorPicker extends sk_ui_component {
 
         this.clrPicker = this.inputBucket.input_clrPicker
     }
+
+    static configForPreview(){
+        return {
+            label: 'Color Picker',
+            config: _c => {
+                return _c.add.colorPicker(_c => {
+                    
+                })
+            }
+        }
+    }
 }
