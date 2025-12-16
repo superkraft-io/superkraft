@@ -2,6 +2,9 @@ class SK_Commands {
     constructor(opt){
         this.commands = {}
 
+        this.capturedShortcut = []
+
+
         this.__captureKeyboardEvents()
     }
 
@@ -18,11 +21,13 @@ class SK_Commands {
             var suo = target.sk_ui_obj
             if(suo && suo.interceptKeyboard) return
 
-            var capturedShortcut = []
-            if (_e.ctrlKey) capturedShortcut.push('ctrl')
-            if (_e.metaKey === '') capturedShortcut.push('cmd') // Note: metaKey is usually a boolean, check context if this is intentional
-            if (_e.altKey) capturedShortcut.push('alt')
-            if (_e.shiftKey) capturedShortcut.push('shift')
+            
+            this.capturedShortcut = []
+
+            if (_e.ctrlKey  ) this.capturedShortcut.push('ctrl')
+            if (_e.metaKey  ) this.capturedShortcut.push('cmd') // Note: metaKey is usually a boolean, check context if this is intentional
+            if (_e.altKey   ) this.capturedShortcut.push('alt')
+            if (_e.shiftKey ) this.capturedShortcut.push('shift')
 
             // --- Start of modifications for function keys ---
             var key = _e.key
@@ -40,8 +45,9 @@ class SK_Commands {
                 // For function keys, keep them as 'f1', 'f2', etc.
                 // For other keys, apply the existing lowercase logic.
                 
-                capturedShortcut.push(key.toLowerCase())
+                this.capturedShortcut.push(key.toLowerCase())
             }
+
             // --- End of modifications ---
             
             // ... (existing code for fixLastChar and loop)
@@ -53,18 +59,17 @@ class SK_Commands {
                     ':': '.'
                 }
                 
-                var lastChar = capturedShortcut[capturedShortcut.length - 1]
+                var lastChar = this.capturedShortcut[this.capturedShortcut.length - 1]
                 var replacement = replacements[lastChar]
 
                 // We must skip replacement for function keys like 'f1'
                 if (isFunctionKey) return 
 
-                if (replacement) capturedShortcut[capturedShortcut.length - 1] = replacement
+                if (replacement) this.capturedShortcut[this.capturedShortcut.length - 1] = replacement
             }
 
             fixLastChar()
             
-            // ... (rest of the command comparison loop)
 
             for (var cmdName in this.commands){
                 var cmd = this.commands[cmdName]
@@ -75,7 +80,7 @@ class SK_Commands {
                 
                 cmdShortcut = cmdShortcut.toLowerCase()
 
-                if (this.compareShortcuts(cmdShortcut.split('+'), capturedShortcut)){
+                if (this.compareShortcuts(cmdShortcut.split('+'), this.capturedShortcut)){
                     _e.preventDefault()
                     _e.stopPropagation()
                     cmd.action()

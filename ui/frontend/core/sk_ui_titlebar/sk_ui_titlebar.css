@@ -139,6 +139,7 @@
 .sk_ui_titlebar_actions_button_macos_minimize > .sk_ui_icon  {
     font-size: 8px;
     min-height: 4px !important;
+    line-height: unset;
 }
 
 .sk_ui_titlebar_actions_button_macos_close {
@@ -146,6 +147,7 @@
 }
 .sk_ui_titlebar_actions_button_macos_close > .sk_ui_icon {
     margin-top: -1px !important;
+    line-height: unset;
 }
 
 .sk_ui_titlebar_actions_button_macos_minimize {
