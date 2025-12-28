@@ -1,3 +1,5 @@
+const { webUtils } = require('electron');
+
 class sk_fileDrop {
     constructor(){
     
@@ -77,8 +79,24 @@ class sk_fileDrop {
                 }
             }
 
-            _e.files = this.files; // Keep same behavior as before
+            var filesArray = []
 
+            for (var i = 0; i < this.files.length; i++){
+                try {
+                    filesArray.push({
+                        name: this.files[i].name,
+                        size: this.files[i].size,
+                        type: this.files[i].type,
+                        lastModified: this.files[i].lastModified,
+                        path: webUtils.getPathForFile(this.files[i])
+                    })
+                } catch(err){
+                    var x = 0
+                }
+            }
+
+            _e.files = filesArray; 
+            
             endDragDropEvent(_e, 'drop');
         }, false);
     }
@@ -139,7 +157,7 @@ class sk_fileDrop {
             if (action === 'drop') {   
                 var path = _e.target.sk_ui_obj.getPath({elements: true})
                 var target = this.findFirstSubscriberOccurance(path, component.uuid)             
-                if (target && target.onFileDrop) target.onFileDrop.cb({action: 'drop', files: this.files})
+                if (target && target.onFileDrop) target.onFileDrop.cb({action: 'drop', files: _e.files})
             }
         }
         

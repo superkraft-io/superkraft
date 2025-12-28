@@ -1,4 +1,4 @@
-const fs = require('fs-extra')
+const fs = require('fs')
 
 module.exports = class SK_CDN_Exporter {
     constructor(opt){
@@ -113,8 +113,8 @@ module.exports = class SK_CDN_Exporter {
                 var cRes = await this.consolidateView(this.sk.paths.views + view.id + '/')
 
                 var viewPath = this.sk.cdn.servePath + '/views/' + view.id + '/'
-                fs.copySync(this.sk.paths.views + view.id + '/frontend', viewPath)
-                fs.removeSync(viewPath + 'sk_ui')
+                fs.cpSync(this.sk.paths.views + view.id + '/frontend', viewPath, { recursive: true })
+                fs.rmSync(viewPath + 'sk_ui', { recursive: true, force: true })
                 
 
                 if (cRes.css.length > 0) fs.writeFileSync(viewPath + view.id + '.css', cRes.css)
@@ -149,7 +149,7 @@ module.exports = class SK_CDN_Exporter {
 
     export(){
         return new Promise(async resolve => {
-            fs.removeSync(this.sk.cdn.servePath)
+            fs.rmSync(this.sk.cdn.servePath, { recursive: true, force: true })
             fs.mkdirSync(this.sk.cdn.servePath)
             fs.mkdirSync(this.sk.cdn.servePath + '/views/')
 
@@ -161,7 +161,7 @@ module.exports = class SK_CDN_Exporter {
             fs.copySync(this.sk.paths.superkraft + '/frontend/', this.sk.cdn.servePath + '/sk_frontend/')
 
             fs.copySync(this.sk.paths.app_frontend, this.sk.cdn.servePath + '/app_frontend/')
-            fs.removeSync(this.sk.cdn.servePath + '/app_frontend/sk_ui/')
+            fs.rmSync(this.sk.cdn.servePath + '/app_frontend/sk_ui/', { recursive: true, force: true })
             
             resolve()
         })

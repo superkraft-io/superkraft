@@ -1,4 +1,4 @@
-var fs = require('fs-extra')
+var fs = require('fs')
 var SK_UI_Component_Bakery = require('../../frontend/codeEditor/bakery.js')
 
 module.exports = class SK_Action extends SK_RootAction {
@@ -10,7 +10,7 @@ module.exports = class SK_Action extends SK_RootAction {
             var baked = (new SK_UI_Component_Bakery(pseudoClass)).asClass()
 
             var targetPath = global.sk.complexity.paths.bakery + pseudoclass.pseudoClassName + '/'
-            try { fs.removeSync(targetPath) } catch(err){ errors.push(err) }    
+            try { fs.rmSync(targetPath, { recursive: true, force: true }) } catch(err){ errors.push(err) }    
             try {
                 fs.mkdirSync(targetPath)
                 fs.writeFileSync(targetPath + pseudoclass.pseudoClassName + '.css', baked.css)

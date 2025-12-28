@@ -1,4 +1,4 @@
-var fs = require('fs-extra')
+var fs = require('fs')
 
 
 module.exports = class SK_DAPP_Deeplink {
@@ -63,7 +63,7 @@ class SK_DAPP_Deeplink_win {
         
         if (this.sk.info.sysInfo.os === 'macos') this.paths.tmp = this.paths.tmp.split('\\').join('//')
 
-        if (!fs.existsSync(this.paths.tmp)) fs.mkdirSync(this.paths.tmp)
+        if (!fs.existsSync(this.paths.tmp)) fs.mkdirSync(this.paths.tmp, { recursive: true })
 
         this.paths.deeplink = this.paths.tmp + 'deeplink.sk'
 
@@ -110,7 +110,7 @@ class SK_DAPP_Deeplink_win {
             busy = true
 
             try { 
-                var data = fs.readJSONSync(this.paths.deeplink)
+                var data = JSON.parse(fs.readFileSync(this.paths.deeplink))
                 this.sk.info.ums.broadcast('sk_deeplink', data)
             } catch(err) {
                 console.error('===== deeplink error: could not read deeplink file')

@@ -548,9 +548,9 @@ class sk_ui_component {
         //Plugin stuff
         
         this.attributes.add({friendlyName: 'DAW plugin Param ID', name: 'dawPluginParamID', type: 'text', onSet: val => {
-            if (!sk_api.pluginMngr) return console.error('[SK] Plugin manager not present. You are probably not running this app as a plugin.')
+            if (!sk_api.vstMngr) return console.error('[SK] Plugin manager not present. You are probably not running this app as a plugin.')
 
-            sk_api.pluginMngr.add(val, this)
+            sk_api.vstMngr.add(val, this)
             
             var mouseUpHandler = async _e => {
                 document.removeEventListener('mouseup', mouseUpHandler)
@@ -570,12 +570,12 @@ class sk_ui_component {
 
                 document.addEventListener('mouseup', mouseUpHandler)
 
-                if (sk_api.pluginMngr.currentTouchedParam && sk_api.pluginMngr.currentTouchedParam.uuid !== this.uuid){
-                    delete sk_api.pluginMngr.currentTouchedParam.dawPluginParamMouseDownRes
-                    await sk.nativeActions.handlePluginParamMouseEvent({ dawPluginParamID: sk_api.pluginMngr.currentTouchedParam.__dawPluginParamID, event: 'mouseup' })
+                if (sk_api.vstMngr.currentTouchedParam && sk_api.vstMngr.currentTouchedParam.uuid !== this.uuid){
+                    delete sk_api.vstMngr.currentTouchedParam.dawPluginParamMouseDownRes
+                    await sk.nativeActions.handlePluginParamMouseEvent({ dawPluginParamID: sk_api.vstMngr.currentTouchedParam.__dawPluginParamID, event: 'mouseup' })
                 }
 
-                sk_api.pluginMngr.currentTouchedParam = this
+                sk_api.vstMngr.currentTouchedParam = this
 
                 this.dawPluginParamIsTouching = Date.now()
                 delete this.dawPluginParamIsTouchingUpTime

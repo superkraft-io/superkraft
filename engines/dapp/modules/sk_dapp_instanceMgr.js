@@ -1,4 +1,4 @@
-var fs = require('fs-extra')
+var fs = require('fs')
 
 module.exports = class SK_Dapp_InstanceMgr {
     constructor(){
