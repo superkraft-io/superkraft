@@ -440,7 +440,13 @@
                 var highest = {size: size, format: (!excludeByte ? 'B' : '')}
 
                 var addFormat = (size, format)=>{
-                    highest = {size: size, format: format.toUpperCase() + (!excludeByte ? 'B' : '')}
+                    if (!format) return
+                    try {
+                         highest = {size: size, format: format.toUpperCase() + (!excludeByte ? 'B' : '')}
+                    } catch(e){
+                        var x = 0
+                    }
+                   
                     formatsList.push(highest)
                 }
 
@@ -456,7 +462,9 @@
 
                 var sizeStr = size.toString()
                 var divisionSteps = Math.floor(sizeStr.length / 3)
-                for (var i = 0; i < divisionSteps; i++) divide()
+                for (var i = 0; i < divisionSteps; i++){
+                    divide()
+                }
 
                 var res = {
                     size: highest.size,
