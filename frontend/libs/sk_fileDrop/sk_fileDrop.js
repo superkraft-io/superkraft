@@ -1,5 +1,3 @@
-const { webUtils } = require('electron');
-
 class sk_fileDrop {
     constructor(){
     
@@ -80,6 +78,8 @@ class sk_fileDrop {
             }
 
             var filesArray = []
+
+            const { webUtils } = require('electron');
 
             for (var i = 0; i < this.files.length; i++){
                 try {
