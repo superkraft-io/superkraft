@@ -561,17 +561,21 @@ class sk_ui_component {
                 if (this.dawPluginParamID && this.dawPluginParamInfo.type !== 'boolean' && this.dawPluginParamInfo.type !== 'list'){
                     await sk.nativeActions.handlePluginParamMouseEvent({ dawPluginParamID: this.__dawPluginParamID, event: 'mouseup' })
                 }
+
+                 clearInterval(sk_api.dawPluginMngr.mouseDownTimer)
             }
             
 
             this.element.addEventListener('mousedown', async _e => {
                 if (_e.button !== 0) return
 
+                _e.stopPropagation()
+
 
                 document.addEventListener('mouseup', mouseUpHandler)
 
                 if (sk_api.dawPluginMngr.currentTouchedParam && sk_api.dawPluginMngr.currentTouchedParam.uuid !== this.uuid){
-                    await sk_api.dawPluginMngr.resetPreviousParam()
+                    await sk_api.dawPluginMngr.resetPreviousParam(true)
                 }
 
                 sk_api.dawPluginMngr.currentTouchedParam = this
@@ -580,7 +584,10 @@ class sk_ui_component {
                 delete this.dawPluginParamIsTouchingUpTime
 
                 if (this.dawPluginParamID){
-                    this.dawPluginParamMouseDownRes = await sk.nativeActions.handlePluginParamMouseEvent({ dawPluginParamID: this.__dawPluginParamID, event: 'mousedown' })
+                    clearInterval(sk_api.dawPluginMngr.mouseDownTimer)
+                    sk_api.dawPluginMngr.mouseDownTimer = setInterval(async ()=>{
+                        this.dawPluginParamMouseDownRes = await sk.nativeActions.handlePluginParamMouseEvent({ dawPluginParamID: this.__dawPluginParamID, event: 'mousedown' })
+                    }, 10)
                 }
             })
 

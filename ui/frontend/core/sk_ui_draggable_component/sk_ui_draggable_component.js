@@ -76,11 +76,15 @@ class sk_ui_draggable_component extends sk_ui_component {
             if (this.onMouseDown) this.onMouseDown()
         })
 
-        this.element.addEventListener('wheel', _e => {
+        this.element.addEventListener('wheel', async _e => {
             this.value += (sk.os === 'win' ? 0 - _e.deltaY : _e.deltaY) / (_e.shiftKey ? 100 : 10)
 
             this.dawPluginParamIsTouching = true
-            if (this.__dawPluginWriteParamValue) this.__dawPluginWriteParamValue(this.value)
+            if (this.__dawPluginWriteParamValue){
+                await sk.nativeActions.handlePluginParamMouseEvent({ dawPluginParamID: this.__dawPluginParamID, event: 'mousedown' })
+                this.__dawPluginWriteParamValue(this.value)
+                await sk.nativeActions.handlePluginParamMouseEvent({ dawPluginParamID: this.__dawPluginParamID, event: 'mouseup' })
+            }
             this.dawPluginParamIsTouching = false
         })
 
