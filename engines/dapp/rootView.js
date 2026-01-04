@@ -57,7 +57,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                     contextIsolation: false,
                     enableRemoteModule: true,
                 },
-                transparent: true, 
+                backgroundColor: '#2e2c29',
                 frame: false
             }
             defOpts = {...defOpts, ...this.info}

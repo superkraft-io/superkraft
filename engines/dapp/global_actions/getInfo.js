@@ -11,7 +11,7 @@ module.exports = class SK_Action extends SK_RootAction {
 
             view: {
                 minimizable : _v.minimizable,
-                maximizable : _v.maximizable,
+                maximizable : view.info.maximizable,
                 closable    : _v.closable,
                 noTitle     : view.info.noTitle
             },
