@@ -43,7 +43,13 @@ module.exports = class SK_RootEngine {
                         var x = 0
                         return reject('invalid_request')
                     }
-                    var auth_token = req.cookies.auth_token
+
+                    var auth_token = undefined
+                    
+                    if (req.cookies && req.cookies.auth_token) auth_token = req.cookies.auth_token
+                    if (req.body && req.body.auth_token) auth_token = req.body.auth_token
+                    if (req.body && req.body.data && req.body.data.auth_token) auth_token = req.body.data.auth_token
+
                     if (!auth_token) return reject('access_denied')
                     var isAuthTokenValid = await this.sk.info.engine.isAuthTokenValid(auth_token)
                     if (isAuthTokenValid === 'invalid_token') return reject('invalid_token')
