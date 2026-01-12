@@ -7,11 +7,13 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         return new Promise(async resolve => {
             this.route = opt.route
 
+            var cdnRoute = this.sk.info.cdn.routes[this.sk.info.config.isWhat.env]
+
             this.routes = {
                 frontend: {
                     view: this.info.route + 'vfe_frontend/',
 
-                    sk: (this.sk.info.cdn ? this.sk.info.cdn.route + 'sk_cdn/sk_frontend' : '/sk'),
+                    sk: (this.sk.info.cdn.targets.site === 'public' ? cdnRoute + 'sk_cdn/sk_frontend' : '/sk'),
 
                     ui: this.sk.info.ui.routes.core,
                     ui_shared: '/sk_ui_shared/',
@@ -19,9 +21,9 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
                     
 
-                    app_root: (this.sk.info.cdn ? this.sk.info.cdn.route + 'sk_cdn/app_frontend/' : '/'),
-                    app: (this.sk.info.cdn ? this.sk.info.cdn.route + 'sk_cdn/app_frontend/' : '/'),
-                    global: (this.sk.info.cdn ? this.sk.info.cdn.route + 'sk_cdn/app_global/' : '/sk_ui_global/'),
+                    app_root: (this.sk.info.cdn.targets.site === 'public' ? cdnRoute + 'sk_cdn/app_frontend/' : '/'),
+                    app: (this.sk.info.cdn.targets.site === 'public' ? cdnRoute + 'sk_cdn/app_frontend/' : '/'),
+                    global: (this.sk.info.cdn.targets.site === 'public' ? cdnRoute + 'sk_cdn/app_global/' : '/sk_ui_global/'),
 
                     complexity: '/complexity/',
 
@@ -41,11 +43,11 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             await this._init(opt)
 
 
-            if (this.sk.info.cdn) this.routes.frontend.ui_cdn = this.sk.info.cdn.route + 'sk_cdn'
+            if (this.sk.info.cdn.targets.site === 'public') this.routes.frontend.ui_cdn = cdnRoute + 'sk_cdn'
 
             
             var render = async (res, page, userData, country) => {
-                if (this.sk.info.cdn) this.routes.frontend.view = this.sk.info.cdn.route + 'sk_cdn/views/' + this.id + '/'
+                if (this.sk.info.cdn.targets.site === 'public') this.routes.frontend.view = cdnRoute + 'sk_cdn/views/' + this.id + '/'
                 
 
                 var globalData = this.sk.info.globalData

@@ -150,7 +150,7 @@ module.exports = class sk_ui {
     async renderInfo(viewUIComponentsPath){
         var results = {
             
-            useCDN: (this.sk.cdn ? true : false),
+            useCDN: this.sk.cdn.targets.site === 'public',
 
             head: __dirname + '/head.ejs',
             script: __dirname + '/script.ejs',

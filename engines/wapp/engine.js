@@ -21,6 +21,8 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
     init(){
         return new Promise(async resolve => {
+            var cdnRoute = this.sk.info.cdn.routes[this.sk.info.config.isWhat.env]
+            
             this.express = express
            
             var app = this.sk.app
@@ -93,7 +95,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
             app.use('/', this.express.static(this.paths.frontend.app.split('\\').join('/')))
        
             
-            if (this.sk.cdn && this.sk.cdn.servePath) this.sk.app.use(this.sk.cdn.route, this.express.static(this.sk.cdn.servePath))
+            if (this.sk.info.cdn && this.sk.info.cdn.targets.site === 'public') this.sk.app.use(cdnRoute, this.express.static(cdnRoute))
 
             this.sk.app.use(this.sk.info.ui.routes.core, this.express.static(this.paths.frontend.ui.core))
             this.sk.app.use(this.sk.info.ui.routes.shared, this.express.static(this.paths.frontend.ui.shared))
