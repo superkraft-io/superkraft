@@ -79,23 +79,33 @@ class sk_fileDrop {
 
             var filesArray = []
 
-            const { webUtils } = require('electron');
+            if (sk.app_type === 'dapp'){
+                const { webUtils } = require('electron');
 
-            for (var i = 0; i < this.files.length; i++){
-                try {
-                    filesArray.push({
-                        name: this.files[i].name,
-                        size: this.files[i].size,
-                        type: this.files[i].type,
-                        lastModified: this.files[i].lastModified,
-                        path: webUtils.getPathForFile(this.files[i])
-                    })
-                } catch(err){
-                    var x = 0
+                for (var i = 0; i < this.files.length; i++){
+                    try {
+                        filesArray.push({
+                            name: this.files[i].name,
+                            size: this.files[i].size,
+                            type: this.files[i].type,
+                            lastModified: this.files[i].lastModified,
+                            path: webUtils.getPathForFile(this.files[i])
+                        })
+                    } catch(err){
+                        var x = 0
+                    }
                 }
+
+                _e.files = filesArray; 
+            } else {
+                 for (var i = 0; i < this.files.length; i++){
+                    filesArray.push(this.files[i])
+                }
+                
+                _e.files = filesArray; 
             }
 
-            _e.files = filesArray; 
+           
             
             endDragDropEvent(_e, 'drop');
         }, false);
