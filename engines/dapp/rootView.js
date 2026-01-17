@@ -56,6 +56,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                     nodeIntegration: true,
                     contextIsolation: false,
                     enableRemoteModule: true,
+                    autoplayPolicy: 'no-user-gesture-required',
                 },
                 backgroundColor: '#2e2c29',
                 frame: false

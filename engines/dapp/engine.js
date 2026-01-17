@@ -3,6 +3,9 @@ const fs = require('fs')
 var _electron = require('electron')
 const { app } = _electron
 
+// Enable video autoplay without user gesture
+app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
+
 var _os = require('os')
 
 const {uIOhook, UiohookKey} = require('uiohook-napi')
