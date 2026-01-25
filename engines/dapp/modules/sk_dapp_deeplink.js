@@ -11,7 +11,7 @@ module.exports = class SK_DAPP_Deeplink {
         this.configSchemes()
 
         if (this.sk.info.sysInfo.os === 'win') this.osModule = new SK_DAPP_Deeplink_win({parent: this, sk: this.sk})
-        else this.osModule = new SK_DAPP_Deeplink_macos({parent: this, sk: this.sk})
+        else this.osModule = new SK_DAPP_Deeplink_mac({parent: this, sk: this.sk})
 
         this.osModule.init()
 
@@ -61,7 +61,7 @@ class SK_DAPP_Deeplink_win {
             tmp: this.sk.app.getPath('temp') + '\\' + this.appName + '\\'
         }
         
-        if (this.sk.info.sysInfo.os === 'macos') this.paths.tmp = this.paths.tmp.split('\\').join('//')
+        if (this.sk.info.sysInfo.os === 'mac') this.paths.tmp = this.paths.tmp.split('\\').join('//')
 
         if (!fs.existsSync(this.paths.tmp)) fs.mkdirSync(this.paths.tmp, { recursive: true })
 
@@ -121,7 +121,7 @@ class SK_DAPP_Deeplink_win {
     }
 }
 
-class SK_DAPP_Deeplink_macos {
+class SK_DAPP_Deeplink_mac {
     constructor(opt){
         this.opt = opt
         this.sk = opt.sk
@@ -137,6 +137,6 @@ class SK_DAPP_Deeplink_macos {
     }
 
     monitor(){
-        //do nothing on macos
+        //do nothing on mac
     }
 }

@@ -20,7 +20,7 @@
 }
 
 
-.sk_ui_titlebar_actions_macos {
+.sk_ui_titlebar_actions_mac {
     left: 0px;
 }
 
@@ -74,27 +74,27 @@
 }
 
 
-/****  macos  ****/
+/****  mac  ****/
 
 :root {
-    --sk_ui_titlebar_color_button_close_macos    : rgb(236, 106, 84);
-    --sk_ui_titlebar_color_button_minimize_macos : rgb(244, 191, 79);
-    --sk_ui_titlebar_color_button_maximize_macos : rgb(97, 197, 83);
+    --sk_ui_titlebar_color_button_close_mac    : rgb(236, 106, 84);
+    --sk_ui_titlebar_color_button_minimize_mac : rgb(244, 191, 79);
+    --sk_ui_titlebar_color_button_maximize_mac : rgb(97, 197, 83);
 }
 
-.sk_ui_titlebar_actions_macos {
+.sk_ui_titlebar_actions_mac {
     left: 8px;
 }
 
-.sk_ui_titlebar_actions_macos > .sk_ui_titlebar_actions_button {
+.sk_ui_titlebar_actions_mac > .sk_ui_titlebar_actions_button {
     margin-right: 8px;
 }
 
-.sk_ui_titlebar_actions_macos:last-child {
+.sk_ui_titlebar_actions_mac:last-child {
     margin-right: 0px;
 }
 
-.sk_ui_titlebar_actions_button_macos {
+.sk_ui_titlebar_actions_button_mac {
     border-radius: 10px;
     width: 12px;
     height: 12px;
@@ -103,11 +103,11 @@
     
 }
 
-.sk_ui_titlebar_actions_button_macos:hover {
+.sk_ui_titlebar_actions_button_mac:hover {
     background-color: inherit !important;
 }
 
-.sk_ui_titlebar_actions_button_macos > .sk_ui_icon {
+.sk_ui_titlebar_actions_button_mac > .sk_ui_icon {
     font-size: 10px;
     opacity: 0;
     color: black;
@@ -115,15 +115,15 @@
     min-width: 10px !important;
     min-height: 10px !important;
 }
-.sk_ui_titlebar_actions_macos:hover > .sk_ui_titlebar_actions_button_macos > .sk_ui_icon {
+.sk_ui_titlebar_actions_mac:hover > .sk_ui_titlebar_actions_button_mac > .sk_ui_icon {
     opacity: 0.5;
 }
-.sk_ui_titlebar_actions_button_macos:active {
+.sk_ui_titlebar_actions_button_mac:active {
     opacity: 1 !important;
     filter: brightness(1.4);
 }
 
-.sk_ui_titlebar_actions_button_macos_maximize_arrow_container {
+.sk_ui_titlebar_actions_button_mac_maximize_arrow_container {
     position: relative;
     transform: rotate(-45deg);
     opacity: 0;
@@ -132,41 +132,41 @@
     width: 100%;
     height: 100%;
 }
-.sk_ui_titlebar_actions_macos:hover > .sk_ui_titlebar_actions_button_macos > .sk_ui_titlebar_actions_button_macos_maximize_arrow_container {
+.sk_ui_titlebar_actions_mac:hover > .sk_ui_titlebar_actions_button_mac > .sk_ui_titlebar_actions_button_mac_maximize_arrow_container {
     opacity: 0.5;
 }
 
-.sk_ui_titlebar_actions_button_macos_minimize > .sk_ui_icon  {
+.sk_ui_titlebar_actions_button_mac_minimize > .sk_ui_icon  {
     font-size: 8px;
     min-height: 4px !important;
     line-height: unset;
 }
 
-.sk_ui_titlebar_actions_button_macos_close {
-    background-color: var(--sk_ui_titlebar_color_button_close_macos);
+.sk_ui_titlebar_actions_button_mac_close {
+    background-color: var(--sk_ui_titlebar_color_button_close_mac);
 }
-.sk_ui_titlebar_actions_button_macos_close > .sk_ui_icon {
+.sk_ui_titlebar_actions_button_mac_close > .sk_ui_icon {
     margin-top: -1px !important;
     line-height: unset;
 }
 
-.sk_ui_titlebar_actions_button_macos_minimize {
-    background-color: var(--sk_ui_titlebar_color_button_minimize_macos);
+.sk_ui_titlebar_actions_button_mac_minimize {
+    background-color: var(--sk_ui_titlebar_color_button_minimize_mac);
 }
 
-.sk_ui_titlebar_actions_button_macos_maximize {
-    background-color: var(--sk_ui_titlebar_color_button_maximize_macos);
+.sk_ui_titlebar_actions_button_mac_maximize {
+    background-color: var(--sk_ui_titlebar_color_button_maximize_mac);
 }
 
 
-.sk_ui_titlebar_actions_button_macos_close:hover {
-    background-color: var(--sk_ui_titlebar_color_button_close_macos) !important;
+.sk_ui_titlebar_actions_button_mac_close:hover {
+    background-color: var(--sk_ui_titlebar_color_button_close_mac) !important;
 }
 
-.sk_ui_titlebar_actions_button_macos_minimize:hover {
-    background-color: var(--sk_ui_titlebar_color_button_minimize_macos) !important;
+.sk_ui_titlebar_actions_button_mac_minimize:hover {
+    background-color: var(--sk_ui_titlebar_color_button_minimize_mac) !important;
 }
 
-.sk_ui_titlebar_actions_button_macos_maximize:hover {
-    background-color: var(--sk_ui_titlebar_color_button_maximize_macos) !important;
+.sk_ui_titlebar_actions_button_mac_maximize:hover {
+    background-color: var(--sk_ui_titlebar_color_button_maximize_mac) !important;
 }

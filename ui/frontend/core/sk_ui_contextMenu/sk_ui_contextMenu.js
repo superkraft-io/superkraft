@@ -194,7 +194,7 @@ class sk_ui_contextMenu_shortcut extends sk_ui_component {
 
     setCombination(val){
         var shortcutStr = val
-        if (typeof val === 'object') shortcutStr = (sk.os === 'macos' ? val.macos : val.win)
+        if (typeof val === 'object') shortcutStr = (sk.os === 'mac' ? val.mac : val.win)
         var split = shortcutStr.toLowerCase().split('+')
 
         var specialCharacters = '^fn⇧⌥ctrlalt⌘'
@@ -214,8 +214,8 @@ class sk_ui_contextMenu_shortcut extends sk_ui_component {
         }
         if (split.includes('^'))     addSpecial('^')
         if (split.includes('ctrl')) addSpecial('Ctrl')
-        if (split.includes('shift')) addSpecial((sk.os === 'macos' ? '⇧' : 'Shift'))
-        if (split.includes('alt') || split.includes('option')) addSpecial((sk.os === 'macos' ? '⌥' : 'Alt'))
+        if (split.includes('shift')) addSpecial((sk.os === 'mac' ? '⇧' : 'Shift'))
+        if (split.includes('alt') || split.includes('option')) addSpecial((sk.os === 'mac' ? '⌥' : 'Alt'))
         if (split.includes('cmd') || split.includes('command')) addSpecial('⌘')
 
         var last = split[split.length - 1]

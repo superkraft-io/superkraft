@@ -8,7 +8,7 @@ module.exports = class SK_Dapp_InstanceMgr {
             tmp: global.sk.app.getPath('temp') + '\\' + this.appName + '\\'
         }
 
-        if (global.sk.info.sysInfo.os === 'macos') this.paths.tmp = this.paths.tmp.split('\\').join('//')
+        if (global.sk.info.sysInfo.os === 'mac') this.paths.tmp = this.paths.tmp.split('\\').join('//')
 
         if (!fs.existsSync(this.paths.tmp)) fs.mkdirSync(this.paths.tmp)
 

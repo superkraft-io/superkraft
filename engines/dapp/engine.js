@@ -20,7 +20,7 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
 
     getSysInfo(){
         var os = _os.platform()
-        if (os === 'darwin') os = 'macos'
+        if (os === 'darwin') os = 'mac'
         else os = 'win'
 
 
@@ -110,9 +110,9 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
 
 
             app.on('window-all-closed', () => {
-                // On macOS it is common for applications and their menu bar
+                // On mac it is common for applications and their menu bar
                 // to stay active until the user quits explicitly with Cmd + Q
-                /*if (this.sk.info.sysInfo.os !== 'macos'){
+                /*if (this.sk.info.sysInfo.os !== 'mac'){
                     app.exit()
                 }
                 */
@@ -122,7 +122,7 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
             
             /*
             app.on('activate', () => {
-                // On macOS it's common to re-create a window in the
+                // On mac it's common to re-create a window in the
                 // app when the dock icon is clicked and there are no
                 // other windows open.
                 if (BrowserWindow.getAllWindows().length === 0){

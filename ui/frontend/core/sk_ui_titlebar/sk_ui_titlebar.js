@@ -10,7 +10,7 @@ class sk_ui_titlebar extends sk_ui_component {
         
         this.attributes.add({friendlyName: 'OS', name: 'os', type: 'string', onSet: val =>{
             var os = 'windows'
-            if (val.indexOf('macos') > -1) os = 'macos'
+            if (val.indexOf('mac') > -1) os = 'mac'
 
             this.classAdd('sk_ui_titlebar_' + os)
 
@@ -157,13 +157,13 @@ class sk_ui_titlebar_actions extends sk_ui_component {
         }
     }
 
-    configureFor_macos(){
+    configureFor_mac(){
         this.minimize.moveBefore(this.maximize)
         
         this.maximize._icon.remove()
         
         this.maximize.add.component(_c => {
-            _c.classAdd('sk_ui_titlebar_actions_button_macos_maximize_arrow_container')
+            _c.classAdd('sk_ui_titlebar_actions_button_mac_maximize_arrow_container')
             _c.compact = true
 
             this.maximize.arrow_top_left = _c.add.component(_c => {
@@ -222,6 +222,6 @@ class sk_ui_titlebar_actions_button extends sk_ui_button {
     configureFor_windows(os, action){
     }
 
-    configureFor_macos(os, action){
+    configureFor_mac(os, action){
     }
 }

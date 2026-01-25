@@ -76,7 +76,7 @@ class SK_Commands {
                 if (!cmd.shortcut) continue
                 
                 var cmdShortcut = cmd.shortcut
-                if (typeof cmdShortcut === 'object') cmdShortcut = (sk.os === 'macos' ? cmd.shortcut.macos : cmd.shortcut.win)
+                if (typeof cmdShortcut === 'object') cmdShortcut = (sk.os === 'mac' ? cmd.shortcut.mac : cmd.shortcut.win)
                 
                 cmdShortcut = cmdShortcut.toLowerCase()
 
