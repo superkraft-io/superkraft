@@ -62,10 +62,10 @@ class sk_ui_listItem extends sk_ui_button {
         this.classAdd('_hidden_visibility')
         setTimeout(()=>{
             this.classRemove('_hidden_height')
-        setTimeout(()=>{
-            this.classRemove('_hidden_visibility')
-            this.classAdd('sk_ui_listItem_created')
-        }, 100)
+            setTimeout(()=>{
+                this.classRemove('_hidden_visibility')
+                this.classAdd('sk_ui_listItem_created')
+            }, 100)
         }, 10)
     }
 
