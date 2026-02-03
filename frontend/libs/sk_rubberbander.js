@@ -10,6 +10,12 @@ class SK_Rubberband {
 
         this.allowScrollX = true;
         this.allowScrollY = true;
+
+        // Anchor points for content smaller than viewport
+        // Options: 'left', 'center', 'right' for X
+        //          'top', 'center', 'bottom' for Y
+        this.anchorX = 'left';
+        this.anchorY = 'top';
         
         this.lastDragTime = 0;
 
@@ -50,6 +56,27 @@ class SK_Rubberband {
         this.onPositionCalculated(x, y);
     }
 
+    getAnchorOffset(axis, viewportSize, contentSize) {
+        const anchor = axis === 'x' ? this.anchorX : this.anchorY;
+        const diff = viewportSize - contentSize;
+
+        if (axis === 'x') {
+            switch (anchor) {
+                case 'left': return 0;
+                case 'center': return diff / 2;
+                case 'right': return diff;
+                default: return diff / 2; // default to center
+            }
+        } else {
+            switch (anchor) {
+                case 'top': return 0;
+                case 'center': return diff / 2;
+                case 'bottom': return diff;
+                default: return diff / 2; // default to center
+            }
+        }
+    }
+
     updateSize(viewportWidth, viewportHeight, contentWidth, contentHeight) {
         this.viewportWidth = viewportWidth;
         this.viewportHeight = viewportHeight;
@@ -62,7 +89,7 @@ class SK_Rubberband {
         if (!this.canScrollX || !this.canScrollY) {
             if (!this.canScrollX){
                 if (this.contentWidth < this.viewportWidth){
-                    this.tweenX.current = 0;
+                    this.tweenX.current = this.getAnchorOffset('x', this.viewportWidth, this.contentWidth);
                 } else {
                     var diffFromRight = this.contentWidth - (this.viewportWidth - (this.tweenX.current || 0));
                     if (diffFromRight < 0) {
@@ -74,7 +101,7 @@ class SK_Rubberband {
 
             if (!this.canScrollY){
                 if (this.contentHeight < this.viewportHeight){
-                    this.tweenY.current = 0;
+                    this.tweenY.current = this.getAnchorOffset('y', this.viewportHeight, this.contentHeight);
                 } else {
                     var diffFromBottom = this.contentWidth - (this.viewportHeight - (this.tweenY.current || 0));
                     if (diffFromBottom < 0) {
@@ -187,7 +214,7 @@ class SK_Rubberband {
                 diff.x = minX - dampingFactor * this.overshootX * (1 - Math.exp(-overshoot / this.overshootX));
             }
         } else {
-            diff.x = 0
+            diff.x = this.getAnchorOffset('x', this.viewportWidth, this.contentWidth);
         }
 
         
@@ -200,7 +227,7 @@ class SK_Rubberband {
                 diff.y = minY - dampingFactor * this.overshootY * (1 - Math.exp(-overshoot / this.overshootY));
             }
         } else {
-            diff.y = 0
+            diff.y = this.getAnchorOffset('y', this.viewportHeight, this.contentHeight);
         }
 
         // calculate velocity

@@ -284,6 +284,16 @@ class sk_ui_iceRink extends sk_ui_component {
 
         this.attributes.add({friendlyName: 'Auto Height', name: 'autoHeight', type: 'bool'})
 
+        this.attributes.add({friendlyName: 'Anchor X', name: 'anchorX', type: 'string',
+            onSet: val => { this.scroller.anchorX = val },
+            onGet: ()=>{ return this.scroller.anchorX }
+        })
+
+        this.attributes.add({friendlyName: 'Anchor Y', name: 'anchorY', type: 'string',
+            onSet: val => { this.scroller.anchorY = val },
+            onGet: ()=>{ return this.scroller.anchorY }
+        })
+
         //Notify deprecated functions and attributes
         
 
