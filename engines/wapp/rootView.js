@@ -86,7 +86,18 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
             this.sk.app.get(this.info.route, async (req, res)=>{
                 //this.sk.stats.increment({type: 'get', route: this.info.route})
-                
+
+                if (this.onPreNavigate){
+                    try {
+                        var onPreNavigateRes = await this.onPreNavigate(req)
+                        if (onPreNavigateRes){
+                            if (onPreNavigateRes.redirect) return res.redirect(onPreNavigateRes.redirect)
+                        }
+                    } catch(err) {
+                        console.error(err)
+                    }
+                }
+
                 var auth_token = req.cookies.auth_token
 
                 if (this.onValidate){
