@@ -156,11 +156,11 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
 
         if (this.sk.onAppReady) this.sk.onAppReady()
 
-        if (uIOhook){
-            uIOhook.on('mouseup', _e => {
+        if (global.uIOhook){
+            global.uIOhook.on('mouseup', _e => {
                 for (var vid in this.sk.info.views) this.sk.info.views[vid].handleMouseUp()
             })
-            uIOhook.start()
+            global.uIOhook.start()
         }
     }
 
