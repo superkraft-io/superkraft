@@ -8,8 +8,6 @@ app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 
 var _os = require('os')
 
-const {uIOhook, UiohookKey} = require('uiohook-napi')
-
 global.ejse = require('ejs-electron')
 
 module.exports = class SK_LocalEngine extends SK_RootEngine {
@@ -73,6 +71,15 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
             this.sk._os = _os
             this.sk.app = app
             this.app = app
+
+
+            if (global.useUIOHookNAPI){
+                const {uIOhook, UiohookKey} = require('uiohook-napi')
+                global.uIOhook = uIOhook
+                global.UiohookKey = UiohookKey
+            }
+
+
 
             app.post = ()=>{} //dummy, to override rootEngine POST loader. POs are loaded  in this current init() function, below
             
@@ -149,10 +156,12 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
 
         if (this.sk.onAppReady) this.sk.onAppReady()
 
-        uIOhook.on('mouseup', _e => {
-            for (var vid in this.sk.info.views) this.sk.info.views[vid].handleMouseUp()
-        })
-        uIOhook.start()
+        if (uIOhook){
+            uIOhook.on('mouseup', _e => {
+                for (var vid in this.sk.info.views) this.sk.info.views[vid].handleMouseUp()
+            })
+            uIOhook.start()
+        }
     }
 
     on(cmd, cb){
