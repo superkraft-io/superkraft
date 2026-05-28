@@ -1,7 +1,7 @@
 const fs = require('fs')
 
 var _electron = require('electron')
-const { app } = _electron
+const { app, nativeImage } = _electron
 
 // Enable video autoplay without user gesture
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
@@ -149,6 +149,12 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
 
     async waitForReady(){
         await app.whenReady()
+
+        if (process.platform === 'darwin' && app.dock && this.sk.info.paths.icons.app) {
+            const dockIcon = nativeImage.createFromPath(this.sk.info.paths.icons.app)
+            if (!dockIcon.isEmpty()) app.dock.setIcon(dockIcon)
+        }
+
         ejse.listen()
     
         this.deeplink = new (require('./modules/sk_dapp_deeplink.js'))({sk: this.sk})

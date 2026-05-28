@@ -49,7 +49,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             
             var doShow = this.info.show || false
             var defOpts = {
-                icon: __dirname + '/app/assets/img/icon.png',
+                icon: this.sk.info.paths.icons.app,
                 width: 1024,
                 height: 750,
                 webPreferences: {
