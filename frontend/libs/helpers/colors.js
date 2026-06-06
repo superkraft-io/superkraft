@@ -83,7 +83,7 @@ class SK_Helpers_Color {
     }
 
     rgbComponentsToRGB(rgba){
-        return `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a || 1})`
+        return `rgba(${rgba.r},${rgba.g},${rgba.b},${(rgba.a !== undefined ? rgba.a : 1)})`
     }
 
     rgbComponentsToHEX(rgb){
