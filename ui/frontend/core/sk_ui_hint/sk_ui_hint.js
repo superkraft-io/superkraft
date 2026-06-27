@@ -46,7 +46,7 @@ class sk_ui_hint extends sk_ui_component {
     }
 
     set content(val){
-        this.label.text = val
+        this.label.element.innerHTML = val
     }
 
     resetAutoHide(duration = 3000){
