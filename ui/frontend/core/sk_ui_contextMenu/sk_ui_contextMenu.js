@@ -621,20 +621,92 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
             })
         }
 
-        
+        var ignoreMouseEvent = ()=> {
+            return this.__ignoreMouseEventsUntil && this.__ignoreMouseEventsUntil > Date.now()
+        }
 
-        this.element.addEventListener('click', _e => {
-            if (this.stop)
+        var notifyItemClicked = _e => {
             if (this.opt.items) return _e.stopPropagation()
             if (!this.opt.bypassOnClick) this.cmParent._onItemClicked(this.opt)
-        })
+        }
 
-        this.element.addEventListener('mouseup', _e => {
+        var activateItem = _e => {
             if (this.opt.items || this.submenu) return _e.stopPropagation()
             if (!this.parent.canClose) return
             if (this.opt.onClick) this.opt.onClick(this.opt)
             sk.ums.broadcast('sk_ui_contextMenu', undefined, {hide: true})
+        }
+
+        var openSubmenu = ()=> {
+            this.parentMenu.closeSubmenus({ignore: this.submenuID})
+            if (!this.opt.items) return
+            if (this.submenu) return
+
+            var rect = this.rect
+
+            clearTimeout(this.closeTimer)
+            clearTimeout(this.showTimer)
+            sk.app.add.contextMenu(async _c => {
+                this.submenuID = _c.uuid
+                _c.cmParent = this.cmParent
+                _c.parentMenu = this.parentMenu
+                _c.parentItem = this
+                _c.isSubmenu = true
+                _c.submenuDirection = this.parent.submenuDirection
+                _c.items = this.opt.items
+                _c.position = {x: rect.left + rect.width, y: rect.top - 6}
+
+                clearTimeout(this.showTimer)
+                this.showTimer = setTimeout(()=>{
+                    _c.show()
+                }, 150)
+            })
+        }
+
+        this.element.addEventListener('click', _e => {
+            if (ignoreMouseEvent()) return _e.stopPropagation()
+            if (this.stop)
+            notifyItemClicked(_e)
         })
+
+        this.element.addEventListener('mouseup', _e => {
+            if (ignoreMouseEvent()) return _e.stopPropagation()
+            activateItem(_e)
+        })
+
+        if (sk.isOnMobile){
+            var touchDragged = false
+
+            this.element.addEventListener('touchstart', _e => {
+                this.__touchStartPos = sk.interactions.getPos(_e, true)
+                touchDragged = false
+            })
+
+            this.element.addEventListener('touchmove', _e => {
+                if (!this.__touchStartPos) return
+
+                var pos = sk.interactions.getPos(_e, true)
+                var diffX = Math.abs(pos.x - this.__touchStartPos.x)
+                var diffY = Math.abs(pos.y - this.__touchStartPos.y)
+
+                if (diffX < 3 && diffY < 3) return
+                touchDragged = true
+            })
+
+            this.element.addEventListener('touchend', _e => {
+                this.__ignoreMouseEventsUntil = Date.now() + 500
+
+                if (touchDragged) return
+
+                _e.preventDefault()
+                _e.stopPropagation()
+
+                if (this.opt.items) return openSubmenu()
+
+                notifyItemClicked(_e)
+                activateItem(_e)
+            })
+        }
 
         if (this.opt.items){
             this.classRemove('sk_ui_contextMenu_Item_interactable')
@@ -654,29 +726,7 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
         
             
         this.element.addEventListener('mouseenter', _e => {
-            this.parentMenu.closeSubmenus({ignore: this.submenuID})
-            if (!this.opt.items) return
-            if (this.submenu) return
-
-            var rect = this.rect
-
-            clearTimeout(this.closeTimer)
-            clearTimeout(this.showTimer)
-            sk.app.add.contextMenu(async _c => {
-                this.submenuID = _c.uuid
-                _c.cmParent = this.cmParent
-                _c.parentMenu = this.parentMenu
-                _c.parentItem = this
-                _c.isSubmenu = true
-                _c.submenuDirection = this.parent.submenuDirection
-                _c.items = this.opt.items
-                _c.position = {x: rect.left + rect.width, y: rect.top - 6}
-                
-                clearTimeout(this.showTimer)
-                this.showTimer = setTimeout(()=>{
-                    _c.show()
-                }, 150)
-            })
+            openSubmenu()
         })
 
         if (this.opt.onAfterCreated) this.opt.onAfterCreated(this)
