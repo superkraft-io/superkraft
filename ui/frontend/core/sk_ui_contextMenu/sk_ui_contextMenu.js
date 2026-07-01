@@ -339,8 +339,6 @@ class sk_ui_contextMenu extends sk_ui_component {
     }
 
     close(opt){
-        console.log('closing menu')
-
         this.closeOpt = opt
         if (this.parentItem){
             this.parentItem.classRemove('sk_ui_contextMenu_Item_submenuExpanded')
@@ -403,8 +401,6 @@ class sk_ui_contextMenu extends sk_ui_component {
     }
 
     show(opt = {}){
-        console.log('showing menu')
-
         return new Promise(async resolve => {
 
             if (this.parentItem) this.parentItem.classAdd('sk_ui_contextMenu_Item_submenuExpanded')
