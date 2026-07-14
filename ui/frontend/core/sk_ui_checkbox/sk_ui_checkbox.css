@@ -15,7 +15,8 @@
 }
 
 .sk_ui_checkbox_iconContainer {
-    border: solid 1px var(--sk_ui_text_color);
+    background-color: var(--sk_ui_color_dark_grey);
+    border: solid 1px var(--sk_ui_color_grey_4);
     border-radius: 4px;
 }
 

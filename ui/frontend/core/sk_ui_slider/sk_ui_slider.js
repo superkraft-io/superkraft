@@ -31,6 +31,13 @@ class sk_ui_slider extends sk_ui_component {
             _c.animate = false
         })
 
+        this.secondThumb = this.add.component(_c => {
+            _c.classAdd('sk_ui_slider_thumb')
+            _c.style.left = '0px'
+            _c.style.display = 'none'
+            _c.animate = false
+        })
+
 
         var mouseUpHandler = async _e => {
             sk.interactions.unblock()
@@ -38,8 +45,9 @@ class sk_ui_slider extends sk_ui_component {
             this.mdPos = undefined
             this.bypassTween = false
             this.hasMoved = false
+            this.__rangeDragOffset = undefined
 
-            if (this.onChangedEnd) this.onChangedEnd(this.value)
+            if (this.onChangedEnd) this.onChangedEnd(this.__rangeMode ? this.getRange() : this.value)
             this.__onChangeStart_notified = false
 
             this.element.removeEventListener('mouseup', mouseUpHandler)
@@ -61,6 +69,24 @@ class sk_ui_slider extends sk_ui_component {
 
             _e.preventDefault()
             _e.stopPropagation()
+
+            if (this.__rangeMode) {
+                var rangeMousePos = sk.interactions.getPos(_e)
+                var rangePosition = !this.vertical
+                    ? rangeMousePos.x - this.rect.left
+                    : rangeMousePos.y - this.rect.top
+                var rangeValue = this.positionToValue(!this.vertical
+                    ? rangePosition - (this.__rangeDragOffset || 0)
+                    : rangePosition - (this.__rangeDragOffset || 0))
+
+                if (this.__rangeDragThumb === 'start') this.setRange(rangeValue, this.__rangeEnd)
+                else this.setRange(this.__rangeStart, rangeValue)
+
+                if (!this.__onChangeStart_notified && this.onChangedStart) this.onChangedStart(this.getRange())
+                this.__onChangeStart_notified = true
+                sk.interactions.block()
+                return
+            }
 
 
             var mousePos = sk.interactions.getPos(_e)
@@ -117,6 +143,18 @@ class sk_ui_slider extends sk_ui_component {
 
             this.mdPos = sk.interactions.getPos(_e)
 
+            if (this.__rangeMode) {
+                var rangeMousePos = this.mdPos
+                var rangePosition = !this.vertical
+                    ? rangeMousePos.x - this.rect.left
+                    : rangeMousePos.y - this.rect.top
+                var thumbPositions = this.getRangeThumbPositions()
+                this.__rangeDragThumb = Math.abs(rangePosition - thumbPositions.start) <= Math.abs(rangePosition - thumbPositions.end)
+                    ? 'start'
+                    : 'end'
+                this.__rangeDragOffset = rangePosition - thumbPositions[this.__rangeDragThumb]
+            }
+
             this.originalPos = {
                 x: this.lineColorBar.rect.width,
                 y: this.lineColorBar.rect.height
@@ -159,6 +197,18 @@ class sk_ui_slider extends sk_ui_component {
         
         this.attributes.add({friendlyName: 'Value', name: 'value', type: 'number', onSet: val => {
             this.setValue(val)
+        }})
+
+        this.attributes.add({friendlyName: 'Range', name: 'range', type: 'bool', onSet: val => {
+            this.setRangeMode(val)
+        }})
+        this.attributes.add({friendlyName: 'Range Start', name: 'rangeStart', type: 'number', onSet: val => {
+            this.__rangeStart = val
+            if (this.__rangeMode) this.setRange(val, this.__rangeEnd)
+        }})
+        this.attributes.add({friendlyName: 'Range End', name: 'rangeEnd', type: 'number', onSet: val => {
+            this.__rangeEnd = val
+            if (this.__rangeMode) this.setRange(this.__rangeStart, val)
         }})
 
         this.attributes.add({friendlyName: 'Step', name: 'step', type: 'number', onSet: val => {  }})
@@ -227,6 +277,126 @@ class sk_ui_slider extends sk_ui_component {
                 }
             }, 100)
         }
+    }
+
+    getSliderMetrics(){
+        var thumbSize = !this.vertical ? this.thumb.rect.width : this.thumb.rect.height
+        var size = !this.vertical ? this.rect.width : this.rect.height
+        var halfThumbSize = thumbSize / 2
+
+        return {
+            size,
+            halfThumbSize,
+            minPos: this.centerOrigin ? 0 : halfThumbSize,
+            maxPos: size - (this.centerOrigin ? 0 : halfThumbSize)
+        }
+    }
+
+    valueToPosition(value){
+        var metrics = this.getSliderMetrics()
+        return sk.utils.map(value, this.min, this.max, metrics.minPos, metrics.maxPos)
+    }
+
+    positionToValue(position){
+        var metrics = this.getSliderMetrics()
+        var clampedPosition = Math.max(metrics.minPos, Math.min(metrics.maxPos, position))
+        return sk.utils.map(clampedPosition, metrics.minPos, metrics.maxPos, this.min, this.max)
+    }
+
+    normalizeRangeValue(value){
+        var normalizedValue = Math.max(this.min, Math.min(this.max, Number(value)))
+        if (!Number.isFinite(normalizedValue)) normalizedValue = this.min
+        if (this.step && this.step > 0) {
+            normalizedValue = this.min + Math.round((normalizedValue - this.min) / this.step) * this.step
+        }
+        return normalizedValue
+    }
+
+    setRangeMode(enabled){
+        this.__rangeMode = !!enabled
+        this.secondThumb.style.display = this.__rangeMode ? '' : 'none'
+        this.thumb.classRemove('sk_ui_slider_thumb_rangeStart')
+        this.secondThumb.classRemove('sk_ui_slider_thumb_rangeEnd')
+
+        if (this.__rangeMode) {
+            this.thumb.classAdd('sk_ui_slider_thumb_rangeStart')
+            this.secondThumb.classAdd('sk_ui_slider_thumb_rangeEnd')
+        }
+
+        if (this.__rangeMode) {
+            this.observeRangeLayout()
+            if (!Number.isFinite(this.__rangeStart)) this.__rangeStart = this.min
+            if (!Number.isFinite(this.__rangeEnd)) this.__rangeEnd = this.max
+            this.setRange(this.__rangeStart, this.__rangeEnd)
+        } else {
+            this.lineColorBar.style.left = '0px'
+            this.setValue(this.__value === undefined ? this.min : this.__value)
+        }
+    }
+
+    observeRangeLayout(){
+        if (this.__rangeResizeObserver || typeof ResizeObserver === 'undefined') return
+
+        this.__rangeResizeObserver = new ResizeObserver(()=> {
+            if (this.__rangeMode) this.updateRangePositions(false)
+        })
+        this.__rangeResizeObserver.observe(this.element)
+    }
+
+    setRange(start, end){
+        if (!this.__rangeMode) return
+
+        var normalizedStart = this.normalizeRangeValue(start)
+        var normalizedEnd = this.normalizeRangeValue(end)
+        if (normalizedStart > normalizedEnd) {
+            if (this.__rangeDragThumb === 'start') normalizedStart = normalizedEnd
+            else normalizedEnd = normalizedStart
+        }
+
+        this.__rangeStart = normalizedStart
+        this.__rangeEnd = normalizedEnd
+        this.updateRangePositions()
+    }
+
+    getRange(){
+        return {
+            min: this.__rangeStart,
+            max: this.__rangeEnd
+        }
+    }
+
+    getRangeThumbPositions(){
+        var startPosition = this.valueToPosition(this.__rangeStart)
+        var endPosition = this.valueToPosition(this.__rangeEnd)
+        var metrics = this.getSliderMetrics()
+        var halfThumbSize = metrics.halfThumbSize
+        var thumbSize = halfThumbSize * 2
+        var overlapOffset = Math.max(0, (thumbSize - (endPosition - startPosition)) / 2)
+        var startOffset = Math.min(overlapOffset, startPosition - metrics.minPos)
+        var endOffset = Math.min(overlapOffset, metrics.maxPos - endPosition)
+
+        return {
+            start: startPosition - startOffset,
+            end: endPosition + endOffset,
+            startPosition,
+            endPosition,
+            halfThumbSize
+        }
+    }
+
+    updateRangePositions(notify = true){
+        if (!this.__rangeMode) return
+
+        var positions = this.getRangeThumbPositions()
+        var positionProperty = !this.vertical ? 'left' : 'top'
+        var sizeProperty = !this.vertical ? 'width' : 'height'
+
+        this.thumb.style[positionProperty] = positions.start - positions.halfThumbSize + 'px'
+        this.secondThumb.style[positionProperty] = positions.end - positions.halfThumbSize + 'px'
+        this.lineColorBar.style[positionProperty] = positions.startPosition + 'px'
+        this.lineColorBar.style[sizeProperty] = Math.max(0, positions.endPosition - positions.startPosition) + 'px'
+
+        if (notify && this.onRangeChanged) this.onRangeChanged(this.getRange())
     }
 
     updatePos(pos){
