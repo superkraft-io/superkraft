@@ -91,6 +91,47 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
                     if (msg.cmd === 'terminate') app.quit()
                 }
             })
+
+            // `wscb` throws if a message arrives for an unregistered command.
+            // In startup races this can happen before handlers are attached.
+            var _handleExpectation = wscb.handleExpectation.bind(wscb)
+            wscb.handleExpectation = (t, json, conn = undefined) => {
+                var trigger = undefined
+                if (t && t.triggers) trigger = t.triggers[json.cmd]
+
+                if (!trigger || typeof trigger.doHandle !== 'function'){
+                    if (t && t.options && typeof t.options.onUnexpectedMessage === 'function'){
+                        try {
+                            t.options.onUnexpectedMessage({
+                                ...json,
+                                error: 'unknown_command'
+                            })
+                        } catch(err) {
+                            console.error(err)
+                        }
+                    } else {
+                        console.warn('[wscb] Unknown command:', json.cmd)
+                    }
+
+                    if (conn && json && json.puid){
+                        try {
+                            t.send({
+                                puid: json.puid,
+                                rejected: true,
+                                error: 'unknown_command',
+                                cmd: json.cmd
+                            }, undefined, undefined, conn)
+                        } catch(err) {
+                            console.error(err)
+                        }
+                    }
+
+                    return
+                }
+
+                _handleExpectation(t, json, conn)
+            }
+
             this.sk.wscb = wscb
 
 
