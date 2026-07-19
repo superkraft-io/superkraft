@@ -1594,6 +1594,7 @@ class sk_ui_resizableizer {
 
         this.__border = 6
         this.sides = {}
+        this.constrainToParent = false
 
         this.allowedSides = {
             left: true,
@@ -1694,16 +1695,37 @@ class sk_ui_resizableizer {
                 if (this.constraints.width){
                     if (this.constraints.width.min && newSize.w < this.constraints.width.min) newSize.w = this.constraints.width.min
                     if (this.constraints.width.max && newSize.w > this.constraints.width.max) newSize.w = this.constraints.width.max
-
-                    
-                    if (this.constraints.width.max !== undefined && this.constraints.width.max !== Infinity && newSize.w >= this.parent.parent.rect.width - newPos.x) newSize.w = this.parent.parent.rect.width - newPos.x
                 }
 
                 if (this.constraints.height){
                     if (this.constraints.height.min && newSize.h < this.constraints.height.min) newSize.h = this.constraints.height.min
                     if (this.constraints.height.max && newSize.h > this.constraints.height.max) newSize.h = this.constraints.height.max
+                }
+            }
 
-                    if (this.constraints.heigh.max !== undefined && this.constraints.heigh.max !== Infinity && newSize.h >= this.parent.parent.rect.heigh - newPos.y) newSize.h = this.parent.parent.rect.heigh - newPos.y
+            if (this.sides.left){
+                newPos.x = this.originalPos.x + this.originalSize.w - newSize.w
+            }
+            if (this.sides.top){
+                newPos.y = this.originalPos.y + this.originalSize.h - newSize.h
+            }
+
+            if (this.constrainToParent){
+                var parentRect = this.parent.parent.rect
+
+                if (this.sides.left && newPos.x < 0){
+                    newSize.w += newPos.x
+                    newPos.x = 0
+                }
+                if (this.sides.top && newPos.y < 0){
+                    newSize.h += newPos.y
+                    newPos.y = 0
+                }
+                if (this.sides.right && newPos.x + newSize.w > parentRect.width){
+                    newSize.w = parentRect.width - newPos.x
+                }
+                if (this.sides.bottom && newPos.y + newSize.h > parentRect.height){
+                    newSize.h = parentRect.height - newPos.y
                 }
             }
 

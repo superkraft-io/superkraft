@@ -8,6 +8,39 @@ class sk_ui_titlebar extends sk_ui_component {
 
         this.vertical = 'none'
         
+
+
+        if (opt.extraOpt && opt.extraOpt.localizedActions){
+            this.sk_api = {
+                window: {
+                    close: ()=>{ this.handleOnClose() },
+
+                    on: ()=>{},
+
+                    isMaximized: async ()=>false,
+                    isFullScreen: async ()=>false,
+                    maximize: ()=>{
+                        this.maximized = true
+                        this.handleOnMaximize()
+                    },
+                    unmaximize: ()=>{
+                        this.maximized = false
+                        this.handleOnUnmaximize()
+                    }
+                },
+                staticInfo: {
+                    application: {
+                        name: opt.extraOpt.title
+                    }
+                }
+            }
+        } else {
+            this.sk_api = sk_api
+        }
+
+
+
+
         this.attributes.add({friendlyName: 'OS', name: 'os', type: 'string', onSet: val =>{
             var os = 'windows'
             if (val.indexOf('mac') > -1) os = 'mac'
@@ -15,8 +48,8 @@ class sk_ui_titlebar extends sk_ui_component {
             this.classAdd('sk_ui_titlebar_' + os)
 
             
-            this._actions = this.add.fromClass(sk_ui_titlebar_actions, _c => _c.configureForOS(os))
-            this._title   = this.add.fromClass(sk_ui_titlebar_title)
+            this._actions = this.add.fromClass(sk_ui_titlebar_actions, _c => _c.configureForOS(os), {sk_api: this.sk_api})
+            this._title   = this.add.fromClass(sk_ui_titlebar_title, _c => {}, {sk_api: this.sk_api})
         }})
 
         this.attributes.add({friendlyName: 'Closable', name: 'closable', type: 'bool', onSet: val =>{
@@ -53,23 +86,25 @@ class sk_ui_titlebar extends sk_ui_component {
             }
         }})
 
+
+
         this.attributes.add({friendlyName: 'Title', name: 'title', type: 'string', onSet: val =>{
             this._title.label.text = val
         }})
 
-        sk_api.window.on('maximize', _e => {
+        this.sk_api.window.on('maximize', _e => {
             if (this._actions.maximize.handleMaximized) this._actions.maximize.handleMaximized()
         })
 
-        sk_api.window.on('enter-full-screen', _e => {
+        this.sk_api.window.on('enter-full-screen', _e => {
             if (this._actions.maximize.handleMaximized) this._actions.maximize.handleMaximized()
         })
 
-        sk_api.window.on('unmaximize', _e => {
+        this.sk_api.window.on('unmaximize', _e => {
             if (this._actions.maximize.handleUnmaximized) this._actions.maximize.handleUnmaximized()
         })
 
-        sk_api.window.on('leave-full-screen', _e => {
+        this.sk_api.window.on('leave-full-screen', _e => {
             if (this._actions.maximize.handleUnmaximized) this._actions.maximize.handleUnmaximized()
         })
     }
@@ -78,6 +113,8 @@ class sk_ui_titlebar extends sk_ui_component {
 class sk_ui_titlebar_title extends sk_ui_component {
     constructor(opt){
         super(opt)
+
+        this.sk_api = opt.extraOpt.sk_api
 
         this.styling += ' fullheight'
         this.vertical = false
@@ -89,7 +126,7 @@ class sk_ui_titlebar_title extends sk_ui_component {
         
         this.label = this.add.label(_c => {
             _c.canMoveView = true
-            _c.text = sk_api.staticInfo.application.name
+            _c.text = this.sk_api.staticInfo.application.name
         })
     }
 }
@@ -97,6 +134,8 @@ class sk_ui_titlebar_title extends sk_ui_component {
 class sk_ui_titlebar_actions extends sk_ui_component {
     constructor(opt){
         super(opt)
+        
+        this.sk_api = opt.extraOpt.sk_api
 
         this.styling += ' fullheight'
         this.vertical = false
@@ -105,18 +144,18 @@ class sk_ui_titlebar_actions extends sk_ui_component {
             _c.classAdd('sk_ui_titlebar_actions_button_closeBtn');
             _c.icon = 'close'
             _c.onClick = ()=>{
-                sk_api.window.close()
+                this.sk_api.window.close()
             }
         })
 
         this.maximize = this.add.fromClass(sk_ui_titlebar_actions_button, _c => {
             _c.classAdd('sk_ui_titlebar_actions_button_maximizeBtn')
             _c.onClick = async ()=>{
-                var isMaximized = await sk_api.window.isMaximized()
-                var isFullscreen = await sk_api.window.isFullScreen()
+                var isMaximized = await this.sk_api.window.isMaximized()
+                var isFullscreen = await this.sk_api.window.isFullScreen()
 
-                if (!isMaximized && !isFullscreen) sk_api.window.maximize()
-                else sk_api.window.unmaximize()
+                if (!isMaximized && !isFullscreen) this.sk_api.window.maximize()
+                else this.sk_api.window.unmaximize()
             }
         })
 
@@ -124,7 +163,7 @@ class sk_ui_titlebar_actions extends sk_ui_component {
             _c.classAdd('sk_ui_titlebar_actions_button_minimizeBtn');
             _c.icon = 'window minimize outline'
             _c.onClick = ()=>{
-                sk_api.window.minimize()
+                this.sk_api.window.minimize()
             }
         })
     }
