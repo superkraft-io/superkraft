@@ -661,7 +661,6 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
 
         this.element.addEventListener('click', _e => {
             if (ignoreMouseEvent()) return _e.stopPropagation()
-            if (this.stop)
             notifyItemClicked(_e)
         })
 
