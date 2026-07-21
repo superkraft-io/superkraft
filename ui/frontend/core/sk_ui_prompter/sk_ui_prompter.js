@@ -3,7 +3,7 @@ class sk_ui_prompter extends sk_ui_modal {
         super(opt)
 
         this.header = this.content.add.label(_c => {
-            _c.marginRight = 128
+            _c.styling += ' fullwidth'
             _c.size = 18
         })
 

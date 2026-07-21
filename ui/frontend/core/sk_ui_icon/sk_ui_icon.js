@@ -21,7 +21,9 @@ class sk_ui_icon extends sk_ui_component {
         this.iconElement = this.element
         this.style.pointerEvents = 'none'
 
-        
+        this.tryFitIconForSize = ()=> {
+            this.iconElement.style.lineHeight = this.size <= 11 ? 'unset' : '1'
+        }
 
         this.attributes.add({friendlyName: 'Ignore Icon Def.', name: 'ignoreIconDefinition', type: 'bool'})
         
@@ -54,6 +56,7 @@ class sk_ui_icon extends sk_ui_component {
             }
 
             if (this.onChanged) this.onChanged()
+            this.tryFitIconForSize()
 
             if (this.type === 'svg'){
                 //this.element.setAttribute('src', val)
@@ -127,6 +130,7 @@ class sk_ui_icon extends sk_ui_component {
             this.iconElement.style.fontSize  = val + 'px'
             this.iconElement.style.minWidth  = val + 'px'
             this.iconElement.style.minHeight = val + 'px'
+            this.tryFitIconForSize()
 
             if (this.type === 'svg'){
                 if (this.svgLoading) await this.awaitSVGLoaded()

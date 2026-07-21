@@ -21,6 +21,12 @@ class SK_ContextMenu {
 
     get position(){ return this.__position }
 
+    set minWidth(val){
+        this.__minWidth = val
+    }
+
+    get minWidth(){ return this.__minWidth }
+
     set button(val){ this.__button = val }
 
 
@@ -140,15 +146,25 @@ class SK_ContextMenu {
             this.menu = undefined
         }
 
+        var minWidth = this.__minWidth instanceof Function ? await this.__minWidth() : this.__minWidth
+
         this.menu = sk.app.add.contextMenu(_c => {
             _c.cmParent = this
             _c.items = items
             _c.position = this.__position || sk.interactions.getPos(opt._e)
+            if (minWidth !== undefined) _c.style.minWidth = typeof minWidth === 'number' ? minWidth + 'px' : minWidth
             
         })
 
         sk.menus.push(this.menu)
 
+        this.escapeKeyCloser = event => {
+            if (event.key !== 'Escape') return
+            event.preventDefault()
+            event.stopImmediatePropagation()
+            if (this.menu) this.menu.close({fromEscape: true})
+        }
+        document.addEventListener('keydown', this.escapeKeyCloser, true)
         
         this.menu.show(opt)
 
@@ -161,7 +177,11 @@ class SK_ContextMenu {
         if (this.onShow) this.onShow(this.menu)
     }
 
-    onMenuHide(opt){
+    onMenuHide(opt, menu){
+        if ((!menu || menu === this.menu) && this.escapeKeyCloser) {
+            document.removeEventListener('keydown', this.escapeKeyCloser, true)
+            this.escapeKeyCloser = undefined
+        }
         this.parent.classRemove('sk_ui_contextMenu_Item_highlightParent')
         
         if (this.toggle){
@@ -172,9 +192,9 @@ class SK_ContextMenu {
         }
         
         
-        if (this.onHide) this.onHide(opt, this.menu)
+        if (this.onHide) this.onHide(opt, menu || this.menu)
 
-        this.menu = undefined
+        if (!menu || menu === this.menu) this.menu = undefined
 
     }
 
@@ -331,7 +351,9 @@ class sk_ui_contextMenu extends sk_ui_component {
 
     async onBeforeRemove(opt){
         return new Promise(async resolve => {
-            if (this.cmParent && this.cmParent.onMenuHide) this.cmParent.onMenuHide(this.closeOpt)
+            if (this.keyboardNavigationHandler) document.removeEventListener('keydown', this.keyboardNavigationHandler, true)
+            if (sk_ui_contextMenu.activeKeyboardMenu === this) sk_ui_contextMenu.activeKeyboardMenu = this.parentContextMenu || null
+            if (this.cmParent && this.cmParent.onMenuHide) this.cmParent.onMenuHide(this.closeOpt, this)
             if (!this.closeInstantly){ await this.transition('fade out') }
            
             resolve()
@@ -431,6 +453,10 @@ class sk_ui_contextMenu extends sk_ui_component {
             }
 
             this.canClose = true
+            this.keyboardNavigationHandler = event => this.handleKeyboardNavigation(event)
+            document.addEventListener('keydown', this.keyboardNavigationHandler, true)
+            sk_ui_contextMenu.activeKeyboardMenu = this
+            if (opt.focusFirstItem) this.focusFirstItem()
 
             resolve()
         })
@@ -488,6 +514,50 @@ class sk_ui_contextMenu extends sk_ui_component {
             var item = items[i]
             if (item.opt[identifier] === id) return item
         }
+    }
+
+    getNavigableItems(){
+        return (this.sk_items || []).filter(item => item.navigable && !item.disabled && !item.passive)
+    }
+
+    focusItem(item){
+        for (var menuItem of this.sk_items || []) menuItem.classRemove('sk_ui_contextMenu_Item_keyboardFocused')
+        this.keyboardFocusedItem = item
+        if (!item) return
+        item.classAdd('sk_ui_contextMenu_Item_keyboardFocused')
+        item.element.scrollIntoView({block: 'nearest'})
+    }
+
+    focusAdjacentItem(direction){
+        var items = this.getNavigableItems()
+        if (!items.length) return
+        var index = items.indexOf(this.keyboardFocusedItem)
+        this.focusItem(items[(index + direction + items.length) % items.length])
+    }
+
+    focusFirstItem(){
+        var items = this.getNavigableItems()
+        if (items.length) this.focusItem(items[0])
+    }
+
+    handleKeyboardNavigation(event){
+        if (sk_ui_contextMenu.activeKeyboardMenu !== this) return
+        if (event.target.matches('input, textarea, select')) return
+        var key = event.key
+        if (!['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft', 'Enter', ' '].includes(key)) return
+        event.preventDefault()
+        event.stopImmediatePropagation()
+        if (key === 'ArrowDown') return this.focusAdjacentItem(1)
+        if (key === 'ArrowUp') return this.focusAdjacentItem(-1)
+        if (key === 'ArrowRight' && this.keyboardFocusedItem && this.keyboardFocusedItem.openSubmenu) return this.keyboardFocusedItem.openSubmenu(true)
+        if (key === 'ArrowLeft' && this.parentContextMenu) {
+            var parentMenu = this.parentContextMenu
+            var parentItem = this.parentItem
+            this.close({fromKeyboard: true})
+            parentMenu.focusItem(parentItem)
+            return
+        }
+        if (this.keyboardFocusedItem && this.keyboardFocusedItem.activate) this.keyboardFocusedItem.activate()
     }
 }
 
@@ -589,6 +659,8 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
     as_item(){
         if (this.opt.onCustomize) if (!this.opt.onCustomize(this)) return
 
+        this.navigable = !this.opt.disabled && !this.opt.passive
+
         if (!this.opt.disabled){
             this.classAdd('sk_ui_contextMenu_Item_enabled sk_ui_contextMenu_Item_interactable')
         }
@@ -633,7 +705,7 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
             sk.ums.broadcast('sk_ui_contextMenu', undefined, {hide: true})
         }
 
-        var openSubmenu = ()=> {
+        var openSubmenu = (focusFirstItem = false)=> {
             this.parentMenu.closeSubmenus({ignore: this.submenuID})
             if (!this.opt.items) return
             if (this.submenu) return
@@ -647,6 +719,7 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
                 _c.cmParent = this.cmParent
                 _c.parentMenu = this.parentMenu
                 _c.parentItem = this
+                _c.parentContextMenu = this.parentMenu
                 _c.isSubmenu = true
                 _c.submenuDirection = this.parent.submenuDirection
                 _c.items = this.opt.items
@@ -654,9 +727,19 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
 
                 clearTimeout(this.showTimer)
                 this.showTimer = setTimeout(()=>{
-                    _c.show()
-                }, 150)
+                    _c.show({focusFirstItem: focusFirstItem})
+                }, focusFirstItem ? 0 : 150)
             })
+        }
+
+        this.openSubmenu = openSubmenu
+        this.activate = ()=> {
+            if (!this.navigable || this.disabled || this.passive) return
+            if (this.opt.items) return this.openSubmenu(true)
+            if (!this.parentMenu.canClose) return
+            if (!this.opt.bypassOnClick) this.cmParent._onItemClicked(this.opt)
+            if (this.opt.onClick) this.opt.onClick(this.opt)
+            sk.ums.broadcast('sk_ui_contextMenu', undefined, {hide: true})
         }
 
         this.element.addEventListener('click', _e => {

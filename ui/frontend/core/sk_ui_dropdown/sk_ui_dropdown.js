@@ -25,6 +25,7 @@ class sk_ui_dropdown extends sk_ui_button {
             var pos = {x: (rect.x + rect.width/2) - opt.menuRect.width/2, y: rect.y + rect.height}
             return pos
         }
+        this.contextMenu.minWidth = ()=> this.rect.width
 
         this.contextMenu.onItemClicked = itemData => {
             if (!this.ignoreApplyingText) this.text = itemData.label
@@ -33,6 +34,81 @@ class sk_ui_dropdown extends sk_ui_button {
             if (this.onItemClicked) this.onItemClicked(itemData)
             if (this.onItemSelected) this.onItemSelected(itemData)
         }
+
+        this.attributes.add({friendlyName: 'Text', name: 'text', type: 'text', onSet: val => {
+            if (this.editableInput) this.editableInput.value = val
+            this.setAutoCompleteText('')
+        }})
+
+        this.attributes.add({friendlyName: 'Editable', name: 'editable', type: 'bool', onSet: val => {
+            if (!this.editableInput) {
+                this.editableInputs = this.add.component(_c => {
+                    _c.classAdd('sk_ui_dropdown_editableInputs')
+                    _c.styling += ' fill'
+                })
+                this.autoCompleteInput = this.editableInputs.add.input(_c => {
+                    _c.type = 'text'
+                    _c.disabled = true
+                    _c.disableFocus = true
+                    _c.classAdd('sk_ui_dropdown_autoComplete')
+                    _c.style.display = 'none'
+                })
+                this.editableInput = this.editableInputs.add.input(_c => {
+                    _c.type = 'text'
+                    _c.styling += ' fill'
+                    _c.style.margin = '0'
+                    _c.style.padding = '0'
+                    _c.onChanged = value => {
+                        this.text = value
+                        if (this.onChanged) this.onChanged(value)
+                        this.setAutoCompleteText('')
+                        if (this.onQuery) this.onQuery({
+                            text: value,
+                            setAutoCompleteText: text => this.setAutoCompleteText(text)
+                        })
+                    }
+                })
+                this.editableInput.input.addEventListener('keydown', event => {
+                    if (event.key === 'ArrowDown') {
+                        event.preventDefault()
+                        event.stopPropagation()
+                        if (this.contextMenu.menu) this.contextMenu.menu.focusAdjacentItem(1)
+                        else this.contextMenu.show({_e: event, focusFirstItem: true})
+                        return
+                    }
+                    var autoCompleteText = this.autoCompleteInput.value
+                    if (event.key !== 'Tab' || !autoCompleteText) return
+                    event.preventDefault()
+                    this.text = autoCompleteText
+                })
+                this.editableInput.input.addEventListener('blur', ()=> {
+                    if (this.contextMenu.menu) this.contextMenu.menu.close({fromInputBlur: true})
+                })
+                this.element.insertBefore(this.editableInputs.element, this._icon.element)
+                this.editableMenuButton = this.add.component(_c => {
+                    _c.classAdd('sk_ui_dropdown_editableMenuButton')
+                    _c.add.icon(_c => {
+                        _c.icon = 'caret down'
+                    })
+                })
+            }
+
+            this.classRemove('sk_ui_dropdown_editable')
+            this.label.style.display = val ? 'none' : ''
+            this.editableInputs.style.display = val ? '' : 'none'
+            this.editableMenuButton.style.display = val ? '' : 'none'
+            this._icon.style.display = val ? 'none' : ''
+            if (val) {
+                this.classAdd('sk_ui_dropdown_editable')
+                this.editableInput.value = this.text || ''
+            }
+        }})
+    }
+
+    setAutoCompleteText(text){
+        if (!this.autoCompleteInput) return
+        this.autoCompleteInput.value = text || ''
+        this.autoCompleteInput.style.display = text ? '' : 'none'
     }
 
     set items(items){
