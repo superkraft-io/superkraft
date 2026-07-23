@@ -523,6 +523,7 @@ class sk_ui_component {
                 //sk.app.eventBlocker.style.cursor = val
                 sk.app.eventBlocker.setCursorFor(this, val)
                 this.style.cursor = val
+                this.classRemove('sk_ui_component_hideCursor')
                 return
             }
             
