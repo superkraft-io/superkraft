@@ -69,7 +69,7 @@ class sk_ui_titlebar extends sk_ui_component {
             var split = val.split('.')
             var ext = split[split.length - 1]
 
-            var validExts = ['png', 'jpg', 'jpeg', 'webp', 'gif']
+            var validExts = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'svg']
 
             var isImg = validExts.includes(ext)
 

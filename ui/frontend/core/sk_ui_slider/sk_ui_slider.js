@@ -277,6 +277,8 @@ class sk_ui_slider extends sk_ui_component {
                 }
             }, 100)
         }
+
+        this.observeLayout()
     }
 
     getSliderMetrics(){
@@ -324,7 +326,7 @@ class sk_ui_slider extends sk_ui_component {
         }
 
         if (this.__rangeMode) {
-            this.observeRangeLayout()
+            this.observeLayout()
             if (!Number.isFinite(this.__rangeStart)) this.__rangeStart = this.min
             if (!Number.isFinite(this.__rangeEnd)) this.__rangeEnd = this.max
             this.setRange(this.__rangeStart, this.__rangeEnd)
@@ -334,13 +336,26 @@ class sk_ui_slider extends sk_ui_component {
         }
     }
 
-    observeRangeLayout(){
-        if (this.__rangeResizeObserver || typeof ResizeObserver === 'undefined') return
+    observeLayout(){
+        if (this.__resizeObserver || typeof ResizeObserver === 'undefined') return
 
-        this.__rangeResizeObserver = new ResizeObserver(()=> {
-            if (this.__rangeMode) this.updateRangePositions(false)
+        this.__resizeObserver = new ResizeObserver(()=> {
+            if (this.mdPos) return
+            if (this.__rangeMode) {
+                this.updateRangePositions(false)
+                return
+            }
+            if (this.__value === undefined) return
+            var wasBypass = this.bypassTween
+            this.bypassTween = true
+            this.setValue(this.__value)
+            this.bypassTween = wasBypass
         })
-        this.__rangeResizeObserver.observe(this.element)
+        this.__resizeObserver.observe(this.element)
+    }
+
+    observeRangeLayout(){
+        this.observeLayout()
     }
 
     setRange(start, end){
