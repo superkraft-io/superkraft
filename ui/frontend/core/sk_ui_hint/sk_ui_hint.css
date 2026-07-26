@@ -24,7 +24,8 @@
 }
 
 .sk_ui_hint_topMost {
-    z-index: 999999999 !important;
+    /* Above context menus / dropdowns (see sk_ui_contextMenu_activated). */
+    z-index: 2147483647 !important;
 }
 
 .sk_ui_hint > .sk_ui_label {
