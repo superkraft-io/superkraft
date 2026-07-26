@@ -74,6 +74,8 @@
     width: 0%;
     bottom: 0px;
     border-radius: 32px;
+    /* Bar mode does not use ProgressBar.js — tween width here. */
+    transition: width 280ms ease-out;
 }
 
 .sk_ui_progressBar_hintHandle {

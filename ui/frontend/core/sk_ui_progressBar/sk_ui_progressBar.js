@@ -58,10 +58,12 @@ class sk_ui_progressBar extends sk_ui_component {
             bar: opt => {
                 this.compact = true
                 this.vertical = false
+                this.__pbType = 'bar'
                 this.classAdd('sk_ui_progressBar_bar sk_ui_color_dark_grey')
                 this.content = this.add.component(_c => {
                     _c.classAdd('sk_ui_progressBar_bar_content sk_ui_gradient_blue')
-                    
+                    // Width tween is CSS on .sk_ui_progressBar_bar_content; keep generic size transition off.
+                    _c.animate = false
                 })
 
                 this.contentHidden = this.add.component(_c => {
@@ -99,23 +101,27 @@ class sk_ui_progressBar extends sk_ui_component {
     }
 
     set progress(val){
-        if (val === this.__lastVal) return
-        this.__lastVal = Math.round(parseFloat(val))
-            
-        try {
-            this.pB.animate(1/100*val)
-        } catch(err) {
-            this.content.style.width = val + '%'
-            this.contentHidden.style.width = val + '%'
+        var next = Math.round(parseFloat(val))
+        if (!Number.isFinite(next)) return
+        if (next === this.__lastVal) return
+        this.__lastVal = Math.max(0, Math.min(100, next))
 
-            if (this.hintProgress){
-                this.hintHandle.hint({
-                    text: this.__lastVal + '%',
-                    instaShow: true,
-                    position: 'right center',
-                    hideOnMove: false
-                })
-            }
+        // Circle/line: ProgressBar.js. Bar: CSS width transition on .sk_ui_progressBar_bar_content.
+        if (this.pB && typeof this.pB.animate === 'function') {
+            this.pB.animate(this.__lastVal / 100)
+            return
+        }
+
+        if (this.content) this.content.style.width = this.__lastVal + '%'
+        if (this.contentHidden) this.contentHidden.style.width = this.__lastVal + '%'
+
+        if (this.hintProgress && this.hintHandle) {
+            this.hintHandle.hint({
+                text: this.__lastVal + '%',
+                instaShow: true,
+                position: 'right center',
+                hideOnMove: false
+            })
         }
     }
 }
