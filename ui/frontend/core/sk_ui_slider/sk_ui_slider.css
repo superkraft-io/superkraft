@@ -6,7 +6,7 @@
 
 .sk_ui_slider_line {
     width: 100%;
-    background-color: black;
+    background-color: var(--sk_ui_color_grey);
     min-height: 6px;
     border-radius: 3px;
     position: relative;
@@ -16,7 +16,7 @@
 
 .sk_ui_slider_line_colorBar {
     position: absolute;
-    background-color: var(--sk_ui_color_grey_2);
+    background-color: var(--sk_ui_color_grey_4);
     left: 0px;
     top: 0px;
     /* bottom: 0px; */
