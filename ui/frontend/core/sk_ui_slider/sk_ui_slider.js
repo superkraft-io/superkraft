@@ -106,17 +106,19 @@ class sk_ui_slider extends sk_ui_component {
             if (newPos.x < 0) newPos.x = 0
             if (newPos.y < 0) newPos.y = 0
 
-            
-            if (newPos.x > this.rect.width) newPos.x = this.rect.width
-            if (newPos.y > this.rect.height) newPos.y = this.rect.height
-
-
-            
-            if (!this.vertical) var value = sk.utils.map(newPos.x, 0, this.rect.width, this.min, this.max)
-            else var value = sk.utils.map(newPos.y, 0, this.rect.height, this.min, this.max)
+            var trackSize = this.getTrackSize()
+            if (!this.vertical) {
+                if (newPos.x > trackSize) newPos.x = trackSize
+                var value = sk.utils.map(newPos.x, 0, trackSize, this.min, this.max)
+            } else {
+                if (newPos.y > trackSize) newPos.y = trackSize
+                var value = sk.utils.map(newPos.y, 0, trackSize, this.min, this.max)
+            }
 
 
             this.setValue(value)
+            // Notify from user input only — never from setValue/tween/ResizeObserver (those corrupt params at width 0).
+            if (this.onChanged) this.onChanged(this.__value)
 
             
             if (mouseDiff.x > 0 || mouseDiff.y > 0){
@@ -124,8 +126,6 @@ class sk_ui_slider extends sk_ui_component {
                 this.__onChangeStart_notified = true
                 sk.interactions.block()
             }
-            
-            //if (this.onChanged) this.onChanged(this.__value)
         }
 
 
@@ -191,6 +191,7 @@ class sk_ui_slider extends sk_ui_component {
             this.dawPluginParamIsTouching = true
             this.setValue(this.defaultValue)
             this.dawPluginParamIsTouching = true
+            if (this.onChanged) this.onChanged(this.__value)
 
             if (this.onChangedEnd) this.onChangedEnd(this.value)
         })
@@ -264,26 +265,45 @@ class sk_ui_slider extends sk_ui_component {
 
          if (opt.extraOpt){
             setTimeout(()=>{
-                var initVals = opt.extraOpt
+                var initVals = opt.extraOpt || {}
+                var hasInit = initVals.step !== undefined
+                    || initVals.min !== undefined
+                    || initVals.max !== undefined
+                    || initVals.default !== undefined
+                    || initVals.value !== undefined
+                // add.slider(cb) still passes a truthy extraOpt {} — do not reset to min after 100ms.
+                if (!hasInit) return
                 if (initVals.step    !== undefined) this.step = initVals.step
                 if (initVals.min     !== undefined) this.min = initVals.min
                 if (initVals.max     !== undefined) this.max = initVals.max
                 if (initVals.default !== undefined) this.defaultValue = initVals.default
-                if (initVals.value   !== undefined){
-                    this.setValue(initVals.value)
-                } else {
-                    if (initVals.default) this.setValue(initVals.default)
-                    else this.setValue(this.min)
-                }
+                var wasBypass = this.bypassTween
+                this.bypassTween = true
+                if (initVals.value !== undefined) this.setValue(initVals.value)
+                else if (initVals.default !== undefined) this.setValue(initVals.default)
+                else if (this.__value === undefined) this.setValue(this.min)
+                this.bypassTween = wasBypass
             }, 100)
         }
 
         this.observeLayout()
     }
 
+    // Layout size (ignores CSS transform scale on ancestors — getBoundingClientRect does not).
+    getTrackSize(){
+        if (!this.vertical) return this.element.offsetWidth || 0
+        return this.element.offsetHeight || 0
+    }
+
+    getThumbSize(){
+        if (!this.thumb || !this.thumb.element) return 0
+        if (!this.vertical) return this.thumb.element.offsetWidth || 0
+        return this.thumb.element.offsetHeight || 0
+    }
+
     getSliderMetrics(){
-        var thumbSize = !this.vertical ? this.thumb.rect.width : this.thumb.rect.height
-        var size = !this.vertical ? this.rect.width : this.rect.height
+        var thumbSize = this.getThumbSize()
+        var size = this.getTrackSize()
         var halfThumbSize = thumbSize / 2
 
         return {
@@ -346,10 +366,14 @@ class sk_ui_slider extends sk_ui_component {
                 return
             }
             if (this.__value === undefined) return
+            // Layout-only refresh must not notify — zero/transform sizes remap to min and corrupt params.
             var wasBypass = this.bypassTween
+            var onChanged = this.onChanged
+            this.onChanged = null
             this.bypassTween = true
             this.setValue(this.__value)
             this.bypassTween = wasBypass
+            this.onChanged = onChanged
         })
         this.__resizeObserver.observe(this.element)
     }
@@ -418,13 +442,13 @@ class sk_ui_slider extends sk_ui_component {
         if (this.bypassTween){
             this.tween.last = pos
             this.tween.current = pos
+            this.tween.target = pos
+            this.tween._steps = 0
+            if (typeof this.tween.stop === 'function') this.tween.stop()
         }
 
         this.thumb.style[(!this.vertical ? 'left' : 'top')] = pos - this.halfThumbSize + 'px'
         this.lineColorBar.style[(!this.vertical ? 'width' : 'height')] = pos + 'px'
-
-        var val = sk.utils.map(pos, 0 + this.halfThumbSize, (!this.vertical ? this.rect.width : this.rect.height) - this.halfThumbSize, this.min, this.max)
-        if (this.onChanged) this.onChanged(val)
 
         this.__lastPos = pos
     }
@@ -436,30 +460,17 @@ class sk_ui_slider extends sk_ui_component {
 
         this.__value = newVal
 
-
-        var thumbRect = this.thumb.rect
-        var thisRect = this.rect
-
-        
-        if (!this.vertical){
-            this.halfThumbSize = thumbRect.width / 2
-            var maxSize = thisRect.width
-        } else {
-            this.halfThumbSize = thumbRect.height / 2
-            var maxSize = thisRect.height
-        }
-
+        this.halfThumbSize = this.getThumbSize() / 2
+        var maxSize = this.getTrackSize()
         var minPos = (this.centerOrigin ? 0 : this.halfThumbSize)
         var maxPos = maxSize - (this.centerOrigin ? 0 : this.halfThumbSize)
+        // Not laid out yet (or inverted) — keep __value; ResizeObserver will place the thumb later.
+        if (!(maxSize > 0) || !(maxPos > minPos) || !Number.isFinite(minPos) || !Number.isFinite(maxPos)) return
+
         var mappedPos = sk.utils.map(newVal, this.min, this.max, minPos, maxPos)
 
-        
-
-
-     
-
         if (!this.smooth){
-            var snapSize = (!this.vertical ? this.rect.width : this.rect.height) / (this.max - this.min)
+            var snapSize = maxSize / (this.max - this.min)
             mappedPos = this.thumb.movres_izer.calcSnap({
                 gridSize      : snapSize,
                 gridSnapWidth : snapSize/2,
@@ -473,8 +484,6 @@ class sk_ui_slider extends sk_ui_component {
         if (mappedPos < minPos) mappedPos = minPos
         if (mappedPos > maxPos) mappedPos = maxPos
 
-        newVal = sk.utils.map(mappedPos, 0 + this.halfThumbSize, this.rect.width - this.halfThumbSize, this.min, this.max)
-        
         if (!this.smooth){
             this.updatePos(mappedPos)
         } else {
@@ -483,7 +492,7 @@ class sk_ui_slider extends sk_ui_component {
         }
 
         if (this.dawPluginParamIsTouching){
-            if (this.__dawPluginWriteParamValue) this.__dawPluginWriteParamValue(newVal)
+            if (this.__dawPluginWriteParamValue) this.__dawPluginWriteParamValue(this.__value)
         }
     }
 }
