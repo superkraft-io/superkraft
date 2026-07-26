@@ -17,6 +17,8 @@ class sk_ui_dropdown extends sk_ui_button {
         })
 
 
+        this._menuEnabled = true
+        this._menuButton = 'left'
         this.contextMenu.button = 'left'
         this.contextMenu.togglable = true
 
@@ -35,9 +37,31 @@ class sk_ui_dropdown extends sk_ui_button {
             if (this.onItemSelected) this.onItemSelected(itemData)
         }
 
+        var contextMenuShow = this.contextMenu.show.bind(this.contextMenu)
+        this.contextMenu.show = opt => {
+            if (!this._menuEnabled) return
+            return contextMenuShow(opt)
+        }
+
         this.attributes.add({friendlyName: 'Text', name: 'text', type: 'text', onSet: val => {
             if (this.editableInput) this.editableInput.value = val
             this.setAutoCompleteText('')
+        }})
+
+        this.attributes.add({friendlyName: 'Menu enabled', name: 'menuEnabled', type: 'bool', onSet: val => {
+            this._menuEnabled = val !== false
+            if (this._menuEnabled) {
+                this.contextMenu.button = this._menuButton || 'left'
+            } else {
+                if (this.contextMenu.button && this.contextMenu.button !== 'none') {
+                    this._menuButton = this.contextMenu.button
+                }
+                this.contextMenu.button = 'none'
+                if (this.contextMenu.menu) {
+                    this.contextMenu.menu.close({fromThis: true})
+                    this.contextMenu.menu = undefined
+                }
+            }
         }})
 
         this.attributes.add({friendlyName: 'Editable', name: 'editable', type: 'bool', onSet: val => {
@@ -70,6 +94,7 @@ class sk_ui_dropdown extends sk_ui_button {
                 })
                 this.editableInput.input.addEventListener('keydown', event => {
                     if (event.key === 'ArrowDown') {
+                        if (!this._menuEnabled) return
                         event.preventDefault()
                         event.stopPropagation()
                         if (this.contextMenu.menu) this.contextMenu.menu.focusAdjacentItem(1)
@@ -80,6 +105,12 @@ class sk_ui_dropdown extends sk_ui_button {
                     if (event.key !== 'Tab' || !autoCompleteText) return
                     event.preventDefault()
                     this.text = autoCompleteText
+                    if (this.onChanged) this.onChanged(autoCompleteText)
+                    this.setAutoCompleteText('')
+                    if (this.onQuery) this.onQuery({
+                        text: autoCompleteText,
+                        setAutoCompleteText: text => this.setAutoCompleteText(text)
+                    })
                 })
                 this.editableInput.input.addEventListener('blur', ()=> {
                     if (this.contextMenu.menu) this.contextMenu.menu.close({fromInputBlur: true})
@@ -87,8 +118,8 @@ class sk_ui_dropdown extends sk_ui_button {
                 this.element.insertBefore(this.editableInputs.element, this._icon.element)
                 this.editableMenuButton = this.add.component(_c => {
                     _c.classAdd('sk_ui_dropdown_editableMenuButton')
-                    _c.add.icon(_c => {
-                        _c.icon = 'caret down'
+                    this.editableMenuButtonIcon = _c.add.icon(_c => {
+                        _c.icon = this._editableMenuIcon || 'caret down'
                     })
                 })
             }
@@ -101,7 +132,15 @@ class sk_ui_dropdown extends sk_ui_button {
             if (val) {
                 this.classAdd('sk_ui_dropdown_editable')
                 this.editableInput.value = this.text || ''
+                if (this.editableMenuButtonIcon) {
+                    this.editableMenuButtonIcon.icon = this._editableMenuIcon || 'caret down'
+                }
             }
+        }})
+
+        this.attributes.add({friendlyName: 'Editable menu icon', name: 'editableMenuIcon', type: 'text', onSet: val => {
+            this._editableMenuIcon = val || 'caret down'
+            if (this.editableMenuButtonIcon) this.editableMenuButtonIcon.icon = this._editableMenuIcon
         }})
     }
 
