@@ -134,7 +134,8 @@ class SK_ContextMenu {
             items = this.__items
         }
 
-        if (!items) return console.error('Cannot show context menu with empty items list')
+        // Null/empty from items() = intentionally suppress (e.g. tool owns RMB).
+        if (!items || !items.length) return
 
         if (this.skipOnce){
             this.skipOnce = false
