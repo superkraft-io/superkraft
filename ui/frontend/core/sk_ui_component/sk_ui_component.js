@@ -517,7 +517,15 @@ class sk_ui_component {
             clearCursorEvents()
             if (sk.app.cursorEl) sk.app.cursorEl.remove()
 
-            var cssCursors = ['', 'none', 'auto', 'crosshair', 'default', 'e-resize', 'grab', 'grabbing', 'help', 'move', 'n-resize', 'ne-resize', 'nw-resize', 'pointer', 'progress', 's-resize', 'se-resize', 'sw-resize', 'text', 'vertical-text', 'w-resize', 'wait', 'not-allowed', 'no-drop']
+            var cssCursors = [
+                '', 'none', 'auto', 'crosshair', 'default', 'pointer', 'progress', 'help', 'text', 'vertical-text',
+                'wait', 'not-allowed', 'no-drop', 'copy', 'alias', 'cell', 'context-menu', 'all-scroll',
+                'col-resize', 'row-resize', 'zoom-in', 'zoom-out',
+                'grab', 'grabbing', 'move',
+                'n-resize', 's-resize', 'e-resize', 'w-resize',
+                'ne-resize', 'nw-resize', 'se-resize', 'sw-resize',
+                'ns-resize', 'ew-resize', 'nesw-resize', 'nwse-resize'
+            ]
             
             if (cssCursors.includes(val)){
                 //sk.app.eventBlocker.style.cursor = val
