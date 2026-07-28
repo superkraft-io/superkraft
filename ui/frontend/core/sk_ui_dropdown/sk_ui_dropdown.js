@@ -20,7 +20,7 @@ class sk_ui_dropdown extends sk_ui_button {
         this._menuEnabled = true
         this._menuButton = 'left'
         this.contextMenu.button = 'left'
-        this.contextMenu.togglable = true
+        this.contextMenu.toggle = true
 
         this.contextMenu.position = opt => {
             var rect = this.rect
@@ -31,7 +31,11 @@ class sk_ui_dropdown extends sk_ui_button {
 
         this.contextMenu.onItemClicked = itemData => {
             if (!this.ignoreApplyingText) this.text = itemData.label
-            if (!this.ignoreApplyingIcon && itemData.icon) this.leftIcon = itemData.icon
+            // Synthetic selection checks stay in the menu only.
+            if (!this.ignoreApplyingIcon && itemData.icon
+                && !(this.checkmarkOnSelected && itemData.icon === 'check')) {
+                this.leftIcon = itemData.icon
+            }
             this.selectedItem = itemData
             if (this.onItemClicked) this.onItemClicked(itemData)
             if (this.onItemSelected) this.onItemSelected(itemData)
@@ -62,6 +66,11 @@ class sk_ui_dropdown extends sk_ui_button {
                     this.contextMenu.menu = undefined
                 }
             }
+        }})
+
+        // When true, the open menu shows a check icon on the current selectedItem.
+        this.attributes.add({friendlyName: 'Checkmark on selected', name: 'checkmarkOnSelected', type: 'bool', onSet: ()=> {
+            this.syncContextMenuItems()
         }})
 
         this.attributes.add({friendlyName: 'Editable', name: 'editable', type: 'bool', onSet: val => {
@@ -152,7 +161,34 @@ class sk_ui_dropdown extends sk_ui_button {
 
     set items(items){
         this._items = items
-        this.contextMenu.items = this._items
+        this.syncContextMenuItems()
+    }
+
+    get items(){
+        return this._items
+    }
+
+    syncContextMenuItems(){
+        if (this.checkmarkOnSelected) {
+            this.contextMenu.items = ()=> this.menuItemsWithSelectionCheck()
+        } else {
+            this.contextMenu.items = this._items
+        }
+    }
+
+    async menuItemsWithSelectionCheck(){
+        var items = this._items
+        try { items = await this._items() } catch(err){}
+        items = items || []
+        var sel = this.selectedItem
+        if (!sel) return items
+        return items.map(item => {
+            var selected = (item.id !== undefined && sel.id !== undefined)
+                ? item.id === sel.id
+                : item === sel
+            if (!selected) return item
+            return Object.assign({}, item, {icon: 'check'})
+        })
     }
 
     async selectByID(id, identifier = 'id', ignoreOnSelectedFire, propagate){
@@ -163,7 +199,10 @@ class sk_ui_dropdown extends sk_ui_button {
             var item = items[i]
             if (item[identifier] === id){
                 this.text = item.label
-                if (item.icon) this.leftIcon.icon = item.icon
+                if (item.icon && !this.ignoreApplyingIcon
+                    && !(this.checkmarkOnSelected && item.icon === 'check')) {
+                    this.leftIcon.icon = item.icon
+                }
                 this.selectedItem = item
                 if (this.onItemSelected && propagate){
                     this.onItemSelected(item, ignoreOnSelectedFire)

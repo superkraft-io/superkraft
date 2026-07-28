@@ -29,6 +29,9 @@ class SK_ContextMenu {
 
     set button(val){ this.__button = val }
 
+    // Dropdown / sk_ui_menu set `togglable`; runtime logic uses `toggle`.
+    set togglable(val){ this.toggle = !!val }
+    get togglable(){ return !!this.toggle }
 
     setup(cb){
         cb(this)
@@ -113,11 +116,12 @@ class SK_ContextMenu {
         //sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true, sender: this.menu})
         
         if (this.parent.disabled && !this.activeWhenParentDisabled) return
-        if (this.toggle){
-            if (this.menu){
-                this.menu.close({fromThis: true})
-                this.menu = undefined
-            }
+        // Second click on the same control: close and stop (do not reopen via show()).
+        if (this.toggle && this.menu){
+            this.menu.close({fromThis: true})
+            this.menu = undefined
+            this.skipOnce = true
+            return
         }
 
         this.show({_e: _e})
