@@ -7,3 +7,8 @@
     padding: 4px 8px;
     border-radius: 4px;
 }
+
+
+.sk_ui_menuItem:hover {
+    background-color: var(--sk_ui_color_dark_grey_2) !important;
+}
