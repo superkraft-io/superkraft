@@ -24,15 +24,18 @@ class sk_ui_menuItems extends Array{
         var item = this.parent.add.simpleButton(_c => {
             _c.classAdd('sk_ui_menuItem')
             _c.text = 'Menu item'
+            _c.animate = false
             _c.contextMenu.button = 'left'
             _c.contextMenu.togglable = true
             _c.contextMenu.position = () => { return {x: _c.rect.left, y: _c.rect.top + _c.rect.height} }
 
             _c.contextMenu.onShow = menu => {
                 this.parent.currentVisibleMenu = {item: _c, menu: menu}
+                _c.classAdd('sk_ui_menuItem_open')
             }
 
             _c.contextMenu.onHide = (opt = {}, menu)=>{
+                _c.classRemove('sk_ui_menuItem_open')
                 try { if (!opt.fromGlobal && this.parent.currentVisibleMenu.menu.uuid === menu.uuid) return } catch(err) {}
                 delete this.parent.currentVisibleMenu
             }

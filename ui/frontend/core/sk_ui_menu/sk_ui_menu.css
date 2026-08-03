@@ -6,9 +6,16 @@
     margin-right: 1px !important;
     padding: 4px 8px;
     border-radius: 4px;
+    transition: none !important;
 }
 
 
-.sk_ui_menuItem:hover {
-    background-color: var(--sk_ui_color_dark_grey_2) !important;
+.sk_ui_menuItem:hover,
+.sk_ui_menuItem.sk_ui_menuItem_open {
+    background-color: var(--sk_ui_color_grey) !important;
+}
+
+/* Keep pressed look while the dropdown is open (mouse may leave the button). */
+.sk_ui_menuItem.sk_ui_menuItem_open {
+    opacity: 1 !important;
 }

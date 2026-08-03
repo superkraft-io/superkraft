@@ -33,7 +33,7 @@ class sk_ui_button extends sk_ui_component {
             this.handleAction()
 
             if (_e.stopPropagation && !_e.defaultPrevented){
-                if (!this.contextMenu.menu) sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true})
+                if (!this.contextMenu.menu) sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true, toBE: false})
                 _e.stopPropagation()
             }
         }

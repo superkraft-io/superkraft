@@ -3,10 +3,32 @@
     padding: 6px;
 }
 
+/* Open groups must keep content height when a flex parent shrinks — the parent
+   (e.g. Display inspector) should scroll, not crush this group. */
+.sk_ui_groupCollapsable:not(.sk_ui_groupCollapsable_collapsed) {
+    flex-shrink: 0 !important;
+    min-height: min-content;
+}
+
+/* sk_ui_transition is `transition: 200ms` (= all). Tweening height 0 ↔ auto
+   leaves the container stuck at 0px when opening, so collapsed-by-default groups
+   (e.g. Display → Reassignment) look empty. Never transition height here. */
+.sk_ui_groupCollapsable > .sk_ui_group_container {
+    transition: opacity 180ms ease, padding 180ms ease !important;
+}
+
+.sk_ui_groupCollapsable:not(.sk_ui_groupCollapsable_collapsed) > .sk_ui_group_container {
+    height: auto !important;
+    min-height: min-content;
+    flex-shrink: 0;
+}
+
 .sk_ui_groupCollapsable_collapsed > .sk_ui_group_container {
     height: 0px;
+    min-height: 0;
     padding: 0px;
     opacity: 0;
+    pointer-events: none;
 }
 
 .sk_ui_groupCollapsable_collapsed > .sk_ui_group_top {
