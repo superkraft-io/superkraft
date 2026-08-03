@@ -101,6 +101,13 @@ class SK_ContextMenu {
         }
 
 
+        // Capture open state before click-time hide races clear `this.menu`.
+        this.parent.element.addEventListener('pointerdown', _e => {
+            if (this.__button !== 'left') return
+            if (_e.button != null && _e.button !== 0) return
+            this._openOnPointerDown = !!(this.menu && this.menu.element && this.menu.element.isConnected)
+        }, true)
+
         this.parent.element.addEventListener('mousedown', _e => {
             if (this.stopPropagation) _e.stopPropagation()
         })
@@ -117,9 +124,14 @@ class SK_ContextMenu {
         
         if (this.parent.disabled && !this.activeWhenParentDisabled) return
         // Second click on the same control: close and stop (do not reopen via show()).
-        if (this.toggle && this.menu){
-            this.menu.close({fromThis: true})
-            this.menu = undefined
+        // Use pointerdown snapshot — `this.menu` may already be cleared by a hide race.
+        var wasOpen = this._openOnPointerDown || !!(this.menu && this.menu.element && this.menu.element.isConnected)
+        this._openOnPointerDown = false
+        if (this.toggle && wasOpen){
+            if (this.menu){
+                this.menu.close({fromThis: true})
+                this.menu = undefined
+            }
             this.skipOnce = true
             return
         }
@@ -128,6 +140,19 @@ class SK_ContextMenu {
     }
 
     async show(opt){
+        // Check before await — a toggle-close can set skipOnce while items() is in flight.
+        if (this.skipOnce){
+            this.skipOnce = false
+            return
+        }
+
+        if (this.toggle && this.menu){
+            this.menu.close({fromThis: true})
+            this.menu = undefined
+            this.skipOnce = true
+            return
+        }
+
         var items = undefined
 
         
@@ -183,7 +208,9 @@ class SK_ContextMenu {
     }
 
     onMenuHide(opt, menu){
-        if ((!menu || menu === this.menu) && this.escapeKeyCloser) {
+        // `this.menu` may already be cleared by toggle-close before async remove.
+        var isOurs = !this.menu || !menu || menu === this.menu
+        if (isOurs && this.escapeKeyCloser) {
             document.removeEventListener('keydown', this.escapeKeyCloser, true)
             this.escapeKeyCloser = undefined
         }
@@ -199,7 +226,7 @@ class SK_ContextMenu {
         
         if (this.onHide) this.onHide(opt, menu || this.menu)
 
-        if (!menu || menu === this.menu) this.menu = undefined
+        if (isOurs) this.menu = undefined
 
     }
 

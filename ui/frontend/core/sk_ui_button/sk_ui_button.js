@@ -33,7 +33,14 @@ class sk_ui_button extends sk_ui_component {
             this.handleAction()
 
             if (_e.stopPropagation && !_e.defaultPrevented){
-                if (!this.contextMenu.menu) sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true, toBE: false})
+                // Toggle menus own close-on-second-click. If the menu was open at
+                // pointerdown, do not broadcast hide here — that races ahead of the
+                // contextMenu click handler and causes an immediate re-show.
+                var cm = this.contextMenu
+                var toggleClosing = cm && cm.toggle && cm._openOnPointerDown
+                if (!toggleClosing && !(cm && cm.menu)) {
+                    sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true, toBE: false})
+                }
                 _e.stopPropagation()
             }
         }

@@ -26,6 +26,7 @@ class sk_ui_menuItems extends Array{
             _c.text = 'Menu item'
             _c.animate = false
             _c.contextMenu.button = 'left'
+            _c.contextMenu.toggle = true
             _c.contextMenu.togglable = true
             _c.contextMenu.position = () => { return {x: _c.rect.left, y: _c.rect.top + _c.rect.height} }
 
@@ -34,10 +35,19 @@ class sk_ui_menuItems extends Array{
                 _c.classAdd('sk_ui_menuItem_open')
             }
 
+            // Clear on any hide (toggle / item / Esc / click-away). Keeping
+            // currentVisibleMenu after !fromGlobal left the bar "hot" and
+            // mouseenter would immediately re-show the menu.
             _c.contextMenu.onHide = (opt = {}, menu)=>{
                 _c.classRemove('sk_ui_menuItem_open')
-                try { if (!opt.fromGlobal && this.parent.currentVisibleMenu.menu.uuid === menu.uuid) return } catch(err) {}
-                delete this.parent.currentVisibleMenu
+                try {
+                    if (!this.parent.currentVisibleMenu || !menu
+                        || this.parent.currentVisibleMenu.menu.uuid === menu.uuid) {
+                        delete this.parent.currentVisibleMenu
+                    }
+                } catch(err) {
+                    delete this.parent.currentVisibleMenu
+                }
             }
 
             _c.element.addEventListener('mouseenter', _e => {
