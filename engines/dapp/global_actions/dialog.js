@@ -1,4 +1,5 @@
 const {app, BrowserWindow, dialog, ipcMain } = require('electron')
+const path = require('path')
 
 module.exports = class SK_Action extends SK_RootAction {
     async exec(opt, res, view, _v){
@@ -8,12 +9,19 @@ module.exports = class SK_Action extends SK_RootAction {
 
             if (defOpt.defaultPath){
                 try {
-                    var stat = await sk_fs.promises.stat(defOpt.defaultPath)
-                    if (sk.info.sysInfo.os === 'win'){
-                        defOpt.defaultPath = defOpt.defaultPath.split('/').join('\\')
+                    var defaultPath = String(defOpt.defaultPath)
+                    // Bare filenames (esp. with spaces) get truncated in the Windows
+                    // save dialog unless they are absolute. Anchor them to Downloads.
+                    var isAbsolute = path.isAbsolute(defaultPath)
+                    if (!isAbsolute && opt.type === 'save') {
+                        defaultPath = path.join(app.getPath('downloads'), defaultPath)
                     }
+                    if (sk.info.sysInfo.os === 'win') {
+                        defaultPath = defaultPath.split('/').join('\\')
+                    }
+                    defOpt.defaultPath = defaultPath
                 } catch(err) {
-                    console.error('[DAPP DIALOG] Invalid default path')
+                    console.error('[DAPP DIALOG] Invalid default path', err)
                 }
             }
 
