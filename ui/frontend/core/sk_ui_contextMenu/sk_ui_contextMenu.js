@@ -7,6 +7,33 @@ class SK_ContextMenu {
         this.__button = 'right'
     }
 
+    // Hard-dismiss: close() alone can clear the owner ref while leaving DOM nodes
+    // (async remove failures / stale sk.menus), so the next toggle click re-opens.
+    static dismissAllOpenMenus(){
+        try {
+            sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {
+                fromGlobal: true,
+                instant: true,
+                toBE: false
+            })
+        } catch (err) {}
+        try {
+            var open = document.querySelectorAll('.sk_ui_contextMenu')
+            for (var i = 0; i < open.length; i++) {
+                var el = open[i]
+                var obj = el.sk_ui_obj
+                if (obj) {
+                    try {
+                        obj.closeInstantly = true
+                        if (typeof obj.remove === 'function') obj.remove()
+                    } catch (err) {}
+                }
+                try { el.remove() } catch (err) {}
+            }
+        } catch (err) {}
+        sk.menus = []
+    }
+
     set items(val){
         if (!this.__items) this.setEventListener()
         this.__items = val
@@ -27,7 +54,11 @@ class SK_ContextMenu {
 
     get minWidth(){ return this.__minWidth }
 
-    set button(val){ this.__button = val }
+    set button(val){
+        this.__button = val
+        // Left-click menus are toggles unless explicitly disabled.
+        if (val === 'left' && this.toggle == null) this.toggle = true
+    }
 
     // Dropdown / sk_ui_menu set `togglable`; runtime logic uses `toggle`.
     set togglable(val){ this.toggle = !!val }
@@ -85,18 +116,22 @@ class SK_ContextMenu {
 
         if (!sk.isOnMobile){
             this.parent.element.addEventListener('click', _e => {
+                // Managed toggles (`button='none'`) open from onClick only — do not
+                // swallow the click here or race doClick.
+                if (this.__button !== 'left') return
                 _e.stopPropagation()
                 _e.preventDefault()
-                if (this.__button === 'left') this.handleMouseEvent(_e)
+                this.handleMouseEvent(_e)
             })
         } else {
             this.parent.element.addEventListener('touchstart', _e => {
+                if (this.__button !== 'left') return
                  if (!this.parent.getParentIceRink()){
                     _e.preventDefault()
                     _e.stopPropagation()
                 }
 
-                if (this.__button === 'left') this.handleMouseEvent(_e)
+                this.handleMouseEvent(_e)
             })
         }
 
@@ -126,20 +161,22 @@ class SK_ContextMenu {
         // Second click on the same control: close and stop (do not reopen via show()).
         // Use pointerdown snapshot — `this.menu` may already be cleared by a hide race.
         var wasOpen = this._openOnPointerDown || !!(this.menu && this.menu.element && this.menu.element.isConnected)
+        // Left-button menus always toggle-close when open (toggle flag can be false
+        // at click time, which used to fall through to show() and stack menus).
+        var leftToggle = this.toggle || this.__button === 'left' || this._managedToggle
         this._openOnPointerDown = false
-        if (this.toggle && wasOpen){
-            if (this.menu){
-                this.menu.close({fromThis: true})
-                this.menu = undefined
-            }
-            this.skipOnce = true
+        if (leftToggle && wasOpen){
+            SK_ContextMenu.dismissAllOpenMenus()
+            this.menu = undefined
             return
         }
 
+        // Fresh open gesture — ignore a stale skipOnce left by older hide races.
+        this.skipOnce = false
         this.show({_e: _e})
     }
 
-    async show(opt){
+    async show(opt = {}){
         // Check before await — a toggle-close can set skipOnce while items() is in flight.
         if (this.skipOnce){
             this.skipOnce = false
@@ -149,19 +186,13 @@ class SK_ContextMenu {
         if (this.toggle && this.menu){
             this.menu.close({fromThis: true})
             this.menu = undefined
-            this.skipOnce = true
             return
         }
 
-        var items = undefined
-
-        
-        
-        if (this.__items instanceof Function){
-            items = await this.__items()
-        } else {
-            items = this.__items
-        }
+        // Avoid `await` on plain values — that still yields a microtask and lets
+        // same-click global hide land before the menu exists / right after it mounts.
+        var items = this.__items instanceof Function ? this.__items() : this.__items
+        if (items && typeof items.then === 'function') items = await items
 
         // Null/empty from items() = intentionally suppress (e.g. tool owns RMB).
         if (!items || !items.length) return
@@ -176,7 +207,20 @@ class SK_ContextMenu {
             this.menu = undefined
         }
 
-        var minWidth = this.__minWidth instanceof Function ? await this.__minWidth() : this.__minWidth
+        var minWidth = this.__minWidth instanceof Function ? this.__minWidth() : this.__minWidth
+        if (minWidth && typeof minWidth.then === 'function') minWidth = await minWidth
+
+        // Managed toggles: close peers directly — never broadcast hide around mount
+        // (stale hide listeners nuclear-remove every `.sk_ui_contextMenu` in the DOM).
+        if (this._managedToggle) {
+            var peers = (sk.menus || []).slice()
+            sk.menus = []
+            for (var p = 0; p < peers.length; p++) {
+                try { if (peers[p] && peers[p].remove) peers[p].remove() } catch (err) {}
+            }
+        } else {
+            sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true, toBE: false})
+        }
 
         this.menu = sk.app.add.contextMenu(_c => {
             _c.cmParent = this
@@ -198,10 +242,6 @@ class SK_ContextMenu {
         
         this.menu.show(opt)
 
-        //sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true, sender: this.menu, excludeSender: true})
-        
-
-
         if (this.highlightParent) this.parent.classAdd('sk_ui_contextMenu_Item_highlightParent')
 
         if (this.onShow) this.onShow(this.menu)
@@ -215,15 +255,10 @@ class SK_ContextMenu {
             this.escapeKeyCloser = undefined
         }
         this.parent.classRemove('sk_ui_contextMenu_Item_highlightParent')
-        
-        if (this.toggle){
-            if (opt){
-                if (opt.fromThis && !this.skipOnce) this.skipOnce = true
-                if (this.menu && opt.sender  && opt.sender.uuid === this.menu.uuid) this.skipOnce = true
-            }
-        }
-        
-        
+
+        // Do not set skipOnce on hide/toggle-close. `_openOnPointerDown` already
+        // prevents reopen races; skipOnce-on-close made the next open a no-op.
+
         if (this.onHide) this.onHide(opt, menu || this.menu)
 
         if (isOurs) this.menu = undefined

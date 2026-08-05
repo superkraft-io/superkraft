@@ -32,13 +32,17 @@ class sk_ui_button extends sk_ui_component {
 
             this.handleAction()
 
-            if (_e.stopPropagation && !_e.defaultPrevented){
-                // Toggle menus own close-on-second-click. If the menu was open at
-                // pointerdown, do not broadcast hide here — that races ahead of the
-                // contextMenu click handler and causes an immediate re-show.
-                var cm = this.contextMenu
+            var cm = this.contextMenu
+            var managedMenu = cm && cm._managedToggle
+            // Managed menus always stop the click — even if preventDefault ran —
+            // so document/parent click-away cannot see this gesture.
+            if (managedMenu) {
+                if (_e.stopPropagation) _e.stopPropagation()
+            } else if (_e.stopPropagation && !_e.defaultPrevented) {
+                // Left-button context menus own open/close on this click.
+                var leftMenu = cm && cm.__button === 'left' && cm.items
                 var toggleClosing = cm && cm.toggle && cm._openOnPointerDown
-                if (!toggleClosing && !(cm && cm.menu)) {
+                if (!leftMenu && !toggleClosing && !(cm && cm.menu)) {
                     sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true, toBE: false})
                 }
                 _e.stopPropagation()
