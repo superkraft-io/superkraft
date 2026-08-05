@@ -222,6 +222,9 @@ class SK_ContextMenu {
             sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {fromGlobal: true, toBE: false})
         }
 
+        // Dismiss hover tips before the menu paints (also again after show).
+        try { if (typeof SK_Hint !== 'undefined' && SK_Hint.hideAll) SK_Hint.hideAll() } catch (err) {}
+
         this.menu = sk.app.add.contextMenu(_c => {
             _c.cmParent = this
             _c.items = items
@@ -241,6 +244,9 @@ class SK_ContextMenu {
         document.addEventListener('keydown', this.escapeKeyCloser, true)
         
         this.menu.show(opt)
+
+        // Hover tooltips must not linger over / under the menu.
+        try { if (typeof SK_Hint !== 'undefined' && SK_Hint.hideAll) SK_Hint.hideAll() } catch (err) {}
 
         if (this.highlightParent) this.parent.classAdd('sk_ui_contextMenu_Item_highlightParent')
 

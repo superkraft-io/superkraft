@@ -1,4 +1,35 @@
 class SK_Hint {
+    // Pending or visible tips — cleared when any context menu opens.
+    static active = new Set()
+
+    static hideAll(){
+        var list = Array.from(SK_Hint.active)
+        for (var i = 0; i < list.length; i++) {
+            try { list[i].hide() } catch (err) {}
+        }
+        try {
+            var nodes = document.querySelectorAll('.sk_ui_hint')
+            for (var n = 0; n < nodes.length; n++) {
+                var el = nodes[n]
+                var suo = el.sk_ui_obj
+                if (suo && typeof suo.remove === 'function') {
+                    try { suo.remove() } catch (err) {}
+                }
+                try { el.remove() } catch (err) {}
+            }
+        } catch (err) {}
+    }
+
+    static anyContextMenuOpen(){
+        try {
+            if (sk.menus && sk.menus.length) return true
+        } catch (err) {}
+        try {
+            return !!document.querySelector('.sk_ui_contextMenu')
+        } catch (err) {}
+        return false
+    }
+
     constructor(opt){
         this.opt = opt
 
@@ -86,8 +117,10 @@ class SK_Hint {
     }
 
     async onHide(){
-        if (!this.created) return
+        SK_Hint.active.delete(this)
         clearTimeout(this.hintTimer)
+        this.hintTimer = undefined
+        if (!this.created) return
         clearInterval(this.__hint.parentPosMonitor)
         await this.__hint.hide()
         try { this.__hint.remove() } catch(err) {}
@@ -96,8 +129,11 @@ class SK_Hint {
 
     show(){
         if (!this.__text || !this.opt.parent.rect.inView) return
+        // Don't let hover tips sit on top of / under an open context menu.
+        if (SK_Hint.anyContextMenuOpen()) return
 
-        
+        SK_Hint.active.add(this)
+
         if (this.__hint){
             this.__hint.classRemove(this.classes)
 
@@ -126,6 +162,11 @@ class SK_Hint {
         })
 
         this.hintTimer = setTimeout(()=>{
+            if (!this.__hint) return
+            if (SK_Hint.anyContextMenuOpen()) {
+                this.hide()
+                return
+            }
             this.__hint.show(this.autoHide)
         }, 100)
     }
