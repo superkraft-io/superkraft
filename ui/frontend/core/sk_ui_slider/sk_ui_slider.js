@@ -47,6 +47,12 @@ class sk_ui_slider extends sk_ui_component {
             this.hasMoved = false
             this.__rangeDragOffset = undefined
 
+            // Snap to step on release when non-smooth.
+            if (!this.__rangeMode && !this.smooth) {
+                this.setValue(this.__value)
+                if (this.onChanged) this.onChanged(this.__value)
+            }
+
             if (this.onChangedEnd) this.onChangedEnd(this.__rangeMode ? this.getRange() : this.value)
             this.__onChangeStart_notified = false
 
@@ -65,7 +71,6 @@ class sk_ui_slider extends sk_ui_component {
 
         var mouseMoveHandler = _e => {
             if (!this.mdPos) return
-
 
             _e.preventDefault()
             _e.stopPropagation()
@@ -88,46 +93,17 @@ class sk_ui_slider extends sk_ui_component {
                 return
             }
 
-
-            var mousePos = sk.interactions.getPos(_e)
-            var mouseDiff = {
-                x: this.mdPos.x - mousePos.x,
-                y: this.mdPos.y - mousePos.y
-            }
-
-
-            
-            var newPos = {
-                x: this.originalPos.x - mouseDiff.x,
-                y: this.originalPos.y - mouseDiff.y,
-            }
-
-            
-            if (newPos.x < 0) newPos.x = 0
-            if (newPos.y < 0) newPos.y = 0
-
-            var trackSize = this.getTrackSize()
-            if (!this.vertical) {
-                if (newPos.x > trackSize) newPos.x = trackSize
-                var value = sk.utils.map(newPos.x, 0, trackSize, this.min, this.max)
-            } else {
-                if (newPos.y > trackSize) newPos.y = trackSize
-                var value = sk.utils.map(newPos.y, 0, trackSize, this.min, this.max)
-            }
-
+            // Absolute pointer → value (no relative origin). Avoids CSS/layout origin bugs.
+            var value = this.pointerEventToValue(_e)
+            if (value == null) return
 
             this.setValue(value)
-            // Notify from user input only — never from setValue/tween/ResizeObserver (those corrupt params at width 0).
             if (this.onChanged) this.onChanged(this.__value)
 
-            
-            if (mouseDiff.x > 0 || mouseDiff.y > 0){
-                if (!this.__onChangeStart_notified && this.onChangedStart) this.onChangedStart(value)
-                this.__onChangeStart_notified = true
-                sk.interactions.block()
-            }
+            if (!this.__onChangeStart_notified && this.onChangedStart) this.onChangedStart(this.__value)
+            this.__onChangeStart_notified = true
+            sk.interactions.block()
         }
-
 
 
 
@@ -136,6 +112,12 @@ class sk_ui_slider extends sk_ui_component {
 
             this.hasMoved = false
             this.bypassTween = true
+            if (this.tween) {
+                this.tween.last = this.tween.current
+                this.tween.target = this.tween.current
+                this.tween._steps = 0
+                if (typeof this.tween.stop === 'function') this.tween.stop()
+            }
 
             _e.preventDefault()
             _e.stopPropagation()
@@ -153,15 +135,15 @@ class sk_ui_slider extends sk_ui_component {
                     ? 'start'
                     : 'end'
                 this.__rangeDragOffset = rangePosition - thumbPositions[this.__rangeDragThumb]
+            } else {
+                // Jump thumb to click/touch immediately.
+                var downVal = this.pointerEventToValue(_e)
+                if (downVal != null) {
+                    this.setValue(downVal)
+                    if (this.onChanged) this.onChanged(this.__value)
+                }
             }
 
-            this.originalPos = {
-                x: this.lineColorBar.rect.width,
-                y: this.lineColorBar.rect.height
-            }
-
-
-            
             this.element.addEventListener('mouseup', mouseUpHandler)
             this.element.addEventListener('touchend', mouseUpHandler)
             
@@ -217,17 +199,9 @@ class sk_ui_slider extends sk_ui_component {
         this.attributes.add({friendlyName: 'Max', name: 'max', type: 'number', onSet: val => {  }})
         this.attributes.add({friendlyName: 'Default Value', name: 'defaultValue', type: 'number'})
 
-        this.attributes.add({friendlyName: 'Labeled', name: 'labeled', type: 'bool', onSet: val => { /*this.sliderBucket.sliderEl.classList.remove('labeled'); if (val) this.sliderBucket.sliderEl.classList.add('labeled');*/ }})
-        this.attributes.add({friendlyName: 'Ticked', name: 'ticked', type: 'bool', onSet: val => { /*this.sliderBucket.sliderEl.classList.remove('ticked'); if (val) this.sliderBucket.sliderEl.classList.add('ticked');*/ }})
-        this.attributes.add({friendlyName: 'Smooth', name: 'smooth', type: 'bool', onSet: val => {
-            /*if (val){
-                this.thumb.classAdd('sk_ui_slider_thumb_smooth')
-                this.lineColorBar.classAdd('sk_ui_slider_line_colorBar_smooth')
-            } else {
-                this.thumb.classremove('sk_ui_slider_thumb_smooth')
-                this.lineColorBar.classremove('sk_ui_slider_line_colorBar_smooth')
-            }*/
-        }})
+        this.attributes.add({friendlyName: 'Labeled', name: 'labeled', type: 'bool', onSet: val => { }})
+        this.attributes.add({friendlyName: 'Ticked', name: 'ticked', type: 'bool', onSet: val => { }})
+        this.attributes.add({friendlyName: 'Smooth', name: 'smooth', type: 'bool', onSet: val => { }})
         this.__smooth = true
 
 
@@ -241,13 +215,8 @@ class sk_ui_slider extends sk_ui_component {
         this.attributes.add({friendlyName: 'Labels', name: 'labels', type: 'text', onSet: val => {  }})
 
         this.attributes.add({friendlyName: 'Color', name: 'color', type: 'text', onSet: val => {
-            //var colors = ['red', 'orange', 'yellow', 'olive', 'green', 'teal', 'blue', 'violet', 'purple', 'pink', 'brown', 'grey', 'black']
-            
             this.lineColorBar.style.backgroundColor = val
             return
-
-            colors.forEach(_c => this.lineColorBar.classRemove(_c))
-            this.lineColorBar.classAdd(val)
         }})
 
         this.attributes.add({friendlyName: 'Center Origin', name: 'centerOrigin', type: 'bool'})
@@ -257,7 +226,7 @@ class sk_ui_slider extends sk_ui_component {
             speed: 20,
             easing: 'outQuint',
             onChanged: res => {
-                if (this.bypassTween && this.smooth) return
+                if (this.bypassTween) return
                 this.updatePos(res.current)
             }
         })
@@ -289,6 +258,46 @@ class sk_ui_slider extends sk_ui_component {
         this.observeLayout()
     }
 
+    /** Coerced numeric bounds — attribute/JSON values may be strings. */
+    getBounds(){
+        var min = Number(this.min)
+        var max = Number(this.max)
+        if (!Number.isFinite(min)) min = 0
+        if (!Number.isFinite(max)) max = 1
+        if (max < min) {
+            var swap = min
+            min = max
+            max = swap
+        }
+        return {min, max}
+    }
+
+    /**
+     * Map pointer to value from element box. Returns null if layout/bounds unusable.
+     */
+    pointerEventToValue(_e){
+        var bounds = this.getBounds()
+        if (bounds.max === bounds.min) return bounds.min
+
+        var mousePos = sk.interactions.getPos(_e)
+        var rect = this.element.getBoundingClientRect()
+        var trackSize = !this.vertical ? rect.width : rect.height
+        if (!(trackSize > 0)) {
+            trackSize = this.getTrackSize()
+        }
+        if (!(trackSize > 0)) return null
+
+        var pos = !this.vertical
+            ? (mousePos.x - rect.left)
+            : (mousePos.y - rect.top)
+        if (pos < 0) pos = 0
+        if (pos > trackSize) pos = trackSize
+
+        var value = bounds.min + (pos / trackSize) * (bounds.max - bounds.min)
+        if (!Number.isFinite(value)) return null
+        return value
+    }
+
     // Layout size (ignores CSS transform scale on ancestors — getBoundingClientRect does not).
     getTrackSize(){
         if (!this.vertical) return this.element.offsetWidth || 0
@@ -305,31 +314,35 @@ class sk_ui_slider extends sk_ui_component {
         var thumbSize = this.getThumbSize()
         var size = this.getTrackSize()
         var halfThumbSize = thumbSize / 2
+        var bounds = this.getBounds()
 
         return {
             size,
             halfThumbSize,
             minPos: this.centerOrigin ? 0 : halfThumbSize,
-            maxPos: size - (this.centerOrigin ? 0 : halfThumbSize)
+            maxPos: size - (this.centerOrigin ? 0 : halfThumbSize),
+            min: bounds.min,
+            max: bounds.max
         }
     }
 
     valueToPosition(value){
         var metrics = this.getSliderMetrics()
-        return sk.utils.map(value, this.min, this.max, metrics.minPos, metrics.maxPos)
+        return sk.utils.map(value, metrics.min, metrics.max, metrics.minPos, metrics.maxPos)
     }
 
     positionToValue(position){
         var metrics = this.getSliderMetrics()
         var clampedPosition = Math.max(metrics.minPos, Math.min(metrics.maxPos, position))
-        return sk.utils.map(clampedPosition, metrics.minPos, metrics.maxPos, this.min, this.max)
+        return sk.utils.map(clampedPosition, metrics.minPos, metrics.maxPos, metrics.min, metrics.max)
     }
 
     normalizeRangeValue(value){
-        var normalizedValue = Math.max(this.min, Math.min(this.max, Number(value)))
-        if (!Number.isFinite(normalizedValue)) normalizedValue = this.min
+        var bounds = this.getBounds()
+        var normalizedValue = Math.max(bounds.min, Math.min(bounds.max, Number(value)))
+        if (!Number.isFinite(normalizedValue)) normalizedValue = bounds.min
         if (this.step && this.step > 0) {
-            normalizedValue = this.min + Math.round((normalizedValue - this.min) / this.step) * this.step
+            normalizedValue = bounds.min + Math.round((normalizedValue - bounds.min) / this.step) * this.step
         }
         return normalizedValue
     }
@@ -347,12 +360,12 @@ class sk_ui_slider extends sk_ui_component {
 
         if (this.__rangeMode) {
             this.observeLayout()
-            if (!Number.isFinite(this.__rangeStart)) this.__rangeStart = this.min
-            if (!Number.isFinite(this.__rangeEnd)) this.__rangeEnd = this.max
+            if (!Number.isFinite(this.__rangeStart)) this.__rangeStart = this.getBounds().min
+            if (!Number.isFinite(this.__rangeEnd)) this.__rangeEnd = this.getBounds().max
             this.setRange(this.__rangeStart, this.__rangeEnd)
         } else {
             this.lineColorBar.style.left = '0px'
-            this.setValue(this.__value === undefined ? this.min : this.__value)
+            this.setValue(this.__value === undefined ? this.getBounds().min : this.__value)
         }
     }
 
@@ -439,6 +452,8 @@ class sk_ui_slider extends sk_ui_component {
     }
 
     updatePos(pos){
+        if (!Number.isFinite(pos)) return
+
         if (this.bypassTween){
             this.tween.last = pos
             this.tween.current = pos
@@ -453,42 +468,57 @@ class sk_ui_slider extends sk_ui_component {
         this.__lastPos = pos
     }
 
-    setValue(val){
-        var newVal = val
-        if (newVal < this.min) newVal = this.min
-        if (newVal > this.max) newVal = this.max
+    snapValueToStep(val){
+        var bounds = this.getBounds()
+        var step = Number(this.step)
+        if (!(step > 0)) step = 1
+        var range = bounds.max - bounds.min
+        if (!(range > 0)) return val
+        var snapped = bounds.min + Math.round((val - bounds.min) / step) * step
+        if (snapped < bounds.min) snapped = bounds.min
+        if (snapped > bounds.max) snapped = bounds.max
+        return snapped
+    }
 
-        this.__value = newVal
+    setValue(val){
+        var bounds = this.getBounds()
+        var newVal = Number(val)
+        if (!Number.isFinite(newVal)) return
+        if (newVal < bounds.min) newVal = bounds.min
+        if (newVal > bounds.max) newVal = bounds.max
 
         this.halfThumbSize = this.getThumbSize() / 2
         var maxSize = this.getTrackSize()
+        if (!(maxSize > 0)) {
+            var rect = this.element.getBoundingClientRect()
+            maxSize = !this.vertical ? rect.width : rect.height
+        }
         var minPos = (this.centerOrigin ? 0 : this.halfThumbSize)
         var maxPos = maxSize - (this.centerOrigin ? 0 : this.halfThumbSize)
-        // Not laid out yet (or inverted) — keep __value; ResizeObserver will place the thumb later.
-        if (!(maxSize > 0) || !(maxPos > minPos) || !Number.isFinite(minPos) || !Number.isFinite(maxPos)) return
 
-        var mappedPos = sk.utils.map(newVal, this.min, this.max, minPos, maxPos)
-
-        if (!this.smooth){
-            var snapSize = maxSize / (this.max - this.min)
-            mappedPos = this.thumb.movres_izer.calcSnap({
-                gridSize      : snapSize,
-                gridSnapWidth : snapSize/2,
-                pos: mappedPos
-            })
-
-            if (this.__lastPos === mappedPos) return
+        // Follow pointer while dragging; snap only when idle (non-smooth).
+        var isDragging = !!(this.mdPos || this.bypassTween)
+        if (!this.smooth && !isDragging) {
+            newVal = this.snapValueToStep(newVal)
         }
 
+        this.__value = newVal
 
+        // Not laid out yet — keep __value; ResizeObserver will place the thumb later.
+        if (!(maxSize > 0) || !(maxPos > minPos) || !Number.isFinite(minPos) || !Number.isFinite(maxPos)) return
+
+        var mappedPos = bounds.max === bounds.min
+            ? minPos
+            : (minPos + ((newVal - bounds.min) / (bounds.max - bounds.min)) * (maxPos - minPos))
+
+        if (!Number.isFinite(mappedPos)) return
         if (mappedPos < minPos) mappedPos = minPos
         if (mappedPos > maxPos) mappedPos = maxPos
 
-        if (!this.smooth){
+        if (!this.smooth || this.bypassTween) {
             this.updatePos(mappedPos)
         } else {
-            if (this.bypassTween && this.smooth) this.updatePos(mappedPos)
-            else this.tween.to(mappedPos)
+            this.tween.to(mappedPos)
         }
 
         if (this.dawPluginParamIsTouching){

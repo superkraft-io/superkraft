@@ -19,9 +19,8 @@
     background-color: var(--sk_ui_color_grey_4);
     left: 0px;
     top: 0px;
-    /* bottom: 0px; */
-    /* right: 0px; */
-    width: 100%;
+    /* Must start at 0 — width:100% made mousedown read a full-track origin and jump to max. */
+    width: 0;
     height: 100%;
     border-radius: 8px;
 }
