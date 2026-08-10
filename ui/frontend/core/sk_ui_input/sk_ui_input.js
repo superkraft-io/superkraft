@@ -216,10 +216,14 @@ class sk_ui_input extends sk_ui_component {
                 this.classRemove('sk_ui_input_dragging')
                 document.body.style.cursor = ''
                 if (ev && ev.preventDefault) ev.preventDefault()
+                // Clear before end callbacks so handlers can format the final value
+                // (e.g. 81 → −∞) without a trailing scrub onChanged overwriting them.
+                this.__dragScrubbing = false
                 if (this.onDragToChangeEnd) this.onDragToChangeEnd(this.value, ev)
-                if (this.onChanged) this.onChanged(this.value)
+                else if (this.onChanged) this.onChanged(this.value)
+            } else {
+                this.__dragScrubbing = false
             }
-            this.__dragScrubbing = false
         }
 
         window.addEventListener('pointermove', onMove, true)
