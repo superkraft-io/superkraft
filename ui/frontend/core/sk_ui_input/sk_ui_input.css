@@ -40,3 +40,13 @@
     border: solid 1px #9d0000;
 }
 
+.sk_ui_input_dragToChange > #inputEl > input {
+    cursor: ns-resize;
+}
+
+.sk_ui_input_dragToChange.sk_ui_input_dragging > #inputEl > input {
+    cursor: ns-resize;
+    user-select: none;
+    caret-color: transparent;
+}
+

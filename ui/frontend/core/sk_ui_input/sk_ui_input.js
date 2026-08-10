@@ -118,13 +118,113 @@ class sk_ui_input extends sk_ui_component {
         this.attributes.add({ friendlyName: 'Min', name: 'min', type: 'number', onSet: val => { this.input.setAttribute('min', val) } })
         this.attributes.add({ friendlyName: 'Max', name: 'max', type: 'number', onSet: val => { this.input.setAttribute('maxlength', val) } })
 
-
+        // Vertical click+drag scrub: sensitivity = Δvalue per pixel (up increases unless invert).
+        // Shift → ×0.1, Alt/Ctrl/Meta → ×10. Click without drag still focuses for typing.
+        this.attributes.add({friendlyName: 'Drag To Change', name: 'dragToChange', type: 'bool', onSet: val => {
+            if (val) this.classAdd('sk_ui_input_dragToChange')
+            else this.classRemove('sk_ui_input_dragToChange')
+        }})
+        this.attributes.add({friendlyName: 'Sensitivity', name: 'sensitivity', type: 'number', onSet: val => {
+            var n = Number(val)
+            this.__sensitivity = (Number.isFinite(n) && n !== 0) ? n : 1
+        }})
+        this.attributes.add({friendlyName: 'Invert', name: 'invert', type: 'bool'})
+        this.__sensitivity = 1
+        this.__dragScrubbing = false
 
         this.input = this.inputBucket.input
         this.input.id = this.element.id + '_input'
         this.__value = ''
 
         this.inputWrapper = this.inputBucket.inputEl
+
+        this.input.addEventListener('pointerdown', _e => this.onDragToChangePointerDown(_e))
+    }
+
+    getDragSensitivity(event){
+        var sens = Number(this.sensitivity)
+        if (!Number.isFinite(sens) || sens === 0) sens = 1
+        if (event) {
+            if (event.shiftKey) sens *= 0.1
+            if (event.altKey || event.ctrlKey || event.metaKey) sens *= 10
+        }
+        return sens
+    }
+
+    roundDragValue(value, sens){
+        var abs = Math.abs(sens)
+        if (!(abs > 0)) return Math.round(value)
+        if (abs >= 1) return Math.round(value)
+        var decimals = Math.min(6, Math.max(0, Math.ceil(-Math.log10(abs) - 1e-9)))
+        var f = Math.pow(10, decimals)
+        return Math.round(value * f) / f
+    }
+
+    clampDragValue(value){
+        var next = value
+        if (this.min !== undefined && this.min !== null && this.min !== '') {
+            var min = parseFloat(this.min)
+            if (Number.isFinite(min) && next < min) next = min
+        }
+        if (this.max !== undefined && this.max !== null && this.max !== '') {
+            var max = parseFloat(this.max)
+            if (Number.isFinite(max) && next > max) next = max
+        }
+        return next
+    }
+
+    onDragToChangePointerDown(event){
+        if (!this.dragToChange) return
+        if (event.button !== 0) return
+        if (this.input.disabled || this.readonly) return
+
+        var startY = event.clientY
+        var startX = event.clientX
+        var startVal = parseFloat(this.value)
+        if (!Number.isFinite(startVal)) startVal = 0
+        var pointerId = event.pointerId
+        var scrubbing = false
+
+        var onMove = ev => {
+            var dy = startY - ev.clientY
+            var dx = ev.clientX - startX
+            if (!scrubbing) {
+                if (Math.abs(dy) < 3 && Math.abs(dx) < 3) return
+                scrubbing = true
+                this.__dragScrubbing = true
+                this.classAdd('sk_ui_input_dragging')
+                try { this.input.setPointerCapture(pointerId) } catch (e) {}
+                try { this.input.blur() } catch (e) {}
+                document.body.style.cursor = 'ns-resize'
+            }
+            var sens = this.getDragSensitivity(ev)
+            if (this.invert) dy = -dy
+            var next = this.clampDragValue(this.roundDragValue(startVal + dy * sens, sens))
+            // Bypass string value setter edge cases while scrubbing.
+            this.inputBucket.input.value = String(next)
+            this.__value = String(next)
+            if (this.onChanged) this.onChanged(this.value)
+            if (this.onDragToChange) this.onDragToChange(this.value, ev)
+        }
+
+        var onUp = ev => {
+            window.removeEventListener('pointermove', onMove, true)
+            window.removeEventListener('pointerup', onUp, true)
+            window.removeEventListener('pointercancel', onUp, true)
+            try { this.input.releasePointerCapture(pointerId) } catch (e) {}
+            if (scrubbing) {
+                this.classRemove('sk_ui_input_dragging')
+                document.body.style.cursor = ''
+                if (ev && ev.preventDefault) ev.preventDefault()
+                if (this.onDragToChangeEnd) this.onDragToChangeEnd(this.value, ev)
+                if (this.onChanged) this.onChanged(this.value)
+            }
+            this.__dragScrubbing = false
+        }
+
+        window.addEventListener('pointermove', onMove, true)
+        window.addEventListener('pointerup', onUp, true)
+        window.addEventListener('pointercancel', onUp, true)
     }
 
     ensureValue(val) {
