@@ -313,7 +313,7 @@
             },
 
             formatSeconds: seconds => {
-                var _s = seconds
+                var _s = Number(seconds) || 0
                 var timeUnit = (_s > 1 ? sk.l10n.getPhrase('seconds') : sk.l10n.getPhrase('second') )
 
                 if (_s > 60){
@@ -327,7 +327,9 @@
                     timeUnit = (_s > 1 ? sk.l10n.getPhrase('hours') : sk.l10n.getPhrase('hour') )
                     hourUnit = true
                 }
-                
+
+                // Cap display decimals (minute/hour conversion otherwise prints long floats).
+                _s = Math.round(_s * 100) / 100
 
                 return {
                     long: _s + ' ' + timeUnit,
