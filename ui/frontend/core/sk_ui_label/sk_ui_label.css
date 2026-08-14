@@ -4,3 +4,50 @@
     white-space: nowrap;
     line-height: 1;
 }
+
+.sk_ui_label_editable {
+    position: relative;
+    cursor: text;
+}
+
+.sk_ui_label_text {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    text-align: inherit;
+}
+
+.sk_ui_label_editing .sk_ui_label_text {
+    visibility: hidden;
+}
+
+.sk_ui_label_editInput {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    z-index: 2;
+}
+
+.sk_ui_label_editInput > #inputEl {
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+}
+
+.sk_ui_label_editInput > #inputEl > input {
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 2px !important;
+    text-align: inherit !important;
+    border: 1px solid rgba(158, 203, 255, 0.55) !important;
+    border-radius: 3px !important;
+    background: rgba(0, 0, 0, 0.55) !important;
+    color: inherit !important;
+    font: inherit !important;
+    line-height: inherit !important;
+    outline: none !important;
+}
