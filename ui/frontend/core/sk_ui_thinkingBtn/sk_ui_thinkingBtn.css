@@ -92,8 +92,18 @@ ease;
     mix-blend-mode: plus-lighter;
 }
 
-.sk_ui_thinkingBtn_on,
-.sk_ui_thinkingBtn_on .sk_ui_thinkingBtn_btn {
+.sk_ui_thinkingBtn_content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    flex: 1 1 auto;
+    pointer-events: none;
+}
+
+.sk_ui_thinkingBtn_on:not(.sk_ui_thinkingBtn_interactive),
+.sk_ui_thinkingBtn_on:not(.sk_ui_thinkingBtn_interactive) .sk_ui_thinkingBtn_btn {
     pointer-events: none !important;
 }
 
@@ -120,7 +130,8 @@ ease;
 }
 
 .sk_ui_thinkingBtn_on .sk_ui_thinkingBtn_btn > .sk_ui_label,
-.sk_ui_thinkingBtn_on .sk_ui_thinkingBtn_btn > .sk_ui_icon {
+.sk_ui_thinkingBtn_on .sk_ui_thinkingBtn_btn > .sk_ui_icon,
+.sk_ui_thinkingBtn_on .sk_ui_thinkingBtn_content {
     position: relative;
     z-index: 1;
 }

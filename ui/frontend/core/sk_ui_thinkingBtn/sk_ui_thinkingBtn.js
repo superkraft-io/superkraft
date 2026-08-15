@@ -49,7 +49,7 @@ class sk_ui_thinkingBtn extends sk_ui_component {
         this.borderOutline = this.add.fromClass(sk_ui_thinkingBtn_borderOutline)
         this.button = this.add.fromClass(sk_ui_thinkingBtn_button, _c => {
             _c.onClick = (event, btn) => {
-                if (this.thinking) return
+                if (this.thinking && this.lockWhileThinking !== false) return
                 if (this.onClick) this.onClick(event, this)
             }
         })
@@ -78,7 +78,7 @@ class sk_ui_thinkingBtn extends sk_ui_component {
         this.attributes.add({friendlyName: 'Thinking', name: 'thinking', type: 'bool', onSet: val => {
             if (val) {
                 this.classAdd('sk_ui_thinkingBtn_on')
-                if (this.button) this.button.pointerEvents = 'none'
+                if (this.lockWhileThinking !== false && this.button) this.button.pointerEvents = 'none'
                 this.startWashes()
             } else {
                 this.classRemove('sk_ui_thinkingBtn_on')
@@ -86,6 +86,34 @@ class sk_ui_thinkingBtn extends sk_ui_component {
                 this.stopWashes()
             }
         }})
+
+        this.attributes.add({friendlyName: 'Lock While Thinking', name: 'lockWhileThinking', type: 'bool', onSet: val => {
+            if (val === false) this.classAdd('sk_ui_thinkingBtn_interactive')
+            else this.classRemove('sk_ui_thinkingBtn_interactive')
+            if (this.thinking && this.button) {
+                this.button.pointerEvents = val === false ? '' : 'none'
+            }
+        }})
+        this.lockWhileThinking = true
+    }
+
+    get content(){
+        if (this._content) return this._content
+        if (this.button && this.button.label) {
+            this.button.label.remove()
+            this.button.label = undefined
+        }
+        if (this.button && this.button._icon) {
+            this.button._icon.remove()
+            this.button._icon = undefined
+        }
+        this._content = this.button.add.component(_c => {
+            _c.classAdd('sk_ui_thinkingBtn_content')
+            _c.styling = 'ttb left top fullwidth'
+            _c.compact = true
+            _c.animate = false
+        })
+        return this._content
     }
 
     addWashes(host, opt){
