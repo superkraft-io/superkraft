@@ -151,6 +151,11 @@ class sk_ui_dropdown extends sk_ui_button {
             this._editableMenuIcon = val || 'caret down'
             if (this.editableMenuButtonIcon) this.editableMenuButtonIcon.icon = this._editableMenuIcon
         }})
+
+        // Alias: autocomplete=true turns on the editable field + ghost suggestion.
+        this.attributes.add({friendlyName: 'Autocomplete', name: 'autocomplete', type: 'bool', onSet: val => {
+            this.editable = !!val
+        }})
     }
 
     setAutoCompleteText(text){
