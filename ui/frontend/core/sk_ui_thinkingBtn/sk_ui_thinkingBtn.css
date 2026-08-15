@@ -1,0 +1,147 @@
+.sk_ui_thinkingBtn {
+    position: relative;
+    width: fit-content;
+    height: fit-content;
+    min-width: 88px;
+    overflow: visible;
+    isolation: isolate;
+}
+
+.sk_ui_thinkingBtn_glow {
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    width: 125%;
+    height: 125%;
+    margin: 0 !important;
+    transform: translate(-50%, -50%);
+    border-radius: 8px;
+    overflow: hidden;
+    pointer-events: none;
+    filter: blur(10px);
+    opacity: 0;
+    z-index: 0;
+    background: rgb(10, 28, 58);
+}
+
+.sk_ui_thinkingBtn_borderOutline {
+    position: absolute !important;
+    inset: -1px;
+    z-index: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    pointer-events: none;
+    box-sizing: border-box;
+    filter: blur(3px);
+    mix-blend-mode: plus-lighter;
+    opacity: 0;
+    transform: scale(0.92);
+    transform-origin: center;
+    transition: opacity 260ms ease, transform 280ms ease, background-color 240ms ease;
+}
+
+.sk_ui_thinkingBtn_btn.sk_ui_button {
+    position: relative;
+    z-index: 1;
+    width: 100% !important;
+    /* height: 33px !important; */
+    /* min-width: 0; */
+    /* min-height: 0; */
+    padding: 8px 14px !important;
+    overflow: hidden !important;
+    /* box-sizing: border-box; */
+    background-color: var(--sk_ui_color_dark_grey);
+    transition: background-color 240ms 
+ease;
+}
+
+.sk_ui_thinkingBtn_btn > .sk_ui_icon {
+    margin-right: 12px;
+}
+
+.sk_ui_thinkingBtn_wash {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0;
+}
+
+.sk_ui_thinkingBtn_washRotator {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 360%;
+    height: 360%;
+    transform: translate(-50%, -50%) rotate(var(--wash-angle, 0deg));
+    pointer-events: none;
+}
+
+.sk_ui_thinkingBtn_washField {
+    position: absolute;
+    inset: 0;
+    transform: translateX(-85%);
+    filter: blur(16px);
+    mix-blend-mode: screen;
+    pointer-events: none;
+}
+
+.sk_ui_thinkingBtn_wash_bright .sk_ui_thinkingBtn_washField {
+    filter: blur(8px);
+    mix-blend-mode: plus-lighter;
+}
+
+.sk_ui_thinkingBtn_on,
+.sk_ui_thinkingBtn_on .sk_ui_thinkingBtn_btn {
+    pointer-events: none !important;
+}
+
+.sk_ui_thinkingBtn_on {
+    opacity: 1 !important;
+}
+
+.sk_ui_thinkingBtn_on .sk_ui_thinkingBtn_glow {
+    opacity: 1;
+}
+
+.sk_ui_thinkingBtn_on .sk_ui_thinkingBtn_borderOutline {
+    opacity: 1;
+    transform: scale(1);
+    background: rgba(255, 255, 255, 0.22);
+}
+
+.sk_ui_thinkingBtn_on .sk_ui_thinkingBtn_btn {
+    background-color: rgb(10, 28, 58) !important;
+}
+
+.sk_ui_thinkingBtn_on .sk_ui_thinkingBtn_wash {
+    opacity: 1;
+}
+
+.sk_ui_thinkingBtn_on .sk_ui_thinkingBtn_btn > .sk_ui_label,
+.sk_ui_thinkingBtn_on .sk_ui_thinkingBtn_btn > .sk_ui_icon {
+    position: relative;
+    z-index: 1;
+}
+
+.sk_ui_thinkingBtn_on .sk_ui_thinkingBtn_btn > .sk_ui_label {
+    color: #fff;
+    text-shadow: 0 0 8px rgba(8, 136, 255, 0.85);
+}
+
+.sk_ui_thinkingBtn_on .sk_ui_thinkingBtn_btn > .sk_ui_icon {
+    color: #fff;
+    filter: drop-shadow(0 0 6px rgba(8, 136, 255, 0.9));
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sk_ui_thinkingBtn_borderOutline {
+        transform: none;
+        transition: opacity 200ms ease;
+    }
+
+    .sk_ui_thinkingBtn_washField {
+        transform: none;
+    }
+}
