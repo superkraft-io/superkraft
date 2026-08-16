@@ -108,8 +108,25 @@ class sk_ui_modal extends sk_ui_component {
         document.addEventListener('keydown', this.escapeKeyCloser)
     }
 
+    dismissAllMenus(){
+        try {
+            if (typeof SK_ContextMenu !== 'undefined' && SK_ContextMenu.dismissAllOpenMenus) {
+                SK_ContextMenu.dismissAllOpenMenus()
+                return
+            }
+        } catch (err) {}
+        try {
+            sk.ums.broadcast('sk_ui_contextMenu-hide', undefined, {
+                fromGlobal: true,
+                instant: true,
+                toBE: false
+            })
+        } catch (err) {}
+    }
+
     hide(){
         return new Promise(async resolve => {
+            this.dismissAllMenus()
             if (this.onHide) this.onHide()
             //this.contentContainer.transition('scale out')
             await this.transition('fade out')
@@ -127,6 +144,7 @@ class sk_ui_modal extends sk_ui_component {
 
     show(){
         return new Promise(async resolve => {
+            this.dismissAllMenus()
             if (this.onShow) this.onShow()
             //this.contentContainer.transition('scale in')
             await this.transition(this.opt.transition || 'fade in')
