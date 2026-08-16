@@ -23,6 +23,11 @@ class sk_ui_slider extends sk_ui_component {
                 _c.classAdd('sk_ui_slider_line_colorBar')
                 _c.animate = false
             })
+            this.lineColorBarEnd = _c.add.component(_c => {
+                _c.classAdd('sk_ui_slider_line_colorBar sk_ui_slider_line_colorBar_end')
+                _c.animate = false
+                _c.style.display = 'none'
+            })
         })
 
         this.thumb = this.add.component(_c => {
@@ -193,6 +198,12 @@ class sk_ui_slider extends sk_ui_component {
             this.__rangeEnd = val
             if (this.__rangeMode) this.setRange(this.__rangeStart, val)
         }})
+        this.attributes.add({friendlyName: 'Range Invert', name: 'rangeInvert', type: 'bool', onSet: val => {
+            this.__rangeInvert = !!val
+            this.classRemove('sk_ui_slider_rangeInvert')
+            if (this.__rangeInvert) this.classAdd('sk_ui_slider_rangeInvert')
+            if (this.__rangeMode) this.updateRangePositions(false)
+        }})
 
         this.attributes.add({friendlyName: 'Step', name: 'step', type: 'number', onSet: val => {  }})
         this.attributes.add({friendlyName: 'Min', name: 'min', type: 'number', onSet: val => {  }})
@@ -216,6 +227,7 @@ class sk_ui_slider extends sk_ui_component {
 
         this.attributes.add({friendlyName: 'Color', name: 'color', type: 'text', onSet: val => {
             this.lineColorBar.style.backgroundColor = val
+            if (this.lineColorBarEnd) this.lineColorBarEnd.style.backgroundColor = val
             return
         }})
 
@@ -365,6 +377,7 @@ class sk_ui_slider extends sk_ui_component {
             this.setRange(this.__rangeStart, this.__rangeEnd)
         } else {
             this.lineColorBar.style.left = '0px'
+            if (this.lineColorBarEnd) this.lineColorBarEnd.style.display = 'none'
             this.setValue(this.__value === undefined ? this.getBounds().min : this.__value)
         }
     }
@@ -445,8 +458,26 @@ class sk_ui_slider extends sk_ui_component {
 
         this.thumb.style[positionProperty] = positions.start - positions.halfThumbSize + 'px'
         this.secondThumb.style[positionProperty] = positions.end - positions.halfThumbSize + 'px'
-        this.lineColorBar.style[positionProperty] = positions.startPosition + 'px'
-        this.lineColorBar.style[sizeProperty] = Math.max(0, positions.endPosition - positions.startPosition) + 'px'
+        if (this.__rangeInvert) {
+            var trackSize = this.getTrackSize()
+            if (!(trackSize > 0) && this.line && this.line.element) {
+                trackSize = !this.vertical ? this.line.element.offsetWidth : this.line.element.offsetHeight
+            }
+            this.lineColorBar.style[positionProperty] = '0px'
+            this.lineColorBar.style[sizeProperty] = Math.max(0, positions.startPosition) + 'px'
+            if (this.lineColorBarEnd) {
+                this.lineColorBarEnd.style.display = ''
+                this.lineColorBarEnd.style[positionProperty] = positions.endPosition + 'px'
+                this.lineColorBarEnd.style[sizeProperty] = Math.max(0, trackSize - positions.endPosition) + 'px'
+            }
+        } else {
+            this.lineColorBar.style[positionProperty] = positions.startPosition + 'px'
+            this.lineColorBar.style[sizeProperty] = Math.max(0, positions.endPosition - positions.startPosition) + 'px'
+            if (this.lineColorBarEnd) {
+                this.lineColorBarEnd.style.display = 'none'
+                this.lineColorBarEnd.style[sizeProperty] = '0px'
+            }
+        }
 
         if (notify && this.onRangeChanged) this.onRangeChanged(this.getRange())
     }

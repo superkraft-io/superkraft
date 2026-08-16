@@ -44,6 +44,14 @@
     border-radius: 0 12px 12px 0;
 }
 
+.sk_ui_slider_rangeInvert .sk_ui_slider_thumb_rangeStart {
+    border-radius: 0 12px 12px 0;
+}
+
+.sk_ui_slider_rangeInvert .sk_ui_slider_thumb_rangeEnd {
+    border-radius: 12px 0 0 12px;
+}
+
 
 
 .sk_ui_slider > #sliderEl {
