@@ -1,5 +1,6 @@
 .sk_ui_checkbox {
     padding: 0px;
+    gap: 6px;
 }
 
 .sk_ui_checkbox:hover {

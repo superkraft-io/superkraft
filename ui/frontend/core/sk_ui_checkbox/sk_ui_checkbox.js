@@ -3,6 +3,7 @@ class sk_ui_checkbox extends sk_ui_button {
         super(opt)
 
         this.styling = 'left middle'
+        this.compact = true
 
         this.label.wrap = true
 
