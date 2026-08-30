@@ -1427,7 +1427,7 @@ class sk_ui_movableizer {
             
             this.moving = false
             
-            this.parent.pointerEvents = 'true'
+            this.parent.pointerEvents = 'auto'
     
             if (this.onBeginNotified && this.onEnd){
                 this.onEnd({
