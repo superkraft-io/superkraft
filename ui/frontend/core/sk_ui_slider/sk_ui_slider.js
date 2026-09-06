@@ -51,6 +51,7 @@ class sk_ui_slider extends sk_ui_component {
             this.bypassTween = false
             this.hasMoved = false
             this.__rangeDragOffset = undefined
+            this.__dragOffset = 0
 
             // Snap to step on release when non-smooth.
             if (!this.__rangeMode && !this.smooth) {
@@ -141,11 +142,19 @@ class sk_ui_slider extends sk_ui_component {
                     : 'end'
                 this.__rangeDragOffset = rangePosition - thumbPositions[this.__rangeDragThumb]
             } else {
-                // Jump thumb to click/touch immediately.
-                var downVal = this.pointerEventToValue(_e)
-                if (downVal != null) {
-                    this.setValue(downVal)
-                    if (this.onChanged) this.onChanged(this.__value)
+                var layoutPos = this.pointerEventToLayoutPos(_e)
+                var thumbPos = Number.isFinite(this.__value) ? this.valueToPosition(this.__value) : null
+                var thumbHit = layoutPos != null && thumbPos != null
+                    && Math.abs(layoutPos - thumbPos) <= Math.max(this.getThumbSize() / 2, 8)
+                if (thumbHit) {
+                    this.__dragOffset = layoutPos - thumbPos
+                } else {
+                    this.__dragOffset = 0
+                    var downVal = this.pointerEventToValue(_e)
+                    if (downVal != null) {
+                        this.setValue(downVal)
+                        if (this.onChanged) this.onChanged(this.__value)
+                    }
                 }
             }
 
@@ -284,28 +293,30 @@ class sk_ui_slider extends sk_ui_component {
         return {min, max}
     }
 
+    pointerEventToLayoutPos(_e){
+        var mousePos = sk.interactions.getPos(_e)
+        var rect = this.element.getBoundingClientRect()
+        var clientSize = !this.vertical ? rect.width : rect.height
+        if (!(clientSize > 0)) return null
+        var pos = !this.vertical ? (mousePos.x - rect.left) : (mousePos.y - rect.top)
+        var layoutSize = this.getTrackSize()
+        if (layoutSize > 0 && Math.abs(layoutSize - clientSize) > 0.5) {
+            pos *= layoutSize / clientSize
+        }
+        return pos
+    }
+
     /**
-     * Map pointer to value from element box. Returns null if layout/bounds unusable.
+     * Map pointer to value with the same half-thumb inset as setValue.
+     * Subtracts __dragOffset so a thumb press does not jump.
      */
     pointerEventToValue(_e){
         var bounds = this.getBounds()
         if (bounds.max === bounds.min) return bounds.min
-
-        var mousePos = sk.interactions.getPos(_e)
-        var rect = this.element.getBoundingClientRect()
-        var trackSize = !this.vertical ? rect.width : rect.height
-        if (!(trackSize > 0)) {
-            trackSize = this.getTrackSize()
-        }
-        if (!(trackSize > 0)) return null
-
-        var pos = !this.vertical
-            ? (mousePos.x - rect.left)
-            : (mousePos.y - rect.top)
-        if (pos < 0) pos = 0
-        if (pos > trackSize) pos = trackSize
-
-        var value = bounds.min + (pos / trackSize) * (bounds.max - bounds.min)
+        var pos = this.pointerEventToLayoutPos(_e)
+        if (pos == null) return null
+        if (this.__dragOffset) pos -= this.__dragOffset
+        var value = this.positionToValue(pos)
         if (!Number.isFinite(value)) return null
         return value
     }
