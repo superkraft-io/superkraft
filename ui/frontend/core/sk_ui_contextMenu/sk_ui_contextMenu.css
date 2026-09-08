@@ -133,5 +133,43 @@
 }
 
 .sk_ui_contextMenu_shortcut_specialChar {
+    font-size: 14px;
+}
+
+/* Win11-ish density. macOS keeps the looser sizes above. */
+.sk_ui_contextMenu.sk_ui_os_win {
+    padding: 6px;
+    min-width: 7rem;
+    border: solid 0.75px #000000;
+}
+
+.sk_ui_contextMenu.sk_ui_os_win .sk_ui_contextMenu_Item:not(.sk_ui_contextMenu_Item_Separator) {
+    padding: 3px 8px;
+    border-radius: 0px;
+}
+
+.sk_ui_contextMenu.sk_ui_os_win .sk_ui_contextMenu_Item_content > .sk_ui_label {
     font-size: 12px;
+}
+
+.sk_ui_contextMenu.sk_ui_os_win .sk_ui_contextMenu_Item_rightSide {
+    margin-left: 20px;
+}
+
+.sk_ui_contextMenu.sk_ui_os_win .sk_ui_contextMenu_Item_Header {
+    margin-top: 6px;
+}
+
+.sk_ui_contextMenu.sk_ui_os_win .sk_ui_contextMenu_Item_Separator {
+    margin: 4px 6px;
+}
+
+.sk_ui_contextMenu.sk_ui_os_win .sk_ui_contextMenu_Item_hasIcon {
+    width: 14px;
+    margin-right: 4px !important;
+}
+
+.sk_ui_contextMenu.sk_ui_os_win .sk_ui_contextMenu_shortcut > .sk_ui_label,
+.sk_ui_contextMenu.sk_ui_os_win .sk_ui_contextMenu_shortcut_specialChar {
+    font-size: 11px;
 }
