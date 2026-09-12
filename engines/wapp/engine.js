@@ -21,7 +21,10 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
     init(){
         return new Promise(async resolve => {
-            var cdnRoute = this.sk.info.cdn.routes[this.sk.info.config.isWhat.env]
+            var cdnRoute = undefined
+            if (this.sk.info.cdn){
+                cdnRoute = this.sk.info.cdn.routes[this.sk.info.config.isWhat.env]
+            }
             
             this.express = express
            

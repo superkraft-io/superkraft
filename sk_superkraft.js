@@ -155,6 +155,7 @@ module.exports = class Superkraft {
         if (opt.config){
             var configData = await sk_fs.promises.readFile(opt.config)
             sk.config = JSON.parse(configData)
+            if (!this.info.cdn) this.info.cdn = sk.config.cdn
         }
 
         /****************/
