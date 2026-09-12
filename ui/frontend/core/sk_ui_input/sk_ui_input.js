@@ -117,6 +117,7 @@ class sk_ui_input extends sk_ui_component {
 
         this.attributes.add({ friendlyName: 'Min', name: 'min', type: 'number', onSet: val => { this.input.setAttribute('min', val) } })
         this.attributes.add({ friendlyName: 'Max', name: 'max', type: 'number', onSet: val => { this.input.setAttribute('maxlength', val) } })
+        this.attributes.add({ friendlyName: 'Step', name: 'step', type: 'number', onSet: val => { this.input.setAttribute('step', val) } })
 
         // Vertical click+drag scrub: sensitivity = Δvalue per pixel (up increases unless invert).
         // Shift → ×0.1, Alt/Ctrl/Meta → ×10. Click without drag still focuses for typing.

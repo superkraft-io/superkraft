@@ -57,6 +57,7 @@ module.exports = class Superkraft {
 
             headers: opt.headers || {},
             csp: opt.csp || {},
+            bodyLimit: opt.bodyLimit,
 
             dapp: opt.dapp || {},
             mobile: opt.mobile || {},

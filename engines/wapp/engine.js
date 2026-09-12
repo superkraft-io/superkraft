@@ -42,8 +42,13 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
                 origin: '*'
             }))
             
-            app.use(bodyParser.json())
-            app.use(bodyParser.urlencoded({ extended: true }))
+            if (this.sk.info.bodyLimit) {
+                app.use(bodyParser.json({ limit: this.sk.info.bodyLimit }))
+                app.use(bodyParser.urlencoded({ extended: true, limit: this.sk.info.bodyLimit }))
+            } else {
+                app.use(bodyParser.json())
+                app.use(bodyParser.urlencoded({ extended: true }))
+            }
         
 
             app.use((err, req, res, next) => {
