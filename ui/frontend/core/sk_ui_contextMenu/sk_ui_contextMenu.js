@@ -904,10 +904,12 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
             _c.styling += ' fullwidth'
             _c.type = this.opt.input
             _c.value = this.opt.value || ''
+            if (this.opt.placeholder) _c.placeholder = this.opt.placeholder
             _c.onChanged = val => {
                 if (this.opt.onChanged) this.opt.onChanged({sender: this, val: val})
             }
         })
+        this.input = input
 
         if (this.opt.input === 'color'){
             var style = input.input.style
@@ -918,5 +920,7 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
             style.borderColor = 'transparent'
             style.color = 'white'
         }
+
+        if (this.opt.onAfterCreated) this.opt.onAfterCreated(this)
     }
 }

@@ -102,27 +102,81 @@ class sk_ui_dropdown extends sk_ui_button {
                     }
                 })
                 this.editableInput.input.addEventListener('keydown', event => {
-                    if (event.key === 'ArrowDown') {
+                    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
                         if (!this._menuEnabled) return
                         event.preventDefault()
                         event.stopPropagation()
-                        if (this.contextMenu.menu) this.contextMenu.menu.focusAdjacentItem(1)
-                        else this.contextMenu.show({_e: event, focusFirstItem: true})
+                        var dir = event.key === 'ArrowDown' ? 1 : -1
+                        var menu = this.activeMenu()
+                        if (menu) {
+                            menu.focusAdjacentItem(dir)
+                            return
+                        }
+                        var shown = this.contextMenu.show({_e: event, focusFirstItem: dir === 1})
+                        if (dir === -1 && shown && typeof shown.then === 'function') {
+                            shown.then(() => {
+                                var opened = this.contextMenu.menu
+                                if (!opened) return
+                                var items = opened.getNavigableItems()
+                                if (items.length) opened.focusItem(items[items.length - 1])
+                            })
+                        }
                         return
                     }
-                    var autoCompleteText = this.autoCompleteInput.value
-                    if (event.key !== 'Tab' || !autoCompleteText) return
+                    if (event.key === 'ArrowRight') {
+                        var rightMenu = this.activeMenu()
+                        var rightItem = rightMenu && rightMenu.keyboardFocusedItem
+                        if (rightItem && rightItem.openSubmenu) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                            rightItem.openSubmenu(true)
+                        }
+                        return
+                    }
+                    if (event.key === 'ArrowLeft') {
+                        var leftMenu = this.activeMenu()
+                        if (leftMenu && leftMenu.parentContextMenu) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                            var parentMenu = leftMenu.parentContextMenu
+                            var parentItem = leftMenu.parentItem
+                            leftMenu.close({fromKeyboard: true})
+                            if (parentMenu) parentMenu.focusItem(parentItem)
+                        }
+                        return
+                    }
+                    if (event.key === 'Enter') {
+                        event.preventDefault()
+                        event.stopPropagation()
+                        if (this.activateFocusedMenuItem()) {
+                            event.stopImmediatePropagation()
+                            return
+                        }
+                    }
+                    var tabComplete = this.autoCompleteInput.value
+                    if (event.key !== 'Tab' || !tabComplete) return
                     event.preventDefault()
-                    this.text = autoCompleteText
-                    if (this.onChanged) this.onChanged(autoCompleteText)
+                    this.text = tabComplete
+                    if (this.onChanged) this.onChanged(tabComplete)
                     this.setAutoCompleteText('')
                     if (this.onQuery) this.onQuery({
-                        text: autoCompleteText,
+                        text: tabComplete,
                         setAutoCompleteText: text => this.setAutoCompleteText(text)
                     })
                 })
+                this.editableInput.element.addEventListener('mousedown', event => event.stopPropagation())
+                this.editableInput.element.addEventListener('click', event => event.stopPropagation())
+                this.element.addEventListener('mouseenter', ()=> {
+                    if (this.contextMenu.menu) this.contextMenu.menu.focused = true
+                })
                 this.editableInput.input.addEventListener('blur', ()=> {
-                    if (this.contextMenu.menu) this.contextMenu.menu.close({fromInputBlur: true})
+                    var menu = this.contextMenu.menu
+                    if (!menu) return
+                    setTimeout(()=> {
+                        if (this.pointerOverMenu()) return
+                        var open = this.contextMenu.menu
+                        if (open) open.close({fromInputBlur: true})
+                    }, 0)
                 })
                 this.element.insertBefore(this.editableInputs.element, this._icon.element)
                 this.editableMenuButton = this.add.component(_c => {
@@ -162,6 +216,30 @@ class sk_ui_dropdown extends sk_ui_button {
         if (!this.autoCompleteInput) return
         this.autoCompleteInput.value = text || ''
         this.autoCompleteInput.style.display = text ? '' : 'none'
+    }
+
+    activeMenu(){
+        if (typeof sk_ui_contextMenu !== 'undefined' && sk_ui_contextMenu.activeKeyboardMenu) {
+            return sk_ui_contextMenu.activeKeyboardMenu
+        }
+        return this.contextMenu.menu
+    }
+
+    pointerOverMenu(){
+        if (this.element && this.element.matches && this.element.matches(':hover')) return true
+        try {
+            if (document.querySelector('.sk_ui_contextMenu:hover')) return true
+        } catch (err) {}
+        var menu = this.contextMenu.menu
+        return !!(menu && menu.focused)
+    }
+
+    activateFocusedMenuItem(){
+        var menu = this.activeMenu()
+        var item = menu && menu.keyboardFocusedItem
+        if (!item || !item.activate) return false
+        item.activate()
+        return true
     }
 
     set items(items){
