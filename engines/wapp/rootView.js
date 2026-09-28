@@ -75,12 +75,12 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                 )
             }
            
-            this.sk.app.use(this.routes.frontend.view, this.sk.info.engine.express.static(opt.root + 'frontend/'))
-            this.sk.app.use(this.routes.frontend.global, this.sk.info.engine.express.static(this.sk.info.paths.globalFrontend))
+            this.sk.app.use(this.routes.frontend.view, this.sk.info.engine.serveStatic(opt.root + 'frontend/'))
+            this.sk.app.use(this.routes.frontend.global, this.sk.info.engine.serveStatic(this.sk.info.paths.globalFrontend))
         
 
             if (this.info.vanilla){
-                this.sk.app.use('/vanillaFE', this.sk.info.engine.express.static(this.sk.info.paths.vanillaFrontend))
+                this.sk.app.use('/vanillaFE', this.sk.info.engine.serveStatic(this.sk.info.paths.vanillaFrontend))
                 this.routes.frontend.view = {}
             }
 
