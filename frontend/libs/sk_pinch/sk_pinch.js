@@ -9,7 +9,7 @@
 //       var {phase, axis, scale, scaleX, scaleY, clientX, clientY} = e.detail
 //   })
 //
-// phase: 'begin' | 'update' | 'end'. axis: 'x' | 'y' | 'xy'.
+// phase: 'begin' | 'update' | 'end'. axis: 'x' | 'y' (diagonal counts as 'x').
 // scale > 1 means zoom in (fingers spreading); scaleX / scaleY are 1 on the
 // axis that is not zooming.
 //
@@ -20,8 +20,8 @@ class SK_Pinch {
     constructor(opt = {}){
         this.native = !!opt.native
 
-        // Finger line within this many degrees of horizontal zooms x, of vertical
-        // zooms y; anything in between zooms both.
+        // Finger line within this many degrees of vertical zooms y; everything
+        // else (horizontal and diagonal) zooms x.
         this.axisLockDegrees = 30
 
         this.pointer = {x: window.innerWidth / 2, y: window.innerHeight / 2}
@@ -51,9 +51,7 @@ class SK_Pinch {
         var dx = Math.abs(touches[0].x - touches[1].x) * (sample.deviceWidth || 1)
         var dy = Math.abs(touches[0].y - touches[1].y) * (sample.deviceHeight || 1)
         var degrees = Math.atan2(dy, dx) * 180 / Math.PI
-        if (degrees <= this.axisLockDegrees) return 'x'
-        if (degrees >= 90 - this.axisLockDegrees) return 'y'
-        return 'xy'
+        return degrees >= 90 - this.axisLockDegrees ? 'y' : 'x'
     }
 
     handle(sample){
@@ -104,8 +102,8 @@ class SK_Pinch {
 
     dispatch(phase, scale){
         var gesture = this.gesture
-        var zoomX = gesture.axis === 'x' || gesture.axis === 'xy'
-        var zoomY = gesture.axis === 'y' || gesture.axis === 'xy'
+        var zoomX = gesture.axis === 'x'
+        var zoomY = gesture.axis === 'y'
         gesture.target.dispatchEvent(new CustomEvent('sk_pinch', {
             bubbles: true,
             detail: {

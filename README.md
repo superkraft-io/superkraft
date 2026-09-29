@@ -15,7 +15,7 @@ SuperKraft is a framework that aims to make development of web applications (bot
 - Cursor manager for custom cursors, supports SVG's as cursor
 - Tweening class with all kinds of easings such as `linear`, `easeInQuad`, `easeOutElastic` and many many more.
 - Localization for mutliple languages
-- Directional trackpad pinch (horizontal / vertical / diagonal) for Electron apps on macOS
+- Directional trackpad pinch (horizontal / vertical) for Electron apps on macOS
 
 ## Directional pinch
 
@@ -25,7 +25,7 @@ Browsers report a trackpad pinch as a ctrl+wheel with no direction. In Electron 
 element.addEventListener('sk_pinch', e => {
     var {phase, axis, scale, scaleX, scaleY, clientX, clientY} = e.detail
     // phase: 'begin' | 'update' | 'end'
-    // axis:  'x' | 'y' | 'xy', locked for the whole gesture
+    // axis:  'x' | 'y', locked for the whole gesture (diagonal counts as 'x')
     // scale > 1 zooms in; scaleX / scaleY are 1 on the axis not zooming
 })
 

@@ -20,7 +20,7 @@ dapp/rootView.js             forwards to the page via UMS ('sk_be_pinch-' + view
         │                    sets sk.nativePinch before the page renders
         ▼
 frontend/libs/sk_pinch       locks the axis from the finger angle at gesture start
-                             (within 30° of horizontal: x, of vertical: y, else xy),
+                             (within 30° of vertical: y, otherwise x),
                              dispatches 'sk_pinch' on the element under the pointer
 ```
 

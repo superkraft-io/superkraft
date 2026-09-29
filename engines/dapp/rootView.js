@@ -64,6 +64,8 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             }
             defOpts = {...defOpts, ...this.info}
             delete defOpts.show
+            // info.icon is the titlebar icon (icon name or image); the OS window keeps the app icon.
+            defOpts.icon = this.sk.info.paths.icons.app
 
             this.defOpts = defOpts
 
@@ -85,7 +87,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
     }
 
     create(){
-        this._view = new BrowserWindow(this.defOpts)
+        var wnd = this._view = new BrowserWindow(this.defOpts)
 
         if (this.defOpts.ignoreMouseEvents) this._view.setIgnoreMouseEvents(true)
 
@@ -110,6 +112,8 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         })
 
         this._view.on('closed'      , ()=>{
+            // A destroyed BrowserWindow can't be shown again; show() creates a fresh one.
+            if (this._view === wnd) delete this._view
             this.setClosed()
         })
 
@@ -176,6 +180,13 @@ module.exports = class SK_RootView extends SK_RootViewCore {
     }
 
     show(){
+        // focusIfOpen views keep their page: bring an open window forward instead of reloading it.
+        if (this.info.focusIfOpen && this._view && (this._view.isVisible() || this._view.isMinimized())){
+            if (this._view.isMinimized()) this._view.restore()
+            this._view.focus()
+            return
+        }
+
         this.info.show = true
         if (!this._view) this.create()
         this._view.show()
