@@ -1,4 +1,5 @@
 const { BrowserWindow, screen } = require('electron')
+const sk_dapp_pinch = require('./modules/sk_dapp_pinch/sk_dapp_pinch.js')
 
 
 
@@ -87,6 +88,12 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         this._view = new BrowserWindow(this.defOpts)
 
         if (this.defOpts.ignoreMouseEvents) this._view.setIgnoreMouseEvents(true)
+
+        // Page reads this as sk.nativePinch (set before reload() renders the template).
+        this.viewInfo.nativePinch = sk_dapp_pinch.attach(this._view)
+        this._view.on('pinch-gesture', data => {
+            this.sk.info.ums.broadcast('sk_be_pinch-' + this.id, data)
+        })
 
         this._view.on('ready-to-show', res => {
             if (!this._view) return

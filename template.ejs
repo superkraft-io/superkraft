@@ -81,6 +81,7 @@
 
            
             <script src="<%= sk.routes.frontend.sk%>/libs/sk_ums/sk_ums.js"></script>
+            <script src="<%= sk.routes.frontend.sk%>/libs/sk_pinch/sk_pinch.js"></script>
 
             <!--<script src="<%= sk.routes.frontend.sk%>/libs/sk_thread.js"></script>-->
 
@@ -187,6 +188,7 @@
             var startSKFE = async ()=>{
                 sk.ums = new SK_UMS()
                 sk.commands = new SK_Commands()
+                sk.pinch = new SK_Pinch({native: <%- JSON.stringify(!!locals.nativePinch) %>})
 
                 if (sk.app_type === 'wapp') document.body.classList.add('sk_ui_appType_wapp')
 
@@ -300,6 +302,8 @@
                             sk.ums.broadcast('app_resize_end', undefined, res.data)
                             sk.ums.broadcast('app_body_resize_end', undefined, res.data)
                         })
+
+                        _c.ums.on('sk_be_pinch-' + sk.id, res => { sk.pinch.handle(res.data) })
 
                         /********/
 
