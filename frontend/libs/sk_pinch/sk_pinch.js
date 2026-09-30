@@ -15,6 +15,10 @@
 //
 // Chromium still turns every pinch into ctrl+wheel. Handlers that use
 // sk_pinch should skip those with sk.pinch.isPinchWheel(event).
+//
+// macOS natural scrolling flips wheel deltas to follow the fingers. Wheel zoom
+// should go by physical direction instead (as on Windows), so scrolling up
+// zooms in: use sk.pinch.zoomWheelDeltaY(event) (negative = zoom in).
 
 class SK_Pinch {
     constructor(opt = {}){
@@ -27,6 +31,9 @@ class SK_Pinch {
         this.pointer = {x: window.innerWidth / 2, y: window.innerHeight / 2}
         this.ctrlDown = false
         this.gesture = null
+        this.naturalScroll = /Mac/.test(navigator.platform)
+        this.readNaturalScroll()
+        window.addEventListener('focus', () => this.readNaturalScroll())
 
         var track = event => {
             this.pointer.x = event.clientX
@@ -43,6 +50,21 @@ class SK_Pinch {
     // A ctrl+wheel that Chromium synthesized from a pinch (Control not held).
     isPinchWheel(event){
         return this.native && !!event.ctrlKey && !this.ctrlDown
+    }
+
+    // Desktop only; a missing key is the macOS default (natural on).
+    readNaturalScroll(){
+        if (typeof process === 'undefined' || process.platform !== 'darwin' || typeof require !== 'function') return
+        require('child_process').execFile('defaults', ['read', '-g', 'com.apple.swipescrolldirection'], (err, out) => {
+            this.naturalScroll = err ? true : String(out).trim() !== '0'
+        })
+    }
+
+    // Wheel deltaY for zooming, by physical direction: negative = scroll up = zoom in.
+    zoomWheelDeltaY(event){
+        // A pinch's ctrl+wheel (Control up) is already spread = zoom in.
+        var pinch = event.ctrlKey && !this.ctrlDown
+        return this.naturalScroll && !pinch ? -event.deltaY : event.deltaY
     }
 
     axisFromTouches(sample){
