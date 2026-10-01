@@ -567,4 +567,11 @@ class sk_ui_slider extends sk_ui_component {
             if (this.__dawPluginWriteParamValue) this.__dawPluginWriteParamValue(this.__value)
         }
     }
+
+    // Take the thumb tween off the global stepper list. Left there, it keeps this slider and
+    // its DOM alive and is visited on every frame for the rest of the session.
+    async remove(opt){
+        if (this.tween && sk.tweens && typeof sk.tweens.remove === 'function') sk.tweens.remove(this.tween)
+        return super.remove(opt)
+    }
 }

@@ -42,7 +42,8 @@ class sk_ui_hint extends sk_ui_component {
             }
 
             this.lastPRect = pRect
-        }, 10)
+        // Each check forces a layout while anything on the page is animating, so not every 10 ms.
+        }, 50)
     }
 
     set content(val){

@@ -4,19 +4,46 @@ class SK_UI_Tweens {
         this.list = []
         //this.globalSpeed = 25
 
+        // Two stepper loops used to run (one started here, one by template.ejs), so every tween
+        // advanced twice per frame, and every tween speed in the apps is tuned to that. There is
+        // one loop now. It advances two steps at once and reports the result once, which gives
+        // the same motion with half the onChanged calls.
+        this.globalStep = {fromGlobalStepper: true, steps: 2}
+
+        // For code that renders once per frame: `stepping` is true while step() is running the
+        // tweens, and `frame` counts the frames stepped so far.
+        this.stepping = false
+        this.frame = 0
+
         this.start()
     }
 
     step(){
-        for (var i in this.list){
-            var tween = this.list[i]
-            tween.step({fromGlobalStepper: true})
+        this.frame++
+        this.stepping = true
+        try {
+            var list = this.list
+            for (var i = 0; i < list.length; i++){
+                list[i].step(this.globalStep)
+            }
+        } finally {
+            this.stepping = false
         }
 
         //sk.ums.broadcast('sk_ui_tween_step', undefined, {toBE: false})
     }
 
+    // For a tween whose owner is going away. Without it the list keeps every tween ever made,
+    // each one keeps its owner alive, and all of them are visited on every frame.
+    remove(tween){
+        var index = this.list.indexOf(tween)
+        if (index > -1) this.list.splice(index, 1)
+    }
+
     start(){
+        // Safe to call again while running: a second call must not add a second loop.
+        this.__stopStepping = false
+        if (this.__running) return
         this.__running = true
         var step = async _ts => {
             if (this.__stopStepping) return this.__running = false
@@ -88,7 +115,9 @@ class SK_Tween {
     */
 
     static get easings() {
-        return {
+        // Built once. This getter runs for every active tween on every frame.
+        if (SK_Tween.__easings) return SK_Tween.__easings
+        return SK_Tween.__easings = {
             // Linear
             linear(t, b, c, d) { return c * t / d + b; },
 
@@ -216,7 +245,7 @@ class SK_Tween {
 
 
         if (this.speed === 'instant') this._steps = 0
-        else this._steps -= sk.tweens.globalSpeed || this.speed
+        else this._steps -= (sk.tweens.globalSpeed || this.speed) * (opt.steps || 1)
         
         if (this._steps < 0) this._steps = 0
 
