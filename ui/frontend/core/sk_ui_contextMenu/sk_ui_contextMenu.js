@@ -711,9 +711,12 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
                 })
                 this.hasIcon = true
             } else {
+                // Native-sized menu glyphs. macOS: checkmark ~11px, icons ~13px. Windows 11: checkmark 12px, icons 16px.
+                var isCheck = /^(check|checkmark)( icon)?$/.test(String(this.opt.icon).trim())
+                var isWin = sk.os === 'win'
                 this.leftSide.icon = this.leftSide.iconContainer.add.icon(_c => {
                     _c.icon = this.opt.icon
-                    _c.size = 16
+                    _c.size = isCheck ? (isWin ? 12 : 11) : (isWin ? 16 : 13)
                 })
                 this.hasIcon = true
             }
@@ -750,6 +753,7 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
         if (this.opt.items){
             this.rightSide.add.icon(_c => {
                 _c.icon = 'chevron right icon'
+                _c.size = sk.os === 'win' ? 12 : 10
             })
         }
 
