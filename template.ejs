@@ -328,10 +328,23 @@
                 }
                 
 
+                // A press that starts inside a menu (dragging a wheel, selecting text) and is released
+                // outside it still produces a click outside the menu. That is not a click-away.
+                sk.__pressStartedInMenu = false
+                document.addEventListener('pointerdown', _e => {
+                    var target = _e.target
+                    sk.__pressStartedInMenu = !!(target && target.closest && target.closest('.sk_ui_contextMenu'))
+                }, true)
+
                 sk.skOnDocumentClicked = _e => {
                     var open_contextMenus = document.querySelectorAll('.sk_ui_contextMenu')
 
                     if (open_contextMenus.length === 0) return
+
+                    if (sk.__pressStartedInMenu) {
+                        sk.__pressStartedInMenu = false
+                        return
+                    }
 
                     var menuIDs = {}
                     open_contextMenus.forEach(_c => { if (_c.sk_ui_obj) menuIDs[_c.id] = _c })
@@ -350,6 +363,18 @@
 
                 if (!sk.isOnMobile) document.addEventListener('click', _e => { sk.skOnDocumentClicked(_e) })
                 else document.addEventListener('touchend', _e => { sk.skOnDocumentClicked(_e) })
+
+                // sk_ui_input stops click / mousedown from bubbling, so clicking into a text field
+                // never reached the click-away above. Focus still bubbles: a field outside every
+                // open menu getting focus closes them. Fields inside a menu are left alone.
+                document.addEventListener('focusin', _e => {
+                    var target = _e.target
+                    if (!target || !target.matches) return
+                    if (!target.matches('input, textarea, [contenteditable=""], [contenteditable="true"]')) return
+                    if (target.closest('.sk_ui_contextMenu')) return
+                    sk.__pressStartedInMenu = false
+                    sk.skOnDocumentClicked(_e)
+                })
 
                 document.addEventListener('mousedown', _e => {
                     if (sk_api && sk_api.dawPluginMngr && sk_api.dawPluginMngr.currentTouchedParam){
