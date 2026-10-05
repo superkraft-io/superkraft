@@ -303,7 +303,10 @@
                             sk.ums.broadcast('app_body_resize_end', undefined, res.data)
                         })
 
-                        _c.ums.on('sk_be_pinch-' + sk.id, res => { sk.pinch.handle(res.data) })
+                        // Native pinch samples from the main process (engines/dapp/rootView.js), over Electron IPC.
+                        if (sk.app_type !== 'wapp' && typeof require === 'function'){
+                            try { require('electron').ipcRenderer.on('sk_be_pinch', (_e, data) => sk.pinch.handle(data)) } catch(err) {}
+                        }
 
                         /********/
 

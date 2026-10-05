@@ -93,8 +93,10 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
         // Page reads this as sk.nativePinch (set before reload() renders the template).
         this.viewInfo.nativePinch = sk_dapp_pinch.attach(this._view)
+        // Straight to this window's page over Electron IPC: UMS can't push to a dapp page, so pinches sent
+        // that way never arrived (and the page skips Chromium's ctrl+wheel copy while native pinch is on).
         this._view.on('pinch-gesture', data => {
-            this.sk.info.ums.broadcast('sk_be_pinch-' + this.id, data)
+            if (!this._view.isDestroyed()) this._view.webContents.send('sk_be_pinch', data)
         })
 
         this._view.on('ready-to-show', res => {
