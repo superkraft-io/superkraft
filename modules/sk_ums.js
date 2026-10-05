@@ -7,7 +7,9 @@ module.exports = class SK_UMS {
 
 
         opt.app.whenReady().then(() => {
-            sk_api.ipc.on('sk.ums', (msg, rW)=>{
+            const ipc = (typeof sk_api !== 'undefined' && sk_api && sk_api.ipc) || null
+            if (!ipc || typeof ipc.on !== 'function') return
+            ipc.on('sk.ums', (msg, rW)=>{
                 if (msg.sk_ums_empty) msg = undefined
                 
                 if (msg.action === 'newID'){
@@ -31,7 +33,9 @@ module.exports = class SK_UMS {
 
     toFE(action, eventID, data){
         return new Promise(resolve => {
-            sk_api.ipc.request('sk.ums', {action: action, eventID: eventID, data: data}, res => {
+            const ipc = (typeof sk_api !== 'undefined' && sk_api && sk_api.ipc) || null
+            if (!ipc || typeof ipc.request !== 'function') return resolve({})
+            ipc.request('sk.ums', {action: action, eventID: eventID, data: data}, res => {
                 resolve(res)
             })
         })

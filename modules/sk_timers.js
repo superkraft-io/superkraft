@@ -23,7 +23,7 @@ module.exports = class SK_Timers {
 
         
         global.clearImmediate = timer => { this.destroy('immediate', timer) }
-        global.setImmediate = (cb, delay)=>{ this.create('immediate', cb, delay) }
+        global.setImmediate = (cb, delay)=>{ return this.create('immediate', cb, delay) }
 
         global.clearTimeout = timer => { this.destroy('timeout', timer) }
         global.setTimeout = (cb, delay)=>{ return this.create('timeout', cb, delay) }
@@ -71,5 +71,19 @@ class SK_Timer {
         } catch(err) {
             var x = 0
         }
+    }
+
+    unref(){
+        if (this.timer && typeof this.timer.unref === 'function') this.timer.unref()
+        return this
+    }
+
+    ref(){
+        if (this.timer && typeof this.timer.ref === 'function') this.timer.ref()
+        return this
+    }
+
+    hasRef(){
+        return this.timer && typeof this.timer.hasRef === 'function' ? this.timer.hasRef() : true
     }
 }

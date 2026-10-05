@@ -32,6 +32,29 @@ module.exports = class SK_Action extends SK_RootAction {
             case 'reload':
                 window.reload()
                 break;
+
+            case 'focus':
+                try {
+                    if (wnd.isMinimized()) wnd.restore()
+                    wnd.setAlwaysOnTop(true)
+                    wnd.show()
+                    if (typeof wnd.moveTop === 'function') wnd.moveTop()
+                    wnd.focus()
+                    if (this.sk && this.sk.app && typeof this.sk.app.focus === 'function') {
+                        this.sk.app.focus({steal: true})
+                    }
+                    wnd.focus()
+                    wnd.flashFrame(true)
+                    setTimeout(() => {
+                        try { wnd.setAlwaysOnTop(false) } catch (err) {}
+                    }, 400)
+                } catch (err) {}
+                break;
+
+            case 'blurAttention':
+                try { wnd.flashFrame(false) } catch (err) {}
+                try { wnd.setAlwaysOnTop(false) } catch (err) {}
+                break;
         
             case 'isMaximized':
                 res.resolve({isMaximized: wnd.isMaximized()})

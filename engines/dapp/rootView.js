@@ -1,4 +1,4 @@
-const { BrowserWindow, screen } = require('electron')
+const { BrowserWindow, screen, Menu } = require('electron')
 
 
 
@@ -76,8 +76,12 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                 this.sk.info.showWindowWaitTime += 500
 
                 setTimeout(()=>{
-                    this.create()
-                    this.show()
+                    try {
+                        this.create()
+                        this.show()
+                    } catch (err) {
+                        console.error('[window]', err && err.stack ? err.stack : err)
+                    }
                 }, this.sk.info.showWindowWaitTime)
             }
         })
@@ -85,6 +89,13 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
     create(){
         this._view = new BrowserWindow(this.defOpts)
+        try {
+            // After the window exists. The default menu binds Ctrl+C / Ctrl+V / Ctrl+Z
+            // as copy/paste/undo, so those keys never arrive at the terminal.
+            Menu.setApplicationMenu(null)
+        } catch (err) {
+            console.error('[menu]', err && err.message ? err.message : err)
+        }
 
         if (this.defOpts.ignoreMouseEvents) this._view.setIgnoreMouseEvents(true)
 
@@ -106,6 +117,21 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             this.setClosed()
         })
 
+        this._view.on('unresponsive', () => {
+            console.error('[window] renderer unresponsive')
+        })
+
+        // The page takes a second or two to load; raise once more when it is ready.
+        this._view.webContents.once('did-finish-load', () => this.bringToFront())
+
+        this._view.webContents.on('did-fail-load', (_e, code, desc, url) => {
+            console.error('[window] did-fail-load', code, desc, url)
+        })
+
+        this._view.webContents.on('render-process-gone', (_e, details) => {
+            console.error('[window] render-process-gone', details && details.reason, details && details.exitCode)
+        })
+
         this._view.on('session-end' , ()=>{
             this.setClosed()
         })
@@ -114,7 +140,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
 
         try {
-            var menu = new (require(opt.root + 'menu/' + 'mac' + '.js'))(this._view)
+            var menu = new (require(this.sk.info.paths.root + 'menu/' + 'mac' + '.js'))(this._view)
         } catch(err) {
 
         }
@@ -172,10 +198,33 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         this.info.show = true
         if (!this._view) this.create()
         this._view.show()
+        this.bringToFront()
         this.closed = false
         this.alreadyLoaded = false
 
         this.sk.info.ums.broadcast('sk_view_cmd-' + this.id, {viewID: this.id, action: 'show'})
+    }
+
+    bringToFront(){
+        // Windows refuses foreground to a process that did not get it from the
+        // foreground app, and a launch through the debugger's terminal usually
+        // doesn't. The window then opens shown but stacked under the editor.
+        // Topmost is not subject to that lock; dropping it right after leaves
+        // the window above every normal window.
+        const w = this._view
+        if (!w || w.isDestroyed()) return
+        if (this.defOpts.focusable === false || this.defOpts.ignoreMouseEvents || this.defOpts.alwaysOnTop) return
+        try {
+            if (w.isMinimized()) w.restore()
+            w.setAlwaysOnTop(true)
+            w.moveTop()
+            w.focus()
+            setTimeout(()=>{
+                try { if (!w.isDestroyed()) w.setAlwaysOnTop(false) } catch (err) {}
+            }, 300)
+        } catch (err) {
+            console.error('[window]', err && err.message ? err.message : err)
+        }
     }
 
     hide(){

@@ -64,6 +64,31 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
         doOnce()
     }
 
+    focusMainWindow(){
+        const views = this.sk.info && this.sk.info.views
+        const index = views && views.index
+        if (index) {
+            try {
+                if (!index._view || index._view.isDestroyed()) {
+                    index.create()
+                    index.show()
+                } else {
+                    index._view.show()
+                    index.bringToFront()
+                }
+                return
+            } catch (err) {
+                console.error('[instance]', err && err.stack ? err.stack : err)
+            }
+        }
+        const wins = _electron.BrowserWindow.getAllWindows()
+        for (const w of wins) {
+            if (w.isMinimized()) w.restore()
+            w.show()
+            w.focus()
+        }
+    }
+
     init(){
         this.startOnlineMonitoring()
 
@@ -71,6 +96,15 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
             this.sk._os = _os
             this.sk.app = app
             this.app = app
+
+            if (!app.requestSingleInstanceLock()) {
+                console.error('[instance] BotSpeak is already running. Close that window, then start the debugger again.')
+                app.exit(0)
+                return
+            }
+            app.on('second-instance', () => {
+                this.focusMainWindow()
+            })
 
 
             if (global.useUIOHookNAPI){
@@ -156,6 +190,13 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
                 }
             })
 
+
+            // Ignore stray OpenCV/Emscripten abort noise on main after OCR worker runs.
+            process.on('uncaughtException', err => {
+                const msg = err && err.message ? err.message : String(err)
+                if (/^abort\(/i.test(msg) || /sk_api is not defined/i.test(msg)) return
+                console.error(err)
+            })
 
             app.on('window-all-closed', () => {
                 // On mac it is common for applications and their menu bar
@@ -265,6 +306,8 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
     }
 
     onViewClosed(){
+        const view = this.sk.info.views && this.sk.info.views.index
+        if (view && view._view && !view._view.isDestroyed()) return
         if (this.checkIfAllViewsClosed()) this.terminate()
     }
 }

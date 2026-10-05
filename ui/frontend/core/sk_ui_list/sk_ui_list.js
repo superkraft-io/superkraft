@@ -105,7 +105,6 @@ class sk_ui_list extends sk_ui_component {
     }
 
     clear(){
-        this.chil
         for (var i = this.list.length - 1; i > -1; i--){
             this.list[i].remove()
             this.list.splice(i, 1)
