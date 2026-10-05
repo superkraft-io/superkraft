@@ -49,20 +49,23 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             this.viewInfo = await this._init(opt)
             
             var doShow = this.info.show || false
+            var defaultWebPreferences = {
+                nodeIntegration: true,
+                contextIsolation: false,
+                enableRemoteModule: true,
+                autoplayPolicy: 'no-user-gesture-required',
+            }
             var defOpts = {
                 icon: this.sk.info.paths.icons.app,
                 width: 1024,
                 height: 750,
-                webPreferences: {
-                    nodeIntegration: true,
-                    contextIsolation: false,
-                    enableRemoteModule: true,
-                    autoplayPolicy: 'no-user-gesture-required',
-                },
+                webPreferences: defaultWebPreferences,
                 backgroundColor: '#2e2c29',
                 frame: false
             }
             defOpts = {...defOpts, ...this.info}
+            // A view's own webPreferences add to the defaults instead of replacing them.
+            if (this.info.webPreferences) defOpts.webPreferences = {...defaultWebPreferences, ...this.info.webPreferences}
             delete defOpts.show
             // info.icon is the titlebar icon (icon name or image); the OS window keeps the app icon.
             defOpts.icon = this.sk.info.paths.icons.app

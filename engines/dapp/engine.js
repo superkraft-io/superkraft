@@ -199,6 +199,8 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
         protocol.handle = (scheme, handler)=> {
             if (scheme !== 'file') return handle.call(protocol, scheme, handler)
             return handle.call(protocol, 'file', request => {
+                var resolved = this.resolveMediaRequest(request)
+                if (resolved) return this.serveMedia(request, resolved)
                 var media = this.mediaFileRequest(request)
                 return media ? this.serveMediaFile(request, media) : handler(request)
             })
@@ -232,6 +234,29 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
         return type ? {pathname: pathname, type: type} : null
     }
 
+    // Media that is not a file as such (audio composed from several files, say): a resolver gets
+    // the request URL and returns null, or {size, type, read(start, end) → Readable of bytes
+    // [start, end]}. The response gets the same range handling as a file.
+    addMediaResolver(resolver){
+        if (!this.mediaResolvers) this.mediaResolvers = []
+        this.mediaResolvers.push(resolver)
+        return ()=> {
+            this.mediaResolvers = this.mediaResolvers.filter(r => r !== resolver)
+        }
+    }
+
+    resolveMediaRequest(request){
+        for (var resolver of this.mediaResolvers || []) {
+            try {
+                var media = resolver(request.url)
+                if (media) return media
+            } catch (err) {
+                console.error('Media resolver failed', err)
+            }
+        }
+        return null
+    }
+
     async serveMediaFile(request, media){
         var stat
         try {
@@ -239,7 +264,15 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
         } catch (err) {
             return new Response(null, {status: 404, statusText: 'Not Found'})
         }
-        var size = stat.size
+        return this.serveMedia(request, {
+            size: stat.size,
+            type: media.type,
+            read: (start, end)=> fs.createReadStream(media.pathname, {start: start, end: end})
+        })
+    }
+
+    async serveMedia(request, media){
+        var size = media.size
         var headers = {'Content-Type': media.type, 'Accept-Ranges': 'bytes'}
         var range = /^bytes=(\d*)-(\d*)$/.exec(String(request.headers.get('range') || '').trim())
         var start = 0
@@ -260,7 +293,7 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
         }
         headers['Content-Length'] = String(Math.max(0, end - start + 1))
         if (request.method === 'HEAD' || size === 0) return new Response(null, {status: status, headers: headers})
-        var stream = require('stream').Readable.toWeb(fs.createReadStream(media.pathname, {start: start, end: end}))
+        var stream = require('stream').Readable.toWeb(media.read(start, end))
         return new Response(stream, {status: status, headers: headers})
     }
 
