@@ -30,29 +30,33 @@ class sk_ui_checkmark extends sk_ui_component {
                 var loader = this.checkmarkBucket.loader
                 var check = this.checkmarkBucket.check
 
-                if (this.currentStyleElement) this.currentStyleElement.remove()
-
-                var style = document.createElement('style')
-                style.type = 'text/css'
-                style.innerHTML = this.generateCSS(this.uuid, val, val)
-                this.currentStyleElement = document.getElementsByTagName('head')[0].appendChild(style)
+                // One <style> per size, shared: per instance they were never removed (a parent's
+                // remove() does not remove its children), one more in <head> for every checkmark made.
+                var styleKey = 's' + String(val).replace(/[^0-9a-zA-Z]/g, '_')
+                var styles = sk_ui_checkmark._styles || (sk_ui_checkmark._styles = {})
+                if (!styles[styleKey] || !styles[styleKey].isConnected) {
+                    var style = document.createElement('style')
+                    style.type = 'text/css'
+                    style.innerHTML = this.generateCSS(styleKey, val, val)
+                    styles[styleKey] = document.getElementsByTagName('head')[0].appendChild(style)
+                }
 
 
                 loader.classList.remove(this.currentClasses.loader)
-                this.currentClasses.loader = 'sk_ui_checkmark_circle-loader-' + this.uuid
+                this.currentClasses.loader = 'sk_ui_checkmark_circle-loader-' + styleKey
                 loader.classList.add(this.currentClasses.loader)
 
                 
                 check.classList.remove(this.currentClasses.check)
-                this.currentClasses.check = 'sk_ui_checkmark-check-' + this.uuid
+                this.currentClasses.check = 'sk_ui_checkmark-check-' + styleKey
                 check.classList.add(this.currentClasses.check)
 
                 check.classList.remove(this.currentClasses.draw)
-                this.currentClasses.draw = 'sk_ui_checkmark-check-draw-' + this.uuid
+                this.currentClasses.draw = 'sk_ui_checkmark-check-draw-' + styleKey
                 check.classList.add(this.currentClasses.draw)
 
                 if (this.checked)  loader.classList.remove(this.currentClasses.loaderComplete)
-                this.currentClasses.loaderComplete = 'sk_ui_checkmark_load-complete-' + this.uuid
+                this.currentClasses.loaderComplete = 'sk_ui_checkmark_load-complete-' + styleKey
                 if (this.checked) loader.classList.add(this.currentClasses.loaderComplete)
             }
         })

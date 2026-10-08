@@ -1,0 +1,12 @@
+.sk_ui_virtualList {
+    position: relative;
+    overflow: auto;
+    min-height: 0;
+}
+
+/* Rows are absolutely positioned at their offsets; the height is set from the row heights. */
+.sk_ui_virtualList_content {
+    position: relative;
+    width: 100%;
+    flex: 0 0 auto;
+}

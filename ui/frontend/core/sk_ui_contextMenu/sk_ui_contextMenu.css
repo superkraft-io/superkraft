@@ -15,7 +15,7 @@
 
 .sk_ui_contextMenu:not(.sk_ui_os_win) {
     border: solid 0.75px #000000;
-    border-radius: 8px;
+    border-radius: 10px;
 }
 
 .sk_ui_contextMenu_activated {
@@ -25,16 +25,20 @@
 }
 
 
+/* macOS density: ~22px rows, 13px text, 5px rounded highlight. */
 .sk_ui_contextMenu_Item:not(.sk_ui_contextMenu_Item_Separator) {
-    border-radius: 4px;
-    padding: 6px 8px;
+    border-radius: 5px;
+    padding: 3px 8px;
+    min-height: 22px;
+    box-sizing: border-box;
 }
 
 .sk_ui_contextMenu_Item_content > .sk_ui_label {
     color: white;
     white-space: nowrap;
-    font-size: 14px;
-    margin-left: 3px;
+    font-size: 13px;
+    line-height: 16px;
+    margin-left: 2px;
 }
 
 .sk_ui_contextMenu_Item_leftSide > .sk_ui_icon > #icon {
@@ -44,7 +48,7 @@
 }
 
 .sk_ui_contextMenu_Item_rightSide {
-    margin-left: 32px;
+    margin-left: 24px;
 }
 
 .sk_ui_contextMenu_Item_rightSide > .sk_ui_icon > #icon {
@@ -71,7 +75,7 @@
 }
 
 .sk_ui_contextMenu_Item_Header {
-    margin-top: 10px;
+    margin-top: 6px;
 }
 
 .sk_ui_contextMenu_Item_Header:first-child {
@@ -79,7 +83,8 @@
 }
 
 .sk_ui_contextMenu_Item_Header > .sk_ui_contextMenu_Item_content > .sk_ui_label {
-    font-size: 12px;
+    font-size: 11px;
+    font-weight: 600;
     /*font-weight: bold;*/
     opacity: 0.5;
 }
@@ -91,10 +96,10 @@
 }
 
 .sk_ui_contextMenu_Item_Separator {
-    border-top: solid 1px rgba(255, 255, 255, 0.253);
+    border-top: solid 1px rgba(255, 255, 255, 0.18);
     height: 1px;
     width: auto;
-    margin: 8px 8px;
+    margin: 5px 10px;
 }
 
 .sk_ui_contextMenu_Item_Separator_passive {
@@ -116,8 +121,9 @@
 
 
 .sk_ui_contextMenu_Item_hasIcon {
-    width: 16px;
-    margin-right: 6px !important;
+    width: 14px;
+    margin-right: 5px !important;
+    justify-content: center;
 }
 
 
@@ -136,40 +142,67 @@
     font-size: 14px;
 }
 
-/* Win11-ish density. macOS keeps the looser sizes above. */
+/* Windows 11 (Fluent MenuFlyout): 8px flyout, ~28px rows, 4px rounded subtle highlight (not accent),
+   16px icons 12px from the text, 9pt Segoe text, faint full-width separators. */
 .sk_ui_contextMenu.sk_ui_os_win {
-    padding: 6px;
-    min-width: 7rem;
-    border: solid 0.75px #000000;
+    padding: 4px;
+    min-width: 8rem;
+    border: solid 1px rgba(0, 0, 0, 0.45);
+    border-radius: 8px;
+    background-color: rgba(44, 44, 44, 0.96);
+    box-shadow: 0px 0px 0px 1px rgba(255, 255, 255, 0.08) inset, 0px 8px 16px 0px rgba(0, 0, 0, 0.35);
 }
 
 .sk_ui_contextMenu.sk_ui_os_win .sk_ui_contextMenu_Item:not(.sk_ui_contextMenu_Item_Separator) {
-    padding: 3px 8px;
-    border-radius: 0px;
+    min-height: 28px;
+    padding: 4px 10px;
+    border-radius: 4px;
 }
 
 .sk_ui_contextMenu.sk_ui_os_win .sk_ui_contextMenu_Item_content > .sk_ui_label {
+    font-family: 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif;
     font-size: 12px;
+    line-height: 16px;
+    margin-left: 0px;
+}
+
+.sk_ui_contextMenu.sk_ui_os_win .sk_ui_contextMenu_Item_enabled:hover,
+.sk_ui_contextMenu.sk_ui_os_win .sk_ui_contextMenu_Item_keyboardFocused {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.sk_ui_contextMenu.sk_ui_os_win .sk_ui_contextMenu_Item_interactable:active {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.sk_ui_contextMenu.sk_ui_os_win .sk_ui_contextMenu_Item_submenuExpanded {
+    background-color: rgba(255, 255, 255, 0.08);
 }
 
 .sk_ui_contextMenu.sk_ui_os_win .sk_ui_contextMenu_Item_rightSide {
-    margin-left: 20px;
+    margin-left: 24px;
 }
 
 .sk_ui_contextMenu.sk_ui_os_win .sk_ui_contextMenu_Item_Header {
-    margin-top: 6px;
+    margin-top: 4px;
+}
+
+.sk_ui_contextMenu.sk_ui_os_win .sk_ui_contextMenu_Item_Header > .sk_ui_contextMenu_Item_content > .sk_ui_label {
+    font-size: 12px;
+    font-weight: 600;
 }
 
 .sk_ui_contextMenu.sk_ui_os_win .sk_ui_contextMenu_Item_Separator {
-    margin: 4px 6px;
+    border-top-color: rgba(255, 255, 255, 0.08);
+    margin: 4px -4px;
 }
 
 .sk_ui_contextMenu.sk_ui_os_win .sk_ui_contextMenu_Item_hasIcon {
-    width: 14px;
-    margin-right: 4px !important;
+    width: 16px;
+    margin-right: 12px !important;
 }
 
 .sk_ui_contextMenu.sk_ui_os_win .sk_ui_contextMenu_shortcut > .sk_ui_label,
 .sk_ui_contextMenu.sk_ui_os_win .sk_ui_contextMenu_shortcut_specialChar {
-    font-size: 11px;
+    font-size: 12px;
 }

@@ -1,0 +1,108 @@
+.sk_ui_tree {
+    width: 100%;
+    gap: 2px;
+}
+
+.sk_ui_tree_row {
+    --sk_ui_tree_depth: 0;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0 0 0 calc(var(--sk_ui_tree_depth) * 14px);
+    gap: 2px;
+    user-select: none;
+}
+
+.sk_ui_tree_row.is-failed > .sk_ui_tree_item > .sk_ui_label,
+.sk_ui_tree_row.is-failed > .sk_ui_tree_item > .sk_ui_icon {
+    color: var(--sk_ui_color_red);
+}
+
+.sk_ui_tree_row.is-suppressed > .sk_ui_tree_item,
+.sk_ui_tree_row.is-rolled > .sk_ui_tree_item {
+    opacity: 0.45;
+}
+
+.sk_ui_tree_caret {
+    width: 14px;
+    min-width: 14px;
+    height: 16px;
+    cursor: pointer;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.sk_ui_tree_item {
+    width: 100%;
+    min-height: 0;
+    padding: 3px 4px !important;
+    justify-content: flex-start !important;
+    border-radius: 4px !important;
+    background-color: transparent !important;
+}
+
+.sk_ui_tree_item.sk_ui_button_enabled_interactable:hover {
+    background-color: var(--sk_ui_color_grey) !important;
+}
+
+.sk_ui_tree_item.sk_ui_button_enabled_interactable:hover > .sk_ui_label,
+.sk_ui_tree_item.sk_ui_button_enabled_interactable:hover > .sk_ui_icon {
+    color: var(--sk_ui_text_color_full);
+}
+
+.sk_ui_tree_row.is-failed > .sk_ui_tree_item.sk_ui_button_enabled_interactable:hover > .sk_ui_label,
+.sk_ui_tree_row.is-failed > .sk_ui_tree_item.sk_ui_button_enabled_interactable:hover > .sk_ui_icon {
+    color: var(--sk_ui_color_red);
+}
+
+.sk_ui_tree_item.sk_ui_button_toggled,
+.sk_ui_tree_item.sk_ui_button_toggled:hover {
+    border-radius: 4px !important;
+}
+
+.sk_ui_tree_item > .sk_ui_icon {
+    margin-right: 4px !important;
+}
+
+.sk_ui_tree_item > .sk_ui_label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sk_ui_tree_fold {
+    width: 100%;
+    gap: 2px;
+    flex-shrink: 0;
+    min-height: 0;
+}
+
+.sk_ui_tree_fold.sk_ui_tree_fold_anim {
+    transition: height 140ms ease !important;
+}
+
+.sk_ui_tree_row.sk_ui_tree_renaming > .sk_ui_tree_item {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 28px;
+    overflow: hidden;
+}
+
+.sk_ui_tree_rename {
+    flex: 1;
+    min-width: 0;
+    height: 22px !important;
+}
+
+.sk_ui_tree_rename > #inputEl,
+.sk_ui_tree_rename > #inputEl > input {
+    height: 22px;
+}
+
+.sk_ui_tree_rename > #inputEl > input {
+    border-radius: 0;
+}
+
+.sk_ui_tree_row.sk_ui_transition {
+    transition: none;
+}

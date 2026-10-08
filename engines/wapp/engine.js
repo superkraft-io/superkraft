@@ -98,17 +98,17 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
             
 
-            app.use('/sk', this.express.static(this.paths.frontend.sk))
-            
-            app.use('/', this.express.static(this.paths.frontend.app.split('\\').join('/')))
-       
-            
-            if (this.sk.info.cdn && this.sk.info.cdn.targets.site === 'public') this.sk.app.use(cdnRoute, this.express.static(cdnRoute))
+            app.use('/sk', this.serveStatic(this.paths.frontend.sk))
 
-            this.sk.app.use(this.sk.info.ui.routes.core, this.express.static(this.paths.frontend.ui.core))
-            this.sk.app.use(this.sk.info.ui.routes.shared, this.express.static(this.paths.frontend.ui.shared))
+            app.use('/', this.serveStatic(this.paths.frontend.app.split('\\').join('/')))
 
-            if (this.sk.info.ui.routes.font) this.sk.app.use(this.info.sk.ui.routes.font, this.express.static(this.paths.frontend.ui.font))
+
+            if (this.sk.info.cdn && this.sk.info.cdn.targets.site === 'public') this.sk.app.use(cdnRoute, this.serveStatic(cdnRoute))
+
+            this.sk.app.use(this.sk.info.ui.routes.core, this.serveStatic(this.paths.frontend.ui.core))
+            this.sk.app.use(this.sk.info.ui.routes.shared, this.serveStatic(this.paths.frontend.ui.shared))
+
+            if (this.sk.info.ui.routes.font) this.sk.app.use(this.info.sk.ui.routes.font, this.serveStatic(this.paths.frontend.ui.font))
 
 
             if (this.sk.complexity) app.use('/complexity', this.express.static(this.sk.complexity.paths.frontend))
@@ -127,6 +127,14 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
             resolve()
         })
+    }
+
+    // express.static that 404s files inside `.ignore_on_wapp` folders.
+    serveStatic(root){
+        var serve = this.express.static(root)
+        var filter = this.sk.info.appTypeFilter
+        if (!filter) return serve
+        return [filter.staticGuard(root), serve]
     }
 
     waitForReady(){ return new Promise(resolve => { resolve() }) }
@@ -162,7 +170,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
             if (config.isWhat.env === 'dev'){
                 this.servers = {http: http.createServer(this.app).listen(ports.http)}
                 this.servers.http.on('error', err => {
-                    console.log('Failed listening to port ' + ports.http)
+                    console.log('Failed listening to port https://localhost:' + ports.http)
                     reject()
                 })
                 resolve()
@@ -221,12 +229,12 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
                 this.servers.https = https.createServer(certOpt, this.app)
                 this.servers.https.on('error', err => {
-                    console.log('Failed listening to port ' + ports.https)
+                    console.log('Failed listening to port https://localhost:' + ports.https)
                     reject()
                 })
 
                 this.servers.https.listen(ports.https, function() {
-                    console.log("[WAPP ENGINE] Listening on " + ports.https)
+                    console.log("[WAPP ENGINE] Listening on https://localhost:" + ports.https)
                     resolve()
                 })
     
@@ -241,7 +249,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
                     }
                 )
                 this.servers.http.on('error', err => {
-                    console.log('Failed listening to port ' + ports.http)
+                    console.log('Failed listening to port https://localhost:' + ports.http)
                     
                 })
                 

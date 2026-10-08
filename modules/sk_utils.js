@@ -10,6 +10,8 @@ module.exports = class SK_Utils {
             var actions = {}
             for (var i = 0; i < actionsFiles.length; i++){
                 var actionName = actionsFiles[i].split('.')[0]
+                // `// .ignore_on_<type>` first line: never required on this app type.
+                if (this.sk.appTypeFilter && await this.sk.appTypeFilter.isActionFileIgnored(actionsPath + actionName + '.js')) continue
                 var action = new (require(actionsPath + actionName + '.js'))({sk: this.sk, window: this.window})
                 action.id = actionName
                 actions[actionName] = action
@@ -29,7 +31,12 @@ module.exports = class SK_Utils {
     captureActions(route, actions, onValidate){
         this.sk.engine.on(`action_${route}`, async (msg, rW, srcOpt) => {
             var action = actions[msg.action]
-            
+            // Unknown or `.ignore_on_<type>` action.
+            if (!action){
+                if (rW) rW({rejected: true, error: 'unknown_action'})
+                return
+            }
+
             //var _sw = this.sk.stats.increment({type: 'action', route: msg.action})
 
             var view = this.sk.views[msg.vid]

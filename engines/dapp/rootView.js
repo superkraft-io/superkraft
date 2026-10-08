@@ -1,4 +1,5 @@
 const { BrowserWindow, screen, Menu } = require('electron')
+const sk_dapp_pinch = require('./modules/sk_dapp_pinch/sk_dapp_pinch.js')
 
 
 
@@ -48,21 +49,26 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             this.viewInfo = await this._init(opt)
             
             var doShow = this.info.show || false
+            var defaultWebPreferences = {
+                nodeIntegration: true,
+                contextIsolation: false,
+                enableRemoteModule: true,
+                autoplayPolicy: 'no-user-gesture-required',
+            }
             var defOpts = {
                 icon: this.sk.info.paths.icons.app,
                 width: 1024,
                 height: 750,
-                webPreferences: {
-                    nodeIntegration: true,
-                    contextIsolation: false,
-                    enableRemoteModule: true,
-                    autoplayPolicy: 'no-user-gesture-required',
-                },
+                webPreferences: defaultWebPreferences,
                 backgroundColor: '#2e2c29',
                 frame: false
             }
             defOpts = {...defOpts, ...this.info}
+            // A view's own webPreferences add to the defaults instead of replacing them.
+            if (this.info.webPreferences) defOpts.webPreferences = {...defaultWebPreferences, ...this.info.webPreferences}
             delete defOpts.show
+            // info.icon is the titlebar icon (icon name or image); the OS window keeps the app icon.
+            defOpts.icon = this.sk.info.paths.icons.app
 
             this.defOpts = defOpts
 
@@ -88,7 +94,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
     }
 
     create(){
-        this._view = new BrowserWindow(this.defOpts)
+        var wnd = this._view = new BrowserWindow(this.defOpts)
         try {
             // After the window exists. The default menu binds Ctrl+C / Ctrl+V / Ctrl+Z
             // as copy/paste/undo, so those keys never arrive at the terminal.
@@ -98,6 +104,12 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         }
 
         if (this.defOpts.ignoreMouseEvents) this._view.setIgnoreMouseEvents(true)
+
+        // Page reads this as sk.nativePinch (set before reload() renders the template).
+        this.viewInfo.nativePinch = sk_dapp_pinch.attach(this._view)
+        this._view.on('pinch-gesture', data => {
+            this.sk.info.ums.broadcast('sk_be_pinch-' + this.id, data)
+        })
 
         this._view.on('ready-to-show', res => {
             if (!this._view) return
@@ -114,6 +126,8 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         })
 
         this._view.on('closed'      , ()=>{
+            // A destroyed BrowserWindow can't be shown again; show() creates a fresh one.
+            if (this._view === wnd) delete this._view
             this.setClosed()
         })
 
@@ -195,6 +209,13 @@ module.exports = class SK_RootView extends SK_RootViewCore {
     }
 
     show(){
+        // focusIfOpen views keep their page: bring an open window forward instead of reloading it.
+        if (this.info.focusIfOpen && this._view && (this._view.isVisible() || this._view.isMinimized())){
+            if (this._view.isMinimized()) this._view.restore()
+            this._view.focus()
+            return
+        }
+
         this.info.show = true
         if (!this._view) this.create()
         this._view.show()

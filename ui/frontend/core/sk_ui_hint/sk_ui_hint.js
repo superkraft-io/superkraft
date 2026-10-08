@@ -42,7 +42,8 @@ class sk_ui_hint extends sk_ui_component {
             }
 
             this.lastPRect = pRect
-        }, 10)
+        // Each check forces a layout while anything on the page is animating, so not every 10 ms.
+        }, 50)
     }
 
     set content(val){
@@ -174,7 +175,9 @@ class sk_ui_hint extends sk_ui_component {
             }
         }
 
-        var positions = this.position.split(' ')
+        var positions = String(this.position || 'top center').trim().split(/\s+/)
+        // One side only ('top'): centred along it.
+        if (positions.length < 2) positions.push('center')
         if (positions[0] === 'center') positions = [positions[1], positions[0]]
         calcPos.secondIsASide = positions[1] !== 'center'
         this.positionFuncs = {

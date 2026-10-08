@@ -229,6 +229,115 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
 
     }
 
+    // ejs-electron answers every file:// request with the whole file in one 200 response
+    // (read synchronously, Range ignored). Chromium's media element cannot play from that,
+    // so audio opened by path never played. Audio / video files are served here instead:
+    // streamed from disk, with 206 responses for Range requests. Everything else stays with
+    // ejs-electron.
+    listenFileProtocol(){
+        var protocol = _electron.protocol
+        var handle = protocol.handle
+        protocol.handle = (scheme, handler)=> {
+            if (scheme !== 'file') return handle.call(protocol, scheme, handler)
+            return handle.call(protocol, 'file', request => {
+                var resolved = this.resolveMediaRequest(request)
+                if (resolved) return this.serveMedia(request, resolved)
+                var media = this.mediaFileRequest(request)
+                return media ? this.serveMediaFile(request, media) : handler(request)
+            })
+        }
+        // ejs-electron already listens from app 'ready': re-register through the wrapper.
+        ejse.stopListening()
+        try {
+            ejse.listen()
+        } finally {
+            protocol.handle = handle
+        }
+    }
+
+    // {pathname, type} for audio / video file URLs, else null.
+    mediaFileRequest(request){
+        var types = {
+            wav: 'audio/wav', wave: 'audio/wav', mp3: 'audio/mpeg', m4a: 'audio/mp4', aac: 'audio/aac',
+            flac: 'audio/flac', ogg: 'audio/ogg', oga: 'audio/ogg', opus: 'audio/ogg', aif: 'audio/aiff',
+            aiff: 'audio/aiff', caf: 'audio/x-caf', mp4: 'video/mp4', m4v: 'video/mp4', mov: 'video/quicktime',
+            webm: 'video/webm', mkv: 'video/x-matroska'
+        }
+        var pathname
+        try {
+            var url = new URL(request.url)
+            pathname = decodeURIComponent(url.pathname)
+            if (process.platform === 'win32' && !url.host.trim()) pathname = pathname.substring(1)
+        } catch (err) {
+            return null
+        }
+        var type = types[require('path').extname(pathname).slice(1).toLowerCase()]
+        return type ? {pathname: pathname, type: type} : null
+    }
+
+    // Media that is not a file as such (audio composed from several files, say): a resolver gets
+    // the request URL and returns null, or {size, type, read(start, end) → Readable of bytes
+    // [start, end]}. The response gets the same range handling as a file.
+    addMediaResolver(resolver){
+        if (!this.mediaResolvers) this.mediaResolvers = []
+        this.mediaResolvers.push(resolver)
+        return ()=> {
+            this.mediaResolvers = this.mediaResolvers.filter(r => r !== resolver)
+        }
+    }
+
+    resolveMediaRequest(request){
+        for (var resolver of this.mediaResolvers || []) {
+            try {
+                var media = resolver(request.url)
+                if (media) return media
+            } catch (err) {
+                console.error('Media resolver failed', err)
+            }
+        }
+        return null
+    }
+
+    async serveMediaFile(request, media){
+        var stat
+        try {
+            stat = await fs.promises.stat(media.pathname)
+        } catch (err) {
+            return new Response(null, {status: 404, statusText: 'Not Found'})
+        }
+        return this.serveMedia(request, {
+            size: stat.size,
+            type: media.type,
+            read: (start, end)=> fs.createReadStream(media.pathname, {start: start, end: end})
+        })
+    }
+
+    async serveMedia(request, media){
+        var size = media.size
+        var headers = {'Content-Type': media.type, 'Accept-Ranges': 'bytes'}
+        var range = /^bytes=(\d*)-(\d*)$/.exec(String(request.headers.get('range') || '').trim())
+        var start = 0
+        var end = size - 1
+        var status = 200
+        if (range && (range[1] || range[2])) {
+            if (range[1]) {
+                start = Number(range[1])
+                if (range[2]) end = Math.min(size - 1, Number(range[2]))
+            } else {
+                start = Math.max(0, size - Number(range[2]))
+            }
+            if (start >= size || start > end) {
+                return new Response(null, {status: 416, headers: {'Content-Range': 'bytes */' + size}})
+            }
+            status = 206
+            headers['Content-Range'] = 'bytes ' + start + '-' + end + '/' + size
+        }
+        headers['Content-Length'] = String(Math.max(0, end - start + 1))
+        if (request.method === 'HEAD' || size === 0) return new Response(null, {status: status, headers: headers})
+        var stream = require('stream').Readable.toWeb(media.read(start, end))
+        return new Response(stream, {status: status, headers: headers})
+    }
+
     async waitForReady(){
         await app.whenReady()
 
@@ -237,7 +346,7 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
             if (!dockIcon.isEmpty()) app.dock.setIcon(dockIcon)
         }
 
-        ejse.listen()
+        this.listenFileProtocol()
     
         this.deeplink = new (require('./modules/sk_dapp_deeplink.js'))({sk: this.sk})
         this.sk.country = app.getLocale().split('-')[0]

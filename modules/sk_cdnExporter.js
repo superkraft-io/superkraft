@@ -60,8 +60,13 @@ module.exports = class SK_CDN_Exporter {
 
                 if (addFirstAndIgnore && dir === addFirstAndIgnore) continue
 
+                var filter = this.sk.appTypeFilter
+                if (filter && filter.isMarkerFileName(dir)) continue
+
                 if (fs.lstatSync(dirPath).isDirectory()){
                     if (dir.indexOf('sk_ui_') === -1) continue
+                    // `.ignore_on_<type>` marker: leave the folder out of the bundle.
+                    if (filter && filter.isDirIgnoredSync(dirPath)) continue
                     var res = await this.consolidate(dirPath + '/')
                     
                     data.css += res.css || ''

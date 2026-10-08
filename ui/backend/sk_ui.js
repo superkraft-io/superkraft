@@ -63,6 +63,8 @@ module.exports = class sk_ui {
             }
            
             if (stat.isDirectory()){
+                // `.ignore_on_<type>` marker: skip this folder and its subtree.
+                if (this.sk.appTypeFilter && await this.sk.appTypeFilter.isDirIgnored(dirPath)) continue
                 var child = {
                     name: dir,
                     children: []

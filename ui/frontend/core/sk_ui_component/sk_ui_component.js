@@ -335,8 +335,18 @@ class sk_ui_component {
 
             var nextIsMin = true
 
+            // Stops once the element has left the page (a parent's remove() does not remove its
+            // children): the timer kept the component, and whatever it was in, alive forever.
+            // Never on the page for 10 ticks: given up too.
+            var wasConnected = !!(this.element && this.element.isConnected)
+            var detachedTicks = 0
             var doNext = ()=>{
                 this.__pulsateTimer = setTimeout(()=>{
+                    var el = this.element
+                    if (el && el.isConnected) {
+                        wasConnected = true
+                        detachedTicks = 0
+                    } else if (wasConnected || !el || ++detachedTicks >= 10) return
                     if (nextIsMin) setMin()
                     else setMax()
 
@@ -1418,15 +1428,18 @@ class sk_ui_movableizer {
             _e.preventDefault()
             _e.stopPropagation()
 
+            // Land on the last pointer position before the drag ends.
+            this.flushMove()
+
             this.off()
 
 
             this.mdPos = undefined
-            
+
             this.parent.animate = this.animateTmp
-            
+
             this.moving = false
-            
+
             this.parent.pointerEvents = 'auto'
     
             if (this.onBeginNotified && this.onEnd){
@@ -1439,16 +1452,58 @@ class sk_ui_movableizer {
         }
     
 
-        this.mouseMoveHandler = _e => {            
+        this.mouseMoveHandler = _e => {
             if (!this.mdPos) return
 
-            
-            
+
+
 
             _e.preventDefault()
             _e.stopPropagation()
 
             this.moving = true
+
+            // Components that drive the mover with their own events (a file dragged over a track
+            // sends dragover) get the move applied at once, as before.
+            if (_e.type !== 'mousemove' && _e.type !== 'touchmove') return this.applyMove(_e)
+
+            // Real pointer moves can arrive several times per frame. Keep the latest and apply
+            // it once, just before the frame is painted.
+            this.pendingMoveEvent = _e
+            if (this.moveFrame) return
+            this.moveFrame = window.requestAnimationFrame(()=>{
+                this.moveFrame = 0
+                this.flushMove()
+            })
+        }
+
+        this.flushMove = ()=>{
+            if (this.moveFrame){
+                window.cancelAnimationFrame(this.moveFrame)
+                this.moveFrame = 0
+            }
+            var _e = this.pendingMoveEvent
+            this.pendingMoveEvent = undefined
+            if (!_e || !this.mdPos) return
+            this.applyMove(_e)
+        }
+
+        this.applyMove = _e => {
+            // Sizes are measured once per drag (a drag is one mdPosGlobal object). `rect` measures
+            // the element and its parent and builds a helper class on every access, and this used
+            // to read it four times per mouse move, each time right after writing left/top (a
+            // forced layout).
+            if (!this.dragBounds || this.dragBounds.drag !== this.mdPosGlobal){
+                var selfRect = this.parent.rect
+                var containerRect = this.parent.parent.rect
+                this.dragBounds = {
+                    drag: this.mdPosGlobal,
+                    width: selfRect.width,
+                    height: selfRect.height,
+                    parentWidth: containerRect.width,
+                    parentHeight: containerRect.height
+                }
+            }
 
             var mousePosInSelf = {
                 x: (_e.clientX || _e.touches[0].clientX) - this.mdPosGlobal.x,
@@ -1488,7 +1543,7 @@ class sk_ui_movableizer {
                 //this.parent.style.left = Math.round(newPos.x - this.offset.x) + 'px'
 
                 var minX = 0
-                var maxX = this.parent.parent.rect.width - this.parent.rect.width + this.offset.x
+                var maxX = this.dragBounds.parentWidth - this.dragBounds.width + this.offset.x
                 if (this.constraints){
                     if (this.constraints.x){
                         if (this.constraints.x.min === Infinity) minX = Infinity
@@ -1506,7 +1561,7 @@ class sk_ui_movableizer {
     
             if (this.axis.indexOf('y') > -1){
                 var minY = 0
-                var maxY = this.parent.parent.rect.height - this.parent.rect.height + this.offset.y
+                var maxY = this.dragBounds.parentHeight - this.dragBounds.height + this.offset.y
                 if (this.constraints){
                     if (this.constraints.y){
                         if (this.constraints.y.min === Infinity) minY = Infinity
@@ -1551,27 +1606,32 @@ class sk_ui_movableizer {
                 y: (_e.clientY || _e.touches[0].clientY)
             }
 
+            var startRect = this.parent.rect
+
             this.mdPos = {
-                x: this.mdPosGlobal.x - this.parent.rect.x,
-                y: this.mdPosGlobal.y - this.parent.rect.y
+                x: this.mdPosGlobal.x - startRect.x,
+                y: this.mdPosGlobal.y - startRect.y
             }
 
-            
-           
-            this.originalPos = this.parent.rect.localPos
+
+
+            this.originalPos = startRect.localPos
 
 
             this.originalPos.x *= this.multiplier.x
             this.originalPos.y *= this.multiplier.y
-    
+
+            this.pendingMoveEvent = undefined
+
             this.animateTmp = this.parent.animate
-            
-    
+
+
             this.parent.pointerEvents = 'none'
-    
+
             document.addEventListener('mousemove', this.mouseMoveHandler)
-            document.addEventListener('touchmove', _e => this.mouseMoveHandler(_e) ) //works but may/will cause issues, since this event handler never gets removed
-            
+            // The handler itself, not a wrapper, so off() can remove it again.
+            document.addEventListener('touchmove', this.mouseMoveHandler)
+
             document.addEventListener('mouseup', this.mouseUpHandler)
             document.addEventListener('touchend', this.mouseUpHandler)
         }
@@ -1581,7 +1641,12 @@ class sk_ui_movableizer {
     }
 
     off(){
-        
+        if (this.moveFrame){
+            window.cancelAnimationFrame(this.moveFrame)
+            this.moveFrame = 0
+        }
+        this.pendingMoveEvent = undefined
+
         this.parent.element.removeEventListener('mousemove', this.mouseMoveHandler)
         this.parent.element.removeEventListener('touchmove', this.mouseMoveHandler)
         
@@ -1823,21 +1888,25 @@ class sk_ui_resizableizer {
     testPoint(_e){
         if (!this.axis) return
 
+        // One layout read per call. This runs on every mouse move over the component, and
+        // `parent.rect` measures two elements and builds a helper class on each access.
+        var rect = this.parent.element.getBoundingClientRect()
+
         var pos = {
-            x: (_e.clientX || _e.touches[0].clientX) - this.parent.rect.left,
-            y: (_e.clientY || _e.touches[0].clientY) - this.parent.rect.top
+            x: (_e.clientX || _e.touches[0].clientX) - rect.left,
+            y: (_e.clientY || _e.touches[0].clientY) - rect.top
         }
 
         this.sides = {}
 
         if (this.axis.indexOf('x') > -1){
             if (pos.x < this.__border && this.allowedSides.left) this.sides.left = true
-            if (pos.x > this.parent.rect.width - this.__border && this.allowedSides.right) this.sides.right = true
+            if (pos.x > rect.width - this.__border && this.allowedSides.right) this.sides.right = true
         }
 
         if (this.axis.indexOf('y') > -1){
             if (pos.y < this.__border && this.allowedSides.top) this.sides.top = true
-            if (pos.y > this.parent.rect.height - this.__border && this.allowedSides.bottom) this.sides.bottom = true
+            if (pos.y > rect.height - this.__border && this.allowedSides.bottom) this.sides.bottom = true
         }
 
         this.cursor = ''
@@ -1908,18 +1977,20 @@ class sk_ui_resizableizer {
     trackMouseLeave(enabled){
         if (sk.isOnMobile) return
 
-        if (!enabled){
-            this.parent.element.removeEventListener('mouseleave', this.mouseLeaveHandler)
-            return
-        }
-
-        this.mouseLeaveHandler = _e => {
+        // One handler for the component's lifetime, attached to one element at a time. A new
+        // closure per call left every earlier listener attached, because only the latest could
+        // be removed, and this is called on every mouse move over the component.
+        if (!this.mouseLeaveHandler) this.mouseLeaveHandler = _e => {
             if (this.mdPos) return
             document.body.style.cursor = ''
             this.cursor = ''
         }
 
-        this.parent.element.addEventListener('mouseleave', this.mouseLeaveHandler)
+        var element = enabled ? this.parent.element : null
+        if (this.mouseLeaveElement === element) return
+        if (this.mouseLeaveElement) this.mouseLeaveElement.removeEventListener('mouseleave', this.mouseLeaveHandler)
+        if (element) element.addEventListener('mouseleave', this.mouseLeaveHandler)
+        this.mouseLeaveElement = element
     }
 }
 
