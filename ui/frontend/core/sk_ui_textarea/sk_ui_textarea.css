@@ -9,6 +9,6 @@
 }
 
 .sk_ui_textarea::selection {
-    background:rgb(93, 177, 255);
+    background: var(--sk_ui_color_blue);
     color: white;
 }

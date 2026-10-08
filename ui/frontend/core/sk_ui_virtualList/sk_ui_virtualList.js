@@ -13,6 +13,7 @@ position is corrected so what is on screen stays put. A width change re-measures
     list.gap = px                             space between rows
     list.setCount(n)                          row count (keeps measured heights of rows kept)
     list.refresh()                            rebuild the rendered rows (data changed)
+    list.resizeRows()                         rows changed height in place (CSS): re-measure, no rebuild
     list.offsetOf(index) / list.indexAt(y)    content position ↔ row
     list.scrollToIndex(index, {align, offset, behavior})   'start' | 'center' | 'third' | 'nearest';
                                               'smooth' is one eased scroll, however far (below)
@@ -98,6 +99,19 @@ class sk_ui_virtualList extends sk_ui_component {
         for (var i = 0; i < this.heights.length; i++) this.heights[i] = undefined
         this._offsetsDirty = true
         this.refresh()
+        this.restoreAnchor(anchor)
+    }
+
+    // Rendered rows changed height in place (a CSS size change, same content): measure them, drop
+    // the estimates kept for the rest, keep the first visible row still. Nothing is re-rendered, so
+    // it is cheap enough to run every frame of an animation.
+    resizeRows(){
+        var anchor = this.anchor()
+        for (var i = 0; i < this.heights.length; i++) this.heights[i] = undefined
+        for (var [index, el] of this.rows) this.heights[index] = el.offsetHeight
+        this._offsetsDirty = true
+        this.ensureOffsets()
+        for (var [index2, el2] of this.rows) el2.style.top = this.offsets[index2] + 'px'
         this.restoreAnchor(anchor)
     }
 

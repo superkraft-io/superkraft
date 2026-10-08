@@ -345,3 +345,14 @@ i.icon, i.icons, i.flag {
   90% { transform: translate(1px, 2px) rotate(0deg); }
   100% { transform: translate(1px, -2px) rotate(-1deg); }
 }
+
+/* Text selection in every SK app: SK blue with white text. Beats Fomantic UI's global grey
+   selection with near-black text (unreadable on dark inputs); !important because Fomantic may load
+   after this sheet. */
+::selection,
+input::selection,
+textarea::selection,
+[contenteditable]::selection {
+    background-color: var(--sk_ui_color_blue, rgb(8, 136, 255)) !important;
+    color: rgb(255, 255, 255) !important;
+}
