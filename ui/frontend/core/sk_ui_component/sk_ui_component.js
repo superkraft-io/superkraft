@@ -335,8 +335,18 @@ class sk_ui_component {
 
             var nextIsMin = true
 
+            // Stops once the element has left the page (a parent's remove() does not remove its
+            // children): the timer kept the component, and whatever it was in, alive forever.
+            // Never on the page for 10 ticks: given up too.
+            var wasConnected = !!(this.element && this.element.isConnected)
+            var detachedTicks = 0
             var doNext = ()=>{
                 this.__pulsateTimer = setTimeout(()=>{
+                    var el = this.element
+                    if (el && el.isConnected) {
+                        wasConnected = true
+                        detachedTicks = 0
+                    } else if (wasConnected || !el || ++detachedTicks >= 10) return
                     if (nextIsMin) setMin()
                     else setMax()
 
