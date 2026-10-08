@@ -8,6 +8,21 @@
     overflow: hidden;
 }
 
+/* A label wider than the dropdown shrinks and ends in "…"; it must never push the arrow out
+   (or, centred, spill past the left edge). Block display: a flex box cannot show an ellipsis. */
+.sk_ui_dropdown > .sk_ui_label {
+    display: block !important;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: left;
+}
+
+.sk_ui_dropdown > .sk_ui_icon {
+    flex-shrink: 0;
+}
+
 .sk_ui_dropdown_rightIcon {
     margin-right: 0px !important;
     margin-left: 4px !important;
