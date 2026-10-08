@@ -82,10 +82,7 @@ class sk_ui_slider extends sk_ui_component {
             _e.stopPropagation()
 
             if (this.__rangeMode) {
-                var rangeMousePos = sk.interactions.getPos(_e)
-                var rangePosition = !this.vertical
-                    ? rangeMousePos.x - this.rect.left
-                    : rangeMousePos.y - this.rect.top
+                var rangePosition = this.axisPos(sk.interactions.getPos(_e))
                 var rangeValue = this.positionToValue(!this.vertical
                     ? rangePosition - (this.__rangeDragOffset || 0)
                     : rangePosition - (this.__rangeDragOffset || 0))
@@ -100,7 +97,18 @@ class sk_ui_slider extends sk_ui_component {
             }
 
             // Absolute pointer → value (no relative origin). Avoids CSS/layout origin bugs.
-            var value = this.pointerEventToValue(_e)
+            // With Shift held, the value moves a fifth as far as the pointer, for fine adjustment; the drag
+            // offset follows, so letting go of Shift doesn't jump.
+            var layoutPos = this.pointerEventToLayoutPos(_e)
+            var value
+            if (_e.shiftKey && layoutPos != null && this.__lastDragPos != null && Number.isFinite(this.__value)) {
+                var metrics = this.getSliderMetrics()
+                var span = metrics.maxPos - metrics.minPos
+                value = span > 0 ? this.__value + (layoutPos - this.__lastDragPos) / span * (metrics.max - metrics.min) * 0.2 : this.__value
+                value = Math.max(metrics.min, Math.min(metrics.max, value))
+                this.__dragOffset = layoutPos - this.valueToPosition(value)
+            } else value = this.pointerEventToValue(_e)
+            if (layoutPos != null) this.__lastDragPos = layoutPos
             if (value == null) return
 
             this.setValue(value)
@@ -132,10 +140,7 @@ class sk_ui_slider extends sk_ui_component {
             this.mdPos = sk.interactions.getPos(_e)
 
             if (this.__rangeMode) {
-                var rangeMousePos = this.mdPos
-                var rangePosition = !this.vertical
-                    ? rangeMousePos.x - this.rect.left
-                    : rangeMousePos.y - this.rect.top
+                var rangePosition = this.axisPos(this.mdPos)
                 var thumbPositions = this.getRangeThumbPositions()
                 this.__rangeDragThumb = Math.abs(rangePosition - thumbPositions.start) <= Math.abs(rangePosition - thumbPositions.end)
                     ? 'start'
@@ -143,6 +148,7 @@ class sk_ui_slider extends sk_ui_component {
                 this.__rangeDragOffset = rangePosition - thumbPositions[this.__rangeDragThumb]
             } else {
                 var layoutPos = this.pointerEventToLayoutPos(_e)
+                this.__lastDragPos = layoutPos
                 var thumbPos = Number.isFinite(this.__value) ? this.valueToPosition(this.__value) : null
                 var thumbHit = layoutPos != null && thumbPos != null
                     && Math.abs(layoutPos - thumbPos) <= Math.max(this.getThumbSize() / 2, 8)
@@ -191,6 +197,24 @@ class sk_ui_slider extends sk_ui_component {
 
             if (this.onChangedEnd) this.onChangedEnd(this.value)
         })
+
+        // Scrolling nudges the value by `wheelStep` (a tenth of it with Shift), when set.
+        this.element.addEventListener('wheel', _e => {
+            var step = Number(this.wheelStep)
+            if (!(step > 0) || this.__rangeMode || this.mdPos) return
+            _e.preventDefault()
+            _e.stopPropagation()
+            // Along the slider's own axis; sideways scrolling also works on a horizontal slider.
+            var delta = !this.vertical && Math.abs(_e.deltaX) > Math.abs(_e.deltaY) ? _e.deltaX : -_e.deltaY
+            if (!delta) return
+            var current = Number.isFinite(this.__value) ? this.__value : this.getBounds().min
+            var wasBypass = this.bypassTween
+            this.bypassTween = true
+            this.setValue(current + (delta > 0 ? 1 : -1) * step * (_e.shiftKey ? 0.1 : 1))
+            this.bypassTween = wasBypass
+            if (this.onChanged) this.onChanged(this.__value)
+            if (this.onChangedEnd) this.onChangedEnd(this.value)
+        }, {passive: false})
         
         this.attributes.add({friendlyName: 'Value', name: 'value', type: 'number', onSet: val => {
             this.setValue(val)
@@ -240,7 +264,30 @@ class sk_ui_slider extends sk_ui_component {
             return
         }})
 
-        this.attributes.add({friendlyName: 'Center Origin', name: 'centerOrigin', type: 'bool'})
+        // Fills from the middle of the track to the value (e.g. pan), instead of from the start.
+        this.attributes.add({friendlyName: 'Center Origin', name: 'centerOrigin', type: 'bool', onSet: val => {
+            if (Number.isFinite(this.__lastPos)) this.updatePos(this.__lastPos)
+        }})
+
+        this.attributes.add({friendlyName: 'Wheel Step', name: 'wheelStep', type: 'number'})
+
+        // 'vertical': a fader, the value increasing upward and filled from the bottom. 'horizontal' (default).
+        this.attributes.add({friendlyName: 'Orientation', name: 'orientation', type: 'text', onSet: val => {
+            var vertical = val === 'vertical'
+            this.vertical = vertical
+            // `vertical` also spaces the children out (a margin under each), which would shift the thumb and
+            // the track; the slider lays them out itself.
+            this.classRemove('sk_ui_component_spaced_vertical')
+            this.classRemove('sk_ui_component_spaced_horizontal')
+            this.classRemove('sk_ui_slider_vertical')
+            if (vertical) this.classAdd('sk_ui_slider_vertical')
+            this.style.height = vertical ? '100%' : height * 2
+            this.style.width = vertical ? height * 2 + 'px' : '100%'
+            // The thumb's cross-axis position comes from the stylesheet when vertical.
+            this.thumb.style.left = vertical ? '' : '0px'
+            this.secondThumb.style.left = vertical ? '' : '0px'
+            if (this.__value !== undefined) this.setValue(this.__value)
+        }})
 
        
         this.tween = new SK_Tween({
@@ -298,12 +345,19 @@ class sk_ui_slider extends sk_ui_component {
         var rect = this.element.getBoundingClientRect()
         var clientSize = !this.vertical ? rect.width : rect.height
         if (!(clientSize > 0)) return null
-        var pos = !this.vertical ? (mousePos.x - rect.left) : (mousePos.y - rect.top)
+        // Vertical sliders count from the bottom, so the value increases upward.
+        var pos = !this.vertical ? (mousePos.x - rect.left) : (rect.bottom - mousePos.y)
         var layoutSize = this.getTrackSize()
         if (layoutSize > 0 && Math.abs(layoutSize - clientSize) > 0.5) {
             pos *= layoutSize / clientSize
         }
         return pos
+    }
+
+    /** A pointer position along the slider's axis, from its start (the bottom, for a vertical slider). */
+    axisPos(mousePos){
+        var rect = this.element.getBoundingClientRect()
+        return !this.vertical ? mousePos.x - rect.left : rect.bottom - mousePos.y
     }
 
     /**
@@ -464,7 +518,7 @@ class sk_ui_slider extends sk_ui_component {
         if (!this.__rangeMode) return
 
         var positions = this.getRangeThumbPositions()
-        var positionProperty = !this.vertical ? 'left' : 'top'
+        var positionProperty = !this.vertical ? 'left' : 'bottom'
         var sizeProperty = !this.vertical ? 'width' : 'height'
 
         this.thumb.style[positionProperty] = positions.start - positions.halfThumbSize + 'px'
@@ -504,8 +558,22 @@ class sk_ui_slider extends sk_ui_component {
             if (typeof this.tween.stop === 'function') this.tween.stop()
         }
 
-        this.thumb.style[(!this.vertical ? 'left' : 'top')] = pos - this.halfThumbSize + 'px'
-        this.lineColorBar.style[(!this.vertical ? 'width' : 'height')] = pos + 'px'
+        var positionProperty = !this.vertical ? 'left' : 'bottom'
+        var sizeProperty = !this.vertical ? 'width' : 'height'
+        this.thumb.style[positionProperty] = pos - this.halfThumbSize + 'px'
+        if (this.centerOrigin) {
+            var center = this.getTrackSize() / 2
+            this.lineColorBar.style[positionProperty] = Math.min(pos, center) + 'px'
+            this.lineColorBar.style[sizeProperty] = Math.abs(pos - center) + 'px'
+            // Square where the fill meets the center; only its outer end is rounded (8px, the stylesheet's).
+            var towardStart = pos < center
+            this.lineColorBar.style.borderRadius = !this.vertical
+                ? (towardStart ? '8px 0 0 8px' : '0 8px 8px 0')
+                : (towardStart ? '0 0 8px 8px' : '8px 8px 0 0')
+        } else {
+            this.lineColorBar.style[positionProperty] = '0px'
+            this.lineColorBar.style[sizeProperty] = pos + 'px'
+        }
 
         this.__lastPos = pos
     }

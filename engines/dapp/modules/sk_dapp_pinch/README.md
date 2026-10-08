@@ -16,7 +16,7 @@ sk_dapp_pinch.node (Obj-C)   local NSEvent monitor on attached windows
 sk_dapp_pinch.js (main)      pairs each magnify with the latest finger positions,
         │                    emits 'pinch-gesture' on the BrowserWindow
         ▼
-dapp/rootView.js             forwards to the page via UMS ('sk_be_pinch-' + viewID),
+dapp/rootView.js             forwards to its page over Electron IPC ('sk_be_pinch'),
         │                    sets sk.nativePinch before the page renders
         ▼
 frontend/libs/sk_pinch       locks the axis from the finger angle at gesture start
