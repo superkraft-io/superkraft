@@ -52,7 +52,6 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             var defaultWebPreferences = {
                 nodeIntegration: true,
                 contextIsolation: false,
-                enableRemoteModule: true,
                 autoplayPolicy: 'no-user-gesture-required',
             }
             var defOpts = {
@@ -106,6 +105,23 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         }
 
         if (this.defOpts.ignoreMouseEvents) this._view.setIgnoreMouseEvents(true)
+
+        // dapp.guardNavigation (opt-in): pages run with Node access, so they never navigate away
+        // from the app's own file:// pages or open child windows; web links go to the browser.
+        if (this.sk.info.dapp && this.sk.info.dapp.guardNavigation) {
+            var openExternal = url => {
+                if (/^https?:\/\//i.test(String(url))) require('electron').shell.openExternal(String(url)).catch(()=> {})
+            }
+            this._view.webContents.setWindowOpenHandler(details => {
+                openExternal(details && details.url)
+                return {action: 'deny'}
+            })
+            this._view.webContents.on('will-navigate', (event, url) => {
+                if (/^file:/i.test(String(url))) return
+                event.preventDefault()
+                openExternal(url)
+            })
+        }
 
         // Page reads this as sk.nativePinch (set before reload() renders the template).
         this.viewInfo.nativePinch = sk_dapp_pinch.attach(this._view)

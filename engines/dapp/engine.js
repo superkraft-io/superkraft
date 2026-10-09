@@ -202,6 +202,14 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
                 console.error(err)
             })
 
+            // A quit closes every window first; one made with closable: false (a splash, say)
+            // ignores close() on macOS, and the whole quit stalls. Quitting makes them closable.
+            app.on('before-quit', () => {
+                for (const w of _electron.BrowserWindow.getAllWindows()) {
+                    try { if (!w.isDestroyed() && !w.isClosable()) w.setClosable(true) } catch (err) {}
+                }
+            })
+
             app.on('window-all-closed', () => {
                 // On mac it is common for applications and their menu bar
                 // to stay active until the user quits explicitly with Cmd + Q
@@ -247,7 +255,8 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
                 var resolved = this.resolveMediaRequest(request)
                 if (resolved) return this.serveMedia(request, resolved)
                 var media = this.mediaFileRequest(request)
-                return media ? this.serveMediaFile(request, media) : handler(request)
+                if (media) return this.serveMediaFile(request, media)
+                return this.withPageCsp(handler(request))
             })
         }
         // ejs-electron already listens from app 'ready': re-register through the wrapper.
@@ -259,13 +268,28 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
         }
     }
 
+    // dapp.csp (opt-in): a Content-Security-Policy header on every HTML page. Pages run with Node
+    // access, so a page must never pull in script from the network.
+    withPageCsp(response){
+        var csp = this.sk.info.dapp && this.sk.info.dapp.csp
+        if (!csp) return response
+        return Promise.resolve(response).then(res => {
+            if (!res || !res.headers || !/text\/html/i.test(res.headers.get('content-type') || '')) return res
+            var headers = new Headers(res.headers)
+            headers.set('Content-Security-Policy', csp)
+            return new Response(res.body, {status: res.status, statusText: res.statusText, headers: headers})
+        })
+    }
+
     // {pathname, type} for audio / video file URLs, else null.
     mediaFileRequest(request){
         var types = {
             wav: 'audio/wav', wave: 'audio/wav', mp3: 'audio/mpeg', m4a: 'audio/mp4', aac: 'audio/aac',
             flac: 'audio/flac', ogg: 'audio/ogg', oga: 'audio/ogg', opus: 'audio/ogg', aif: 'audio/aiff',
             aiff: 'audio/aiff', caf: 'audio/x-caf', mp4: 'video/mp4', m4v: 'video/mp4', mov: 'video/quicktime',
-            webm: 'video/webm', mkv: 'video/x-matroska'
+            webm: 'video/webm', mkv: 'video/x-matroska',
+            // Broadcast Wave / RF64 are WAV inside.
+            bwf: 'audio/wav', rf64: 'audio/wav', bw64: 'audio/wav'
         }
         var pathname
         try {
