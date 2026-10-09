@@ -4,6 +4,8 @@ var sk_dialog = {
             var properties = [
                 (opt.directories ? 'openDirectory' : 'openFile')
             ]
+            // macOS: a New Folder button in folder pickers (otherwise users pick a parent folder).
+            if (opt.directories) properties.push('createDirectory')
 
             if (opt.multiple) properties.push('multiSelections')
             if (opt.dontAddToRecent) properties.push('dontAddToRecent')
