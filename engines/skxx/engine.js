@@ -119,7 +119,9 @@ module.exports = class SKXX_Engine extends SK_RootEngine {
         //this.deeplink = new (require('./modules/sk_dapp_deeplink.js'))({sk: this.sk})
         this.sk.country = app.getLocale().split('-')[0]
 
-        if (this.sk.onAppReady) await this.sk.onAppReady()
+        // The option lives on sk.info (sk_superkraft.js); this.sk is the Superkraft instance.
+        var onAppReady = this.sk.onAppReady || (this.sk.info && this.sk.info.onAppReady)
+        if (onAppReady) await onAppReady()
     }
 
     on(cmd, cb){
