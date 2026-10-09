@@ -151,8 +151,33 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             this.setClosed()
         })
 
+        // A hung page: offer Wait / Reload once, until the page answers again.
+        var hangDialog = null
         this._view.on('unresponsive', () => {
             console.error('[window] renderer unresponsive')
+            if (hangDialog || !this.wantsCrashDialog(wnd)) return
+            hangDialog = new AbortController()
+            var signal = hangDialog.signal
+            var title = this.info.title || 'This window'
+            this.askCrashDialog(wnd, {
+                type: 'warning',
+                buttons: ['Wait', 'Reload'],
+                defaultId: 0,
+                cancelId: 0,
+                title: title + ' is not responding',
+                message: title + ' is not responding',
+                detail: 'You can wait for it to respond, or reload the window. Unsaved changes since the last save may be lost if you reload.',
+                signal: signal
+            }, response => {
+                if (signal.aborted) return
+                // Wait keeps hangDialog set: no second prompt until 'responsive'.
+                if (response === 1) this.reopenAfterCrash(wnd)
+            })
+        })
+        this._view.on('responsive', () => {
+            if (!hangDialog) return
+            hangDialog.abort()
+            hangDialog = null
         })
 
         // The page takes a second or two to load; raise once more when it is ready.
@@ -164,6 +189,23 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
         this._view.webContents.on('render-process-gone', (_e, details) => {
             console.error('[window] render-process-gone', details && details.reason, details && details.exitCode)
+            if (details && details.reason === 'clean-exit') return
+            if (hangDialog) { hangDialog.abort(); hangDialog = null }
+            // Hidden helper windows get no dialog; show() replaces a crashed window when next asked.
+            if (!this.wantsCrashDialog(wnd)) return
+            var title = this.info.title || 'This window'
+            this.askCrashDialog(wnd, {
+                type: 'error',
+                buttons: ['Reopen', 'Close'],
+                defaultId: 0,
+                cancelId: 1,
+                title: title + ' stopped unexpectedly',
+                message: title + ' stopped unexpectedly',
+                detail: 'Unsaved changes since the last save may be lost. Reopen the window to continue.'
+            }, response => {
+                if (response === 0) this.reopenAfterCrash(wnd)
+                else this.discardWindow(wnd)
+            })
         })
 
         this._view.on('session-end' , ()=>{
@@ -228,7 +270,48 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         this._view.loadURL('file://' + this.sk.info.paths.superkraft + '/template.ejs')
     }
 
+    // info.crashDialog === false opts a view out. Windows not on screen never get one.
+    wantsCrashDialog(wnd){
+        if (this.info.crashDialog === false) return false
+        if (!wnd || wnd.isDestroyed() || this._view !== wnd) return false
+        return wnd.isVisible() || wnd.isMinimized()
+    }
+
+    askCrashDialog(wnd, opts, onResponse){
+        const { dialog } = require('electron')
+        dialog.showMessageBox(wnd, opts).then(res => {
+            // The window may have been closed or replaced while the dialog was up.
+            if (wnd.isDestroyed() || this._view !== wnd) return
+            onResponse(res.response)
+        }).catch(err => {
+            console.error('[window] crash dialog', err && err.message ? err.message : err)
+        })
+    }
+
+    // Destroy skips the page's own close guard, which a dead or hung page can't answer.
+    discardWindow(wnd){
+        if (!wnd || wnd.isDestroyed()) return
+        wnd.destroy()
+        if (this._view === wnd) {
+            delete this._view
+            this.setClosed()
+        }
+    }
+
+    reopenAfterCrash(wnd){
+        this.discardWindow(wnd)
+        try {
+            this.show()
+        } catch (err) {
+            console.error('[window]', err && err.stack ? err.stack : err)
+        }
+    }
+
     show(){
+        // A crashed renderer leaves a blank window: replace it instead of focusing or showing it.
+        if (this._view && (this._view.isDestroyed() || this._view.webContents.isCrashed())) this.discardWindow(this._view)
+        if (this._view && this._view.isDestroyed()) delete this._view
+
         // focusIfOpen views keep their page: bring an open window forward instead of reloading it.
         if (this.info.focusIfOpen && this._view && (this._view.isVisible() || this._view.isMinimized())){
             if (this._view.isMinimized()) this._view.restore()
