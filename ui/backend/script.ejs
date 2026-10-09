@@ -597,6 +597,8 @@
     sk.__eventListenerPatcher.add = EventTarget.prototype.addEventListener;
     sk.__eventListenerPatcher.remove = EventTarget.prototype.removeEventListener;
 
+    sk.__eventListenerPatcher.capture = options => typeof options === 'boolean' ? options : !!(options && options.capture);
+
     EventTarget.prototype.addEventListener = function (type, listener, options) {
         if (!this.eventListeners) this.eventListeners = new WeakMap();
 
@@ -606,7 +608,27 @@
                 list = [];
                 this.eventListeners.set(this, list);
             }
-            list.push({ type, listener, options });
+            const capture = sk.__eventListenerPatcher.capture(options);
+            if (options && typeof options === 'object' && options.once) {
+                // A fired once-listener never reaches removeEventListener: register a wrapper
+                // that drops its record first, or the list keeps the listener (and all it
+                // closes over) for the target's lifetime.
+                if (list.some(l => l.type === type && l.listener === listener && l.capture === capture && l.wrapped)) return;
+                const target = this;
+                const record = { type, listener, options, capture };
+                record.wrapped = function (event) {
+                    const current = target.eventListeners && target.eventListeners.get(target);
+                    if (current) {
+                        const index = current.indexOf(record);
+                        if (index > -1) current.splice(index, 1);
+                        if (current.length === 0) target.eventListeners.delete(target);
+                    }
+                    return typeof listener === 'function' ? listener.call(this, event) : listener.handleEvent(event);
+                };
+                list.push(record);
+                return sk.__eventListenerPatcher.add.call(this, type, record.wrapped, options);
+            }
+            list.push({ type, listener, options, capture });
         }
         return sk.__eventListenerPatcher.add.call(this, type, listener, options);
     };
@@ -616,8 +638,15 @@
 
         const list = this.eventListeners.get(this);
         if (list) {
+            const capture = sk.__eventListenerPatcher.capture(options);
             for (let i = list.length - 1; i >= 0; --i) {
-                if (list[i].type === type && list[i].listener === listener) list.splice(i, 1);
+                const record = list[i];
+                if (record.type !== type || record.listener !== listener) continue;
+                if (record.wrapped) {
+                    if (record.capture !== capture) continue;
+                    sk.__eventListenerPatcher.remove.call(this, type, record.wrapped, options);
+                }
+                list.splice(i, 1);
             }
             if (list.length === 0) this.eventListeners.delete(this);
         }
