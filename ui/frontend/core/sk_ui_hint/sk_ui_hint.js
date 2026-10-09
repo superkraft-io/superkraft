@@ -46,8 +46,19 @@ class sk_ui_hint extends sk_ui_component {
         }, 50)
     }
 
+    // Text, not HTML: hints show file names and paths. '<br>' and newlines still break lines;
+    // a trusted caller can pass {html: true} to hint() for real markup.
     set content(val){
-        this.label.element.innerHTML = val
+        var el = this.label.element
+        if (this.html) {
+            el.innerHTML = val
+            return
+        }
+        el.textContent = ''
+        String(val == null ? '' : val).split(/<br\s*\/?>|\n/i).forEach((line, i) => {
+            if (i) el.appendChild(document.createElement('br'))
+            if (line) el.appendChild(document.createTextNode(line))
+        })
     }
 
     resetAutoHide(duration = 3000){

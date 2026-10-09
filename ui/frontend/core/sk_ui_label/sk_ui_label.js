@@ -93,10 +93,14 @@ class sk_ui_label extends sk_ui_component {
         try {
             var text = val == null ? '' : String(val)
             if (!asHTML && text.trim().split('\n').length > 1) {
-                host.innerHTML = text.split('\n').map(line => {
-                    if (line === '') return '<br>'
-                    return '<div>' + line + '</div>'
-                }).join('')
+                // One div per line, as text: names and paths reach labels (file names can hold markup).
+                host.textContent = ''
+                text.split('\n').forEach(line => {
+                    if (line === '') return host.appendChild(document.createElement('br'))
+                    var div = document.createElement('div')
+                    div.textContent = line
+                    host.appendChild(div)
+                })
                 if (host === this.element) this.styling = 'top middle ttb'
             } else if (asHTML) {
                 host.innerHTML = text

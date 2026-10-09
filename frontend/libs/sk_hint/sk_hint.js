@@ -81,6 +81,7 @@ class SK_Hint {
         if (opt.limitWidth !== undefined) this.limitWidth = opt.limitWidth
         if (opt.sticky     !== undefined) this.sticky     = opt.sticky
         
+        this.html = !!opt.html
         this.classes = opt.classes || ''
 
         this.hideOnMove = opt.hideOnMove
@@ -138,6 +139,7 @@ class SK_Hint {
             this.__hint.classRemove(this.classes)
 
             this.__hint.classAdd(this.classes)
+            this.__hint.html = this.html
             this.__hint.content = this.__text
             this.__hint.updatePos()
             return
@@ -146,6 +148,7 @@ class SK_Hint {
         this.__hint = new sk_ui_hint({parent: sk.app, noHint: true, target: this.opt.parent, extraOpt: {}})
         this.__hint.setup(_c => {
             _c.suoParent  = this.opt.parent
+            _c.html       = this.html
             _c.content    = this.__text
             _c.position   = this.__position
             _c.sticky     = this.sticky
