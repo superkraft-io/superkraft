@@ -81,8 +81,10 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
                 console.error('[instance]', err && err.stack ? err.stack : err)
             }
         }
+        // Only windows the user can already see: hidden helper windows stay hidden.
         const wins = _electron.BrowserWindow.getAllWindows()
         for (const w of wins) {
+            if (w.isDestroyed() || !(w.isVisible() || w.isMinimized())) continue
             if (w.isMinimized()) w.restore()
             w.show()
             w.focus()
@@ -98,12 +100,14 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
             this.app = app
 
             if (!app.requestSingleInstanceLock()) {
-                console.error('[instance] BotSpeak is already running. Close that window, then start the debugger again.')
+                console.error('[instance] ' + (app.getName() || 'The app') + ' is already running. Close that window first.')
                 app.exit(0)
                 return
             }
-            app.on('second-instance', () => {
+            app.on('second-instance', (_e, argv) => {
                 this.focusMainWindow()
+                // Windows hands deep links to a second launch; it exits above, so read them here.
+                if (this.deeplink && typeof this.deeplink.handleArgv === 'function') this.deeplink.handleArgv(argv)
             })
 
 

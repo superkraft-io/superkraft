@@ -98,7 +98,9 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         try {
             // After the window exists. The default menu binds Ctrl+C / Ctrl+V / Ctrl+Z
             // as copy/paste/undo, so those keys never arrive at the terminal.
-            Menu.setApplicationMenu(null)
+            // Not on macOS: there the menu carries Quit and the Edit roles that make
+            // Cmd+C / Cmd+V / Cmd+Z work in text fields; apps install their own.
+            if (process.platform !== 'darwin') Menu.setApplicationMenu(null)
         } catch (err) {
             console.error('[menu]', err && err.message ? err.message : err)
         }

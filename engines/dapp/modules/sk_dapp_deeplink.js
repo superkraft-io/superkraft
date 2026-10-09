@@ -25,6 +25,17 @@ module.exports = class SK_DAPP_Deeplink {
         this.sk.app.setAsDefaultProtocolClient(this.sk.info.dapp.deeplink.scheme)
     }
 
+    handleArgv(argv){
+        if (!this.sk.info.dapp.deeplink || !Array.isArray(argv)) return
+        var scheme = this.sk.info.dapp.deeplink.scheme + '://'
+        for (var i = 0; i < argv.length; i++){
+            if (String(argv[i]).indexOf(scheme) < 0) continue
+            var data = this.parseData(String(argv[i]))
+            if (data) this.sk.info.ums.broadcast('sk_deeplink', data)
+            return
+        }
+    }
+
     parseData(data){
         try {
             var results = {pairs: {}}
