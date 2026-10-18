@@ -19,6 +19,12 @@
     text-align: left;
 }
 
+/* Editable: the input shows the text. The rule above beat the label's own display: none, so the
+   value showed twice. */
+.sk_ui_dropdown.sk_ui_dropdown_editable > .sk_ui_label {
+    display: none !important;
+}
+
 .sk_ui_dropdown > .sk_ui_icon {
     flex-shrink: 0;
 }
