@@ -207,3 +207,58 @@
 .sk_ui_contextMenu.sk_ui_os_win .sk_ui_contextMenu_shortcut_specialChar {
     font-size: 12px;
 }
+
+
+/* Searchable menus: a field on top; matches from every submenu replace the items while typing. */
+.sk_ui_contextMenu_search {
+    gap: 6px;
+    padding: 2px 6px 2px 8px;
+    box-sizing: border-box;
+}
+
+.sk_ui_contextMenu_search_icon > #icon {
+    color: white;
+    opacity: 0.5;
+}
+
+.sk_ui_contextMenu_search_field {
+    position: relative;
+    min-width: 0;
+}
+
+.sk_ui_contextMenu_search_field > .sk_ui_input {
+    position: relative;
+    z-index: 1;
+}
+
+.sk_ui_contextMenu_search_field input {
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    color: white;
+    font-size: 13px;
+}
+
+.sk_ui_contextMenu_search_ghost {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    color: rgba(255, 255, 255, 0.35);
+    white-space: pre;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.sk_ui_contextMenu_search_separator {
+    margin: 4px 6px 5px;
+}
+
+.sk_ui_contextMenu_search_path {
+    font-size: 11px;
+    opacity: 0.5;
+    white-space: nowrap;
+}

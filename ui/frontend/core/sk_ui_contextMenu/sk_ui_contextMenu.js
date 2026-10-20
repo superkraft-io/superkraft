@@ -227,6 +227,8 @@ class SK_ContextMenu {
 
         this.menu = sk.app.add.contextMenu(_c => {
             _c.cmParent = this
+            // true or {placeholder}: a search field on top that finds items in every submenu.
+            if (this.searchable) _c.searchable = this.searchable
             _c.items = items
             _c.position = this.__position || sk.interactions.getPos(opt._e)
             if (minWidth !== undefined) _c.style.minWidth = typeof minWidth === 'number' ? minWidth + 'px' : minWidth
@@ -530,6 +532,7 @@ class sk_ui_contextMenu extends sk_ui_component {
             document.addEventListener('keydown', this.keyboardNavigationHandler, true)
             sk_ui_contextMenu.activeKeyboardMenu = this
             if (opt.focusFirstItem) this.focusFirstItem()
+            if (this.searchInput) this.searchInput.focus()
 
             resolve()
         })
@@ -543,6 +546,8 @@ class sk_ui_contextMenu extends sk_ui_component {
             this.classAdd(this.menuChain)
         }
 
+
+        if (this.searchable && !this.isSubmenu) this.buildSearch()
 
         this.sk_items = []
         for (var i in this.__items){
@@ -590,11 +595,199 @@ class sk_ui_contextMenu extends sk_ui_component {
     }
 
     getNavigableItems(){
-        return (this.sk_items || []).filter(item => item.navigable && !item.disabled && !item.passive)
+        var list = this.searchResults ? this.searchResults : (this.sk_items || [])
+        return list.filter(item => item.navigable && !item.disabled && !item.passive)
+    }
+
+    /* ----- search (searchable menus) -----
+     * A field on top. Typing lists every clickable item of the menu and its submenus that matches,
+     * best first (label starts with it, then a word does, then it is inside the label, then inside
+     * its submenu / group name), with that path on the right. The best match's label completes the
+     * typing in grey: Tab or → takes it. ↑ ↓ move, Enter picks, the first match is focused. */
+
+    buildSearch(){
+        var opt = typeof this.searchable === 'object' ? this.searchable : {}
+        this.classAdd('sk_ui_contextMenu_searchable')
+        this.searchRow = this.add.component(_c => {
+            _c.classAdd('sk_ui_contextMenu_search')
+            _c.compact = true
+            _c.styling = 'left middle fullwidth'
+            _c.add.icon(_c => {
+                _c.classAdd('sk_ui_contextMenu_search_icon')
+                _c.icon = 'search'
+                _c.size = 11
+            })
+            _c.add.component(_c => {
+                _c.classAdd('sk_ui_contextMenu_search_field')
+                _c.compact = true
+                _c.styling = 'left middle fill'
+                this.searchGhost = _c.add.component(_c => {
+                    _c.classAdd('sk_ui_contextMenu_search_ghost')
+                    _c.compact = true
+                })
+                this.searchField = _c.add.input(_c => {
+                    _c.styling += ' fullwidth'
+                    _c.placeholder = opt.placeholder || 'Search'
+                })
+            })
+        })
+        this.add.component(_c => _c.classAdd('sk_ui_contextMenu_Item_Separator sk_ui_contextMenu_search_separator'))
+        this.searchInput = this.searchField.input
+        this.searchInput.setAttribute('spellcheck', 'false')
+        this.searchInput.setAttribute('autocomplete', 'off')
+        this.searchInput.addEventListener('input', ()=> this.runSearch())
+        this.searchInput.addEventListener('keydown', _e => this.onSearchKey(_e))
+        this.searchRows = []
+    }
+
+    // Every clickable item, with the submenus / group headers it sits under.
+    searchEntries(){
+        var out = []
+        var walk = (items, path)=> {
+            var group = null
+            for (var item of items || []){
+                if (!item || item.separator || item.input) continue
+                if (item.header){
+                    group = item.header
+                    continue
+                }
+                if (Array.isArray(item.items)){
+                    walk(item.items, path.concat(item.label || ''))
+                    continue
+                }
+                // Disabled label rows are used as group titles.
+                if (item.disabled && !item.onClick){
+                    if (item.label) group = item.label
+                    continue
+                }
+                if (item.disabled || item.passive || !item.label) continue
+                out.push({item: item, label: String(item.label), path: path.concat(group || []).filter(Boolean).join(' › ')})
+            }
+        }
+        walk(this.__items, [])
+        return out
+    }
+
+    searchMatches(query){
+        var q = query.toLowerCase()
+        var scored = []
+        this.searchEntries().forEach((entry, index) => {
+            var label = entry.label.toLowerCase()
+            var score = -1
+            if (label.startsWith(q)) score = 0
+            else if (label.split(/[\s\-_/()]+/).some(word => word.startsWith(q))) score = 1
+            else if (label.includes(q)) score = 2
+            else if (entry.path.toLowerCase().includes(q)) score = 3
+            if (score >= 0) scored.push({entry: entry, score: score, index: index})
+        })
+        scored.sort((a, b) => a.score - b.score || a.index - b.index)
+        return scored.map(match => match.entry)
+    }
+
+    runSearch(){
+        var query = this.searchInput.value.trim()
+        this.closeSubmenus()
+        // Straight in the menu, not a wrapper: an item checks its parent menu's canClose.
+        for (var old of this.searchRows || []) old.remove()
+        this.searchRows = []
+        this.searchResults = null
+        this.setSearchGhost('')
+        for (var item of this.sk_items || []) item.element.style.display = query ? 'none' : ''
+        if (!query) return this.focusItem(null)
+
+        // Keep the size it opened with, so the menu doesn't jump while typing.
+        if (!this.__searchSize){
+            var rect = this.element.getBoundingClientRect()
+            this.__searchSize = true
+            this.style.minWidth = rect.width + 'px'
+            this.style.minHeight = rect.height + 'px'
+        }
+
+        var matches = this.searchMatches(query).slice(0, 60)
+        this.searchResults = []
+        if (!matches.length){
+            this.searchRows.push(this.add.fromClass(sk_ui_contextMenu_Item, _c => {
+                _c.cmParent = this.cmParent
+                _c.parentMenu = this
+                _c.config({label: 'No matches', disabled: true})
+            }))
+        }
+        matches.forEach(entry => {
+            var row = this.add.fromClass(sk_ui_contextMenu_Item, _c => {
+                _c.cmParent = this.cmParent
+                _c.parentMenu = this
+                // A copy: config() writes into the object it gets, and the original stays in its submenu.
+                _c.config({...entry.item, shortcut: undefined})
+                if (entry.path) _c.rightSide.add.label(_c => {
+                    _c.classAdd('sk_ui_contextMenu_search_path')
+                    _c.text = entry.path
+                })
+            })
+            this.searchRows.push(row)
+            this.searchResults.push(row)
+        })
+        if (this.searchResults.some(item => item.hasIcon)) this.searchResults.forEach(item => item.leftSide.iconContainer.classAdd('sk_ui_contextMenu_Item_hasIcon'))
+        this.focusFirstItem()
+
+        var best = matches[0]
+        if (best && best.label.toLowerCase().startsWith(query.toLowerCase())) this.setSearchGhost(best.label)
+    }
+
+    // The completion in grey behind the typing: what is typed (invisible) + the rest of the label.
+    setSearchGhost(label){
+        this.searchCompletion = label || ''
+        var ghost = this.searchGhost && this.searchGhost.element
+        if (!ghost) return
+        ghost.textContent = ''
+        var typed = this.searchInput.value
+        if (!label || typed.length >= label.length) return
+        // Lined up with the text inside the <input> (sk_ui_input wraps it in its own padding).
+        var cs = getComputedStyle(this.searchInput)
+        var fieldRect = ghost.parentElement.getBoundingClientRect()
+        var inputRect = this.searchInput.getBoundingClientRect()
+        ghost.style.font = cs.font
+        ghost.style.letterSpacing = cs.letterSpacing
+        ghost.style.lineHeight = cs.lineHeight
+        ghost.style.paddingLeft = '0px'
+        ghost.style.left = (inputRect.left - fieldRect.left + parseFloat(cs.borderLeftWidth || 0) + parseFloat(cs.paddingLeft || 0) - this.searchInput.scrollLeft) + 'px'
+        ghost.style.top = (inputRect.top - fieldRect.top + parseFloat(cs.borderTopWidth || 0) + parseFloat(cs.paddingTop || 0)) + 'px'
+        ghost.style.height = (inputRect.height - parseFloat(cs.borderTopWidth || 0) - parseFloat(cs.borderBottomWidth || 0) - parseFloat(cs.paddingTop || 0) - parseFloat(cs.paddingBottom || 0)) + 'px'
+        ghost.style.bottom = 'auto'
+        var hidden = document.createElement('span')
+        hidden.style.visibility = 'hidden'
+        hidden.style.whiteSpace = 'pre'
+        hidden.textContent = typed
+        var rest = document.createElement('span')
+        rest.style.whiteSpace = 'pre'
+        rest.textContent = label.slice(typed.length)
+        ghost.append(hidden, rest)
+    }
+
+    onSearchKey(_e){
+        var key = _e.key
+        var atEnd = this.searchInput.selectionStart === this.searchInput.value.length
+        if ((key === 'Tab' || (key === 'ArrowRight' && atEnd)) && this.searchCompletion && this.searchCompletion.length > this.searchInput.value.length){
+            _e.preventDefault()
+            this.searchInput.value = this.searchCompletion
+            this.runSearch()
+            return
+        }
+        if (key === 'Tab') return _e.preventDefault()
+        if (key === 'ArrowDown' || key === 'ArrowUp'){
+            _e.preventDefault()
+            _e.stopPropagation()
+            return this.focusAdjacentItem(key === 'ArrowDown' ? 1 : -1)
+        }
+        if (key === 'Enter'){
+            _e.preventDefault()
+            _e.stopPropagation()
+            var item = this.keyboardFocusedItem || this.getNavigableItems()[0]
+            if (item && item.activate) item.activate()
+        }
     }
 
     focusItem(item){
-        for (var menuItem of this.sk_items || []) menuItem.classRemove('sk_ui_contextMenu_Item_keyboardFocused')
+        for (var menuItem of (this.sk_items || []).concat(this.searchRows || [])) menuItem.classRemove('sk_ui_contextMenu_Item_keyboardFocused')
         this.keyboardFocusedItem = item
         if (!item) return
         item.classAdd('sk_ui_contextMenu_Item_keyboardFocused')
