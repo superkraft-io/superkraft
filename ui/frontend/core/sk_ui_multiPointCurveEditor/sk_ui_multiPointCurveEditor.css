@@ -1,0 +1,78 @@
+.sk_ui_multiPointCurveEditor {
+    cursor: crosshair;
+}
+
+.sk_ui_multiPointCurveEditor:focus-within {
+    border-color: rgba(255, 255, 255, 0.32) !important;
+}
+
+.sk_ui_multiPointCurveEditor_grid {
+    stroke: rgba(255, 255, 255, 0.08);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+}
+
+.sk_ui_multiPointCurveEditor_curveOutline {
+    fill: none;
+    stroke: #000000;
+    vector-effect: non-scaling-stroke;
+    pointer-events: none;
+}
+
+.sk_ui_multiPointCurveEditor_curve {
+    fill: none;
+    stroke: #ffffff;
+    /* stroke-width comes from the SVG attribute (curveThickness). */
+    vector-effect: non-scaling-stroke;
+}
+
+.sk_ui_multiPointCurveEditor_point {
+    cursor: grab;
+}
+
+.sk_ui_multiPointCurveEditor_point:active {
+    cursor: grabbing;
+}
+
+.sk_ui_multiPointCurveEditor_dot {
+    fill: #ffffff;
+    stroke: #000000;
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+}
+
+.sk_ui_multiPointCurveEditor_point_active .sk_ui_multiPointCurveEditor_dot {
+    fill: #ffffff;
+    stroke: #000000;
+}
+
+.sk_ui_multiPointCurveEditor_point_hover .sk_ui_multiPointCurveEditor_dot {
+    fill: #ffffff;
+    stroke: #000000;
+}
+
+.sk_ui_multiPointCurveEditor_handle {
+    stroke: #ffffff;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+}
+
+.sk_ui_multiPointCurveEditor_handleHitArea {
+    cursor: ew-resize;
+}
+
+.sk_ui_multiPointCurveEditor_handleHitArea[data-axis="y"] {
+    cursor: ns-resize;
+}
+
+.sk_ui_multiPointCurveEditor_thumb {
+    fill: #111418;
+    stroke: #ffffff;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    cursor: ew-resize;
+}
+
+.sk_ui_multiPointCurveEditor_thumb[data-axis="y"] {
+    cursor: ns-resize;
+}
