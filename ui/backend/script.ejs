@@ -186,12 +186,19 @@
             })
         },
 
+        // The wapp backend can't know the visitor's OS; read it from the browser.
+        // Same values as the dapp engine: 'mac' on Apple platforms, otherwise 'win'.
+        detectBrowserOS: ()=>{
+            var platform = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || navigator.userAgent || ''
+            return /mac|iphone|ipad|ipod/i.test(platform) ? 'mac' : 'win'
+        },
+
         init: ()=>{
             return new Promise(async (resolve, reject)=>{
 			    await sk.awaitEngineInitialization()
                 
                 var res = await sk.comm.main('getInfo')
-                if (!sk.isOnMobile) sk.os = res.os
+                if (!sk.isOnMobile) sk.os = res.os || sk.detectBrowserOS()
                 sk.arch    = res.arch
                 sk.main    = res.main
                 sk.noTitle = res.view.noTitle

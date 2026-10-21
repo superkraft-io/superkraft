@@ -5,7 +5,10 @@ module.exports = class SK_Action extends SK_RootAction {
             actions: Object.keys(view.actions),
             main: false,
 
-            view: {}
+            // In-page windows (sk_ui_titlebar) drop their close button unless closable is set.
+            view: {
+                closable: true
+            }
         }
 
         res.resolve(info)

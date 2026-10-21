@@ -107,6 +107,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
 
             this.sk.app.use(this.sk.info.ui.routes.core, this.serveStatic(this.paths.frontend.ui.core))
             this.sk.app.use(this.sk.info.ui.routes.shared, this.serveStatic(this.paths.frontend.ui.shared))
+            this.sk.app.use(this.sk.info.ui.routes.global, this.serveStatic(this.paths.frontend.ui.global))
 
             if (this.sk.info.ui.routes.font) this.sk.app.use(this.info.sk.ui.routes.font, this.serveStatic(this.paths.frontend.ui.font))
 
