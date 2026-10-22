@@ -76,6 +76,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             }
            
             this.sk.app.use(this.routes.frontend.view, this.sk.info.engine.serveStatic(opt.root + 'frontend/'))
+            if (this.sk.info.gate) this.sk.info.gate.route(this.sk.app, this.id, opt.root + 'frontend/sk_ui/', this.info.route + 'vfe_frontend/sk_ui/')
             this.sk.app.use(this.routes.frontend.global, this.sk.info.engine.serveStatic(this.sk.info.paths.globalFrontend))
         
 

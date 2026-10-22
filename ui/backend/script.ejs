@@ -599,6 +599,44 @@
 
 
 
+    // Gated components (`.requires_<feature>` folders, wapp): one bundle per feature, served only
+    // to entitled users. Resolves true once loaded, false when the server says no (retry later is
+    // fine). Other app types load every component up front, so this is a no-op there.
+    sk.ui.gated = {}
+    sk.ui.gatedVerdicts = {}
+    sk.ui.loadGated = feature => {
+        if (sk.app_type !== 'wapp') return Promise.resolve(true)
+        if (sk.ui.gated[feature]) return sk.ui.gated[feature]
+        var base = '/sk_gated/' + encodeURIComponent(sk.id) + '/' + encodeURIComponent(feature)
+        var load = sk.ui.gated[feature] = new Promise(resolve => {
+            delete sk.ui.gatedVerdicts[feature]
+            var script = document.createElement('script')
+            // The bundle (or the denied answer) ends by setting sk.ui.gatedVerdicts[feature].
+            script.src = base + '.js?t=' + Date.now()
+            script.onload = ()=> {
+                var entitled = sk.ui.gatedVerdicts[feature] === true
+                if (!entitled) script.remove()
+                else {
+                    var link = document.createElement('link')
+                    link.rel = 'stylesheet'
+                    link.type = 'text/css'
+                    link.href = base + '.css'
+                    document.head.appendChild(link)
+                }
+                resolve(entitled)
+            }
+            script.onerror = ()=> {
+                script.remove()
+                resolve(false)
+            }
+            document.head.appendChild(script)
+        }).then(loaded => {
+            if (!loaded && sk.ui.gated[feature] === load) delete sk.ui.gated[feature]
+            return loaded
+        })
+        return load
+    }
+
     sk.__eventListenerPatcher = {}
 
     sk.__eventListenerPatcher.add = EventTarget.prototype.addEventListener;

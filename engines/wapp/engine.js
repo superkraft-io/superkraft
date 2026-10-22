@@ -130,12 +130,15 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
         })
     }
 
-    // express.static that 404s files inside `.ignore_on_wapp` folders.
+    // express.static that 404s files inside `.ignore_on_wapp` folders, and gated (`.requires_*`)
+    // code, which is only served bundled through /sk_gated/.
     serveStatic(root){
         var serve = this.express.static(root)
-        var filter = this.sk.info.appTypeFilter
-        if (!filter) return serve
-        return [filter.staticGuard(root), serve]
+        var guards = []
+        if (this.sk.info.appTypeFilter) guards.push(this.sk.info.appTypeFilter.staticGuard(root))
+        if (this.sk.info.gate && this.sk.info.gate.active) guards.push(this.sk.info.gate.staticGuard(root))
+        if (!guards.length) return serve
+        return [...guards, serve]
     }
 
     waitForReady(){ return new Promise(resolve => { resolve() }) }

@@ -62,11 +62,15 @@ module.exports = class SK_CDN_Exporter {
 
                 var filter = this.sk.appTypeFilter
                 if (filter && filter.isMarkerFileName(dir)) continue
+                var gate = this.sk.gate
+                if (gate && gate.isMarkerFileName(dir)) continue
 
                 if (fs.lstatSync(dirPath).isDirectory()){
                     if (dir.indexOf('sk_ui_') === -1) continue
                     // `.ignore_on_<type>` marker: leave the folder out of the bundle.
                     if (filter && filter.isDirIgnoredSync(dirPath)) continue
+                    // `.requires_<feature>` marker: gated code never goes to the (public) CDN.
+                    if (gate && gate.featureOfDirSync(dirPath)) continue
                     var res = await this.consolidate(dirPath + '/')
                     
                     data.css += res.css || ''

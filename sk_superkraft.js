@@ -103,6 +103,7 @@ module.exports = class Superkraft {
         var sk = this.info
 
         this.info.appTypeFilter = new (require(__dirname + '/modules/sk_appTypeFilter.js'))({type: opt.type})
+        this.info.gate = new (require(__dirname + '/modules/sk_gate.js'))({sk: sk, type: opt.type, onCheckEntitlement: opt.onCheckEntitlement})
         this.info.utils = new (require(__dirname + '/modules/sk_utils.js'))({sk: sk})
         this.info.timers = (opt.type === 'dapp' ? new (require(__dirname + '/modules/sk_timers.js'))({sk: sk}) : undefined)
         //this.info.stats = new (require(__dirname + '/modules/sk_stats.js'))({sk: sk})
