@@ -39,6 +39,12 @@ view first, so scrolling never waits for it. Items that leave are released in th
     rink.refresh()                            rebuild the shown items (their data changed)
     rink.measure()                            measure the shown items now (forces a layout; size
                                               changes are picked up on their own)
+    rink.setHeightScales(map, update = true)  items given part of their height (the rest clipped
+                                              away: no layout per frame) and faded:
+                                              key -> 0..1 (collapsing / growing them, a frame at a
+                                              time); an empty map, all whole again. Keep it to items
+                                              near the view: shrunk ones let more items into range
+    rink.heightOfKey(key)                     heightOf, by key
     rink.releaseAll()                         drop every item (a subclass's onBeforeRemove calls it)
     rink.itemFor(key)                         the built item while it exists (shown or kept), else undefined
     rink.heightOf(index)                      measured height, else the estimate
@@ -74,6 +80,7 @@ class sk_ui_iceRinkVirtual extends sk_ui_iceRink {
         this.__count = 0
         this.__keys = []
         this.__heights = new Map()      // key -> measured px
+        this.__scales = new Map()       // key -> 0..1: shown at that part of its height (setHeightScales)
         this.__offsets = [0]
         this.__offsetsDirty = true
         this.__estimate = 40
@@ -185,15 +192,35 @@ class sk_ui_iceRinkVirtual extends sk_ui_iceRink {
 
     /***** geometry *****/
 
-    __heightOf(index){
+    // Whole height: measured, else the estimate.
+    __baseHeightOf(index){
         var h = this.__heights.get(this.__keys[index])
         if (h !== undefined) return h
         return this.estimateItem ? this.estimateItem(index) : this.__estimate
     }
 
+    // The room it takes: part of it while scaled.
+    __heightOf(index){
+        var h = this.__baseHeightOf(index)
+        var scale = this.__scales.get(this.__keys[index])
+        return scale === undefined ? h : h * scale
+    }
+
     heightOf(index){
         this.__ensureOffsets()
-        return this.__heightOf(index)
+        return this.__baseHeightOf(index)
+    }
+
+    // By key, for items not (or no longer) in the list: measured, else the learned estimate.
+    heightOfKey(key){
+        var h = this.__heights.get(key)
+        return h === undefined ? this.__estimate : h
+    }
+
+    setHeightScales(scales, update = true){
+        this.__scales = scales
+        this.__offsetsDirty = true
+        if (update) this.update()
     }
 
     __ensureOffsets(){
@@ -310,15 +337,29 @@ class sk_ui_iceRinkVirtual extends sk_ui_iceRink {
         this.__scheduleWork()
     }
 
-    // Shown slots at their items' offsets (only the ones that moved are written).
+    // Shown slots at their items' offsets, scaled ones clipped to their part (only what changed is
+    // written).
     __position(){
         for (var i = this.__range.first; i <= this.__range.last; i++){
             var entry = this.__shown.get(this.__keys[i])
             if (!entry) continue
             var top = this.__offsets[i]
-            if (entry.top === top) continue
-            entry.top = top
-            entry.slot.style.transform = 'translateY(' + top + 'px)'
+            if (entry.top !== top){
+                entry.top = top
+                entry.slot.style.transform = 'translateY(' + top + 'px)'
+            }
+            // A scaled one keeps its height, its lower part clipped away (the ones after it are
+            // placed by the scaled height): no layout, nothing measured, each frame. It fades with its
+            // part too, on its own layer meanwhile.
+            var scale = this.__scales.get(entry.key)
+            var clip = scale === undefined ? '' : 'inset(0px 0px ' + Math.max(0, this.__baseHeightOf(i) - this.__heightOf(i)) + 'px 0px)'
+            if (entry.clip !== clip){
+                var style = entry.slot.style
+                if (!entry.clip !== !clip) style.willChange = clip ? 'transform, opacity, clip-path' : ''
+                entry.clip = clip
+                style.clipPath = clip
+                style.opacity = scale === undefined ? '' : String(Math.round(scale * 1000) / 1000)
+            }
         }
     }
 
@@ -345,6 +386,8 @@ class sk_ui_iceRinkVirtual extends sk_ui_iceRink {
         if (entry.element.parentNode !== slot) slot.appendChild(entry.element)
         entry.slot = slot
         entry.top = undefined
+        entry.clip = undefined          // (a reused slot may still be clipped for its last item)
+        slot.style.clipPath = slot.style.opacity = slot.style.willChange = ''
         slot.__virtualKey = entry.key
         this.__slotObserver.observe(slot)
     }
@@ -474,6 +517,7 @@ class sk_ui_iceRinkVirtual extends sk_ui_iceRink {
                 this.__buildCost = (this.__buildCost === undefined ? cost : this.__buildCost * 0.7 + cost * 0.3)
                 placeholder.element.remove()
                 real.top = placeholder.top
+                real.clip = placeholder.clip
                 real.slot = slot
                 this.__shown.set(real.key, real)
                 // (Observed again: the observer reports a slot when observing starts, so the new
@@ -517,13 +561,15 @@ class sk_ui_iceRinkVirtual extends sk_ui_iceRink {
             if (entry.placeholder || !entry.slot) continue
             var index = indexOfKey.get(entry.key)
             if (index === undefined) continue
+            // (A scaled one keeps its whole height, only clipped.)
+            var scale = this.__scales.get(entry.key)
             var h = entry.slot.offsetHeight
             if (!this.isKept || !this.isKept(entry.key)) learned.push(h)
 
-            var before = this.__heightOf(index)
+            var before = this.__baseHeightOf(index)
             if (h === before) continue
             changed = true
-            if (this.__offsets[index] + before <= view.top) shift += h - before
+            if (this.__offsets[index] + this.__heightOf(index) <= view.top) shift += (h - before) * (scale === undefined ? 1 : scale)
             this.__heights.set(entry.key, h)
         }
 
