@@ -166,14 +166,22 @@ class sk_ui_component {
                 {value: 'wrap'}
             ],
 
+            // Only the jsomStyle_ classes that change are touched, in one call each way.
             onSet: val => {
                 this._styling = val.replace('undefined', '')
                 var stylingsList = ['top' , 'left', 'center', 'right',  'middle', 'bottom', 'fill', 'wrap', 'ttb', 'btt', 'sb', 'sa', 'se', 'scrollable', 'fullwidth', 'fullheight']
-                for (var i in stylingsList) this.element.classList.remove('jsomStyle_' + stylingsList[i])
+                var newStylings = val.split('undefined').join('').split(' ').filter(Boolean).map(_s => 'jsomStyle_' + _s)
+                var classList = this.element.classList
 
-                var newStylings = val.split('undefined').join('').split(' ')
-               
-                for (var i = 0; i < newStylings.length; i++) this.element.classList.add('jsomStyle_' + newStylings[i])
+                var toRemove = []
+                for (var i = 0; i < stylingsList.length; i++){
+                    var name = 'jsomStyle_' + stylingsList[i]
+                    if (classList.contains(name) && !newStylings.includes(name)) toRemove.push(name)
+                }
+                var toAdd = newStylings.filter(_name => !classList.contains(_name))
+
+                if (toRemove.length) classList.remove(...toRemove)
+                if (toAdd.length) try { classList.add(...toAdd) } catch(err) { toAdd.forEach(_name => { try { classList.add(_name) } catch(err) {} }) }
             }
         })
 
@@ -954,12 +962,21 @@ class sk_ui_component {
 
     
 
-    classAdd(val = ''){
-        val.split(' ').forEach(_class => {
-            try { this.element.classList.add(_class) } catch(err) {}
-        })
+    // One classList call for all the classes, and none for classes already as wanted: each call is
+    // a style invalidation the browser checks against every stylesheet rule (even adding a class
+    // that is there already). (A bad token fails the batch: then one by one, skipping it.)
+    classAdd(val = ''){ this.__classOp('add', val) }
+    classRemove(val = ''){ this.__classOp('remove', val) }
+    __classOp(op, val){
+        var classList = this.element.classList
+        var list = String(val).split(' ').filter(_class => _class && classList.contains(_class) === (op === 'remove'))
+        if (!list.length) return
+        try {
+            this.element.classList[op](...list)
+        } catch(err) {
+            list.forEach(_class => { try { this.element.classList[op](_class) } catch(err) {} })
+        }
     }
-    classRemove(val = ''){ val.split(' ').forEach(_class => { try { this.element.classList.remove(_class) } catch (err) { }}) }
     classHas(val = ''){ return this.element.classList.contains(val) }
 
 

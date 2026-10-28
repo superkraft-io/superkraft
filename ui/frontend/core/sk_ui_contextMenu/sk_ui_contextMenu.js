@@ -576,10 +576,13 @@ class sk_ui_contextMenu extends sk_ui_component {
             if (item.hasIcon) return true
         }
     }
+    // When any item has an icon, every item gets the icon column so the labels line up.
+    // Headers without an icon sit at the left edge unless they ask for align: 'labels'.
     configIconOffset(){
         if (!this.anyItemHasIcon()) return
         for (var i in this.sk_items){
             var item = this.sk_items[i]
+            if (item.opt && item.opt.header && !item.hasIcon && item.opt.align !== 'labels') continue
             item.leftSide.iconContainer.classAdd('sk_ui_contextMenu_Item_hasIcon')
         }
     }

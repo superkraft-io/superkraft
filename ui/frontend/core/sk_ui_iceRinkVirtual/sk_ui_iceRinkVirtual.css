@@ -1,0 +1,21 @@
+/* The list's full height; slots are placed in it by transform. */
+.sk_ui_iceRinkVirtual_track {
+    position: relative;
+    flex: none;
+    width: 100%;
+}
+
+/* Fomantic gives every icon backface-visibility: hidden, which makes each one a GPU layer (and the
+   items overlapping them more layers): in a scrolling list, a hundred layers to update every frame. */
+.sk_ui_iceRinkVirtual_track i.icon {
+    backface-visibility: visible;
+}
+
+/* flow-root: the item's margins stay inside, so the slot measures the item whole. */
+.sk_ui_iceRinkVirtual_slot {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    display: flow-root;
+}

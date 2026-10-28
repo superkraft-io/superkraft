@@ -49,8 +49,11 @@ class sk_ui_iceRink extends sk_ui_component {
         scroller.allowScrollX = true;
         scroller.allowScrollY = true;
 
+        // (updateSize reports the position every tick while the content fits: only a change ticks again.)
         scroller.onPositionCalculated = (x, y) => {
+            if (x === this.scrollPos.x && y === this.scrollPos.y) return
             this.scrollPos = {x: x, y: y}
+            this.requestTick()
         }
 
 
@@ -212,7 +215,31 @@ class sk_ui_iceRink extends sk_ui_component {
         }
 
 
-        requestAnimationFrame(() => this._tick())
+        // _tick runs when something changed (a scroll, a size), not every frame: an ice rink at rest
+        // costs nothing. It only writes: the sizes it needs come from observers (reading them in the
+        // tick, between writes, made the browser lay the page out several times per frame).
+        this.__tickFrame = 0
+        this.__sizes = {wrapperWidth: 0, wrapperHeight: 0, contentWidth: 0, contentHeight: 0}
+        this.__scrollbarShown = {x: false, y: false}
+        this.scrollbars.x.onResized = this.scrollbars.y.onResized = ()=> this.requestTick()
+        this.requestTick()
+        var sizeObserver = new ResizeObserver(records => {
+            for (var r of records){
+                var box = r.borderBoxSize && r.borderBoxSize[0]
+                var width = box ? box.inlineSize : r.contentRect.width
+                var height = box ? box.blockSize : r.contentRect.height
+                if (r.target === this.contentWrapper.element){
+                    this.__sizes.wrapperWidth = width
+                    this.__sizes.wrapperHeight = height
+                } else if (r.target === this.content.element){
+                    this.__sizes.contentWidth = width
+                    this.__sizes.contentHeight = height
+                }
+            }
+            this.requestTick()
+        })
+        sizeObserver.observe(this.contentWrapper.element)
+        sizeObserver.observe(this.content.element)
 
 
         this.attributes.add({friendlyName: 'Hide Overflow', name: 'hideOverflow', type: 'bool', onSet: val => {
@@ -263,6 +290,7 @@ class sk_ui_iceRink extends sk_ui_component {
 
         var observer = new ResizeObserver(()=>{
             if (!this.content) return
+            this.requestTick()
 
             const contentRect = this.content.rect
             const width  = contentRect.width
@@ -285,12 +313,12 @@ class sk_ui_iceRink extends sk_ui_component {
         this.attributes.add({friendlyName: 'Auto Height', name: 'autoHeight', type: 'bool'})
 
         this.attributes.add({friendlyName: 'Anchor X', name: 'anchorX', type: 'string',
-            onSet: val => { this.scroller.anchorX = val },
+            onSet: val => { this.scroller.anchorX = val; this.requestTick() },
             onGet: ()=>{ return this.scroller.anchorX }
         })
 
         this.attributes.add({friendlyName: 'Anchor Y', name: 'anchorY', type: 'string',
-            onSet: val => { this.scroller.anchorY = val },
+            onSet: val => { this.scroller.anchorY = val; this.requestTick() },
             onGet: ()=>{ return this.scroller.anchorY }
         })
 
@@ -341,14 +369,17 @@ class sk_ui_iceRink extends sk_ui_component {
         this.__notifyDeprecated(name, msg, true)
     }
 
+    requestTick(){
+        if (this.__tickFrame) return
+        this.__tickFrame = requestAnimationFrame(() => this._tick())
+    }
+
     _tick(){
-        this.scroller.updateSize(this.contentWrapper.rect.width, this.contentWrapper.rect.height, this.content.rect.width, this.content.rect.height);
+        this.__tickFrame = 0
+        var sizes = this.__sizes
+        this.scroller.updateSize(sizes.wrapperWidth, sizes.wrapperHeight, sizes.contentWidth, sizes.contentHeight);
 
-       
-        this.content.style.left = this.scrollPos.x + 'px'
-        this.content.style.top = this.scrollPos.y + 'px'
-
-        //this.content.style.transform = `translate(${this.scrollPos.x}px, ${this.scrollPos.y}px)`
+        this.positionContent(this.scrollPos.x, this.scrollPos.y)
 
         this.scrollbars.x.position = sk.utils.map(0-this.scrollPos.x, 0, this.scroller.contentWidth - this.scroller.viewportWidth, 0, 1)
         this.scrollbars.y.position = sk.utils.map(0-this.scrollPos.y, 0, this.scroller.contentHeight - this.scroller.viewportHeight, 0, 1)
@@ -366,8 +397,8 @@ class sk_ui_iceRink extends sk_ui_component {
 
          if (this.onOverscroll){
             var diff = {
-                x: this.scroller.contentWidth - this.contentWrapper.rect.width,
-                y: this.scroller.contentHeight - this.contentWrapper.rect.height
+                x: this.scroller.contentWidth - sizes.wrapperWidth,
+                y: this.scroller.contentHeight - sizes.wrapperHeight
             }
 
             var overscrolls = {
@@ -386,11 +417,12 @@ class sk_ui_iceRink extends sk_ui_component {
             this.lastOverscrollVal.x = overscroll.x
             this.lastOverscrollVal.y = overscroll.y
         }
+    }
 
-
-
-
-        requestAnimationFrame(() => this._tick())
+    // Where the content sits for scroll position x, y. (A subclass can move it by transform.)
+    positionContent(x, y){
+        this.content.style.left = x + 'px'
+        this.content.style.top = y + 'px'
     }
 
 
@@ -425,14 +457,14 @@ class sk_ui_iceRink extends sk_ui_component {
         component.element.addEventListener('touchstart', this.handleMouseDown)
     }
 
+    // Shown or not is kept here, not read back (`visible` reads computed style and layout).
     showScrollbar(axis){
-        var scrollbar = this.scrollbars[axis]
-        var isVisible = scrollbar.visible
-        if (isVisible) return
+        if (this.__scrollbarShown[axis]) return
+        this.__scrollbarShown[axis] = true
 
         this.scrollbars[axis].show()
 
-        if (this.scrollbars.x.visible && this.scrollbars.y.visible){
+        if (this.__scrollbarShown.x && this.__scrollbarShown.y){
             if (!this.scrollbars.x.hidden) this.scrollbars.x.style.width = 'calc(100% - 12px)'
             if (!this.scrollbars.y.hidden) this.scrollbars.y.style.height = 'calc(100% - 12px)'
             
@@ -442,23 +474,19 @@ class sk_ui_iceRink extends sk_ui_component {
     }
 
     hideScrollbar(axis){
-        var scrollbar = this.scrollbars[axis]
-        var isVisible = scrollbar.visible
+        if (!this.__scrollbarShown[axis]) return
+        this.__scrollbarShown[axis] = false
 
-        var rect = scrollbar.rect
-
-        if (!isVisible) return
-        
         this.scrollbars[axis].hide()
 
         this.scrollbars.x.style.width = ''
         this.scrollbars.y.style.height = ''
 
-        if (!this.scrollbars.x.visible){
+        if (!this.__scrollbarShown.x){
             this.contentWrapper.style.height = ''
         }
 
-        if (!this.scrollbars.y.visible){
+        if (!this.__scrollbarShown.y){
             this.contentWrapper.style.width = ''
         }
     }

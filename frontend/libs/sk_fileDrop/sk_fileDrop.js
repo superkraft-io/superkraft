@@ -3,6 +3,12 @@ class sk_fileDrop {
     
         this.files = undefined
         this.subscribers = {}
+        this.active = new Set()     // the subscribers in drop mode for the drag going on
+
+        // A drag the app started itself (a file dragged out with webContents.startDrag): only
+        // subscribers with onFileDrop.internal go into drop mode. Set by whoever starts it, cleared
+        // on its drop or the first mouse move after it (a drop outside the app fires nothing here).
+        this.internal = false
 
         var elementToHandle = document.body
         if (sk.app_type !== 'wapp') elementToHandle = document
@@ -146,6 +152,15 @@ class sk_fileDrop {
 
 
 
+    // The components from the event's target up (its nearest element that is one: a drop on a label's
+    // text or an image inside a component lands on an element that isn't, and getPath on it threw,
+    // leaving every drop area after it in place).
+    pathOf(_e){
+        var el = _e && _e.target
+        while (el && !el.sk_ui_obj) el = el.parentElement
+        return el ? el.sk_ui_obj.getPath({elements: true}) : []
+    }
+
     subscribe(component){ this.subscribers[component.uuid] = component }
     unsubscribe(component){ delete this.subscribers[component.uuid] }
 
@@ -157,17 +172,49 @@ class sk_fileDrop {
         }   
     }
 
-    notifyAll(_e, action){
-        for (var uuid in this.subscribers){
-            var component = this.subscribers[uuid]
-            if (!component.onFileDrop) return
+    // Whether a subscriber goes into drop mode for this drag (onFileDrop.accepts: a test of its own).
+    accepts(component){
+        var opt = component.onFileDrop
+        if (!opt) return false
+        if (this.internal && !opt.internal) return false
+        return !opt.accepts || !!opt.accepts()
+    }
 
-            if (action === 'start') this.addFileDropArea(component)
-            if (action === 'end' || action === 'drop') this.removeFileDropArea(component, _e)
-            if (action === 'drop') {   
-                var path = _e.target.sk_ui_obj.getPath({elements: true})
-                var target = this.findFirstSubscriberOccurance(path, component.uuid)             
-                if (target && target.onFileDrop) target.onFileDrop.cb({action: 'drop', files: _e.files})
+    startInternal(){
+        this.internal = true
+    }
+
+    endInternal(){
+        this.internal = false
+    }
+
+    notifyAll(_e, action){
+        if (action === 'start') this.active = new Set(Object.values(this.subscribers).filter(component => this.accepts(component)))
+        var active = this.active
+        if (action === 'end' || action === 'drop') this.active = new Set()
+        if (action === 'drop') this.internal = false
+
+        // CSS hooks: the page while a drag is on, and the subscribers that take it (others can fade).
+        if (action === 'start') document.body.classList.add('sk_fileDrop_dragging')
+        if (action === 'end' || action === 'drop') document.body.classList.remove('sk_fileDrop_dragging')
+
+        var path = (action === 'drop') ? this.pathOf(_e) : []
+        for (var component of active){
+            if (!component.onFileDrop) continue
+
+            // (One subscriber's failure leaves the others' drop areas to be cleaned up all the same.)
+            try {
+                if (action === 'start') component.element.classList.add('sk_fileDrop_accepting')
+                if (action === 'end' || action === 'drop') component.element.classList.remove('sk_fileDrop_accepting')
+
+                if (action === 'start') this.addFileDropArea(component)
+                if (action === 'end' || action === 'drop') this.removeFileDropArea(component, _e, path)
+                if (action === 'drop') {
+                    var target = this.findFirstSubscriberOccurance(path, component.uuid)
+                    if (target && target.onFileDrop) target.onFileDrop.cb({action: 'drop', files: _e.files})
+                }
+            } catch(err) {
+                console.error('sk_fileDrop:', err)
             }
         }
         
@@ -191,7 +238,7 @@ class sk_fileDrop {
             if (pA.x !== pB.x || pA.y !== pB.y) return true
         }
 
-        var path = _e.target.sk_ui_obj.getPath({elements: true})
+        var path = sk.fileDrop.pathOf(_e)
         for (var i in path){
             var item = path[i]
             var suo = item.sk_ui_obj
@@ -215,7 +262,8 @@ class sk_fileDrop {
     }
     
     leaveFunc(_e){
-        var path = _e.target.sk_ui_obj.getPath({elements: true})
+        var path = sk.fileDrop.pathOf(_e)
+        if (!path.length) return
 
         var listUpUntilFileDropArea = []
         for (var i in path){
@@ -270,6 +318,7 @@ class sk_fileDrop {
     addFileDropArea(component){
         var parentPostionCSSValue = sk.utils.cssVar('position', component)
 
+        if (component.fileDropArea) component.fileDropArea.remove()     // (one left over: never two)
         component.__dragOverInfo = {clientX: 1, clientY: 1}
         component.element.addEventListener('dragover', this.overFunc)
         component.fileDropArea = component.add.fileDrop_Area(_c => {
@@ -310,17 +359,20 @@ class sk_fileDrop {
         })
     }
 
-    removeFileDropArea(component, _e){
+    removeFileDropArea(component, _e, path){
         _e.sk_origin = 'sk_fileDrop'
 
         component.element.removeEventListener('dragover', this.overFunc)
-        component.fileDropArea.remove()
+        component.element.removeEventListener('dragleave', this.leaveFunc)
+        if (component.fileDropArea) component.fileDropArea.remove()
+        delete component.fileDropArea
+        // The drag is over: the next one over it notifies its start again.
+        delete component.fileDropStartNotified
 
         if (component.onFileDropEnded) component.onFileDropEnded(component)
 
         if (_e.type === 'drop'){
-            var path = _e.target.sk_ui_obj.getPath({elements: true})
-            var target = this.findFirstSubscriberOccurance(path, component.uuid)
+            var target = this.findFirstSubscriberOccurance(path || this.pathOf(_e), component.uuid)
             if (target && target.onMouseUp) target.onMouseUp(_e)
         }
     }
@@ -335,9 +387,9 @@ class sk_fileDrop {
         
         var firstRun = true
 
-        for (var i in this.subscribers){
-            if (this.subscribers[i].onFileDrop.hidden){
-                this.subscribers[i].fileDropArea.outline.style.borderColor = 'transparent'
+        for (var subscriber of this.active){
+            if (subscriber.onFileDrop.hidden){
+                subscriber.fileDropArea.outline.style.borderColor = 'transparent'
                 continue
             }
         }
@@ -345,9 +397,8 @@ class sk_fileDrop {
         clearInterval(this.outlineAnimatorTimer)
         this.outlineAnimatorTimer = setInterval(()=>{
             this.outlineOpacity = (this.outlineAnimatorReverse ? this.outlineOpacity-stepping : this.outlineOpacity+stepping)
-            for (var i in this.subscribers){
-                var subscriber = this.subscribers[i]
-                if (subscriber.onFileDrop.hidden) continue
+            for (var subscriber of this.active){
+                if (subscriber.onFileDrop.hidden || !subscriber.fileDropArea) continue
                 subscriber.fileDropArea.outline.style.borderColor = `rgba(255,255,255,${this.outlineOpacity})`
             }
 

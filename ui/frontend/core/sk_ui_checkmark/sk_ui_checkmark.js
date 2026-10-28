@@ -113,6 +113,10 @@ class sk_ui_checkmark extends sk_ui_component {
             opacity: 0;
             display: none;
             position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 0px;
+            height: 0px;
         }
         
         .sk_ui_checkmark_load-complete-<id> {
@@ -129,6 +133,7 @@ class sk_ui_checkmark extends sk_ui_component {
             transform: scaleX(-1) rotate(135deg);
         }
         .sk_ui_checkmark-check-<id>:after {
+            box-sizing: border-box;
             opacity: 1;
             height: <checkHeight>px;
             width: <checkWidth>px;
@@ -174,19 +179,25 @@ class sk_ui_checkmark extends sk_ui_component {
         }
         `
 
-        var widthRatio = (height/100)
-        var heightRatio = (height/100)
-
-        var widthSub = (1*(1-widthRatio))
-        var heightSub = (1*(1-heightRatio))
-
-        var checkInfo = {
-            pos: {x: 18 * (width/100) - widthSub, y: 50 * (height/100) - heightSub},
-            size: {width: width/4, height: height/2}
-        }
-
         var borderThickness = 5 * (width/100)
         if (borderThickness < 2) borderThickness = 2
+
+        // The check centred in the circle, whatever box-sizing the page uses (Fomantic makes it border-box):
+        // its holder sits at the circle's centre (50% / 50% of the inside of the ring), and the :after (a
+        // border-box W × H, its top and right borders b thick, scaleX(-1) rotate(135deg) about its top left)
+        // is moved back by its shape's centre. A point (x, y) of it lands at c·(x + y, x − y), c = cos 45°,
+        // so the shape spans x 0 … c(W + H), y c(W − b − H) … cW. (The old offsets, ratios made for size
+        // 100, were off at small sizes, where the border is held at 2px.)
+        var checkW = width/4
+        var checkH = height/2
+        var c = Math.SQRT1_2
+        var checkInfo = {
+            pos: {
+                x: -c * (checkW + checkH) / 2,
+                y: -c * (2 * checkW - borderThickness - checkH) / 2
+            },
+            size: {width: checkW, height: checkH}
+        }
 
         var adaptedCSS = css
         .split('<id>')          .join(id)

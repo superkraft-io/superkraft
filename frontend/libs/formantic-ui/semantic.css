@@ -43522,12 +43522,16 @@ ol.ui.suffixed.list li::before,
   margin-bottom: 0;
 }
 
+/* superkraft: disabled. `*:has(> ...)` can match any element, so every child added or removed
+   anywhere made the browser re-check that element's ancestors up to <html> (in a scrolling list, on
+   every frame). Piled segments aren't used.
 @supports selector(:has(.f)) {
   *:has(> .ui.piled.segment) {
     z-index: 0;
     position: relative;
   }
 }
+*/
 
 /* -------------------
            Stacked
