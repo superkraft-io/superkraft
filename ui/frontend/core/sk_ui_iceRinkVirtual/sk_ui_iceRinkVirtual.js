@@ -36,6 +36,13 @@ view first, so scrolling never waits for it. Items that leave are released in th
                                               built only once scrolling stops
 
     rink.setCount(n)                          item count; call after any data change
+    rink.setCount(n, {raised, onEnd})         the same, the shown items sliding from where they were
+                                              drawn to their new places (a re-sort), over slideDuration
+                                              ms: raised (a Set of keys) drawn above the others
+                                              meanwhile, ones gone from the list fading out where they
+                                              were; onEnd once there (or cut short by another change)
+    rink.endSlide()                           every item at its place now
+    rink.sliding                              a slide is under way
     rink.refresh()                            rebuild the shown items (their data changed)
     rink.measure()                            measure the shown items now (forces a layout; size
                                               changes are picked up on their own)
@@ -76,11 +83,14 @@ class sk_ui_iceRinkVirtual extends sk_ui_iceRink {
         this.workBudget = 4
         this.fastScrollSpeed = 1.5      // px/ms: faster than this, placeholders aren't built
         this.slowBuildCost = 8          // ms: items that take longer to build wait until scrolling stops
+        this.slideDuration = 500
 
         this.__count = 0
         this.__keys = []
         this.__heights = new Map()      // key -> measured px
         this.__scales = new Map()       // key -> 0..1: shown at that part of its height (setHeightScales)
+        this.__shifts = new Map()       // key -> px: drawn that far from its place (sliding to it)
+        this.__raised = new Set()       // keys drawn above the others (while sliding)
         this.__offsets = [0]
         this.__offsetsDirty = true
         this.__estimate = 40
@@ -146,7 +156,10 @@ class sk_ui_iceRinkVirtual extends sk_ui_iceRink {
 
     /***** data *****/
 
-    setCount(n){
+    setCount(n, slide){
+        // Where the shown items are drawn now (mid-slide too): a slide starts from there.
+        var drawn = slide ? this.__drawn() : null
+
         this.__count = Math.max(0, n | 0)
         this.__offsetsDirty = true
         this.__ensureOffsets()
@@ -165,6 +178,7 @@ class sk_ui_iceRinkVirtual extends sk_ui_iceRink {
         }
 
         this.update()
+        if (drawn) this.__slide(drawn, slide)
     }
 
     get count(){
@@ -221,6 +235,76 @@ class sk_ui_iceRinkVirtual extends sk_ui_iceRink {
         this.__scales = scales
         this.__offsetsDirty = true
         if (update) this.update()
+    }
+
+    /***** sliding to new places *****/
+
+    get sliding(){
+        return !!this.__slideAnim
+    }
+
+    // The shown items' drawn tops (a slide's shift included) and elements, by key.
+    __drawn(){
+        var drawn = new Map()
+        for (var entry of this.__shown.values()){
+            if (entry.top !== undefined) drawn.set(entry.key, {top: entry.top, element: entry.element})
+        }
+        return drawn
+    }
+
+    // Each item drawn before starts where it was and closes the distance, eased in and out; one
+    // drawn before and gone from the list fades out where it was (a copy: the item itself is
+    // released). Only slot transforms are written per frame.
+    __slide(drawn, opt){
+        this.endSlide()
+        var keys = this.__keys
+        var offsets = this.__offsets
+        var shifts = new Map()
+        for (var i = 0; i < this.__count; i++){
+            var was = drawn.get(keys[i])
+            if (!was) continue
+            drawn.delete(keys[i])
+            if (was.top !== offsets[i]) shifts.set(keys[i], was.top - offsets[i])
+        }
+        var ghosts = []
+        for (var gone of drawn.values()){
+            var ghost = document.createElement('div')
+            ghost.className = 'sk_ui_iceRinkVirtual_slot'
+            ghost.style.transform = 'translateY(' + gone.top + 'px)'
+            ghost.style.pointerEvents = 'none'
+            ghost.appendChild(gone.element.cloneNode(true))
+            this.track.appendChild(ghost)
+            ghosts.push(ghost)
+        }
+
+        var anim = this.__slideAnim = {start: performance.now(), shifts: shifts, ghosts: ghosts, onEnd: opt.onEnd, frame: 0}
+        this.__raised = opt.raised || new Set()
+        var step = ()=> {
+            if (this.__slideAnim !== anim) return
+            var p = (performance.now() - anim.start) / this.slideDuration
+            if (p >= 1) return this.endSlide()
+            var left = p < 0.5 ? 1 - 4 * p * p * p : Math.pow(-2 * p + 2, 3) / 2
+            var now = new Map()
+            shifts.forEach((px, key) => now.set(key, px * left))
+            this.__shifts = now
+            for (var g of ghosts) g.style.opacity = String(Math.round(left * 1000) / 1000)
+            this.__position()
+            anim.frame = requestAnimationFrame(step)
+        }
+        step()
+    }
+
+    endSlide(){
+        var anim = this.__slideAnim
+        if (!anim) return
+        this.__slideAnim = null
+        cancelAnimationFrame(anim.frame)
+        for (var g of anim.ghosts) g.remove()
+        this.__shifts = new Map()
+        this.__raised = new Set()
+        this.__ensureOffsets()
+        this.__position()
+        if (anim.onEnd) anim.onEnd()
     }
 
     __ensureOffsets(){
@@ -337,16 +421,21 @@ class sk_ui_iceRinkVirtual extends sk_ui_iceRink {
         this.__scheduleWork()
     }
 
-    // Shown slots at their items' offsets, scaled ones clipped to their part (only what changed is
-    // written).
+    // Shown slots at their items' offsets (sliding ones shifted from there), scaled ones clipped to
+    // their part (only what changed is written).
     __position(){
         for (var i = this.__range.first; i <= this.__range.last; i++){
             var entry = this.__shown.get(this.__keys[i])
             if (!entry) continue
-            var top = this.__offsets[i]
+            var top = this.__offsets[i] + (this.__shifts.get(entry.key) || 0)
             if (entry.top !== top){
                 entry.top = top
                 entry.slot.style.transform = 'translateY(' + top + 'px)'
+            }
+            var raised = this.__raised.has(entry.key)
+            if (!!entry.raised !== raised){
+                entry.raised = raised
+                entry.slot.style.zIndex = raised ? '1' : ''
             }
             // A scaled one keeps its height, its lower part clipped away (the ones after it are
             // placed by the scaled height): no layout, nothing measured, each frame. It fades with its
@@ -386,8 +475,9 @@ class sk_ui_iceRinkVirtual extends sk_ui_iceRink {
         if (entry.element.parentNode !== slot) slot.appendChild(entry.element)
         entry.slot = slot
         entry.top = undefined
-        entry.clip = undefined          // (a reused slot may still be clipped for its last item)
-        slot.style.clipPath = slot.style.opacity = slot.style.willChange = ''
+        entry.clip = undefined          // (a reused slot may still be clipped or raised for its last item)
+        entry.raised = undefined
+        slot.style.clipPath = slot.style.opacity = slot.style.willChange = slot.style.zIndex = ''
         slot.__virtualKey = entry.key
         this.__slotObserver.observe(slot)
     }
@@ -518,6 +608,7 @@ class sk_ui_iceRinkVirtual extends sk_ui_iceRink {
                 placeholder.element.remove()
                 real.top = placeholder.top
                 real.clip = placeholder.clip
+                real.raised = placeholder.raised
                 real.slot = slot
                 this.__shown.set(real.key, real)
                 // (Observed again: the observer reports a slot when observing starts, so the new
@@ -623,6 +714,11 @@ class sk_ui_iceRinkVirtual extends sk_ui_iceRink {
         if (this.__frame) cancelAnimationFrame(this.__frame)
         if (this.__workFrame) cancelAnimationFrame(this.__workFrame)
         this.__frame = this.__workFrame = 0
+        if (this.__slideAnim){
+            cancelAnimationFrame(this.__slideAnim.frame)
+            this.__slideAnim.ghosts.forEach(g => g.remove())
+            this.__slideAnim = null
+        }
         this.__slotObserver.disconnect()
         for (var entry of this.__shown.values()){
             entry.element.remove()
