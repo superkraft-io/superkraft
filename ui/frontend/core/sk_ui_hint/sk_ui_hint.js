@@ -73,6 +73,7 @@ class sk_ui_hint extends sk_ui_component {
         if (autoHide){
             var duration = (!Number.isNaN(autoHide) ? autoHide : undefined)
             if (autoHide === true) duration = 3000
+            this.autoHideDuration = duration || 3000
             this.resetAutoHide(duration)
         }
         
@@ -102,15 +103,23 @@ class sk_ui_hint extends sk_ui_component {
         if (!instant) return this.transition('fade ' + this.results.animation + ' out')
     }
 
+    // (A hint shown without autoHide stays up when its text changes.)
     updatePos(){
-        this.resetAutoHide()
+        if (this.autoHideDuration) this.resetAutoHide(this.autoHideDuration)
         this.calcPos()
         this.element.style.left = this.results.x + 'px'
         this.element.style.top = this.results.y + 'px'
     }
 
-    calcPos(){
-        this.opacity = 0
+    // Kept beside a moving target (a progress bar's end), every frame: no fade, no autoHide reset.
+    follow(){
+        this.calcPos(true)
+        this.element.style.left = this.results.x + 'px'
+        this.element.style.top = this.results.y + 'px'
+    }
+
+    calcPos(keepOpacity){
+        if (!keepOpacity) this.opacity = 0
 
         var margin = 6
 

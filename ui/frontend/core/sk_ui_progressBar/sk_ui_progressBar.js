@@ -120,8 +120,25 @@ class sk_ui_progressBar extends sk_ui_component {
                 text: this.__lastVal + '%',
                 instaShow: true,
                 position: 'right center',
-                hideOnMove: false
+                hideOnMove: false,
+                autoHide: false     // (unpacking can go seconds without a step)
             })
+            this.followHint()
         }
+    }
+
+    // The % hint rides the end of the bar: placed every frame while the width tweens. (Placed once,
+    // it measured the bar before the tween started and sat where the last step ended.)
+    followHint(){
+        cancelAnimationFrame(this.__hintFrame)
+        var style = getComputedStyle(this.content.element)
+        var duration = parseFloat(style.transitionDuration) * (/ms$/.test(style.transitionDuration) ? 1 : 1000)
+        var until = performance.now() + (duration || 0) + 50
+        var step = ()=>{
+            var hint = this.hintHandle._hint.created
+            if (hint) hint.follow()
+            if (performance.now() < until) this.__hintFrame = requestAnimationFrame(step)
+        }
+        step()
     }
 }
