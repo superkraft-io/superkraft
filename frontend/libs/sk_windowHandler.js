@@ -3,6 +3,7 @@ class SK_WindowHandler {
         this.draggableElements = {}
 
         this.initObserver()
+        this.initScrollObserver()
 
 
         setTimeout(()=>{
@@ -34,6 +35,13 @@ class SK_WindowHandler {
             attributeFilter: ['.sk_window_drag', 'sk_window_drag'],
             childList: true
         });
+    }
+
+    // Anything that scrolls can carry its content up under the title bar: see .sk_ui_scrolledContent in sk_ui.css.
+    initScrollObserver(){
+        window.addEventListener('scroll', e => {
+            if (e.target.classList) e.target.classList.add('sk_ui_scrolledContent')
+        }, {capture: true, passive: true})
     }
 
     globalScanOnce(){

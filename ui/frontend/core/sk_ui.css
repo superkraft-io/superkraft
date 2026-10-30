@@ -173,6 +173,25 @@ i.icon, i.icons, i.flag {
     -webkit-app-region: no-drag
 }
 
+/*
+    Chromium builds the window's drag map from every element's whole box and ignores overflow clipping:
+    content scrolled up out of sight still cuts its no-drag box out of the title bar above it.
+    So what scrolls adds no boxes of its own. The scroller's box stays no-drag, and that one is the visible part.
+    (initial, not none: Chromium reads none as no-drag.)
+*/
+.sk_ui_iceRink_contentWrapper .sk_ui_cannotMoveView:not(.sk_window_drag),
+.sk_ui_scrolledContent .sk_ui_cannotMoveView:not(.sk_window_drag) {
+    -webkit-app-region: initial;
+}
+
+/* A drag area inside scrolled content keeps its buttons clickable. */
+.sk_ui_iceRink_contentWrapper .sk_window_drag .sk_ui_cannotMoveView,
+.sk_ui_iceRink_contentWrapper .sk_ui_canMoveView .sk_ui_cannotMoveView,
+.sk_ui_scrolledContent .sk_window_drag .sk_ui_cannotMoveView,
+.sk_ui_scrolledContent .sk_ui_canMoveView .sk_ui_cannotMoveView {
+    -webkit-app-region: no-drag;
+}
+
 
 
 .sk_ui_construction_stripes {
