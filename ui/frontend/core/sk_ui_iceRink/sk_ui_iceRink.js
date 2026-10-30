@@ -13,7 +13,8 @@ class sk_ui_iceRink extends sk_ui_component {
         this.contentWrapper = this.add.component(_c => {
             _c.classAdd('sk_ui_iceRink_contentWrapper')
             _c.styling = 'left top ttb'
-            
+            _c.animate = false // Its size decides the scrollbars: mid-transition it would say the content doesn't fit.
+
             this.content = _c.add.component(_c => {
                 _c.classAdd('sk_ui_iceRink_content')
                 _c.animate = false
@@ -223,6 +224,9 @@ class sk_ui_iceRink extends sk_ui_component {
         this.__tickFrame = 0
         this.__sizes = {wrapperWidth: 0, wrapperHeight: 0, contentWidth: 0, contentHeight: 0}
         this.__scrollbarShown = {x: false, y: false}
+        this.__scrollbarRoom = {x: 0, y: 0}
+        this.scrollbars.x.hide()
+        this.scrollbars.y.hide()
         this.scrollbars.x.onResized = this.scrollbars.y.onResized = ()=> this.requestTick()
         this.requestTick()
         var sizeObserver = new ResizeObserver(records => {
@@ -390,10 +394,15 @@ class sk_ui_iceRink extends sk_ui_component {
         this.scrollbars.x.updateHandleSize(this.scroller.contentWidth)
         this.scrollbars.y.updateHandleSize(this.scroller.contentHeight)
         
-        if (this.scroller.contentWidth <= this.scroller.viewportWidth) this.hideScrollbar('x')
+        // Against the room there is without the scrollbars: the room they take themselves would keep them up
+        // once they are shown, around content that fits.
+        var fitsX = this.scroller.contentWidth <= this.scroller.viewportWidth + this.__scrollbarRoom.x
+        var fitsY = this.scroller.contentHeight <= this.scroller.viewportHeight + this.__scrollbarRoom.y
+
+        if (fitsX) this.hideScrollbar('x')
         else this.showScrollbar('x')
 
-        if (this.scroller.contentHeight <= this.scroller.viewportHeight) this.hideScrollbar('y')
+        if (fitsY) this.hideScrollbar('y')
         else this.showScrollbar('y')
 
 
@@ -470,8 +479,14 @@ class sk_ui_iceRink extends sk_ui_component {
             if (!this.scrollbars.x.hidden) this.scrollbars.x.style.width = 'calc(100% - 12px)'
             if (!this.scrollbars.y.hidden) this.scrollbars.y.style.height = 'calc(100% - 12px)'
             
-            if (!this.scrollbars.x.hidden) this.contentWrapper.style.width = 'calc(100% - 12px)'
-            if (!this.scrollbars.y.hidden) this.contentWrapper.style.height = 'calc(100% - 12px)'
+            if (!this.scrollbars.x.hidden){
+                this.contentWrapper.style.width = 'calc(100% - 12px)'
+                this.__scrollbarRoom.x = 12
+            }
+            if (!this.scrollbars.y.hidden){
+                this.contentWrapper.style.height = 'calc(100% - 12px)'
+                this.__scrollbarRoom.y = 12
+            }
         }
     }
 
@@ -484,12 +499,9 @@ class sk_ui_iceRink extends sk_ui_component {
         this.scrollbars.x.style.width = ''
         this.scrollbars.y.style.height = ''
 
-        if (!this.__scrollbarShown.x){
-            this.contentWrapper.style.height = ''
-        }
-
-        if (!this.__scrollbarShown.y){
-            this.contentWrapper.style.width = ''
-        }
+        // The room is only taken while both are shown.
+        this.contentWrapper.style.width = ''
+        this.contentWrapper.style.height = ''
+        this.__scrollbarRoom = {x: 0, y: 0}
     }
 }
