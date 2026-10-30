@@ -113,8 +113,40 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                 if (/^https?:\/\//i.test(String(url))) require('electron').shell.openExternal(String(url)).catch(()=> {})
             }
             this._view.webContents.setWindowOpenHandler(details => {
+                // sk.nativeWindows: the page's own blank child window, into which it moves a part of its DOM.
+                if (details && details.url === 'about:blank' && /^sk_nativeWindow_/.test(details.frameName)) {
+                    return {
+                        action: 'allow',
+                        overrideBrowserWindowOptions: {
+                            parent: this._view,
+                            icon: this.defOpts.icon,
+                            backgroundColor: this.defOpts.backgroundColor,
+                            frame: false,
+                            show: false
+                        }
+                    }
+                }
                 openExternal(details && details.url)
                 return {action: 'deny'}
+            })
+            // That child has this page's Node access too: it never goes anywhere or opens anything itself.
+            var children = new Map()
+            this._view.webContents.on('did-create-window', (child, details) => {
+                children.set(details.frameName, child)
+                child.once('closed', ()=> children.delete(details.frameName))
+                child.setMenu(null)
+                child.webContents.setWindowOpenHandler(details => {
+                    openExternal(details && details.url)
+                    return {action: 'deny'}
+                })
+                child.webContents.on('will-navigate', (event, url) => {
+                    event.preventDefault()
+                    openExternal(url)
+                })
+            })
+            this._view.webContents.ipc.on('sk_nativeWindow', (_e, name, command, arg) => {
+                var child = children.get(name)
+                if (child && !child.isDestroyed()) this.commandChild(child, command, arg)
             })
             this._view.webContents.on('will-navigate', (event, url) => {
                 if (/^file:/i.test(String(url))) return
@@ -234,6 +266,29 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             
             this.isResizing = true
         })
+    }
+
+    // sk.nativeWindows: this page's child windows, which it can't reliably measure or move itself.
+    commandChild(child, command, arg = {}){
+        if (command === 'focus') return child.focus()
+        if (command === 'resize') return child.setSize(arg.width, arg.height)
+        if (command === 'limit') return child.setMinimumSize(arg.minWidth || 0, arg.minHeight || 0)
+        if (command !== 'place') return
+
+        // Over this window, each further one a step down and right, and all of it on that screen.
+        var own = this._view.getBounds()
+        var area = screen.getDisplayMatching(own).workArea
+        var step = (arg.cascade || 0) * 24
+        var inside = (at, size, start, room) => Math.max(start, Math.min(at, start + room - size))
+        child.setResizable(arg.resizable !== false)
+        child.setMinimumSize(arg.minWidth || 0, arg.minHeight || 0)
+        child.setBounds({
+            x: Math.round(inside(own.x + (own.width - arg.width) / 2 + step, arg.width, area.x, area.width)),
+            y: Math.round(inside(own.y + (own.height - arg.height) / 2 + step, arg.height, area.y, area.height)),
+            width: arg.width,
+            height: arg.height
+        })
+        child.show()
     }
 
     handleMouseUp(){

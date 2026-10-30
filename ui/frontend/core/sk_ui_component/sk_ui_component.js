@@ -703,6 +703,17 @@ class sk_ui_component {
         return document.activeElement.id === this.element.id
     }
 
+    // Where this component's menus and hints open: the app, or the OS window it is in (sk_nativeWindows).
+    get overlayHost(){
+        var view = this.element && this.element.ownerDocument.defaultView
+        return (view && view.sk_overlayHost) || sk.app
+    }
+
+    // Across the app and its OS windows.
+    static queryAllWindows(selector){
+        return typeof sk_nativeWindows === 'undefined' ? document.querySelectorAll(selector) : sk_nativeWindows.querySelectorAll(selector)
+    }
+
     getPath(opt = {}){
         var path = []
 
@@ -909,7 +920,7 @@ class sk_ui_component {
 
     get rect(){
         var inViewport = (rect)=>{
-            var html = document.documentElement;
+            var html = this.element.ownerDocument.documentElement;
           
             return !!rect &&
               rect.bottom >= 0 &&

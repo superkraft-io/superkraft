@@ -5,6 +5,12 @@ class sk_ui_modal extends sk_ui_component {
 
         this.frosted = true
         this.compact = true
+
+        // Asked from an OS window with room for it, it opens there: in the page it could sit behind that window.
+        if (typeof sk_nativeWindows !== 'undefined') setTimeout(()=> {
+            var host = sk_nativeWindows.focusedHost()
+            if (host && host.element.offsetWidth >= 400 && host.element.offsetHeight >= 240) host.element.appendChild(this.element)
+        }, 0)
         
 
         this.opt = {}

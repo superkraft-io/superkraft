@@ -18,7 +18,7 @@ class SK_ContextMenu {
             })
         } catch (err) {}
         try {
-            var open = document.querySelectorAll('.sk_ui_contextMenu')
+            var open = sk_ui_component.queryAllWindows('.sk_ui_contextMenu')
             for (var i = 0; i < open.length; i++) {
                 var el = open[i]
                 var obj = el.sk_ui_obj
@@ -225,7 +225,7 @@ class SK_ContextMenu {
         // Dismiss hover tips before the menu paints (also again after show).
         try { if (typeof SK_Hint !== 'undefined' && SK_Hint.hideAll) SK_Hint.hideAll() } catch (err) {}
 
-        this.menu = sk.app.add.contextMenu(_c => {
+        this.menu = this.parent.overlayHost.add.contextMenu(_c => {
             _c.cmParent = this
             // true or {placeholder}: a search field on top that finds items in every submenu.
             if (this.searchable) _c.searchable = this.searchable
@@ -366,7 +366,7 @@ class sk_ui_contextMenu extends sk_ui_component {
                 menu.remove()
             }
 
-            var open_contextMenus = document.querySelectorAll('.sk_ui_contextMenu')
+            var open_contextMenus = sk_ui_component.queryAllWindows('.sk_ui_contextMenu')
             for (var i = 0; i < open_contextMenus.length; i++) open_contextMenus[i].sk_ui_obj.remove()
 
             sk.menus = []
@@ -446,7 +446,7 @@ class sk_ui_contextMenu extends sk_ui_component {
 
 
     calcPos(){
-        var appRect = sk.app.rect
+        var appRect = this.overlayHost.rect
         var menuRect = this.rect
 
 
@@ -563,7 +563,7 @@ class sk_ui_contextMenu extends sk_ui_component {
     }
 
     closeSubmenus(opt = {}){
-        document.querySelectorAll('.sk_ui_contextMenu_submenu_of_' + this.uuid).forEach(_c => {
+        sk_ui_component.queryAllWindows('.sk_ui_contextMenu_submenu_of_' + this.uuid).forEach(_c => {
             if (opt.ignore && opt.ignore === _c.sk_ui_obj.uuid) return
             clearTimeout(_c.sk_ui_obj.showTimer)
             _c.sk_ui_obj.close()
@@ -987,7 +987,7 @@ class sk_ui_contextMenu_Item extends sk_ui_component {
 
             clearTimeout(this.closeTimer)
             clearTimeout(this.showTimer)
-            sk.app.add.contextMenu(async _c => {
+            this.overlayHost.add.contextMenu(async _c => {
                 this.submenuID = _c.uuid
                 _c.cmParent = this.cmParent
                 _c.parentMenu = this.parentMenu

@@ -8,7 +8,7 @@ class SK_Hint {
             try { list[i].hide() } catch (err) {}
         }
         try {
-            var nodes = document.querySelectorAll('.sk_ui_hint')
+            var nodes = sk_ui_component.queryAllWindows('.sk_ui_hint')
             for (var n = 0; n < nodes.length; n++) {
                 var el = nodes[n]
                 var suo = el.sk_ui_obj
@@ -25,7 +25,7 @@ class SK_Hint {
             if (sk.menus && sk.menus.length) return true
         } catch (err) {}
         try {
-            return !!document.querySelector('.sk_ui_contextMenu')
+            return sk_ui_component.queryAllWindows('.sk_ui_contextMenu').length > 0
         } catch (err) {}
         return false
     }
@@ -145,7 +145,7 @@ class SK_Hint {
             return
         }
 
-        this.__hint = new sk_ui_hint({parent: sk.app, noHint: true, target: this.opt.parent, extraOpt: {}})
+        this.__hint = new sk_ui_hint({parent: this.opt.parent.overlayHost, noHint: true, target: this.opt.parent, extraOpt: {}})
         this.__hint.setup(_c => {
             _c.suoParent  = this.opt.parent
             _c.html       = this.html

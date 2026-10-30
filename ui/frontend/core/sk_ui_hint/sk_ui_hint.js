@@ -160,7 +160,7 @@ class sk_ui_hint extends sk_ui_component {
 
                 if (!secondOperation) this.results.animation = 'right'
 
-                if (this.results.x > document.body.clientWidth) calcPos.left()
+                if (this.results.x > this.element.ownerDocument.body.clientWidth) calcPos.left()
             },
 
             top: (secondOperation)=>{
@@ -182,7 +182,7 @@ class sk_ui_hint extends sk_ui_component {
 
                 if (!secondOperation) this.results.animation = 'down'
 
-                if (this.results.y > document.body.clientHeight) calcPos.left()
+                if (this.results.y > this.element.ownerDocument.body.clientHeight) calcPos.left()
             },
 
             center: ()=>{
@@ -211,7 +211,7 @@ class sk_ui_hint extends sk_ui_component {
         if (this.results.x < 0) this.results.x = 0
         if (this.results.y < 0) this.results.y = 0
 
-        var appRect = sk.app.rect
+        var appRect = this.overlayHost.rect
         if (this.results.x + hintInfo.rect.width > appRect.width) this.results.x = appRect.width - hintInfo.rect.width
         if (this.results.y + hintInfo.rect.height > appRect.height) this.results.y = appRect.height - hintInfo.rect.height
     }
