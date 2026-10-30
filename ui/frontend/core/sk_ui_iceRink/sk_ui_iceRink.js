@@ -58,8 +58,8 @@ class sk_ui_iceRink extends sk_ui_component {
 
 
         this.eventsAttached = false
-        this.attachListeners = () => {
-            scroller.startDrag(this.mdPos.x, this.mdPos.y)
+        this.attachListeners = pos => {
+            scroller.startDrag(pos.x, pos.y)
             
             this.element.removeEventListener('mousemove', this.handleMouseMoveFromElement);
             this.element.removeEventListener('touchmove', this.handleMouseMoveFromElement);
@@ -102,10 +102,12 @@ class sk_ui_iceRink extends sk_ui_component {
                 y: pos.y - this.mdPos.y
             }
 
-            if (diff.x !== 0 || diff.y !== 0){
+            // A hand that moves a little during a click is still a click: the drag blocks all interaction, so the
+            // button under the pointer would never get its click. (The drag starts from here: the content doesn't jump.)
+            if (Math.abs(diff.x) >= 5 || Math.abs(diff.y) >= 5){
                 if (!this.eventsAttached){
                     this.eventsAttached = true
-                    this.attachListeners()
+                    this.attachListeners(pos)
                 }
             }
         }
