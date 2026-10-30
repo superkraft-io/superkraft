@@ -23,6 +23,10 @@ class SK_Rubberband {
         this.lastDragX = 0;
         
 
+        // Wheel deltas move the content directly (macOS), not through the inertia: see followWheel.
+        this.followsWheel = typeof sk !== 'undefined' && sk.os === 'mac'
+        this.wheelRun = 0
+
         this.snapbackEasing = 'outElastic'
         this.programmaticScrollEasing = 'outQuad'
 
@@ -267,8 +271,10 @@ class SK_Rubberband {
         const friction = 0.95;
         const minVel = 0.1;
         var maxRubber = this.overshootX; // max soft overshoot
+        const run = this.wheelRun;
 
         const step = () => {
+            if (run !== this.wheelRun) return;
             velocity *= friction;
             this.tweenX.current += velocity;
 
@@ -308,8 +314,10 @@ class SK_Rubberband {
         const friction = 0.95;
         const minVel = 0.1;
         var maxRubber = this.overshootY; // max soft overshoot
+        const run = this.wheelRun;
 
         const step = () => {
+            if (run !== this.wheelRun) return;
             velocity *= friction;
             this.tweenY.current += velocity;
 
@@ -347,6 +355,7 @@ class SK_Rubberband {
 
     handleWheelEvent(deltaX, deltaY) {
         if (!this.canScrollX && !this.canScrollY) return;
+        if (this.followsWheel) return this.followWheel(deltaX, deltaY);
 
         this.mdPos = { x: this.tweenX.current, y: this.tweenY.current };
         this.tweenX.stop();
@@ -359,6 +368,37 @@ class SK_Rubberband {
 
         if (this.canScrollX) this.beginInertiaX(this.velX);
         if (this.canScrollY) this.beginInertiaY(this.velY);
+    }
+
+    // macOS: the trackpad's deltas come already smoothed, with the system's own momentum after the
+    // fingers lift. Thrown into the inertia above they lagged behind the fingers (a tenth of each
+    // delta per frame, the rest over the next second), so here they move the content 1:1, like
+    // native scrolling. Past an edge each delta pushes less the further out it is; once the events
+    // stop, the content snaps back.
+    followWheel(deltaX, deltaY) {
+        this.wheeling = true;
+        this.wheelRun++; // inertia still running stops
+        this.tweenX.stop();
+        this.tweenY.stop();
+
+        if (this.canScrollX) this.tweenX.current = this.wheelStep(this.tweenX.current, -deltaX, this.viewportWidth - this.contentWidth, this.overshootX);
+        if (this.canScrollY) this.tweenY.current = this.wheelStep(this.tweenY.current, -deltaY, this.viewportHeight - this.contentHeight, this.overshootY);
+        this.onPositionCalculated(this.tweenX.current, this.tweenY.current);
+
+        clearTimeout(this.wheelEnd);
+        this.wheelEnd = setTimeout(() => {
+            this.wheeling = false;
+            if (this.canScrollX) this.beginSnapBackX();
+            if (this.canScrollY) this.beginSnapBackY();
+        }, 120);
+    }
+
+    wheelStep(pos, delta, min, maxRubber) {
+        const max = 0;
+        const over = pos > max ? pos - max : (pos < min ? min - pos : 0);
+        const outward = (pos > max && delta > 0) || (pos < min && delta < 0);
+        if (outward) delta *= Math.pow(Math.max(0, 1 - over / maxRubber), 2);
+        return Math.min(max + maxRubber, Math.max(min - maxRubber, pos + delta));
     }
 
     scrollTo(x, y, animate = true, usePercent = false) {
