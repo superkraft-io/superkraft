@@ -129,48 +129,72 @@ class sk_ui_label extends sk_ui_component {
         }
     }
 
-    // The room is the label's width with the whole text in it; the head grows by halving until it no longer fits.
+    // No layout is forced: the room is the label's own width (it fills what it is given, flex 1 1 0) as its
+    // ResizeObserver reports it, and text is measured on a canvas. A pane drag refits every row on every frame.
     fitEllipsis(){
         var full = this._fullText
-        var host = this.contentHost()
-        var el = this.element
         if (full == null || this.editing) return
-        host.textContent = full
-        this.isTruncated = false
-        if (!this._ellipsis || !el.isConnected) return
-        var room = el.clientWidth
-        if (!room || el.scrollWidth <= room) return
-
-        var tail = Math.max(0, Math.min(this.ellipsisTail, full.length - 1))
-        var end = full.slice(full.length - tail)
-        var fits = n => {
-            host.textContent = full.slice(0, n).trimEnd() + '…' + end
-            return el.scrollWidth <= room
+        var text = full
+        var room = this._ellipsis ? this._ellipsisRoom : 0
+        if (room > 0){
+            var measure = sk_ui_label.measurer(this._ellipsisFont)
+            if (measure(full) > room){
+                var tail = Math.max(0, Math.min(this.ellipsisTail, full.length - 1))
+                var end = full.slice(full.length - tail)
+                var cut = n => full.slice(0, n).trimEnd() + '…' + end
+                var lo = 0
+                var hi = full.length - tail - 1
+                while (lo < hi){
+                    var mid = Math.ceil((lo + hi) / 2)
+                    if (measure(cut(mid)) <= room) lo = mid
+                    else hi = mid - 1
+                }
+                text = cut(lo)
+            }
         }
-        var lo = 0
-        var hi = full.length - tail - 1
-        while (lo < hi){
-            var mid = Math.ceil((lo + hi) / 2)
-            if (fits(mid)) lo = mid
-            else hi = mid - 1
-        }
-        fits(lo)
-        this.isTruncated = true
+        this.isTruncated = text !== full
+        var host = this.contentHost()
+        if (host.textContent !== text) host.textContent = text
     }
 
-    // Its own size (laid out, fonts in) and its parent's (a cut label doesn't grow with the room it got back).
+    // One canvas for every label; widths in the label's font (and letter spacing).
+    static measurer(font){
+        var ctx = sk_ui_label._measureCtx || (sk_ui_label._measureCtx = document.createElement('canvas').getContext('2d'))
+        return text => {
+            ctx.font = font.font
+            ctx.letterSpacing = font.letterSpacing
+            return ctx.measureText(text).width
+        }
+    }
+
+    readEllipsisFont(){
+        var style = getComputedStyle(this.element)
+        this._ellipsisFont = {
+            font: style.fontStyle + ' ' + style.fontWeight + ' ' + style.fontSize + ' ' + style.fontFamily,
+            letterSpacing: style.letterSpacing === 'normal' ? '0px' : style.letterSpacing
+        }
+    }
+
     watchEllipsisRoom(){
         if (this._ellipsisObserver || typeof ResizeObserver === 'undefined') return
-        this._ellipsisObserver = new ResizeObserver(()=> {
-            var parent = this.element.parentElement
-            if (parent && parent !== this._ellipsisParent){
-                if (this._ellipsisParent) this._ellipsisObserver.unobserve(this._ellipsisParent)
-                this._ellipsisParent = parent
-                this._ellipsisObserver.observe(parent)
-            }
+        this._ellipsisObserver = new ResizeObserver(entries => {
+            var room = entries[entries.length - 1].contentRect.width
+            if (room === this._ellipsisRoom) return
+            this._ellipsisRoom = room
+            if (!this._ellipsisFont) this.readEllipsisFont()
             this.fitEllipsis()
         })
         this._ellipsisObserver.observe(this.element)
+        // A web font arriving changes every width: the labels that cut refit once.
+        if (!sk_ui_label._ellipsisLabels && document.fonts){
+            sk_ui_label._ellipsisLabels = new Set()
+            document.fonts.addEventListener('loadingdone', ()=> sk_ui_label._ellipsisLabels.forEach(label => {
+                if (!label.element.isConnected) return sk_ui_label._ellipsisLabels.delete(label)
+                label.readEllipsisFont()
+                label.fitEllipsis()
+            }))
+        }
+        if (sk_ui_label._ellipsisLabels) sk_ui_label._ellipsisLabels.add(this)
     }
 
     ensureEditableHost(){
