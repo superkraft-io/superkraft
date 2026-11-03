@@ -67,6 +67,20 @@ class sk_ui_label extends sk_ui_component {
             })}})
         }})
 
+        // A text longer than its room keeps its start and its last ellipsisTail characters, cut close to the end
+        // ("Voice Cleaner Ul…a HQ"), left-aligned. isTruncated says when it is; the cut follows the room.
+        this.ellipsisTail = 4
+        this.attributes.add({friendlyName: 'Ellipsis', name: 'ellipsis', type: 'bool', onSet: val => {
+            this._ellipsis = !!val
+            this.element.classList.toggle('sk_ui_label_ellipsis', this._ellipsis)
+            if (this._ellipsis) this.watchEllipsisRoom()
+            else if (this._ellipsisObserver) {
+                this._ellipsisObserver.disconnect()
+                this._ellipsisObserver = null
+            }
+            this.fitEllipsis()
+        }})
+
         this.attributes.add({friendlyName: 'Editable', name: 'editable', type: 'bool', onSet: val => {
             if (val) {
                 this.ensureEditableHost()
@@ -90,6 +104,7 @@ class sk_ui_label extends sk_ui_component {
 
     writeContent(val, asHTML = false){
         var host = this.contentHost()
+        this._fullText = null
         try {
             var text = val == null ? '' : String(val)
             if (!asHTML && text.trim().split('\n').length > 1) {
@@ -106,10 +121,56 @@ class sk_ui_label extends sk_ui_component {
                 host.innerHTML = text
             } else {
                 host.innerText = text
+                this._fullText = text
+                if (this._ellipsis) this.fitEllipsis()
             }
         } catch (err) {
             host.innerText = val
         }
+    }
+
+    // The room is the label's width with the whole text in it; the head grows by halving until it no longer fits.
+    fitEllipsis(){
+        var full = this._fullText
+        var host = this.contentHost()
+        var el = this.element
+        if (full == null || this.editing) return
+        host.textContent = full
+        this.isTruncated = false
+        if (!this._ellipsis || !el.isConnected) return
+        var room = el.clientWidth
+        if (!room || el.scrollWidth <= room) return
+
+        var tail = Math.max(0, Math.min(this.ellipsisTail, full.length - 1))
+        var end = full.slice(full.length - tail)
+        var fits = n => {
+            host.textContent = full.slice(0, n).trimEnd() + '…' + end
+            return el.scrollWidth <= room
+        }
+        var lo = 0
+        var hi = full.length - tail - 1
+        while (lo < hi){
+            var mid = Math.ceil((lo + hi) / 2)
+            if (fits(mid)) lo = mid
+            else hi = mid - 1
+        }
+        fits(lo)
+        this.isTruncated = true
+    }
+
+    // Its own size (laid out, fonts in) and its parent's (a cut label doesn't grow with the room it got back).
+    watchEllipsisRoom(){
+        if (this._ellipsisObserver || typeof ResizeObserver === 'undefined') return
+        this._ellipsisObserver = new ResizeObserver(()=> {
+            var parent = this.element.parentElement
+            if (parent && parent !== this._ellipsisParent){
+                if (this._ellipsisParent) this._ellipsisObserver.unobserve(this._ellipsisParent)
+                this._ellipsisParent = parent
+                this._ellipsisObserver.observe(parent)
+            }
+            this.fitEllipsis()
+        })
+        this._ellipsisObserver.observe(this.element)
     }
 
     ensureEditableHost(){

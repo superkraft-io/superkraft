@@ -5,6 +5,14 @@
     line-height: 1;
 }
 
+/* sk_ui_label.ellipsis: the label may shrink, its text starts at the left (the cut is written, not CSS's). */
+.sk_ui_label_ellipsis {
+    min-width: 0;
+    overflow: hidden;
+    justify-content: flex-start !important;
+    text-align: left !important;
+}
+
 .sk_ui_label_editable {
     position: relative;
     cursor: text;
