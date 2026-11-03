@@ -163,7 +163,23 @@ var sk_nativeWindows = new (class SK_NativeWindows {
         this.observer.observe(document.body, {attributes: true, attributeFilter: ['class', 'style']})
     }
 
-    // {title, width, height, minWidth, minHeight, resizable, onCloseRequested, onFocus}. Null when the window can't
+    // A file:// image's path on disk, which is what the main process takes as a window's icon.
+    iconPath(url){
+        if (!url) return undefined
+        var at = new URL(url, document.baseURI)
+        return at.protocol === 'file:' ? require('url').fileURLToPath(at) : undefined
+    }
+
+    // A window's first moments: its stylesheets arrive and what it was given is laid out in it. Components animate
+    // every style change (sk_ui_transition), but none of this is a change to see.
+    holdTransitions(entry){
+        var hold = entry.document.createElement('style')
+        hold.textContent = '*, *::before, *::after { transition: none !important; }'
+        entry.document.head.appendChild(hold)
+        entry.stylesLoaded.then(()=> setTimeout(()=> hold.remove(), 150))
+    }
+
+    // {title, icon, width, height, minWidth, minHeight, resizable, onCloseRequested, onFocus}. Null when the window can't
     // be opened: the caller stays in the page. onCloseRequested: the OS asked (Alt+F4); the window stays until close().
     open(opt = {}){
         var entry = this.spare || this.createWindow()
@@ -174,7 +190,9 @@ var sk_nativeWindows = new (class SK_NativeWindows {
         entry.document.title = opt.title || ''
         entry.size = {width: Math.round(opt.width), height: Math.round(opt.height)}
         this.windows.push(entry)
+        this.holdTransitions(entry)
         entry.command('place', {
+            icon: this.iconPath(opt.icon),
             width: entry.size.width,
             height: entry.size.height,
             minWidth: opt.minWidth,
@@ -245,7 +263,7 @@ var sk_nativeWindows = new (class SK_NativeWindows {
         var hold = doc.createElement('style')
         hold.textContent = 'html { visibility: hidden; }'
         doc.head.appendChild(hold)
-        this.copyStyles(entry).then(()=> hold.remove())
+        entry.stylesLoaded = this.copyStyles(entry).then(()=> hold.remove())
 
         this.copyAttributes(document.documentElement, doc.documentElement)
         this.copyAttributes(document.body, doc.body)

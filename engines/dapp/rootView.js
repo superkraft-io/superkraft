@@ -280,6 +280,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         var area = screen.getDisplayMatching(own).workArea
         var step = (arg.cascade || 0) * 24
         var inside = (at, size, start, room) => Math.max(start, Math.min(at, start + room - size))
+        if (arg.icon) child.setIcon(arg.icon)
         child.setResizable(arg.resizable !== false)
         child.setMinimumSize(arg.minWidth || 0, arg.minHeight || 0)
         child.setBounds({

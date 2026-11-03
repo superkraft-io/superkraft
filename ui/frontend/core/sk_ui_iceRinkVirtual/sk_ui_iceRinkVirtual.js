@@ -698,8 +698,11 @@ class sk_ui_iceRinkVirtual extends sk_ui_iceRink {
     }
 
     // By transform, on its own layer: scrolling moves the painted list instead of laying the page
-    // out and repainting the list every frame.
+    // out and repainting the list every frame. On whole screen pixels: between two, the layer is resampled and blurs.
     positionContent(x, y){
+        var scale = window.devicePixelRatio || 1
+        x = Math.round(x * scale) / scale
+        y = Math.round(y * scale) / scale
         if (x === this.__contentX && y === this.__contentY) return
         this.__contentX = x
         this.__contentY = y
