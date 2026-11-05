@@ -272,7 +272,12 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
                 if (!authRes.error) validationRes = true
                 if (authRes.error === 'invalid_token') validationRes = 'invalid_token'
             } catch(err) {
-                validationRes = 'invalid_token'
+                // Only a refused token is invalid_token (pages then log out and drop the cookie);
+                // an unreachable database is just a failed check.
+                if (err === 'invalid_token' || (err && err.error === 'invalid_token')){
+                    validationRes = 'invalid_token'
+                    authRes = {error: 'invalid_token'}
+                }
             }
 
             resolve((returnAuthRes ? authRes : validationRes))
@@ -288,7 +293,7 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
                 if (!auth_token) return resolve(false)
 
                 var validationRes = await view.sk.info.engine.isAuthTokenValid(auth_token, true)
-                if (!validationRes) return resolve(false)
+                if (!validationRes || validationRes.error) return resolve(false)
 
                 resolve(validationRes)
             }
