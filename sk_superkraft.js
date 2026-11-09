@@ -202,13 +202,15 @@ module.exports = class Superkraft {
         await sk.engine.waitForReady()
         await sk.engine.initViews()
 
-        if (opt.type === 'wapp' && opt.cdn && opt.cdn.export){
+        // The files pages load from the CDN (cdn.targets.site 'public'), into cdn.servePath. Runs when cdn.export is
+        // set, or with SK_CDN_EXPORT=1; SK_CDN_EXPORT=only exports and stops (scripts/export_site_cdn.js).
+        var exportCdn = process.env.SK_CDN_EXPORT
+        if (opt.type === 'wapp' && opt.cdn && (opt.cdn.export || exportCdn)){
             console.log('[SK] Exporting CDN content...')
             var cdnExporter = new (require(__dirname + '/modules/sk_cdnExporter.js'))({sk: sk})
             await cdnExporter.export()
             console.log('[SK] Done!')
-            //process.exit()
-            //return
+            if (exportCdn === 'only') process.exit(0)
         }
 
         if (sk.engine.start) await sk.engine.start()

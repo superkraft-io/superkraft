@@ -7,13 +7,17 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         return new Promise(async resolve => {
             this.route = opt.route
 
-            var cdnRoute = this.sk.info.cdn.routes[this.sk.info.config.isWhat.env]
+            var cdn = this.sk.info.cdn
+            var cdnRoute = cdn.routes[this.sk.info.config.isWhat.env]
+            var onCdn = cdn.targets.site === 'public'
+            // Where the exported site (sk_cdnExporter) lives on the CDN: cdn.paths.site, e.g. releases/site
+            var siteBase = onCdn ? cdnRoute + String((cdn.paths && cdn.paths.site) || 'sk_cdn').replace(/^\/+|\/+$/g, '') : ''
 
             this.routes = {
                 frontend: {
                     view: this.info.route + 'vfe_frontend/',
 
-                    sk: (this.sk.info.cdn.targets.site === 'public' ? cdnRoute + 'sk_cdn/sk_frontend' : '/sk'),
+                    sk: (onCdn ? siteBase + '/sk_frontend' : '/sk'),
 
                     ui: this.sk.info.ui.routes.core,
                     ui_shared: '/sk_ui_shared/',
@@ -21,9 +25,9 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
                     
 
-                    app_root: (this.sk.info.cdn.targets.site === 'public' ? cdnRoute + 'sk_cdn/app_frontend/' : '/'),
-                    app: (this.sk.info.cdn.targets.site === 'public' ? cdnRoute + 'sk_cdn/app_frontend/' : '/'),
-                    global: (this.sk.info.cdn.targets.site === 'public' ? cdnRoute + 'sk_cdn/app_global/' : '/sk_ui_global/'),
+                    app_root: (onCdn ? siteBase + '/app_frontend/' : '/'),
+                    app: (onCdn ? siteBase + '/app_frontend/' : '/'),
+                    global: (onCdn ? siteBase + '/app_global/' : '/sk_ui_global/'),
 
                     complexity: '/complexity/',
 
@@ -43,11 +47,21 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             await this._init(opt)
 
 
-            if (this.sk.info.cdn.targets.site === 'public') this.routes.frontend.ui_cdn = cdnRoute + 'sk_cdn'
+            if (onCdn) this.routes.frontend.ui_cdn = siteBase
 
-            
+
             var render = async (res, page, userData, country) => {
-                if (this.sk.info.cdn.targets.site === 'public') this.routes.frontend.view = cdnRoute + 'sk_cdn/views/' + this.id + '/'
+                if (onCdn) {
+                    this.routes.frontend.view = siteBase + '/views/' + this.id + '/'
+                    // Browsers only start workers from the page's own site: template.ejs points workers made from
+                    // these CDN folders at the same file here (the site still serves all of it)
+                    this.routes.frontend.cdnMap = [
+                        [siteBase + '/app_frontend/', '/'],
+                        [siteBase + '/views/' + this.id + '/', this.info.route + 'vfe_frontend/'],
+                        [siteBase + '/sk_frontend/', '/sk/'],
+                        [siteBase + '/app_global/', '/sk_ui_global/']
+                    ]
+                }
                 
 
                 var globalData = this.sk.info.globalData

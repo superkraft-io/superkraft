@@ -103,7 +103,8 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
             app.use('/', this.serveStatic(this.paths.frontend.app.split('\\').join('/')))
 
 
-            if (this.sk.info.cdn && this.sk.info.cdn.targets.site === 'public') this.sk.app.use(cdnRoute, this.serveStatic(cdnRoute))
+            // A CDN on a local path (e.g. /cdn/) is served from that folder; a CDN on its own host serves itself
+            if (this.sk.info.cdn && this.sk.info.cdn.targets.site === 'public' && /^\//.test(cdnRoute || '')) this.sk.app.use(cdnRoute, this.serveStatic(cdnRoute))
 
             this.sk.app.use(this.sk.info.ui.routes.core, this.serveStatic(this.paths.frontend.ui.core))
             this.sk.app.use(this.sk.info.ui.routes.shared, this.serveStatic(this.paths.frontend.ui.shared))
