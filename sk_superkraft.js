@@ -65,6 +65,9 @@ module.exports = class Superkraft {
             ui: opt.ui || {},
 
             cdn: opt.cdn,
+            // () => build name or null: which build of the exported site pages load (cdn.paths.builds/<build>/);
+            // null means cdn.paths.site, the single folder from before builds (engines/wapp/rootView.js)
+            cdnBuild: typeof opt.cdnBuild === 'function' ? opt.cdnBuild : null,
 
             ports: opt.ports || {},
 

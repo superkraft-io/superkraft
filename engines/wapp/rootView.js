@@ -27,9 +27,11 @@ module.exports = class SK_RootView extends SK_RootViewCore {
      * Scripts and stylesheets from the CDN get crossorigin="anonymous" (the CDN answers with CORS): without it
      * the browser hides their errors as "Script error." with no file or line.
      */
-    toCdn(html){
-        var rules = this.cdnRewrites || []
-        var cdnHost = this.cdnSiteBase ? new URL(this.cdnSiteBase).origin : null
+    // page: {base, rewrites} the page was rendered with (its build); the current ones when left out
+    toCdn(html, page){
+        var rules = (page ? page.rewrites : this.cdnRewrites) || []
+        var siteBase = page ? page.base : this.cdnSiteBase
+        var cdnHost = siteBase ? new URL(siteBase).origin : null
         return html.replace(/<(link|script|img|source|video|audio)\b[^>]*>/gi, (tag, name) => {
             var out = tag.replace(/\b(src|href)=(["'])(\/[^"']*)\2/gi, (m, attr, q, url) => {
                 for (var [from, to] of rules) if (url.startsWith(from)) return attr + '=' + q + to + url.slice(from.length) + q
@@ -51,8 +53,21 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             var cdn = this.sk.info.cdn
             var cdnRoute = cdn.routes[this.sk.info.config.isWhat.env]
             var onCdn = cdn.targets.site === 'public'
-            // Where the exported site (sk_cdnExporter) lives on the CDN: cdn.paths.site, e.g. releases/site
-            var siteBase = onCdn ? cdnRoute + String((cdn.paths && cdn.paths.site) || 'sk_cdn').replace(/^\/+|\/+$/g, '') : ''
+            var trim = v => String(v).replace(/^\/+|\/+$/g, '')
+            var cdnRoot = String(cdnRoute || '').replace(/\/?$/, '/')
+            // Where the exported site (sk_cdnExporter) lives on the CDN: the current build's folder
+            // (cdn.paths.builds/<build>/, Aurora's Deployments) or, before there is one, cdn.paths.site (releases/site)
+            var legacyBase = onCdn ? cdnRoot + trim((cdn.paths && cdn.paths.site) || 'sk_cdn') : ''
+            var buildsPath = trim((cdn.paths && cdn.paths.builds) || 'dashboard')
+            var siteBaseNow = () => {
+                if (!onCdn) return ''
+                var build = null
+                try { build = this.sk.info.cdnBuild ? this.sk.info.cdnBuild() : null } catch(err) {}
+                // It goes into every page's HTML: only a 12-character hex name is used
+                return (typeof build === 'string' && /^[0-9a-f]{12}$/.test(build)) ? cdnRoot + buildsPath + '/' + build : legacyBase
+            }
+            var siteBase = siteBaseNow()
+            var favIconSource = this.sk.info.paths.icons.favIcon
 
             this.routes = {
                 frontend: {
@@ -88,33 +103,55 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             await this._init(opt)
 
 
-            if (onCdn) {
-                this.routes.frontend.ui_cdn = siteBase
+            // Every address that depends on where the exported site is. Set once here, and again only when the build
+            // changes (render below), so nothing is rebuilt or kept per request.
+            var applySiteBase = base => {
+                var f = this.routes.frontend
+                f.sk = base + '/sk_frontend'
+                f.app_root = base + '/app_frontend/'
+                f.app = base + '/app_frontend/'
+                f.global = base + '/app_global/'
+                f.ui_cdn = base
                 // The base styles and every core, shared and global component's own files (root_url)
-                this.routes.frontend.ui = siteBase + '/sk_ui_core/'
-                this.routes.frontend.ui_shared = siteBase + '/sk_ui_shared/'
-                this.routes.frontend.ui_global = siteBase + '/app_global/'
-                if (this.sk.info.ui.routes.font) this.routes.frontend.font = siteBase + '/sk_ui_font/'
-                var fav = this.routes.frontend.favIcon
-                if (typeof fav === 'string' && /^\/[^/]/.test(fav)) this.routes.frontend.favIcon = siteBase + '/app_frontend' + fav
-                this.cdnSiteBase = siteBase
-                this.cdnRewrites = this.cdnRewritesFor(siteBase)
+                f.ui = base + '/sk_ui_core/'
+                f.ui_shared = base + '/sk_ui_shared/'
+                f.ui_global = base + '/app_global/'
+                if (this.sk.info.ui.routes.font) f.font = base + '/sk_ui_font/'
+                f.favIcon = (typeof favIconSource === 'string' && /^\/[^/]/.test(favIconSource)) ? base + '/app_frontend' + favIconSource : favIconSource
+                this.cdnSiteBase = base
+                this.cdnRewrites = this.cdnRewritesFor(base)
             }
+            if (onCdn) applySiteBase(siteBase)
 
 
             var render = async (res, page, userData, country) => {
+                // This page's own copy of the addresses, taken now: a build switching while it renders (the awaits
+                // below) changes later pages, never half of this one
+                var routes = this.routes
+                var cdnPage = null
                 if (onCdn) {
-                    this.routes.frontend.view = siteBase + '/views/' + this.id + '/'
-                    // Browsers only start workers from the page's own site: template.ejs points workers made from
-                    // these CDN folders at the same file here (the site still serves all of it)
-                    this.routes.frontend.cdnMap = [
-                        [siteBase + '/app_frontend/', '/'],
-                        [siteBase + '/views/' + this.id + '/', this.info.route + 'vfe_frontend/'],
-                        [siteBase + '/sk_frontend/', '/sk/'],
-                        [siteBase + '/app_global/', '/sk_ui_global/'],
-                        [siteBase + '/sk_ui_core/', this.sk.info.ui.routes.core],
-                        [siteBase + '/sk_ui_shared/', this.sk.info.ui.routes.shared]
-                    ]
+                    // A new build since the last page: its folder from now on (pages already open keep theirs)
+                    var now = siteBaseNow()
+                    if (now !== siteBase) {
+                        siteBase = now
+                        applySiteBase(siteBase)
+                    }
+                    var base = siteBase
+                    routes = {...this.routes, frontend: {
+                        ...this.routes.frontend,
+                        view: base + '/views/' + this.id + '/',
+                        // Browsers only start workers from the page's own site: template.ejs points workers made from
+                        // these CDN folders at the same file here (the site still serves all of it)
+                        cdnMap: [
+                            [base + '/app_frontend/', '/'],
+                            [base + '/views/' + this.id + '/', this.info.route + 'vfe_frontend/'],
+                            [base + '/sk_frontend/', '/sk/'],
+                            [base + '/app_global/', '/sk_ui_global/'],
+                            [base + '/sk_ui_core/', this.sk.info.ui.routes.core],
+                            [base + '/sk_ui_shared/', this.sk.info.ui.routes.shared]
+                        ]
+                    }}
+                    cdnPage = {base: base, rewrites: this.cdnRewrites}
                 }
                 
 
@@ -135,6 +172,8 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                         },
 
                         ...this.viewInfo,
+                        // This page's addresses (its build), not the shared ones
+                        sk: {...this.viewInfo.sk, routes: routes},
                         ...{
                             userData: userData,
                             globalData: globalData,
@@ -142,7 +181,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                     },
                     (err, html) => {
                         if (err) { console.error('[SK] Rendering ' + this.id + ' failed:', err); return res.status(500).send('Internal error') }
-                        res.send(onCdn ? this.toCdn(html) : html)
+                        res.send(cdnPage ? this.toCdn(html, cdnPage) : html)
                     }
                 )
             }
