@@ -22,14 +22,26 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         return rules
     }
 
-    /** The rendered page with those addresses on the CDN: only in the tags that load files, never in links */
+    /**
+     * The rendered page with those addresses on the CDN: only in the tags that load files, never in links.
+     * Scripts and stylesheets from the CDN get crossorigin="anonymous" (the CDN answers with CORS): without it
+     * the browser hides their errors as "Script error." with no file or line.
+     */
     toCdn(html){
         var rules = this.cdnRewrites || []
-        if (!rules.length) return html
-        return html.replace(/<(link|script|img|source|video|audio)\b[^>]*>/gi, tag => tag.replace(/\b(src|href)=(["'])(\/[^"']*)\2/gi, (m, attr, q, url) => {
-            for (var [from, to] of rules) if (url.startsWith(from)) return attr + '=' + q + to + url.slice(from.length) + q
-            return m
-        }))
+        var cdnHost = this.cdnSiteBase ? new URL(this.cdnSiteBase).origin : null
+        return html.replace(/<(link|script|img|source|video|audio)\b[^>]*>/gi, (tag, name) => {
+            var out = tag.replace(/\b(src|href)=(["'])(\/[^"']*)\2/gi, (m, attr, q, url) => {
+                for (var [from, to] of rules) if (url.startsWith(from)) return attr + '=' + q + to + url.slice(from.length) + q
+                return m
+            })
+            var isLoad = /^script$/i.test(name) || (/^link$/i.test(name) && /\brel=["']?(stylesheet|preload|modulepreload)/i.test(out))
+            if (cdnHost && isLoad && !/\bcrossorigin\b/i.test(out) && out.includes((/^script$/i.test(name) ? 'src=' : 'href=')) &&
+                new RegExp('\\b(src|href)=["\']' + cdnHost.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '/', 'i').test(out)) {
+                out = out.replace(/^<(\w+)/, '<$1 crossorigin="anonymous"')
+            }
+            return out
+        })
     }
 
     init(opt){
@@ -85,6 +97,7 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                 if (this.sk.info.ui.routes.font) this.routes.frontend.font = siteBase + '/sk_ui_font/'
                 var fav = this.routes.frontend.favIcon
                 if (typeof fav === 'string' && /^\/[^/]/.test(fav)) this.routes.frontend.favIcon = siteBase + '/app_frontend' + fav
+                this.cdnSiteBase = siteBase
                 this.cdnRewrites = this.cdnRewritesFor(siteBase)
             }
 

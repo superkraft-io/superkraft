@@ -8,18 +8,32 @@
         <% if (sk.routes.frontend.cdnMap){ %>
             <script>
                 // Files come from the CDN, but browsers only start workers from the page's own site: a worker made
-                // from a CDN address starts from the same file on this site instead (rootView.js cdnMap)
+                // from a CDN address starts from the same file on this site instead (rootView.js cdnMap). An address
+                // on another site that the map doesn't cover starts through a small worker of our own that loads it
+                // (importScripts and import may reach other sites); the console says which address missed.
                 (function(map){
                     var local = function(url){
                         var s = String(url && url.href ? url.href : url)
                         for (var i = 0; i < map.length; i++) if (s.indexOf(map[i][0]) === 0) return map[i][1] + s.slice(map[i][0].length)
                         return url
-                    }
+                    };
+                    var foreign = function(url){
+                        try { var u = new URL(String(url && url.href ? url.href : url), location.href); return /^https?:$/.test(u.protocol) && u.origin !== location.origin ? u.href : null } catch(e) { return null }
+                    };
+                    var loader = function(href, options){
+                        console.warn('[SK] Worker from another site, started through a loader (not in the CDN map):', href, map)
+                        var code = options && options.type === 'module' ? 'import ' + JSON.stringify(href) : 'importScripts(' + JSON.stringify(href) + ')'
+                        return URL.createObjectURL(new Blob([code], {type: 'text/javascript'}))
+                    };
                     ['Worker', 'SharedWorker'].forEach(function(name){
                         var Native = window[name]
                         if (!Native) return
-                        var Local = function(url, options){ return new Native(local(url), options) }
-                        Local.prototype = Native.prototype
+                        var Local = function(url, options){
+                            var target = local(url)
+                            var href = foreign(target)
+                            return new Native(href ? loader(href, options) : target, options)
+                        };
+                        Local.prototype = Native.prototype;
                         window[name] = Local
                     })
                 })(<%- JSON.stringify(sk.routes.frontend.cdnMap) %>)
