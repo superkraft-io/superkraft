@@ -114,7 +114,11 @@ module.exports = class sk_ui {
                 }
                 var _path = parentPath + child.name + '/'
                 if (child.children) iterateChildren(child.children, _path)
-                simplified.push({name: child.name.replace('sk_ui_', ''), path: _path})
+                // Not every component has a stylesheet: head.ejs links only the ones that do (a missing
+                // one was requested anyway, 404'd as an HTML page and logged a MIME error).
+                var hasCss = true
+                try { hasCss = require('fs').existsSync(String(path).replace(/[\\/]?$/, '/') + _path + child.name + '.css') } catch (err) {}
+                simplified.push({name: child.name.replace('sk_ui_', ''), path: _path, css: hasCss})
             }
         }
         iterateChildren(concat)

@@ -195,7 +195,11 @@ class sk_ui_hint extends sk_ui_component {
             }
         }
 
+        // 'middle' (the styling word) means center here; unknown words are dropped, not called.
         var positions = String(this.position || 'top center').trim().split(/\s+/)
+            .map(word => word === 'middle' ? 'center' : word)
+            .filter(word => typeof calcPos[word] === 'function')
+        if (!positions.length) positions = ['top', 'center']
         // One side only ('top'): centred along it.
         if (positions.length < 2) positions.push('center')
         if (positions[0] === 'center') positions = [positions[1], positions[0]]
