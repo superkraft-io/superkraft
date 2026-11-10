@@ -5,6 +5,8 @@ const crypto = require('crypto')
 // Builds the folder a wapp loads from the CDN when cdn.targets.site is 'public' (cdn.servePath):
 //
 //   sk_ui.js, sk_ui.css      every core, engine and shared sk_ui component, in the order pages load them
+//   sk_ui_base.css           the base styles (colors, sk_ui, gradients, shadows)
+//   sk_ui_core/, sk_ui_shared/  what those components load on their own (images, workers…); not their js and css
 //   views/<id>/              the view's frontend; <id>.js and <id>.css hold its sk_ui components, then the global ones
 //   sk_frontend/             superkraft/frontend
 //   app_frontend/            the app's frontend
@@ -27,6 +29,8 @@ const SKIP_DIRS = new Set(['node_modules', '.git', '.vscode', '.idea'])
 // Server templates (.ejs) and repository files never go out; neither do notes (.md)
 const SKIP_FILES = /^(package(-lock)?\.json|tsconfig[^/]*\.json|\.ds_store|thumbs\.db|\.git|\.gitignore|\.gitmodules|\.gitattributes|\.gitkeep|\.npmignore)$/i
 const SKIP_EXT = /\.(ts|tsx|map|ejs|md)$/i
+// The core folder's base styles (template.ejs), bundled into sk_ui_base.css
+const BASE_CSS = ['sk_ui_colors.css', 'sk_ui.css', 'sk_ui_gradients.css', 'sk_ui_shadows.css']
 
 module.exports = class SK_CDN_Exporter {
     constructor(opt){
@@ -111,15 +115,19 @@ module.exports = class SK_CDN_Exporter {
         }
         if (SKIP_FILES.test(name)) return true
         if (SKIP_EXT.test(name)) return true
+        // sk_ui_x/sk_ui_x.js and .css: in sk_ui.js / <view>.js already, nothing loads them on their own
+        var own = /^(sk_ui_.+)\.(js|css)$/.exec(name)
+        if (own && path.basename(path.dirname(full)) === own[1]) return true
         if (this.sk.gate && this.sk.gate.isMarkerFileName && this.sk.gate.isMarkerFileName(name)) return true
         if (this.sk.appTypeFilter && this.sk.appTypeFilter.isMarkerFileName && this.sk.appTypeFilter.isMarkerFileName(name)) return true
         return false
     }
 
     /** Makes dst a copy of src (with the skips), touching only what differs; extra: names in dst to leave alone */
-    async syncDir(src, dst, extra = []){
+    async syncDir(src, dst, extra = [], own = [], drop = []){
         fs.mkdirSync(dst, {recursive: true})
-        var keep = new Set(extra)
+        // extra: kept in dst; own: kept in dst and not copied (written by the caller)
+        var keep = new Set([...extra, ...own])
         var entries = []
         try { entries = fs.readdirSync(src, {withFileTypes: true}) } catch(err) { return keep }
 
@@ -127,6 +135,7 @@ module.exports = class SK_CDN_Exporter {
             var from = path.join(src, e.name)
             var to = path.join(dst, e.name)
             var isDir = e.isDirectory() || (e.isSymbolicLink() && fs.statSync(from).isDirectory())
+            if (own.includes(e.name) || drop.includes(e.name)) continue
             if (this.skipped(e.name, from, isDir)) continue
             keep.add(e.name)
             if (isDir) { await this.syncDir(from, to); continue }
@@ -179,6 +188,24 @@ module.exports = class SK_CDN_Exporter {
         fs.writeFileSync(file, content)
         this.stats.copied++
         this.stats.bytes += Buffer.byteLength(content)
+    }
+
+    /**
+     * The web app manifest, served from the CDN: its start_url and scope must still be on the site, so relative
+     * ones are made absolute against the site (start_url's origin, or mobile.origin in the config)
+     */
+    exportManifest(src, dst){
+        var m
+        try { m = JSON.parse(fs.readFileSync(src, 'utf8')) } catch(err) { return }
+        var mobile = this.sk.mobile || {}
+        var origin = mobile.origin || null
+        try { if (!origin && m.start_url) origin = new URL(m.start_url).origin } catch(err) {}
+        if (!origin) { console.warn('[SK CDN] The manifest\'s start_url is relative: set mobile.origin so it can go on the CDN'); return }
+        for (var key of ['start_url', 'scope', 'id']) if (typeof m[key] === 'string') m[key] = new URL(m[key], origin + '/').href
+        if (!m.start_url) m.start_url = origin + '/'
+        // The scope has to hold start_url; one that doesn't is left out (browsers then use start_url's folder)
+        if (m.scope && !m.start_url.startsWith(m.scope)) delete m.scope
+        this.writeIfChanged(dst, JSON.stringify(m))
     }
 
     /* ---------------- bundles ---------------- */
@@ -237,6 +264,22 @@ module.exports = class SK_CDN_Exporter {
         await this.syncDir(p.superkraft + 'frontend', path.join(out, 'sk_frontend')); keep.add('sk_frontend')
         await this.syncDir(p.app_frontend, path.join(out, 'app_frontend')); keep.add('app_frontend')
         if (p.globalFrontend) { await this.syncDir(p.globalFrontend, path.join(out, 'app_global')); keep.add('app_global') }
+
+        // What components and the template still load on their own: the core and shared component folders
+        // (the base styles, and each component's files through root_url), the font and the mobile web app images
+        // The base styles, in the order the template loads them, as one file (it loads where the four did)
+        var base = BASE_CSS.map(n => { try { return '/* ' + n + ' */\n' + fs.readFileSync(uiPaths.core + n, 'utf8') } catch(err) { return '' } }).filter(Boolean).join('\n')
+        await this.writeBundle(path.join(out, 'sk_ui_base.css'), base); keep.add('sk_ui_base.css')
+        await this.syncDir(uiPaths.core, path.join(out, 'sk_ui_core'), [], [], BASE_CSS); keep.add('sk_ui_core')
+        if (uiPaths.shared) { await this.syncDir(uiPaths.shared, path.join(out, 'sk_ui_shared')); keep.add('sk_ui_shared') }
+        var fontDir = ui.paths && ui.paths.frontend && ui.paths.frontend.font
+        if (fontDir && fs.existsSync(fontDir)) { await this.syncDir(fontDir, path.join(out, 'sk_ui_font')); keep.add('sk_ui_font') }
+        var mobileDir = p.root && path.join(p.root, 'sk_wapp_mobile')
+        if (mobileDir && fs.existsSync(mobileDir)) {
+            await this.syncDir(mobileDir, path.join(out, 'sk_wapp_mobile'), [], ['sk_manifest.json'])
+            this.exportManifest(path.join(mobileDir, 'sk_manifest.json'), path.join(out, 'sk_wapp_mobile', 'sk_manifest.json'))
+            keep.add('sk_wapp_mobile')
+        }
 
         this.prune(out, keep)
         this.saveManifest()

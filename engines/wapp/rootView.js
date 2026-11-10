@@ -3,6 +3,35 @@ module.exports = class SK_RootView extends SK_RootViewCore {
         super(opt)
     }
     
+    /**
+     * Local addresses that generated templates and the app's settings bake in (the mobile web app's manifest,
+     * splash images and icons, the app icons in /img/...): on the CDN those files are in the export, under these
+     * folders. The exported manifest's start_url and scope point back at the site.
+     */
+    cdnRewritesFor(siteBase){
+        var rules = [['/sk_wapp_mobile/', siteBase + '/sk_wapp_mobile/']]
+        // The app's frontend is served from /, so /img/x is its img/x
+        try {
+            var appDir = this.sk.info.paths.app_frontend
+            // Superkraft's own routes come first on the site (/sk_ui/ is the core components, not the app's sk_ui folder)
+            var taken = new Set(['/sk/', ...Object.values(this.sk.info.ui.routes || {})])
+            for (var e of require('fs').readdirSync(appDir, {withFileTypes: true})) {
+                if (e.isDirectory() && !/^(node_modules|\.)/.test(e.name) && !taken.has('/' + e.name + '/')) rules.push(['/' + e.name + '/', siteBase + '/app_frontend/' + e.name + '/'])
+            }
+        } catch(err) {}
+        return rules
+    }
+
+    /** The rendered page with those addresses on the CDN: only in the tags that load files, never in links */
+    toCdn(html){
+        var rules = this.cdnRewrites || []
+        if (!rules.length) return html
+        return html.replace(/<(link|script|img|source|video|audio)\b[^>]*>/gi, tag => tag.replace(/\b(src|href)=(["'])(\/[^"']*)\2/gi, (m, attr, q, url) => {
+            for (var [from, to] of rules) if (url.startsWith(from)) return attr + '=' + q + to + url.slice(from.length) + q
+            return m
+        }))
+    }
+
     init(opt){
         return new Promise(async resolve => {
             this.route = opt.route
@@ -47,7 +76,17 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             await this._init(opt)
 
 
-            if (onCdn) this.routes.frontend.ui_cdn = siteBase
+            if (onCdn) {
+                this.routes.frontend.ui_cdn = siteBase
+                // The base styles and every core, shared and global component's own files (root_url)
+                this.routes.frontend.ui = siteBase + '/sk_ui_core/'
+                this.routes.frontend.ui_shared = siteBase + '/sk_ui_shared/'
+                this.routes.frontend.ui_global = siteBase + '/app_global/'
+                if (this.sk.info.ui.routes.font) this.routes.frontend.font = siteBase + '/sk_ui_font/'
+                var fav = this.routes.frontend.favIcon
+                if (typeof fav === 'string' && /^\/[^/]/.test(fav)) this.routes.frontend.favIcon = siteBase + '/app_frontend' + fav
+                this.cdnRewrites = this.cdnRewritesFor(siteBase)
+            }
 
 
             var render = async (res, page, userData, country) => {
@@ -59,7 +98,9 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                         [siteBase + '/app_frontend/', '/'],
                         [siteBase + '/views/' + this.id + '/', this.info.route + 'vfe_frontend/'],
                         [siteBase + '/sk_frontend/', '/sk/'],
-                        [siteBase + '/app_global/', '/sk_ui_global/']
+                        [siteBase + '/app_global/', '/sk_ui_global/'],
+                        [siteBase + '/sk_ui_core/', this.sk.info.ui.routes.core],
+                        [siteBase + '/sk_ui_shared/', this.sk.info.ui.routes.shared]
                     ]
                 }
                 
@@ -85,6 +126,10 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                             userData: userData,
                             globalData: globalData,
                         }
+                    },
+                    (err, html) => {
+                        if (err) { console.error('[SK] Rendering ' + this.id + ' failed:', err); return res.status(500).send('Internal error') }
+                        res.send(onCdn ? this.toCdn(html) : html)
                     }
                 )
             }

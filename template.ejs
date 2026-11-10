@@ -26,14 +26,19 @@
             </script>
         <% } %>
 
-        <%# The same in both modes: sk.routes.frontend.sk points at the CDN when the site is on it; the base styles stay on the site %>
+        <%# The same in both modes: sk.routes.frontend.sk and .ui point at the CDN when the site is on it %>
             <script type='application/javascript' src='<%= sk.routes.frontend.sk%>/libs/fastclick.js'></script>
             <script type='application/javascript' src='<%= sk.routes.frontend.sk%>/libs/sortable.min.js'></script>
 
-            <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui %>sk_ui_colors.css">
-            <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui %>sk_ui.css">
-            <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui %>sk_ui_gradients.css">
-            <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui %>sk_ui_shadows.css">
+            <% if (sk.routes.frontend.ui_cdn){ %>
+                <%# The four base styles below, in one file (sk_cdnExporter) %>
+                <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui_cdn %>/sk_ui_base.css">
+            <% } else { %>
+                <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui %>sk_ui_colors.css">
+                <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui %>sk_ui.css">
+                <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui %>sk_ui_gradients.css">
+                <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.ui %>sk_ui_shadows.css">
+            <% } %>
             
             <% if (sk.routes.frontend.engine){ %>
                 <%- include(sk.routes.frontend.engine + '/frontend/engine_body.ejs') %>
@@ -66,8 +71,9 @@
             
             <% if (sk.ui && sk.ui.font){ %>
                 <%- include(sk.ui.font) %>
+                <%# Written by sk_ui_fontMngr only when the app sets a font %>
+                <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.font || '/sk_ui_font/' %>sk_ui_font.css">
             <% } %>
-            <link rel="stylesheet" type="text/css" href="/sk_ui_font/sk_ui_font.css">
             
             <script src="<%= sk.routes.frontend.sk%>/libs/sk_windowHandler.js"></script>
 
@@ -103,8 +109,8 @@
             <!--<script src="<%= sk.routes.frontend.sk%>/libs/sk_thread.js"></script>-->
 
 
-            <!--<link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.sk%>libs/sk_contextMenu/sk_contextMenu.css">
-            <script src="<%= sk.routes.frontend.sk%>libs/sk_contextMenu/sk_contextMenu.js"></script>-->
+            <!--<link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.sk%>/libs/sk_contextMenu/sk_contextMenu.css">
+            <script src="<%= sk.routes.frontend.sk%>/libs/sk_contextMenu/sk_contextMenu.js"></script>-->
 
             <script src="<%= sk.routes.frontend.sk%>/libs/sk_childMngr/sk_childMngr.js"></script>
 
