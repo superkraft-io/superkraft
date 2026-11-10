@@ -28,6 +28,18 @@
             view: '<%= sk.routes.frontend.view %>',
             global: '<%= sk.routes.frontend.global %>',
             icon: '<%= sk.routes.icon %>',
+            // The build's packs on the CDN (heavy parts kept outside the build): path in the export → address
+            assets: <%- JSON.stringify(sk.routes.frontend.assets || {}).replace(/</g, '\\u003c') %>,
+        },
+
+        // Where a heavy file or folder of the export is on the CDN when it's in a pack, e.g.
+        // sk.cdnAsset('app_frontend/libs/midify/models'); null when it isn't (local mode, no pack): use the usual address
+        cdnAsset: rel => {
+            var assets = (sk.paths && sk.paths.assets) || {}
+            rel = String(rel || '').replace(/^\/+|\/+$/g, '')
+            if (Object.prototype.hasOwnProperty.call(assets, rel)) return assets[rel]
+            for (var entry in assets) if (rel.indexOf(entry + '/') === 0) return assets[entry] + rel.slice(entry.length)
+            return null
         },
 
         id: '<%= id %>',

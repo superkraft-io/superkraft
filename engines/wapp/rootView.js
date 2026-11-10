@@ -59,13 +59,31 @@ module.exports = class SK_RootView extends SK_RootViewCore {
             // (cdn.paths.builds/<build>/, Aurora's Deployments) or, before there is one, cdn.paths.site (releases/site)
             var legacyBase = onCdn ? cdnRoot + trim((cdn.paths && cdn.paths.site) || 'sk_cdn') : ''
             var buildsPath = trim((cdn.paths && cdn.paths.builds) || 'dashboard')
-            var siteBaseNow = () => {
-                if (!onCdn) return ''
-                var build = null
-                try { build = this.sk.info.cdnBuild ? this.sk.info.cdnBuild() : null } catch(err) {}
-                // It goes into every page's HTML: only a 12-character hex name is used
-                return (typeof build === 'string' && /^[0-9a-f]{12}$/.test(build)) ? cdnRoot + buildsPath + '/' + build : legacyBase
+            // The app's cdnBuild() answers a build name, or {build, assets} with the build's packs: heavy parts kept
+            // outside the build, {path in the export: 'assets/<12 hex>[/<file>]'} (Aurora's Deployments, cdn_assets.json)
+            var segment = '[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]+)*'
+            var entryRe = new RegExp('^' + segment + '(?:/' + segment + ')*$')
+            var targetRe = new RegExp('^assets/[0-9a-f]{12}(?:/' + segment + ')?$')
+            var lastAnswer = {}
+            var lastCdn = {base: legacyBase, assets: {}}
+            var cdnNow = () => {
+                if (!onCdn) return lastCdn
+                var answer = null
+                try { answer = this.sk.info.cdnBuild ? this.sk.info.cdnBuild() : null } catch(err) {}
+                var build = answer && typeof answer === 'object' ? answer.build : answer
+                var map = answer && typeof answer === 'object' && answer.assets && typeof answer.assets === 'object' ? answer.assets : null
+                // The same answer as last time: nothing to work out again
+                if (build === lastAnswer.build && map === lastAnswer.map) return lastCdn
+                lastAnswer = {build: build, map: map}
+                // It goes into every page's HTML: only a 12-character hex build and checked pack entries are used
+                if (typeof build !== 'string' || !/^[0-9a-f]{12}$/.test(build)) return (lastCdn = {base: legacyBase, assets: {}})
+                var assets = {}
+                for (var key of Object.keys(map || {})) {
+                    if (entryRe.test(key) && typeof map[key] === 'string' && targetRe.test(map[key])) assets[key] = cdnRoot + buildsPath + '/' + map[key]
+                }
+                return (lastCdn = {base: cdnRoot + buildsPath + '/' + build, assets: assets})
             }
+            var siteBaseNow = () => cdnNow().base
             var siteBase = siteBaseNow()
             var favIconSource = this.sk.info.paths.icons.favIcon
 
@@ -140,6 +158,8 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                     routes = {...this.routes, frontend: {
                         ...this.routes.frontend,
                         view: base + '/views/' + this.id + '/',
+                        // The build's packs: path in the export → its address (script.ejs gives pages sk.cdnAsset)
+                        assets: cdnNow().assets,
                         // Browsers only start workers from the page's own site: template.ejs points workers made from
                         // these CDN folders at the same file here (the site still serves all of it)
                         cdnMap: [
