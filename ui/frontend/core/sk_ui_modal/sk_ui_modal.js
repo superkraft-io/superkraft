@@ -104,14 +104,26 @@ class sk_ui_modal extends sk_ui_component {
         })
 
 
+        // Escape closes only the top modal: every open one listens on document, so each checks it's the last
+        // opened that still takes Escape (removed ones are dropped from the stack as they're found).
         this.escapeKeyCloser = _e => {
             if (_e.key !== 'Escape') return
+            var stack = sk_ui_modal.escapeStack = sk_ui_modal.escapeStack.filter(modal => modal.element && modal.element.isConnected)
+            if (stack[stack.length - 1] !== this) return
             _e.stopPropagation()
             _e.preventDefault()
+            this.leaveEscapeStack()
             this.hide()
         }
 
+        sk_ui_modal.escapeStack.push(this)
         document.addEventListener('keydown', this.escapeKeyCloser)
+    }
+
+    static escapeStack = []
+
+    leaveEscapeStack(){
+        sk_ui_modal.escapeStack = sk_ui_modal.escapeStack.filter(modal => modal !== this)
     }
 
     dismissAllMenus(){
@@ -133,6 +145,7 @@ class sk_ui_modal extends sk_ui_component {
     hide(){
         return new Promise(async resolve => {
             this.dismissAllMenus()
+            this.leaveEscapeStack()
             if (this.onHide) this.onHide()
             //this.contentContainer.transition('scale out')
             await this.transition('fade out')
@@ -190,6 +203,7 @@ class sk_ui_modal extends sk_ui_component {
 
         if (!val.includes('escape')){
             document.removeEventListener('keydown', this.escapeKeyCloser)
+            this.leaveEscapeStack()
         }
     }
 

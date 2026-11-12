@@ -285,19 +285,23 @@ module.exports = class SK_WebEngine extends SK_RootEngine {
         })
     }
 
+    // What an action learns about the caller: the token's validation (userID, userRefID) when the view needs a
+    // login. A view open to guests (bypassOnAuthFail) lets everyone in, but a caller with a valid login still
+    // gets their validation (it used to answer true at once, so its actions never knew who was logged in);
+    // a guest, or a login that doesn't check out, gets true.
     onValidateAction(srcOpt, view){
         return new Promise(async resolve => {
-            if (view.info.bypassOnAuthFail || !view.info.checkAuth) resolve(true)
-            
+            if (!view.info.checkAuth) return resolve(true)
+
             var auth_token = srcOpt.req.cookies.auth_token
-            if (view.info.checkAuth){
-                if (!auth_token) return resolve(false)
-
-                var validationRes = await view.sk.info.engine.isAuthTokenValid(auth_token, true)
-                if (!validationRes || validationRes.error) return resolve(false)
-
-                resolve(validationRes)
+            var validationRes = null
+            if (auth_token) {
+                try { validationRes = await view.sk.info.engine.isAuthTokenValid(auth_token, true) } catch(err) { validationRes = null }
             }
+            var valid = !!validationRes && !validationRes.error
+
+            if (view.info.bypassOnAuthFail) return resolve(valid ? validationRes : true)
+            resolve(valid ? validationRes : false)
         })
     }
 }

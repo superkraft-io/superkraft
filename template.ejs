@@ -5,6 +5,14 @@
         <title><%= title %></title>
         <link rel="icon" type="image/x-icon" href="<%= sk.routes.frontend.favIcon %>">
 
+        <% if (typeof wappPage !== 'undefined' && wappPage){ %>
+            <%# Web pages: dark from the first paint, before any stylesheet or script (the body is transparent and
+                only turns dark once the app adds sk_ui_appType_wapp, so the browser's white canvas showed first).
+                The colour is --sk_ui_color_very_dark_grey. %>
+            <meta name="color-scheme" content="dark">
+            <style>html { background-color: rgb(20, 20, 20); }</style>
+        <% } %>
+
         <% if (sk.routes.frontend.cdnMap){ %>
             <script>
                 // Files come from the CDN, but browsers only start workers from the page's own site: a worker made

@@ -194,6 +194,8 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                         ...this.viewInfo,
                         // This page's addresses (its build), not the shared ones
                         sk: {...this.viewInfo.sk, routes: routes},
+                        // A web page: template.ejs paints it dark from the first frame (desktop windows stay transparent)
+                        wappPage: true,
                         ...{
                             userData: userData,
                             globalData: globalData,
