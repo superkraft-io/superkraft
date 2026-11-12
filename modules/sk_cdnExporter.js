@@ -79,8 +79,18 @@ module.exports = class SK_CDN_Exporter {
         }
     }
 
-    /** Minified code, or the code as it is when it can't be minified (what failed is listed at the end) */
-    async minified(code, name){
+    /** An ES module: an .mjs file, or a copied file with a real import / export statement. Bundles never are:
+     *  they're classic scripts joined together, and as a module terser drops every top-level class nothing in
+     *  the bundle uses (all of a view's components). "export: null," in an object literal is not a statement. */
+    static isModule(code, name, bundle){
+        if (bundle) return false
+        if (/\.mjs$/i.test(name)) return true
+        return /^\s*import\s*(?:[\w$*{]|["'])/m.test(code) || /^\s*export\s+(?:default\b|const\b|let\b|var\b|function\b|class\b|async\b|\{|\*)/m.test(code)
+    }
+
+    /** Minified code, or the code as it is when it can't be minified (what failed is listed at the end).
+     *  bundle: a joined bundle (sk_ui.js, <view>.js), always a classic script */
+    async minified(code, name, bundle = false){
         this.progress('Minifying ' + path.relative(process.cwd(), name).replace(/\\/g, '/'))
         try {
             if (/\.css$/i.test(name)) {
@@ -91,7 +101,7 @@ module.exports = class SK_CDN_Exporter {
                 return res.styles
             }
             var terser = this.tool('terser')
-            var isModule = /\.mjs$/i.test(name) || /^\s*(import|export)\b/m.test(code)
+            var isModule = SK_CDN_Exporter.isModule(code, name, bundle)
             var out = await terser.minify(code, {
                 module: isModule, keep_classnames: true, keep_fnames: true,
                 compress: {passes: 1}, mangle: true, format: {comments: false}
@@ -184,7 +194,7 @@ module.exports = class SK_CDN_Exporter {
         var rel = path.relative(this.out, file).replace(/\\/g, '/')
         var hash = crypto.createHash('sha1').update(content).digest('hex')
         if (this.manifest.bundles[rel] === hash && fs.existsSync(file)) { this.stats.kept++; return }
-        this.writeIfChanged(file, await this.minified(content, file))
+        this.writeIfChanged(file, await this.minified(content, file, true))
         this.manifest.bundles[rel] = hash
     }
 
