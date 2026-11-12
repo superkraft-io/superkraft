@@ -41,6 +41,12 @@ module.exports = class SK_CDN_Exporter {
         this.minify = m === true ? {js: true, css: true} : {js: !!(m && m.js), css: !!(m && m.css)}
     }
 
+    /** A `[SK CDN] Progress:` line when run as the export only (scripts/export_site_cdn.js): Aurora's
+     *  Deployments shows it while it waits. Starting the site normally prints none. */
+    progress(text){
+        if (process.env.SK_CDN_EXPORT === 'only') console.log('[SK CDN] Progress: ' + text)
+    }
+
     /* ---------------- minifying ---------------- */
 
     get manifestPath(){ return this.out + '.export.json' }
@@ -75,6 +81,7 @@ module.exports = class SK_CDN_Exporter {
 
     /** Minified code, or the code as it is when it can't be minified (what failed is listed at the end) */
     async minified(code, name){
+        this.progress('Minifying ' + path.relative(process.cwd(), name).replace(/\\/g, '/'))
         try {
             if (/\.css$/i.test(name)) {
                 var CleanCSS = this.tool('clean-css')
@@ -233,6 +240,7 @@ module.exports = class SK_CDN_Exporter {
         this.loadManifest()
 
         // core, engine and shared components: one bundle for every page
+        this.progress('Bundling the shared components')
         var general = [
             this.bundle(uiPaths.core, ui.components.core),
             this.bundle(uiPaths.engine, ui.components.engine || []),
@@ -245,8 +253,10 @@ module.exports = class SK_CDN_Exporter {
         // each view: its frontend, and a bundle of its components followed by the global ones
         var viewsOut = path.join(out, 'views')
         var viewIds = new Set()
+        var viewCount = Object.keys(this.sk.views).length, viewNo = 0
         for (var _v in this.sk.views) {
             var view = this.sk.views[_v]
+            this.progress(`View ${view.id} (${++viewNo} of ${viewCount})`)
             var viewRoot = p.views + view.id + '/'
             var dir = path.join(viewsOut, view.id)
             await this.syncDir(viewRoot + 'frontend', dir, [view.id + '.js', view.id + '.css'])
@@ -261,9 +271,12 @@ module.exports = class SK_CDN_Exporter {
         this.prune(viewsOut, viewIds)
         keep.add('views')
 
+        this.progress('Copying sk_frontend')
         await this.syncDir(p.superkraft + 'frontend', path.join(out, 'sk_frontend')); keep.add('sk_frontend')
+        this.progress('Copying app_frontend')
         await this.syncDir(p.app_frontend, path.join(out, 'app_frontend')); keep.add('app_frontend')
-        if (p.globalFrontend) { await this.syncDir(p.globalFrontend, path.join(out, 'app_global')); keep.add('app_global') }
+        if (p.globalFrontend) { this.progress('Copying app_global'); await this.syncDir(p.globalFrontend, path.join(out, 'app_global')); keep.add('app_global') }
+        this.progress('Copying the component folders')
 
         // What components and the template still load on their own: the core and shared component folders
         // (the base styles, and each component's files through root_url), the font and the mobile web app images
