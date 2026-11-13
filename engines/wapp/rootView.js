@@ -252,7 +252,12 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                     
                         if (auth_res){
                             if (auth_res.error === 'invalid_token'){
-                                return res.redirect('/logout')
+                                // A refused token (expired, revoked, purged): drop the cookie here and go to the
+                                // login page. This used to go through the /logout page, which only removes the
+                                // cookie in the browser: where the proxy doesn't route /logout to this app the
+                                // visitor got a 404 and kept the dead cookie, so every later visit ended there too.
+                                res.clearCookie('auth_token', {path: '/'})
+                                return res.redirect(this.info.onAuthFail || '/login')
                             }
 
 
