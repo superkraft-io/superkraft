@@ -421,16 +421,12 @@
                     
                     var _time = `${hours}:${minutes}`
 
-                    var diff = (Date.now() - defOpt.time.getTime())
-                    var elapsedHours = Math.floor(diff / 1000 / 60 / 60)
-                    if (elapsedHours < 24){
-                        result = sk.l10n.getPhrase('today') + ' ' + _time
-                    } else {
-                        if (elapsedHours >= 48){ result = defOpt.time.toLocaleString() }
-                        else {
-                            if (elapsedHours >= 24) result = sk.l10n.getPhrase('yesterday') + ' ' + _time
-                        }
-                    }
+                    // By calendar day, not by hours passed: 23:00 last night is "Yesterday", not "Today"
+                    var startOfDay = d => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
+                    var daysAgo = Math.round((startOfDay(new Date()) - startOfDay(defOpt.time)) / 86400000)
+                    if (daysAgo === 0) result = sk.l10n.getPhrase('today') + ' ' + _time
+                    else if (daysAgo === 1) result = sk.l10n.getPhrase('yesterday') + ' ' + _time
+                    else result = defOpt.time.toLocaleString()
                 } else {
                     var time = opt.time.getTime()
 
