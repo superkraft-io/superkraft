@@ -234,6 +234,14 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
                 var auth_token = req.cookies.auth_token
 
+                // The login could not be checked or the page's data not read (the database is slow, restarting
+                // or away): say so and let the browser try again. Such a visitor used to be sent to the login
+                // page as if logged out, where the cookie could be deleted too.
+                var unavailable = why => {
+                    console.error('[SK] ' + this.info.route + ' not served, ' + why)
+                    res.status(503).set('Retry-After', '5').set('Cache-Control', 'no-store').send('<!DOCTYPE html><html><head><meta charset="UTF-8"><meta http-equiv="refresh" content="5"><meta name="color-scheme" content="dark"><title>One moment</title><style>html{background:rgb(20,20,20);color:#ddd;font:14px/1.5 system-ui,sans-serif}body{margin:0;box-sizing:border-box;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;padding:48px 24px 40px}p{margin:0 0 6px}.l{display:block;height:30px}.s{display:block;width:36px;height:36px;margin:0 auto 16px;animation:r 1s linear infinite}@keyframes r{to{transform:rotate(360deg)}}.b{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-width:150px;height:38px;margin-top:16px;padding:8px 12px;border-radius:8px;background:rgb(8,136,255);color:#fff;text-decoration:none}.b:hover{background:rgb(3,88,167)}.b:active{opacity:.5}.h{display:inline-flex;align-items:center;gap:8px;color:#888;text-decoration:none}.h:hover{color:#ddd}.h svg{width:13px;height:14px;fill:currentColor}</style></head><body><a href="/"><img class="l" src="/logo_white_text.png" alt="Splitter"></a><div><svg class="s" viewBox="0 0 36 36" fill="none" stroke-width="3" aria-hidden="true"><circle cx="18" cy="18" r="15" stroke="#333"/><path d="M18 3a15 15 0 0 1 15 15" stroke="#ddd" stroke-linecap="round"/></svg><p>We could not reach our servers just now. You are still logged in.</p><p>This page tries again in a few seconds.</p><a class="b" href="">Try now</a></div><a class="h" href="/help"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M448 360V24c0-13.3-10.7-24-24-24H96C43 0 0 43 0 96v320c0 53 43 96 96 96h328c13.3 0 24-10.7 24-24v-16c0-7.5-3.5-14.3-8.9-18.7-4.2-15.4-4.2-59.3 0-74.7 5.4-4.3 8.9-11.1 8.9-18.6zM128 134c0-3.3 2.7-6 6-6h212c3.3 0 6 2.7 6 6v20c0 3.3-2.7 6-6 6H134c-3.3 0-6-2.7-6-6v-20zm0 64c0-3.3 2.7-6 6-6h212c3.3 0 6 2.7 6 6v20c0 3.3-2.7 6-6 6H134c-3.3 0-6-2.7-6-6v-20zm253.4 250H96c-17.7 0-32-14.3-32-32 0-17.6 14.4-32 32-32h285.4c-1.9 17.1-1.9 46.9 0 64z"/></svg>Help</a></body></html>')
+                }
+
                 if (this.onValidate){
                     var validationRes = await this.onValidate(auth_token, req)
                     if (!validationRes) return res.redirect('/404')
@@ -262,7 +270,11 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
 
                             //check ban
-                            var latestRestrictionRes = await this.sk.info.database.do.getLatestRestriction({user_id: auth_res.userID})
+                            try {
+                                var latestRestrictionRes = await this.sk.info.database.do.getLatestRestriction({user_id: auth_res.userID})
+                            } catch(err) {
+                                return unavailable('the restriction check failed')
+                            }
                             if (latestRestrictionRes.latestRestriction){
                                 if (this.info.route !== '/restricted') return res.redirect('/restricted')
                             } else {
@@ -293,8 +305,9 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                             */
                             
                         } else {
+                            // No answer about the token (a refused one is handled above): not a logout
                             if (this.info.onAuthFail){
-                                return res.redirect(this.info.onAuthFail)
+                                return unavailable('the login check failed')
                             } else {
                                 if (!this.info.bypassOnAuthFail) return res.redirect('/404')
                             }
@@ -310,6 +323,10 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                     try {
                         userData = await this.onForwardUserData(auth_token, validationRes, {req: req, res: res})
                     } catch(err) {
+                        // A view rejects on purpose for a page that doesn't exist (a used ticket); a database
+                        // that didn't answer is not that
+                        var dbDown = err && ['dbTimeout', 'dbUnavailable', 'dbNoResponse'].includes(err.error)
+                        if (dbDown) return unavailable('its data could not be read (' + err.error + ')')
                         return res.redirect('/404')
                     }
                 }
