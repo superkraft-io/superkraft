@@ -180,6 +180,10 @@ module.exports = class SK_RootView extends SK_RootViewCore {
 
                 var countries = await this.sk.info.l10n.listCountries()
                 var phrases = await this.sk.info.l10n.getForCountry(country)
+                // The language the phrases are really in (one without phrases comes out in English). The page gets
+                // it so the language picker can show the page's language even when it came from the browser or
+                // the account and not from the `country` cookie.
+                var language = countries && countries.indexOf(country) > -1 ? country : 'en'
 
                 res.render(
                     page,
@@ -187,7 +191,8 @@ module.exports = class SK_RootView extends SK_RootViewCore {
                         ...{
                             l10n: {
                                 countries: countries,
-                                phrases: phrases
+                                phrases: phrases,
+                                country: language
                             }
                         },
 

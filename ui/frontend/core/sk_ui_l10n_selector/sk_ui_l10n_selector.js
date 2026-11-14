@@ -48,9 +48,12 @@ class sk_ui_l10n_selector extends sk_ui_button {
             ga: {flag: 'ie', name: 'Gaeilge'}
         }
 
-        var currentlySetCountry = Cookies.get('country')
-        if (currentlySetCountry){
-            var currSelCountry = this.countries[currentlySetCountry]
+        // Show the language the page is in. The server says which one it used (sk.l10n.country): it can come from
+        // the account or the browser, not only from the cookie, and reading the cookie alone showed "English" on
+        // a Swedish page. The cookie is only the fallback where the server doesn't say.
+        var currentlySetCountry = (sk.l10n && sk.l10n.country) || Cookies.get('country')
+        var currSelCountry = this.countries[currentlySetCountry]
+        if (currSelCountry){
             this.icon = currSelCountry.flag + ' flag'
             this.text = currSelCountry.name
         }
