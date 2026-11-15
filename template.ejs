@@ -82,6 +82,8 @@
 
             <script> try { /*var $ = jQuery = require("jquery")*/ } catch(err) {} </script>
             <script src="<%= sk.routes.frontend.sk%>/libs/jquery/dist/jquery.slim.min.js"></script>
+            <%# In the desktop app (pages with Node access) jQuery puts itself in module.exports instead of on the page, and jQuery UI, Semantic UI and jsom need it on the page. FastClick used to take module.exports first, which hid this. %>
+            <script>if (!window.jQuery && typeof module === 'object' && module.exports && module.exports.fn && module.exports.fn.jquery) window.jQuery = window.$ = module.exports</script>
             <script src="<%= sk.routes.frontend.sk%>/libs/jquery/jquery-ui/jquery-ui.min.js"></script>
             
             <script src="<%= sk.routes.frontend.sk%>/libs/ua_parser/ua_parser.min.js"></script>
