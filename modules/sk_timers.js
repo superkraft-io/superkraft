@@ -77,7 +77,6 @@ class SK_Timer {
                 ? this.opt.parent.originals.set.immediate(run)
                 : this.opt.parent.originals.set[this.opt.type](run, this.opt.delay)
         } catch(err) {
-            var x = 0
         }
     }
 

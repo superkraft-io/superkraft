@@ -40,7 +40,6 @@ module.exports = class SK_RootEngine {
 
                 if (postModule.info.protected){
                     if (!req.cookies){
-                        var x = 0
                         return reject('invalid_request')
                     }
 

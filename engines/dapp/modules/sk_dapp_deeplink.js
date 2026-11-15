@@ -55,7 +55,6 @@ module.exports = class SK_DAPP_Deeplink {
 
             return results
         } catch(err) {
-            var x = 0
         }
     }
 }

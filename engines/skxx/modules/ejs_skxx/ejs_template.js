@@ -284,7 +284,6 @@ module.exports = class EJS_Template{
     _addOutput(line){
         
         if (line.indexOf('.ui.head') > -1){
-            var x = 0
         }
 
         if (this.truncate) {

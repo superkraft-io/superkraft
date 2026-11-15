@@ -164,7 +164,6 @@ class sk_ui_icon extends sk_ui_component {
                     for (var i in children){
                         var child = children[i]
                         try { applyToChildren(child) } catch(err) {
-                            var x = 0
                         }
 
                         try { child.style.fill = val } catch(err) {

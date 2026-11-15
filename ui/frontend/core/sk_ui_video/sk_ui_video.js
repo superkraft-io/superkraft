@@ -6,14 +6,6 @@ class sk_ui_video extends sk_ui_component {
             this.loadFromURL(val)
         }})
 
-        // Debug events
-        this.element.addEventListener('loadstart', () => console.log('Video: loadstart'))
-        this.element.addEventListener('loadedmetadata', () => console.log('Video: loadedmetadata'))
-        this.element.addEventListener('loadeddata', () => console.log('Video: loadeddata'))
-        this.element.addEventListener('canplay', () => console.log('Video: canplay'))
-        this.element.addEventListener('canplaythrough', () => console.log('Video: canplaythrough'))
-        this.element.addEventListener('play', () => console.log('Video: play'))
-        this.element.addEventListener('playing', () => console.log('Video: playing'))
         this.element.addEventListener('error', (e) => console.error('Video error:', this.element.error))
 
         this.attributes.add({friendlyName: 'Autoplay', name: 'autoplay', type: 'bool', onSet: async val => {

@@ -54,7 +54,6 @@ class SK_WebWorker {
                     data: _data
                 })
             } catch(err) {
-                var x = 0
             }
         })
     }

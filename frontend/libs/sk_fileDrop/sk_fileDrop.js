@@ -98,7 +98,6 @@ class sk_fileDrop {
                             path: webUtils.getPathForFile(this.files[i])
                         })
                     } catch(err){
-                        var x = 0
                     }
                 }
 

@@ -196,7 +196,6 @@ module.exports =  class EJS_Utils {
                         includePath = filePath;
                     }
                 } catch(err) {
-                    var x = 0   
                 }
             }
             // Then look in any views directories

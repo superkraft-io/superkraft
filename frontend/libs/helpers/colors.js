@@ -57,7 +57,6 @@ class SK_Helpers_Color {
         try {
             rgb = this.rgbComponents(clr)
         } catch(err){
-            var x = 0
         }
 
         try {

@@ -1223,7 +1223,6 @@ class sk_ui_attribute {
                 }
             )
         } catch(err) {
-            var x = 0
         }
 
         this.info = info

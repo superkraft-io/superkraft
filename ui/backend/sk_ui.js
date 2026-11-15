@@ -109,7 +109,6 @@ module.exports = class sk_ui {
             for (var i = 0; i < children.length; i++){
                 var child = children[i]
                 if (!child){
-                    var x = 0
                     continue
                 }
                 var _path = parentPath + child.name + '/'
@@ -198,7 +197,6 @@ module.exports = class sk_ui {
                 console.log('merged ' + dirName)
                 merged.css += fs.readFileSync(fullPaths.css) + '\n\n'
             } catch(err) {
-                var x = 0
             }
         }
 

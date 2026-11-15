@@ -101,11 +101,9 @@ class sk_ui_complexity_objectTree extends sk_ui_groupCollapsable {
                             var sk_ui_obj = el.sk_ui_obj
                             var targetObj = sk_ui_obj.targetObject
                             if (targetObj){
-                                var x = 0
                             }
                             targetObj.classRemove('sk_ui_complexity_object_highlighted')
                         } catch(err) {
-                            var x = 0
                         }
                     }
                     

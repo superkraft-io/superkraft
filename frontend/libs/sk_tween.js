@@ -240,7 +240,6 @@ class SK_Tween {
         
 
         if (this.tag === 'zoomY'){
-            var x = 0
         }
 
 

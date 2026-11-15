@@ -166,7 +166,6 @@ class sk_ui_complexity {
                         path[1].sk_ui_obj.objectListItem.top.classAdd('sk_ui_complexity_objectTree_item_highlighted')
                     }
                 } catch(err) {
-                    var x = 0
                 }
                
             }
