@@ -4,6 +4,9 @@ module.exports = class SK_Utils {
     }
 
     async loadActions(srcPath){
+        // No actions folder: the view (or app) simply has no actions
+        try { await sk_fs.promises.access(srcPath) } catch (err) { return {} }
+
         try {
             var actionsPath = srcPath
             var actionsFiles = await sk_fs.promises.readdir(actionsPath)

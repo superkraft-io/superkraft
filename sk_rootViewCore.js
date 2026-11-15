@@ -34,6 +34,10 @@ module.exports = class SK_RootViewCore {
             try { await sk_fs.promises.access(this.viewInfo.viewBodyScripts.start)  } catch (err) { this.viewInfo.viewBodyScripts.start = this.sk.info.paths.superkraft + 'sk_emptyEJS.ejs' }
             try { await sk_fs.promises.access(this.viewInfo.viewBodyScripts.end)    } catch (err) { this.viewInfo.viewBodyScripts.end = this.sk.info.paths.superkraft + 'sk_emptyEJS.ejs' }
 
+            // A view's own stylesheet (frontend/view.css) is linked only when the view has one
+            this.viewInfo.viewCss = true
+            try { await sk_fs.promises.access(opt.root + 'frontend/view.css') } catch (err) { this.viewInfo.viewCss = false }
+
             if (this.sk.info.complexity) this.viewInfo.sk.useComplexity = this.sk.info.useComplexity
             
             //load actions

@@ -49,7 +49,6 @@
         <% } %>
 
         <%# The same in both modes: sk.routes.frontend.sk and .ui point at the CDN when the site is on it %>
-            <script type='application/javascript' src='<%= sk.routes.frontend.sk%>/libs/fastclick.js'></script>
             <script type='application/javascript' src='<%= sk.routes.frontend.sk%>/libs/sortable.min.js'></script>
 
             <% if (sk.routes.frontend.ui_cdn){ %>
@@ -73,10 +72,6 @@
             window.addEventListener('error', e => {
                 console.warn('Script error from:', e.filename, 'line:', e.lineno, 'col:', e.colno, e.message);
             });
-            
-            document.addEventListener('DOMContentLoaded', function() {
-                FastClick.attach(document.body);
-            }, false);
         </script>
 
         
@@ -151,7 +146,7 @@
             <%- include(globalHead) %>
 
             
-            <link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.view%>view.css">
+            <% if (typeof viewCss === 'undefined' || viewCss){ %><link rel="stylesheet" type="text/css" href="<%= sk.routes.frontend.view%>view.css"><% } %>
             <%- include(viewHead) %>
 
             <script src="<%= sk.routes.frontend.sk%>/libs/sk_hint/sk_hint.js"></script>
