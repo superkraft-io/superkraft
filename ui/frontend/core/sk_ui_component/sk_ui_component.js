@@ -52,7 +52,7 @@ class sk_ui_component {
 
 
         try {
-            if (this.sk_ui_opt.extraOpt.onBeforeCreate) opt.extraOpt.onBeforeCreate(this)
+            if (this.sk_ui_opt.extraOpt.onBeforeCreate) this.sk_ui_opt.extraOpt.onBeforeCreate(this)
         } catch(err) {
             console.error(err)
             console.error('[sk_ui_component] Critical error!')
@@ -782,7 +782,7 @@ class sk_ui_component {
     hideAnimation(opt){
         return new Promise(resolve => {
             if (opt.dimension === 'width') this.width = 0.1
-            else if (opt.dimension === 'width') this.height = 0.1
+            else if (opt.dimension === 'height') this.height = 0.1
             this.opacity = 0.001
             this.style.transform = 'scale(0)'
             setTimeout(()=>{ resolve() }, 250)
