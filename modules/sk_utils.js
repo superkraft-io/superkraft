@@ -4,8 +4,10 @@ module.exports = class SK_Utils {
     }
 
     async loadActions(srcPath){
-        // No actions folder: the view (or app) simply has no actions
-        try { await sk_fs.promises.access(srcPath) } catch (err) { return {} }
+        // No actions folder: the view (or app) simply has no actions. existsSync, not fs/promises
+        // access: inside a packaged app's app.asar, access() fails on folders (ENOENT) and every
+        // view then loaded no actions at all (blank windows in 0.8.0).
+        if (!require('fs').existsSync(srcPath)) return {}
 
         try {
             var actionsPath = srcPath
