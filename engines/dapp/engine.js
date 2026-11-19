@@ -397,11 +397,20 @@ module.exports = class SK_LocalEngine extends SK_RootEngine {
         })
     }
 
+    // Ends the app once every window is closed. sk.onBeforeTerminate (optional) runs first; returning true
+    // means it finishes the quit itself (an updater installing and opening the new version, say), so the
+    // app isn't ended here, now or by a later call.
     async terminate(){
+        if (this._quitHandedOver) return
         this.closeAllViews()
         this.sk.info.timers.destroyAll()
 
-        if (this.sk.info.onBeforeTerminate) await this.sk.onBeforeTerminate()
+        var hook = this.sk.onBeforeTerminate
+        if (typeof hook === 'function') {
+            var res = hook.call(this.sk)
+            if (res === true) { this._quitHandedOver = true; return }
+            await res
+        }
 
         process.exit()
     }
